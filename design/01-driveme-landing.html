@@ -171,7 +171,13 @@
 
   /* ---------- hero ---------- */
   header{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg)}
-  .hero-media{position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
+  /* Poster painted on the CONTAINER: mobile browsers defer video loading, and a
+     deferred video never fires canplay — which would leave this at opacity:0 and
+     hide its poster too. */
+  .hero-media{
+    position:absolute;inset:0;width:100%;height:100%;overflow:hidden;
+    background:#0A0A0A url("assets/hero-poster.jpg") center center/cover no-repeat;
+  }
   #hero-video{
     position:absolute;top:50%;left:50%;width:100%;height:100%;object-fit:cover;
     transform:translate(-50%,-50%) scale(1.04);
@@ -775,8 +781,8 @@
 
 <header id="top">
   <div class="hero-media">
-    <video id="hero-video" autoplay muted loop playsinline preload="auto"
-           poster="assets/hero-poster.jpg" aria-hidden="true">
+    <video id="hero-video" autoplay muted loop playsinline webkit-playsinline
+           preload="metadata" poster="assets/hero-poster.jpg" aria-hidden="true">
       <source src="assets/hero-montage.mp4" type="video/mp4">
     </video>
   </div>
@@ -1304,10 +1310,30 @@
   const heroVideo = document.getElementById('hero-video');
   if (heroVideo){
     const reveal = () => heroVideo.classList.add('ready');
-    heroVideo.addEventListener('canplay', reveal, {once:true});
-    heroVideo.addEventListener('loadeddata', reveal, {once:true});
-    const tryPlay = () => { const p = heroVideo.play(); if (p && p.catch) p.catch(()=>{}); };
-    tryPlay();
+    /* Safari honours the muted PROPERTY, not just the attribute. */
+    heroVideo.muted = true;
+    heroVideo.defaultMuted = true;
+    heroVideo.playsInline = true;
+
+    ['loadedmetadata','loadeddata','canplay','playing'].forEach(ev =>
+      heroVideo.addEventListener(ev, reveal, {once:true}));
+    setTimeout(reveal, 2500);   /* never leave the video invisible */
+
+    const conn = navigator.connection || navigator.webkitConnection;
+    const saveData = conn && (conn.saveData || /^(slow-)?2g$/.test(conn.effectiveType || ''));
+
+    const tryPlay = () => {
+      if (saveData) return;
+      const p = heroVideo.play();
+      if (p && p.catch) p.catch(()=>{});
+    };
+    if (saveData){
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.preload = 'none';
+    } else {
+      heroVideo.load();
+      tryPlay();
+    }
     /* Some browsers refuse autoplay until the user engages. Retry on the first
        real interaction; the poster frame covers the gap either way. */
     ['pointerdown','touchstart','scroll','keydown'].forEach(ev =>
