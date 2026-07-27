@@ -1,2 +1,5 @@
 .vercel
 .env*
+# ...but the template must be committed — it documents what to set in Vercel
+!.env.example
+node_modules

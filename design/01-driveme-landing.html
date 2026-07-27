@@ -29,6 +29,8 @@
     --gold-light:#EBD9A8;
     --gold-deep:#8E6F32;
     --gold-glow:rgba(201,169,97,.28);
+    /* validation only — a warm hairline, deliberately not red */
+    --warn:#C9A961;
     --gold-grad:linear-gradient(120deg,#8E6F32 0%,#C9A961 26%,#F2E3BC 50%,#C9A961 74%,#8E6F32 100%);
     --white:#F5F5F5;
     --line:rgba(201,169,97,.16);
@@ -476,6 +478,107 @@
     font-size:12px;color:var(--silver-dim)}
   .est-member b{color:var(--gold);font-weight:500}
 
+  /* ---------- form states: validation, sending, confirmation ---------- */
+  /* Quiet by design: a warm hairline under the field and small silver helper text.
+     No red, no alert boxes, no shake — the brand voice does not raise its voice. */
+  .field-note{
+    font-size:11.5px;line-height:1.5;letter-spacing:.02em;color:var(--silver-dim);
+    margin-top:5px;opacity:0;transform:translateY(-2px);
+    transition:opacity var(--standard),transform var(--standard);
+  }
+  .field-note.on{opacity:1;transform:none}
+  .hb-field.invalid,.wl.invalid .wl-form{box-shadow:inset 0 -1.5px 0 var(--warn)}
+  .hb-field.invalid label{color:var(--warn)}
+
+  /* button busy state — a thin rotating ring, not a bouncing spinner */
+  .btn.busy{pointer-events:none;opacity:.72}
+  .btn .spin{
+    width:13px;height:13px;border-radius:50%;flex:none;display:none;
+    border:1.5px solid currentColor;border-top-color:transparent;
+    animation:spin 760ms linear infinite;
+  }
+  .btn.busy .spin{display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){ .btn .spin{animation-duration:2.4s} }
+
+  /* hero booking confirmation — replaces the form in place, same footprint */
+  .hb-done{
+    background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(15,19,25,.22);
+    padding:30px 34px;margin-top:44px;max-width:1000px;text-align:left;
+    display:flex;align-items:center;gap:22px;
+    animation:fadeUp 700ms cubic-bezier(.16,1,.3,1) both;
+  }
+  .hb-done .tick{
+    width:42px;height:42px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    background:var(--blue-100);border:1px solid var(--blue-300);
+  }
+  .hb-done .tick svg{width:19px;height:19px;fill:none;stroke:var(--gold);stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+  .hb-done h4{font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--white);letter-spacing:-.01em}
+  .hb-done p{font-size:13.5px;font-weight:300;color:var(--silver);margin-top:4px;line-height:1.6}
+  .hb-done b{font-weight:600;color:var(--gold);letter-spacing:.06em}
+  @media(max-width:680px){.hb-done{padding:24px;gap:16px;margin-top:32px}}
+
+  /* waitlist: the CTA expands into a field in place, rather than opening a modal */
+  .wl{margin-top:auto;padding-top:12px}
+  .wl-open{
+    background:none;border:0;padding:0;font-family:inherit;cursor:pointer;
+    font-size:13px;letter-spacing:.08em;color:var(--silver-dim);
+    display:inline-flex;gap:10px;align-items:center;transition:color var(--standard),gap var(--standard);
+  }
+  .svc:hover .wl-open{gap:16px;color:var(--white)}
+  .wl-form{
+    display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:100px;padding:5px 5px 5px 18px;
+    max-height:0;opacity:0;overflow:hidden;border-color:transparent;
+    transition:max-height 420ms cubic-bezier(.16,1,.3,1),opacity 300ms var(--standard),
+               border-color 300ms,padding 420ms cubic-bezier(.16,1,.3,1);
+  }
+  .wl.open .wl-form{max-height:120px;opacity:1;border-color:var(--line)}
+  .wl-input{
+    border:0;background:transparent;font-family:inherit;font-size:14px;color:var(--white);
+    padding:9px 0;width:100%;min-width:0;
+  }
+  .wl-input::placeholder{color:var(--silver-dim)}
+  .wl-input:focus{outline:none}
+  .wl-send{
+    width:36px;height:36px;border-radius:50%;flex:none;cursor:pointer;
+    border:1px solid var(--line);background:var(--glass);color:var(--gold);
+    display:flex;align-items:center;justify-content:center;font-size:15px;
+    transition:background var(--standard),border-color var(--standard),color var(--standard);
+  }
+  .wl-send:hover{background:var(--gold);border-color:var(--gold);color:#fff}
+  .wl-send:disabled{opacity:.5;cursor:default}
+  .wl-done{
+    font-size:13px;font-weight:300;line-height:1.6;color:var(--silver);
+    animation:fadeUp 600ms cubic-bezier(.16,1,.3,1) both;
+  }
+  .wl .field-note{padding-left:2px}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+  /* ---------- pricing rail + payment methods (plan §3.4) ---------- */
+  /* token-only so the same block works on the dark and light grounds */
+  .pricing{margin-top:56px}
+  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:20px;overflow:hidden}
+  @media(max-width:900px){.price-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.price-grid{grid-template-columns:1fr}}
+  .price{background:var(--bg);padding:30px 28px}
+  .price-k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-dim);display:block}
+  .price b{display:block;margin:12px 0 8px;font-family:var(--font-display);font-size:30px;font-weight:600;
+    letter-spacing:-.01em;color:var(--gold)}
+  .price b small{font-size:.46em;font-weight:400;letter-spacing:.02em;color:var(--silver-dim);margin-left:5px}
+  .price p{font-size:13px;font-weight:300;line-height:1.65;color:var(--silver)}
+  .pay{margin-top:26px;display:flex;align-items:center;gap:26px;flex-wrap:wrap;
+    border:1px solid var(--line);border-radius:100px;padding:16px 30px}
+  @media(max-width:680px){.pay{border-radius:20px;padding:20px 22px;gap:16px}}
+  .pay-k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-dim)}
+  .pay ul{list-style:none;display:flex;gap:26px;flex-wrap:wrap}
+  .pay li{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--silver);letter-spacing:.03em}
+  .pay svg{width:17px;height:17px;fill:none;stroke:var(--gold);stroke-width:1.5;
+    stroke-linecap:round;stroke-linejoin:round;flex:none}
+
   /* ---------- the approach (live tracking) ---------- */
   .appr-grid{display:grid;grid-template-columns:1.4fr .6fr;gap:28px;margin-top:64px;align-items:stretch}
   @media(max-width:900px){.appr-grid{grid-template-columns:1fr}}
@@ -510,30 +613,36 @@
   .appr-driver .app-avatar{width:42px;height:42px}
 
   /* ---------- fleet ---------- */
-  .fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:64px}
-  @media(max-width:960px){.fleet-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:680px){.fleet-grid{grid-template-columns:1fr}}
-  .ride{
+  /* Phase 2 target, not an inventory grid — no vehicle has been acquired, so this
+     shows one aspirational vehicle class rather than a browsable line-up. */
+  .target{
+    display:grid;grid-template-columns:1.05fr .95fr;margin-top:64px;
     border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--glass);
-    display:flex;flex-direction:column;
-    transition:transform 500ms cubic-bezier(.16,1,.3,1),border-color var(--standard),box-shadow 500ms cubic-bezier(.16,1,.3,1);
+    transition:border-color var(--standard),box-shadow 500ms cubic-bezier(.16,1,.3,1);
   }
-  .ride:hover{transform:translateY(-6px);border-color:rgba(201,169,97,.42);box-shadow:0 26px 70px rgba(0,0,0,.5)}
-  .ride-media{position:relative;aspect-ratio:3/2;overflow:hidden;flex:none}
-  .ride-media img{width:100%;height:100%;object-fit:cover;display:block;
+  .target:hover{border-color:rgba(201,169,97,.42);box-shadow:0 26px 70px rgba(0,0,0,.5)}
+  .target-media{position:relative;min-height:420px;overflow:hidden}
+  .target-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
     transition:transform 1200ms cubic-bezier(.16,1,.3,1)}
-  .ride:hover .ride-media img{transform:scale(1.07)}
-  .ride-media::after{content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,transparent 45%,rgba(10,10,10,.85) 100%)}
+  .target:hover .target-media img{transform:scale(1.05)}
+  .target-media::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,transparent 50%,rgba(10,10,10,.6) 100%)}
   .ride-tag{
     position:absolute;left:20px;top:18px;z-index:2;
     font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);
     background:rgba(10,10,10,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
     border:1px solid rgba(201,169,97,.3);border-radius:100px;padding:7px 14px;
   }
-  .ride-body{padding:26px 30px 30px}
+  .target-copy{padding:48px 52px;display:flex;flex-direction:column;justify-content:center}
   .ride-class{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--silver-dim)}
-  .ride-body h3{font-family:var(--font-display);font-size:26px;font-weight:500;letter-spacing:-.005em;margin:8px 0 18px}
+  .target-copy h3{font-family:var(--font-display);font-size:32px;font-weight:500;letter-spacing:-.01em;margin:10px 0 18px}
+  .target-copy p{font-size:15px;font-weight:300;color:var(--silver);line-height:1.75;margin-bottom:26px}
+  @media(max-width:860px){
+    .target{grid-template-columns:1fr}
+    .target-media{min-height:280px}
+    .target-media::after{background:linear-gradient(180deg,transparent 45%,rgba(10,10,10,.65) 100%)}
+    .target-copy{padding:36px 28px}
+  }
   .ride-specs{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
   .ride-specs li{
     font-size:12px;color:var(--silver);letter-spacing:.04em;
@@ -656,6 +765,7 @@
   .story-step b{display:block;font-family:var(--font-display);font-size:21px;font-weight:500;color:inherit;letter-spacing:-.005em;margin-bottom:3px}
   .story-step.on{color:var(--silver);border-left-color:var(--gold)}
   .story-step.on b{color:var(--white)}
+  .story-note{margin-top:32px;font-size:12px;font-weight:300;letter-spacing:.06em;color:var(--silver-dim)}
 
   /* ---------- stats ---------- */
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
@@ -674,43 +784,50 @@
     background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;
     -webkit-text-fill-color:transparent;color:transparent;
   }
-  .stat .num small{font-size:.55em;font-weight:500;opacity:.85}
+  /* no opacity here: an opacity<1 child gets its own compositing layer, where the
+     parent's background-clip:text cutout has no background behind it — the € and M
+     rendered fully transparent. Keep the affixes on the parent's painted layer. */
+  .stat .num small{font-size:.55em;font-weight:500}
   .stat p{margin-top:10px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--silver-dim)}
+  .stats-note{margin-top:28px;max-width:780px;font-size:13px;font-weight:300;line-height:1.75;color:var(--silver-dim)}
 
   /* ---------- roadmap ---------- */
   .map-band{margin-top:80px;border:1px solid var(--line);border-radius:24px;overflow:hidden;
     background:radial-gradient(ellipse 70% 90% at 50% -20%,rgba(184,188,194,.06),transparent);padding:80px 48px}
-  .phases{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
-  @media(max-width:820px){.phases{grid-template-columns:1fr;gap:36px}.phase::before{display:none}.phases .track{display:none}}
-  .phases .track{position:absolute;top:5px;left:12.5%;right:12.5%;height:1px;background:var(--line)}
-  .phases .track i{display:block;height:100%;width:0;
+  .stages{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+  @media(max-width:820px){.stages{grid-template-columns:1fr;gap:36px}.stage::before{display:none}.stages .track{display:none}}
+  .stages .track{position:absolute;top:5px;left:12.5%;right:12.5%;height:1px;background:var(--line)}
+  .stages .track i{display:block;height:100%;width:0;
     background:linear-gradient(90deg,var(--gold-deep),var(--gold) 45%,var(--gold-light));
     box-shadow:0 0 12px rgba(201,169,97,.5)}
-  .phase{text-align:center;position:relative;padding-top:36px}
-  .phase::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  .stage{text-align:center;position:relative;padding-top:36px}
+  .stage::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
     width:11px;height:11px;border-radius:50%;border:1px solid var(--silver-dim);background:var(--bg);
     transition:border-color 500ms,box-shadow 500ms,background 500ms}
-  .phase.lit::before{border-color:var(--gold-light);background:var(--gold);box-shadow:0 0 20px rgba(201,169,97,.65)}
-  .phase h4{font-family:var(--font-display);font-size:23px;font-weight:500;letter-spacing:-.005em}
-  .phase p{font-size:13px;color:var(--silver-dim);margin-top:6px;letter-spacing:.05em}
-  .phase .yr{font-size:11px;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:10px}
+  .stage.lit::before{border-color:var(--gold-light);background:var(--gold);box-shadow:0 0 20px rgba(201,169,97,.65)}
+  .stage h4{font-family:var(--font-display);font-size:23px;font-weight:500;letter-spacing:-.005em}
+  .stage p{font-size:13px;color:var(--silver-dim);margin-top:6px;letter-spacing:.05em}
+  .stage .yr{font-size:11px;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:10px}
 
-  /* ---------- testimonials ---------- */
-  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:72px}
-  @media(max-width:960px){.quotes{grid-template-columns:1fr}}
-  .quote{
-    border:1px solid var(--line);border-radius:20px;padding:44px 40px;
+  /* ---------- founder's note ---------- */
+  /* One attributed note rather than a testimonial grid — pre-launch, there are no
+     customers to quote, so the only honest first-person voice is the founder's. */
+  .founder{
+    max-width:840px;margin:72px auto 0;
+    border:1px solid var(--line);border-radius:20px;padding:52px 56px;
     background:linear-gradient(170deg,var(--glass-strong),rgba(255,255,255,.01));
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    display:flex;flex-direction:column;gap:32px;
+    display:flex;flex-direction:column;gap:26px;
     transition:transform 500ms cubic-bezier(.16,1,.3,1),border-color var(--standard),box-shadow 500ms;
   }
-  .quote:hover{transform:translateY(-6px);border-color:rgba(184,188,194,.28);box-shadow:0 24px 70px rgba(0,0,0,.45)}
-  .quote .mark{font-family:var(--font-display);font-size:64px;line-height:.6;font-weight:700;
+  .founder:hover{transform:translateY(-6px);border-color:rgba(184,188,194,.28);box-shadow:0 24px 70px rgba(0,0,0,.45)}
+  .founder .mark{font-family:var(--font-display);font-size:64px;line-height:.6;font-weight:700;
     background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;
     -webkit-text-fill-color:transparent;color:transparent}
-  .quote p{font-family:var(--font-display);font-size:19px;font-weight:400;line-height:1.62;color:var(--white);flex:1;letter-spacing:-.005em}
-  .quote .who{display:flex;align-items:center;gap:16px}
+  .founder p{font-family:var(--font-display);font-size:19px;font-weight:400;line-height:1.62;color:var(--white);letter-spacing:-.005em}
+  .founder .who{display:flex;align-items:center;gap:16px;margin-top:6px;
+    border-top:1px solid var(--line-soft);padding-top:28px}
+  @media(max-width:680px){.founder{padding:36px 26px;margin-top:48px}.founder p{font-size:17px}}
   .avatar{
     width:52px;height:52px;border-radius:50%;flex:none;
     display:flex;align-items:center;justify-content:center;
@@ -719,7 +836,7 @@
     font-family:var(--font-display);color:var(--gold-light);
   }
   .who b{display:block;font-family:var(--font-display);font-size:18px;font-weight:500}
-  .who span{font-size:12px;color:var(--silver-dim);letter-spacing:.06em}
+  .who span{font-size:12px;color:var(--silver-dim);letter-spacing:.06em;line-height:1.5}
 
   /* ---------- final CTA + footer ---------- */
   .final{
@@ -736,6 +853,10 @@
   .foot ul{list-style:none;display:flex;gap:36px;flex-wrap:wrap}
   .foot a{font-size:13px;color:var(--silver-dim);letter-spacing:.06em;transition:color var(--standard)}
   .foot a:hover{color:var(--gold)}
+  .foot-contact{display:flex;flex-direction:column;gap:8px;text-align:right}
+  .foot-contact a{font-size:13px;color:var(--silver);letter-spacing:.04em;transition:color var(--standard)}
+  .foot-contact a:hover{color:var(--gold)}
+  @media(max-width:680px){.foot-contact{text-align:left}}
   .legal{margin-top:48px;font-size:12px;color:#4A4C50;letter-spacing:.04em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
   @media (prefers-reduced-motion:reduce){
@@ -760,9 +881,9 @@
 
 <nav id="nav">
   <div class="bar-top">
-    <a class="contact-line" href="tel:+358401234567" data-hover>
+    <a class="contact-line" href="tel:+358451878083" data-hover>
       <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1.2 1.2 0 0 1 1.2-.3c1.3.4 2.7.6 4.1.6.7 0 1.3.6 1.3 1.3V21c0 .7-.6 1.3-1.3 1.3C10.3 22.3 1.7 13.7 1.7 3.3 1.7 2.6 2.3 2 3 2h3.8c.7 0 1.3.6 1.3 1.3 0 1.4.2 2.8.6 4.1.1.4 0 .9-.3 1.2z"/></svg>
-      <span>+358 40 123 4567</span>
+      <span>+358 45 187 8083</span>
     </a>
     <a class="logo" href="#top">DRIVE<span class="dot">·</span>ME</a>
     <a class="nav-cta" href="#request" data-hover>Book a Driver</a>
@@ -801,9 +922,9 @@
     </div>
   </div>
   <div class="hero-meta">
-    <span>Est. Helsinki — 2026</span>
+    <span>Helsinki · Launching 2026</span>
     <span class="scroll-hint">Scroll <i></i></span>
-    <span>Licensed · Insured · Vetted</span>
+    <span>Licensed · Insured · Vetted from day one</span>
   </div>
 </header>
 
@@ -812,7 +933,7 @@
   <div class="wrap">
     <p class="kicker reveal">The problem</p>
     <h2 class="reveal">Every ride-share makes you <em>abandon your own car.</em></h2>
-    <p class="lead reveal">A dinner, an event, one glass of wine — and your vehicle spends the night across the city. DriveMe removes the trade-off entirely.</p>
+    <p class="lead reveal">A dinner, an event, one glass of wine — and your vehicle spends the night across the city. DriveMe is built to remove the trade-off entirely.</p>
     <div class="compare">
       <div class="card bad reveal" data-tilt>
         <p class="tag">The old way</p>
@@ -920,6 +1041,18 @@
           <p class="req-note">One-hour minimum — billed in half hours.</p>
         </div>
 
+        <!-- appears only when the destination falls outside the four capital-region
+             cities; the surcharge is per kilometre, so it needs a distance -->
+        <div class="field" id="field-km" hidden>
+          <label for="km-out">Distance beyond the metro area</label>
+          <div class="stepper">
+            <button type="button" id="km-minus" aria-label="Decrease distance by five kilometres">−</button>
+            <output id="km-out" for="km-minus km-plus">20<small>km</small></output>
+            <button type="button" id="km-plus" aria-label="Increase distance by five kilometres">+</button>
+          </div>
+          <p class="req-note">Charged at €0,50 per kilometre beyond the Helsinki Metro Area.</p>
+        </div>
+
         <div class="req-foot">
           <a class="btn btn-primary" href="#approach" data-hover>Continue</a>
           <span class="step-of">Step 1 of 4</span>
@@ -931,11 +1064,46 @@
         <p class="est-big" id="est-total">€50</p>
         <p class="est-mode" id="est-mode">2 hr · By the hour</p>
         <div class="est-line"><span>Professional driver</span><b id="est-driver">2 hr × €25</b></div>
-        <div class="est-line" id="est-callout-row" hidden><span>Outside the metro</span><b>€15</b></div>
+        <div class="est-line" id="est-callout-row" hidden><span id="est-callout-label">Beyond the metro</span><b id="est-callout">€10</b></div>
         <div class="est-total"><span>Total</span><b id="est-total-2">€50</b></div>
         <p class="est-fine">VAT included. No surge pricing, ever — the same rate at two in the afternoon and two in the morning.</p>
-        <p class="est-member">Members pay no callout fee — <b>€100 / month</b></p>
+        <p class="est-member">Subscription — <b>€100 / month</b> for five hours of driver time</p>
       </aside>
+    </div>
+
+    <!-- full pricing architecture per plan §3.4, plus supported payment methods -->
+    <div class="pricing reveal" id="pricing">
+      <div class="price-grid">
+        <div class="price">
+          <span class="price-k">Professional driver</span>
+          <b>€25<small>/ hour</small></b>
+          <p>One-hour minimum, billed in half hours thereafter.</p>
+        </div>
+        <div class="price">
+          <span class="price-k">Beyond the metro</span>
+          <b>€0,50<small>/ km</small></b>
+          <p>Applies past Helsinki, Espoo, Vantaa and Kauniainen.</p>
+        </div>
+        <div class="price">
+          <span class="price-k">Event packages</span>
+          <b>€200–500</b>
+          <p>Private events and multi-stop evenings, quoted in advance.</p>
+        </div>
+        <div class="price">
+          <span class="price-k">Subscription</span>
+          <b>€100<small>/ month</small></b>
+          <p>Five hours of driver time every month.</p>
+        </div>
+      </div>
+      <div class="pay">
+        <span class="pay-k">Payment methods</span>
+        <ul>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Card</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10.5 18.5h3"/></svg>MobilePay</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg>Corporate invoicing</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Cash</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -1002,7 +1170,7 @@
         <div class="svc-body">
           <h3>Premium Driver</h3>
           <p>A licensed professional drives you home in your own car. On demand, day or night.</p>
-          <span class="go">Book now →</span>
+          <a class="go" href="#request" data-hover>Book now →</a>
         </div>
       </article>
       <article class="svc soon reveal" data-hover>
@@ -1013,7 +1181,16 @@
         <div class="svc-body">
           <h3>Luxury Chauffeur</h3>
           <p>Executive sedans with dedicated chauffeurs for corporate accounts and events.</p>
-          <span class="go">Join waitlist →</span>
+          <div class="wl" data-tier="chauffeur">
+            <button type="button" class="wl-open">Join waitlist →</button>
+            <form class="wl-form" novalidate>
+              <label class="sr-only" for="wl-chauffeur">Email address for the chauffeur waitlist</label>
+              <input class="wl-input" id="wl-chauffeur" type="email" autocomplete="email" placeholder="you@example.com">
+              <button class="wl-send" type="submit" aria-label="Join the chauffeur waitlist">→</button>
+            </form>
+            <p class="field-note" role="status"></p>
+            <p class="wl-done" hidden role="status" aria-live="polite"></p>
+          </div>
         </div>
       </article>
       <article class="svc soon reveal" data-hover>
@@ -1024,7 +1201,16 @@
         <div class="svc-body">
           <h3>Premium Rental</h3>
           <p>Curated vehicles, delivered to your door with a full tank and a handshake.</p>
-          <span class="go">Join waitlist →</span>
+          <div class="wl" data-tier="rental">
+            <button type="button" class="wl-open">Join waitlist →</button>
+            <form class="wl-form" novalidate>
+              <label class="sr-only" for="wl-rental">Email address for the rental waitlist</label>
+              <input class="wl-input" id="wl-rental" type="email" autocomplete="email" placeholder="you@example.com">
+              <button class="wl-send" type="submit" aria-label="Join the rental waitlist">→</button>
+            </form>
+            <p class="field-note" role="status"></p>
+            <p class="wl-done" hidden role="status" aria-live="polite"></p>
+          </div>
         </div>
       </article>
     </div>
@@ -1034,49 +1220,26 @@
 <!-- 5 · Fleet -->
 <section id="fleet">
   <div class="wrap">
-    <p class="kicker reveal">The fleet</p>
-    <h2 class="reveal">Your car — or <em>ours.</em></h2>
-    <p class="lead reveal">Premium Driver always puts a professional behind the wheel of your own vehicle. When you'd rather be collected, our chauffeur and rental services draw on a curated fleet — every car detailed, insured, and driven by the same vetted professionals.</p>
-    <div class="fleet-grid">
-      <article class="ride reveal" data-hover>
-        <div class="ride-media">
-          <img src="assets/fleet-s-class.jpg" alt="Black Mercedes-Benz S-Class saloon" loading="lazy">
-          <span class="ride-tag">Flagship</span>
-        </div>
-        <div class="ride-body">
-          <span class="ride-class">Executive saloon</span>
-          <h3>Mercedes-Benz S-Class</h3>
-          <ul class="ride-specs"><li>3 passengers</li><li>2 cases</li><li>Rear suite</li></ul>
-        </div>
-      </article>
-      <article class="ride reveal" data-hover>
-        <div class="ride-media">
-          <img src="assets/fleet-e-class.jpg" alt="Black Mercedes-Benz E-Class saloon in motion" loading="lazy">
-          <span class="ride-tag">Everyday luxury</span>
-        </div>
-        <div class="ride-body">
-          <span class="ride-class">Business saloon</span>
-          <h3>Mercedes-Benz E-Class</h3>
-          <ul class="ride-specs"><li>3 passengers</li><li>2 cases</li><li>Airport ready</li></ul>
-        </div>
-      </article>
-      <article class="ride reveal" data-hover>
-        <div class="ride-media">
-          <img src="assets/fleet-a6.jpg" alt="Black Audi A6 saloon" loading="lazy">
-          <span class="ride-tag">Discreet</span>
-        </div>
-        <div class="ride-body">
-          <span class="ride-class">Business saloon</span>
-          <h3>Audi A6</h3>
-          <ul class="ride-specs"><li>3 passengers</li><li>2 cases</li><li>Quattro</li></ul>
-        </div>
-      </article>
+    <p class="kicker reveal">The fleet · Phase 2</p>
+    <h2 class="reveal">Today, your car. <em>In time, ours.</em></h2>
+    <p class="lead reveal">DriveMe owns no vehicles at launch, and that is the design — a professional drives the car you already have, which is precisely what lets Phase 1 begin without fleet financing. A small premium fleet comes later: two to three vehicles, acquired only once Phase 1 is generating consistent revenue, opening the chauffeur and rental tiers.</p>
+    <div class="target reveal" data-hover>
+      <div class="target-media">
+        <img src="assets/fleet-s-class.jpg" alt="Reference image of a Mercedes-Benz S-Class saloon — the vehicle class DriveMe intends to acquire for its future chauffeur service" loading="lazy">
+        <span class="ride-tag">Planned · Phase 2</span>
+      </div>
+      <div class="target-copy">
+        <span class="ride-class">Intended vehicle class</span>
+        <h3>Mercedes-Benz S-Class</h3>
+        <p>The standard we intend to buy into when the chauffeur tier opens — a reference point, not an inventory list. No vehicle shown here has been acquired, financed, or insured, and none will be until Phase 1 has proven the demand behind it.</p>
+        <ul class="ride-specs"><li>2–3 vehicles planned</li><li>Follows Phase 1</li><li>Chauffeur-driven</li></ul>
+      </div>
     </div>
     <div class="cabin reveal">
-      <img src="assets/fleet-interior.jpg" alt="Interior cabin of a Mercedes-Benz" loading="lazy">
+      <img src="assets/fleet-interior.jpg" alt="Reference image of a premium saloon cabin, illustrating the standard DriveMe is targeting" loading="lazy">
       <div class="cabin-copy">
-        <h3>The cabin is the point.</h3>
-        <p>Climate set before you step in. Phone paired. Conversation optional. Every DriveMe journey is quiet by default — because the best luxury is the kind you don't have to ask for.</p>
+        <h3>The standard we're building toward.</h3>
+        <p>Climate set before you step in. Phone paired. Conversation optional. That is the brief for the chauffeur tier when it opens — because the best luxury is the kind you don't have to ask for.</p>
       </div>
     </div>
   </div>
@@ -1094,7 +1257,7 @@
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>
-        <h4>Background checked</h4><p>Multi-stage vetting: identity, licence history, and in-person evaluation.</p>
+        <h4>Background checked</h4><p>Four checks before activation: licence verification, driving record, criminal background, and an in-person interview.</p>
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="11" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.5-8 12-8 12S4 15.5 4 10a8 8 0 0 1 8-8z"/></svg>
@@ -1110,7 +1273,7 @@
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.2 5.6.6-4.2 3.9 1.2 5.6-5-2.9-5 2.9 1.2-5.6L4 8.8l5.6-.6z"/></svg>
-        <h4>Luxury experience</h4><p>Suited drivers, quiet rides, your preferences remembered — every single time.</p>
+        <h4>Luxury experience</h4><p>Suited drivers, quiet rides, your preferences remembered — the standard every booking is held to.</p>
       </div>
     </div>
   </div>
@@ -1130,6 +1293,7 @@
             <div class="story-step" data-i="2"><b>Payments</b>Cashless, itemised, corporate-ready.</div>
             <div class="story-step" data-i="3"><b>Arrival</b>Rate the journey. Your car sleeps at home.</div>
           </div>
+          <p class="story-note">Interface preview — screens shown are in development, with sample journey data.</p>
         </div>
         <div class="phone" data-hover>
           <div class="screen">
@@ -1187,9 +1351,10 @@
     <div class="stats reveal">
       <div class="stat"><div class="num"><small>€</small><span data-count="325">0</span><small>M</small></div><p>Addressable market</p></div>
       <div class="stat"><div class="num"><span data-count="1.35" data-dec="2">0</span><small>M</small></div><p>Capital-region population</p></div>
-      <div class="stat"><div class="num"><span data-count="3">0</span></div><p>Growth phases</p></div>
-      <div class="stat"><div class="num"><span data-count="100">0</span><small>%</small></div><p>Licensed driver network</p></div>
+      <div class="stat"><div class="num"><span data-count="3">0</span></div><p>Service phases</p></div>
+      <div class="stat"><div class="num"><span data-count="4">0</span></div><p>Vetting checks per driver</p></div>
     </div>
+    <p class="stats-note reveal">Market size and population are external estimates for Finland and the Helsinki capital region, not DriveMe figures. Every driver must clear four checks before a first booking — Finnish licence verification, a driving-record check, a criminal background check, and an in-person interview — and none is activated on a partial file.</p>
   </div>
 </section>
 
@@ -1199,37 +1364,33 @@
     <p class="kicker reveal">Expansion</p>
     <h2 class="reveal">From Helsinki, <em>outward.</em></h2>
     <div class="map-band reveal">
-      <div class="phases" id="phases">
+      <!-- "Stage", never "Phase": Phase 1/2/3 are the service tiers (driver →
+           chauffeur → rental). These are geographic milestones on the plan's
+           month-based windows and must not read as the same sequence. -->
+      <div class="stages" id="stages">
         <div class="track"><i id="track-fill"></i></div>
-        <div class="phase"><span class="yr">Phase 1 · 2026</span><h4>Helsinki</h4><p>Launch city</p></div>
-        <div class="phase"><span class="yr">Phase 2 · 2027</span><h4>Finland</h4><p>Tampere · Turku · Oulu</p></div>
-        <div class="phase"><span class="yr">Phase 3 · 2028</span><h4>Nordics</h4><p>Stockholm · Oslo · Copenhagen</p></div>
-        <div class="phase"><span class="yr">Beyond</span><h4>Global</h4><p>Selected premium cities</p></div>
+        <div class="stage"><span class="yr">Stage 1 · Months 0–6</span><h4>Helsinki</h4><p>Helsinki · Espoo · Vantaa</p></div>
+        <div class="stage"><span class="yr">Stage 2 · Months 6–18</span><h4>Finland</h4><p>Tampere · Turku · Oulu · Lapland</p></div>
+        <div class="stage"><span class="yr">Stage 3 · Months 18–36</span><h4>Nordics</h4><p>Sweden · Norway · Denmark</p></div>
+        <div class="stage"><span class="yr">Long-term</span><h4>Global</h4><p>Franchise &amp; licensing model</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 9 · Testimonials -->
+<!-- 9 · Founder's note -->
 <section id="voices">
   <div class="wrap">
-    <p class="kicker reveal">Early voices</p>
-    <h2 class="reveal">Trusted by people who <em>don't compromise.</em></h2>
-    <div class="quotes">
-      <div class="quote reveal" data-hover>
-        <span class="mark">“</span>
-        <p>After client dinners I used to juggle taxis and next-morning car retrievals. Now my car and I arrive home together. It's the only way I travel in Helsinki.</p>
-        <div class="who"><span class="avatar">HL</span><div><b>Henrik Lindqvist</b><span>Managing Partner, law firm</span></div></div>
-      </div>
-      <div class="quote reveal" data-hover>
-        <span class="mark">“</span>
-        <p>My father is 82 and still loves his Volvo. DriveMe lets him keep his independence — a professional drives him to appointments in his own car.</p>
-        <div class="who"><span class="avatar">AK</span><div><b>Anna Korhonen</b><span>Family client</span></div></div>
-      </div>
-      <div class="quote reveal" data-hover>
-        <span class="mark">“</span>
-        <p>The drivers are immaculate — suited, discreet, punctual. It feels less like an app and more like having a private chauffeur on call.</p>
-        <div class="who"><span class="avatar">JV</span><div><b>Jussi Virtanen</b><span>CEO, technology group</span></div></div>
+    <p class="kicker reveal">Founder's note</p>
+    <h2 class="reveal">Why I'm building <em>DriveMe.</em></h2>
+    <div class="founder reveal" data-hover>
+      <span class="mark">“</span>
+      <p>I kept running into the same evening in Helsinki. Dinner runs long, the weather turns, a glass of wine is poured — and a car you rely on becomes something to recover tomorrow morning. Every app in this city solves the passenger's journey. None of them solve the car's.</p>
+      <p>So DriveMe starts deliberately narrow: one service, one city, licensed professional drivers who come to you and drive your own vehicle home. The chauffeur and rental tiers will open only once that first promise is being kept consistently. I would rather earn the second product than announce it.</p>
+      <p>If you are an early customer, a driver who takes the work seriously, or a venue that sends people home at midnight — I want to hear from you before we launch.</p>
+      <div class="who">
+        <span class="avatar">SN</span>
+        <div><b>Sohail Noman</b><span>Founder &amp; Chief Executive Officer<br>Mansio Group Oy · Helsinki</span></div>
       </div>
     </div>
   </div>
@@ -1241,8 +1402,8 @@
     <p class="kicker reveal" style="justify-content:center">Begin</p>
     <h2 class="reveal">Your car deserves a <em>better way home.</em></h2>
     <div class="hero-ctas reveal">
-      <a class="btn btn-primary" href="#" data-hover>Book Your Driver</a>
-      <a class="btn btn-ghost" href="#" data-hover>Talk to us</a>
+      <a class="btn btn-primary" href="#request" data-hover>Book Your Driver</a>
+      <a class="btn btn-ghost" href="mailto:info@driveme.fi" data-hover>Talk to us</a>
     </div>
   </div>
 </section>
@@ -1251,17 +1412,23 @@
   <div class="wrap">
     <div class="foot">
       <a class="logo" href="#top">DRIVE<span class="dot">·</span>ME</a>
+      <!-- Every entry points at a section that exists. Drivers, Corporate, Careers
+           and Press had no destination, so they are gone rather than dead. -->
       <ul>
-        <li><a href="#" data-hover>Services</a></li>
-        <li><a href="#" data-hover>Drivers</a></li>
-        <li><a href="#" data-hover>Corporate</a></li>
-        <li><a href="#" data-hover>Safety</a></li>
-        <li><a href="#" data-hover>Careers</a></li>
-        <li><a href="#" data-hover>Press</a></li>
+        <li><a href="#services" data-hover>Services</a></li>
+        <li><a href="#pricing" data-hover>Pricing</a></li>
+        <li><a href="#why" data-hover>Safety</a></li>
+        <li><a href="#roadmap" data-hover>Roadmap</a></li>
+        <li><a href="#request" data-hover>Book a driver</a></li>
+        <li><a href="mailto:info@driveme.fi" data-hover>Contact</a></li>
       </ul>
+      <div class="foot-contact">
+        <a href="tel:+358451878083" data-hover>+358 45 187 8083</a>
+        <a href="mailto:info@driveme.fi" data-hover>info@driveme.fi</a>
+      </div>
     </div>
     <div class="legal">
-      <span>© 2026 DriveMe Oy · Helsinki, Finland</span>
+      <span>© 2026 DriveMe — Mansio Group Oy · Y-tunnus 3631044-9 · Helsinki, Finland</span>
       <span>Privacy · Terms · Licensing</span>
     </div>
   </div>
@@ -1347,28 +1514,37 @@
   }
 
   /* ---- the request: live estimate ---- */
-  const RATE = 25, CALLOUT = 15;
+  /* Plan §3.4: €25/hr with a one-hour minimum, plus €0.50 per km beyond the
+     Helsinki Metro Area — a per-km surcharge, not a flat callout fee. */
+  const RATE = 25, PER_KM = 0.5;
   const modeHour = document.getElementById('mode-hour'), modeP2P = document.getElementById('mode-p2p');
   if (modeHour){
-    let byHour = true, hours = 2;
+    let byHour = true, hours = 2, kmOut = 20;
     const fHours = document.getElementById('field-hours'), fDest = document.getElementById('field-dest');
-    const out = document.getElementById('hrs-out');
+    const fKm = document.getElementById('field-km');
+    const out = document.getElementById('hrs-out'), kmOutEl = document.getElementById('km-out');
     const eTotal = document.getElementById('est-total'), eTotal2 = document.getElementById('est-total-2');
     const eMode = document.getElementById('est-mode'), eDriver = document.getElementById('est-driver');
     const eCallout = document.getElementById('est-callout-row');
+    const eCalloutLabel = document.getElementById('est-callout-label');
+    const eCalloutVal = document.getElementById('est-callout');
     const dest = document.getElementById('dest');
     const euro = n => '€' + (Number.isInteger(n) ? n : n.toFixed(2).replace('.', ','));
 
     function render(){
       out.innerHTML = (Number.isInteger(hours) ? hours : hours.toFixed(1).replace('.', ',')) + '<small>hours</small>';
+      kmOutEl.innerHTML = kmOut + '<small>km</small>';
       fHours.hidden = !byHour; fDest.hidden = byHour;
       // point-to-point is priced off an assumed ~45 min engagement, same hourly rate
       const billed = byHour ? hours : 0.75;
-      // anything outside the four capital-region cities picks up the single callout fee
+      // anything outside the four capital-region cities picks up the per-km surcharge
       const metro = /helsinki|espoo|vantaa|kauniainen|westend|savoy/i;
       const outside = !byHour && dest.value.trim() !== '' && !metro.test(dest.value);
-      const total = billed * RATE + (outside ? CALLOUT : 0);
-      eCallout.hidden = !outside;
+      const surcharge = outside ? kmOut * PER_KM : 0;
+      const total = billed * RATE + surcharge;
+      eCallout.hidden = !outside; fKm.hidden = !outside;
+      eCalloutLabel.textContent = 'Beyond the metro · ' + kmOut + ' km × €0,50';
+      eCalloutVal.textContent = euro(surcharge);
       eDriver.textContent = (Number.isInteger(billed) ? billed : billed.toFixed(2).replace('.', ',')) + ' hr × ' + euro(RATE);
       eMode.textContent = byHour
         ? (Number.isInteger(hours) ? hours : hours.toFixed(1).replace('.', ',')) + ' hr · By the hour'
@@ -1385,6 +1561,8 @@
     modeP2P.addEventListener('click', () => setMode(false));
     document.getElementById('hrs-minus').addEventListener('click', () => { hours = Math.max(1, hours - .5); render(); });
     document.getElementById('hrs-plus').addEventListener('click',  () => { hours = Math.min(12, hours + .5); render(); });
+    document.getElementById('km-minus').addEventListener('click', () => { kmOut = Math.max(5, kmOut - 5); render(); });
+    document.getElementById('km-plus').addEventListener('click',  () => { kmOut = Math.min(400, kmOut + 5); render(); });
     dest.addEventListener('input', render);
     render();
   }
@@ -1464,16 +1642,16 @@
 
   /* roadmap track */
   const trackFill = document.getElementById('track-fill');
-  const phases = document.querySelectorAll('.phase');
+  const stages = document.querySelectorAll('.stage');
   const pio = new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return; pio.disconnect();
     let w = 0; const step = () => {
       w += 1.2; trackFill.style.width = Math.min(w,100)+'%';
-      phases.forEach((ph,i) => ph.classList.toggle('lit', w >= (i/(phases.length-1))*100 - 1));
+      stages.forEach((ph,i) => ph.classList.toggle('lit', w >= (i/(stages.length-1))*100 - 1));
       if (w < 100) requestAnimationFrame(step);
     }; requestAnimationFrame(step);
   }), {threshold:.4});
-  if (document.getElementById('phases')) pio.observe(document.getElementById('phases'));
+  if (document.getElementById('stages')) pio.observe(document.getElementById('stages'));
 
   /* app scroll story */
   const story = document.getElementById('story');
@@ -1511,5 +1689,204 @@
   tick();
 })();
 </script>
+<!-- ===================== lead capture ===================== -->
+<script>
+(function(){
+  'use strict';
+
+  /* Same structural test the API and the Postgres CHECK constraint use, so the
+     three layers can never disagree about what a valid address is. */
+  const EMAIL_RE = /^[^@\s]+@[^@\s.]+\.[^@\s]+$/;
+  const isEmail = v => typeof v === 'string' && v.trim().length <= 254 && EMAIL_RE.test(v.trim());
+
+  async function postJSON(url, payload){
+    let res;
+    try {
+      res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch {
+      // network down, offline, request blocked
+      return { ok:false, data:{ error:'We could not reach the network. Please try again.' } };
+    }
+    let data = {};
+    try { data = await res.json(); } catch { /* non-JSON error page */ }
+    return { ok: res.ok && data.success === true, data };
+  }
+
+  /* ---------- inline field notes (quiet: text + a warm hairline) ---------- */
+  function setNote(noteEl, message){
+    if (!noteEl) return;
+    noteEl.textContent = message || '';
+    noteEl.classList.toggle('on', Boolean(message));
+  }
+  function markField(wrapEl, invalid){
+    if (wrapEl) wrapEl.classList.toggle('invalid', Boolean(invalid));
+  }
+
+  /* ======================= hero booking form ======================= */
+  const form = document.getElementById('hero-book');
+  if (form){
+    const pickup = document.getElementById('hb-pickup');
+    const drop   = document.getElementById('hb-drop');
+    const email  = document.getElementById('hb-email');
+    const date   = document.getElementById('hb-date');
+    const time   = document.getElementById('hb-time');
+    const submit = document.getElementById('hb-submit');
+    const label  = submit.querySelector('.hb-label');
+    const done   = document.getElementById('hb-done');
+    const refEl  = document.getElementById('hb-ref');
+
+    const wrapOf = el => el.closest('.hb-field');
+    const noteOf = id => document.getElementById(id);
+
+    // today, in the browser's own timezone — toISOString() would shift the date
+    const todayLocal = () => {
+      const d = new Date();
+      return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+    };
+    if (date && !date.value) date.value = todayLocal();
+    if (date) date.min = todayLocal();
+
+    function validate(){
+      let firstBad = null;
+
+      const pickupBad = !pickup.value.trim();
+      markField(wrapOf(pickup), pickupBad);
+      setNote(noteOf('note-pickup'), pickupBad ? 'We need to know where the car is.' : '');
+      if (pickupBad && !firstBad) firstBad = pickup;
+
+      const emailBad = !isEmail(email.value);
+      markField(wrapOf(email), emailBad);
+      setNote(noteOf('note-email'),
+        emailBad ? (email.value.trim() ? 'That address looks incomplete.' : 'We send your confirmation here.') : '');
+      if (emailBad && !firstBad) firstBad = email;
+
+      const dateBad = !date.value || !time.value;
+      markField(wrapOf(date), dateBad);
+      setNote(noteOf('note-date'), dateBad ? 'Pick a date and time.' : '');
+      if (dateBad && !firstBad) firstBad = date;
+
+      return firstBad;
+    }
+
+    // Re-validate as the visitor fixes things, but only once they've had a first go —
+    // nagging on an untouched field is the opposite of calm.
+    let submitted = false;
+    [pickup, email, date, time].forEach(el =>
+      el.addEventListener('input', () => { if (submitted) validate(); }));
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      submitted = true;
+
+      const firstBad = validate();
+      if (firstBad){ firstBad.focus(); return; }
+
+      submit.classList.add('busy');
+      submit.disabled = true;
+      label.textContent = 'Sending';
+
+      const destination = drop.value.trim();
+      const { ok, data } = await postJSON('/api/bookings', {
+        mode: destination ? 'point_to_point' : 'hourly',
+        pickup_location: pickup.value.trim(),
+        destination: destination || null,
+        // no destination means an open-ended evening: the plan's 1-hour minimum
+        duration_hours: destination ? null : 1,
+        customer_email: email.value.trim(),
+        vehicle_details: null,
+        scheduled_for: date.value + 'T' + time.value
+      });
+
+      if (ok){
+        refEl.textContent = data.reference || (data.bookingId || '').slice(0,8).toUpperCase();
+        form.hidden = true;
+        done.hidden = false;
+        return;
+      }
+
+      // failed: restore the button and explain, without shouting
+      submit.classList.remove('busy');
+      submit.disabled = false;
+      label.textContent = 'Request a driver';
+
+      const field = data.field;
+      const map = { pickup_location:['note-pickup', pickup], customer_email:['note-email', email] };
+      if (map[field]){
+        const [noteId, el] = map[field];
+        markField(wrapOf(el), true);
+        setNote(noteOf(noteId), data.error);
+        el.focus();
+      } else {
+        markField(wrapOf(email), false);
+        setNote(noteOf('note-email'), data.error || 'Something went wrong. Please try again.');
+      }
+    });
+  }
+
+  /* ======================= waitlist tiles ======================= */
+  document.querySelectorAll('.wl').forEach(wl => {
+    const tier   = wl.dataset.tier;
+    const open   = wl.querySelector('.wl-open');
+    const wlForm = wl.querySelector('.wl-form');
+    const input  = wl.querySelector('.wl-input');
+    const send   = wl.querySelector('.wl-send');
+    const note   = wl.querySelector('.field-note');
+    const doneEl = wl.querySelector('.wl-done');
+    if (!open || !wlForm || !input) return;
+
+    const COPY = {
+      chauffeur: "You're on the list — we'll reach out before the S-Class fleet launches.",
+      rental:    "You're on the list — we'll reach out before the rental fleet opens."
+    };
+
+    open.addEventListener('click', () => {
+      wl.classList.add('open');
+      open.hidden = true;
+      // wait for the expand to start before focusing, so the page doesn't jump
+      setTimeout(() => input.focus(), 120);
+    });
+
+    input.addEventListener('input', () => {
+      if (!wl.classList.contains('invalid')) return;
+      wl.classList.remove('invalid');
+      setNote(note, '');
+    });
+
+    wlForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!isEmail(input.value)){
+        wl.classList.add('invalid');
+        setNote(note, input.value.trim() ? 'That address looks incomplete.' : 'Add an email and we’ll let you know.');
+        input.focus();
+        return;
+      }
+
+      wl.classList.remove('invalid');
+      setNote(note, '');
+      send.disabled = true;
+      input.disabled = true;
+
+      const { ok, data } = await postJSON('/api/notify', { email: input.value.trim(), tier });
+
+      if (ok){
+        wlForm.hidden = true;
+        doneEl.textContent = COPY[tier] || "You're on the list.";
+        doneEl.hidden = false;
+        return;
+      }
+
+      send.disabled = false;
+      input.disabled = false;
+      wl.classList.add('invalid');
+      setNote(note, data.error || 'That did not go through. Please try again.');
+    });
+  });
+})();
+</script>
 </body>
 </html>
+
