@@ -1,0 +1,13 @@
+{
+  "name": "driveme-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DriveMe — premium mobility landing site and lead-capture API (Mansio Group Oy)",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
