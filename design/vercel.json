@@ -3,8 +3,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/dark", "destination": "/01-driveme-landing", "permanent": false },
-    { "source": "/light", "destination": "/02-driveme-light", "permanent": false }
+    { "source": "/light", "destination": "/", "permanent": true },
+    { "source": "/02-driveme-light", "destination": "/", "permanent": true }
   ],
   "headers": [
     {
