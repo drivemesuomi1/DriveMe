@@ -66,6 +66,7 @@
   .card{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);padding:22px;box-shadow:var(--sh-1)}
   .card + .card{margin-top:14px}
   .head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .head-actions{display:flex;align-items:flex-end;justify-content:flex-end;gap:10px;flex-wrap:wrap}
 
   /* ---------------- filters ---------------- */
   .filters{display:flex;gap:6px;flex-wrap:wrap}
@@ -242,12 +243,20 @@
           <h2>Bookings</h2>
           <p class="muted flush">Assign a vetted driver, move the ride along, and bill it.</p>
         </div>
-        <div class="filters" id="bk-filters">
-          <button type="button" data-f="upcoming" class="on">Upcoming</button>
-          <button type="button" data-f="active">Active</button>
-          <button type="button" data-f="completed">Completed</button>
-          <button type="button" data-f="cancelled">Cancelled</button>
-          <button type="button" data-f="all">All</button>
+        <div class="head-actions">
+          <div class="filters" id="bk-filters" role="group" aria-label="Booking status">
+            <button type="button" data-f="upcoming" class="on">Upcoming</button>
+            <button type="button" data-f="active">Active</button>
+            <button type="button" data-f="completed">Completed</button>
+            <button type="button" data-f="cancelled">Cancelled</button>
+            <button type="button" data-f="all">All</button>
+          </div>
+          <div class="filters" id="bk-period" role="group" aria-label="Booking period">
+            <button type="button" data-period="all" class="on">All time</button>
+            <button type="button" data-period="week">Week</button>
+            <button type="button" data-period="month">Month</button>
+            <button type="button" data-period="year">Year</button>
+          </div>
         </div>
       </div>
       <div class="scroll">
@@ -296,7 +305,16 @@
     </div>
 
     <div class="card">
-      <h3>Roster</h3>
+      <div class="head-row">
+        <div><h3>Roster</h3><p class="muted flush" id="drv-count">-</p></div>
+        <div class="filters" id="drv-filters" role="group" aria-label="Driver status">
+          <button type="button" data-f="all" class="on">All drivers</button>
+          <button type="button" data-f="pending">Pending</button>
+          <button type="button" data-f="vetting">Vetting</button>
+          <button type="button" data-f="approved">Approved</button>
+          <button type="button" data-f="suspended">Suspended</button>
+        </div>
+      </div>
       <div class="scroll">
         <table>
           <thead><tr><th scope="col">Driver</th><th scope="col">Contact</th><th scope="col">Vetting</th><th scope="col">Status</th></tr></thead>
@@ -315,10 +333,16 @@
     <div class="card">
       <div class="head-row">
         <div><h2>Waitlist</h2><p class="muted flush" id="wl-count">-</p></div>
-        <div class="row">
-          <div class="filters" id="wl-filters">
+        <div class="head-actions">
+          <div class="filters" id="wl-filters" role="group" aria-label="Waitlist type">
             <button type="button" data-f="chauffeur" class="on">Luxury Chauffeur</button>
             <button type="button" data-f="rental">Premium Rental</button>
+          </div>
+          <div class="filters" id="wl-period" role="group" aria-label="Waitlist period">
+            <button type="button" data-period="all" class="on">All time</button>
+            <button type="button" data-period="week">Week</button>
+            <button type="button" data-period="month">Month</button>
+            <button type="button" data-period="year">Year</button>
           </div>
           <button type="button" class="dm-btn ghost sm" id="wl-export">Export CSV</button>
         </div>
@@ -339,8 +363,18 @@
   <!-- ==================== invoices ==================== -->
   <section id="v-invoices" hidden>
     <div class="card">
-      <h2>Corporate invoices</h2>
-      <p class="muted below-lg">Raised from a booking: open it, name the company, then generate.</p>
+      <div class="head-row">
+        <div>
+          <h2>Corporate invoices</h2>
+          <p class="muted flush">Raised from a booking: open it, name the company, then generate.</p>
+        </div>
+        <div class="filters" id="inv-period" role="group" aria-label="Invoice period">
+          <button type="button" data-period="all" class="on">All time</button>
+          <button type="button" data-period="week">Week</button>
+          <button type="button" data-period="month">Month</button>
+          <button type="button" data-period="year">Year</button>
+        </div>
+      </div>
       <div class="scroll">
         <table>
           <thead><tr><th scope="col">Number</th><th scope="col">Company</th><th scope="col">Booking</th><th scope="col">Amount</th><th scope="col">Issued</th><th scope="col">Due</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
@@ -436,6 +470,44 @@
   };
   const PAY = { card:'Card', mobilepay:'MobilePay', invoice:'Corporate invoice' };
   const pill = (label, cls) => '<span class="dm-pill ' + cls + '">' + esc(label) + '</span>';
+  const PERIOD_LABELS = { all:'All time', week:'This week', month:'This month', year:'This year' };
+
+  function periodRange(period){
+    const d = new Date();
+    if (period === 'week'){
+      const start = new Date(d);
+      start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start); end.setDate(end.getDate() + 7);
+      return { start, end };
+    }
+    if (period === 'month'){
+      const start = new Date(d.getFullYear(), d.getMonth(), 1);
+      return { start, end:new Date(d.getFullYear(), d.getMonth() + 1, 1) };
+    }
+    if (period === 'year'){
+      const start = new Date(d.getFullYear(), 0, 1);
+      return { start, end:new Date(d.getFullYear() + 1, 0, 1) };
+    }
+    return null;
+  }
+
+  function inPeriod(iso, period){
+    if (period === 'all') return true;
+    if (!iso) return false;
+    const t = new Date(iso);
+    if (Number.isNaN(t.getTime())) return false;
+    const range = periodRange(period);
+    return t >= range.start && t < range.end;
+  }
+
+  function bindFilterGroup(id, attr, onChange){
+    $(id).addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.toggle('on', x === b));
+      onChange(b.dataset[attr]);
+    });
+  }
 
   /* ================= boot ================= */
   async function boot(){
@@ -499,16 +571,13 @@
 
   /* ================= bookings ================= */
   let bkFilter = 'upcoming';
-  $('bk-filters').addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return;
-    bkFilter = b.dataset.f;
-    document.querySelectorAll('#bk-filters button').forEach(x => x.classList.toggle('on', x === b));
-    renderBookings();
-  });
+  let bkPeriod = 'all';
+  bindFilterGroup('bk-filters', 'f', value => { bkFilter = value; renderBookings(); });
+  bindFilterGroup('bk-period', 'period', value => { bkPeriod = value; renderBookings(); });
 
   async function loadBookings(){
     const { data, error } = await sb.from('bookings').select('*')
-      .order('scheduled_for', { ascending:true, nullsFirst:false }).limit(500);
+      .order('scheduled_for', { ascending:true, nullsFirst:false }).limit(2000);
     if (error) return DM.toast(error.message, 'bad');
     bookings = data || [];
     $('n-bookings').textContent = bookings.filter(b => bucket(b) === 'upcoming' || bucket(b) === 'active').length;
@@ -523,7 +592,10 @@
   }
 
   function renderBookings(){
-    const rows = bookings.filter(b => bkFilter === 'all' || bucket(b) === bkFilter);
+    const rows = bookings.filter(b =>
+      (bkFilter === 'all' || bucket(b) === bkFilter) &&
+      inPeriod(b.scheduled_for || b.created_at, bkPeriod)
+    );
     $('bk-empty').hidden = rows.length > 0;
     $('bk-rows').innerHTML = rows.map(b => {
       const d = drivers.find(x => x.id === b.driver_id);
@@ -709,12 +781,15 @@
   });
 
   /* ================= drivers ================= */
+  let drvFilter = 'all';
   const CHECKS = [
     ['licence_verified_at', 'Licence'],
     ['driving_record_checked_at', 'Driving record'],
     ['background_checked_at', 'Background'],
     ['interviewed_at', 'Interview'],
   ];
+
+  bindFilterGroup('drv-filters', 'f', value => { drvFilter = value; renderDrivers(); });
 
   async function loadDrivers(){
     const { data, error } = await sb.from('drivers').select('*').order('created_at');
@@ -725,8 +800,10 @@
   }
 
   function renderDrivers(){
-    $('drv-empty').hidden = drivers.length > 0;
-    $('drv-rows').innerHTML = drivers.map(d => {
+    const rows = drivers.filter(d => drvFilter === 'all' || d.status === drvFilter);
+    $('drv-count').textContent = rows.length + ' of ' + drivers.length + ' driver' + (drivers.length === 1 ? '' : 's');
+    $('drv-empty').hidden = rows.length > 0;
+    $('drv-rows').innerHTML = rows.map(d => {
       const vetted = CHECKS.every(([col]) => d[col]);
       const checks = CHECKS.map(([col, lab]) => d[col]
         ? '<span class="chk done" title="Cleared ' + d[col] + '">' +
@@ -783,12 +860,9 @@
 
   /* ================= waitlist ================= */
   let wlTier = 'chauffeur';
-  $('wl-filters').addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return;
-    wlTier = b.dataset.f;
-    document.querySelectorAll('#wl-filters button').forEach(x => x.classList.toggle('on', x === b));
-    renderWaitlist();
-  });
+  let wlPeriod = 'all';
+  bindFilterGroup('wl-filters', 'f', value => { wlTier = value; renderWaitlist(); });
+  bindFilterGroup('wl-period', 'period', value => { wlPeriod = value; renderWaitlist(); });
 
   async function loadWaitlist(){
     const { data, error } = await sb.from('waitlist').select('*').order('created_at', { ascending:false });
@@ -799,16 +873,17 @@
   }
 
   function renderWaitlist(){
-    const rows = waitlist.filter(w => w.tier === wlTier);
+    const rows = waitlist.filter(w => w.tier === wlTier && inPeriod(w.created_at, wlPeriod));
     $('wl-count').textContent = rows.length + ' signup' + (rows.length === 1 ? '' : 's') +
-      ' on the ' + (wlTier === 'chauffeur' ? 'Luxury Chauffeur' : 'Premium Rental') + ' list';
+      ' on the ' + (wlTier === 'chauffeur' ? 'Luxury Chauffeur' : 'Premium Rental') +
+      ' list - ' + PERIOD_LABELS[wlPeriod];
     $('wl-empty').hidden = rows.length > 0;
     $('wl-rows').innerHTML = rows.map(w =>
       '<tr><td>' + esc(w.email) + '</td><td class="muted">' + esc(when(w.created_at)) + '</td></tr>').join('');
   }
 
   $('wl-export').addEventListener('click', () => {
-    const rows = waitlist.filter(w => w.tier === wlTier);
+    const rows = waitlist.filter(w => w.tier === wlTier && inPeriod(w.created_at, wlPeriod));
     if (!rows.length) return DM.toast('Nothing to export on this list.', 'bad');
     const csv = 'email,tier,signed_up\n' + rows.map(w =>
       '"' + w.email.replace(/"/g, '""') + '",' + w.tier + ',' + w.created_at).join('\n');
@@ -821,6 +896,9 @@
   });
 
   /* ================= invoices ================= */
+  let invPeriod = 'all';
+  bindFilterGroup('inv-period', 'period', value => { invPeriod = value; renderInvoices(); });
+
   async function loadInvoices(){
     const { data, error } = await sb.from('invoices').select('*').order('created_at', { ascending:false });
     if (error) return DM.toast(error.message, 'bad');
@@ -830,9 +908,10 @@
   }
 
   function renderInvoices(){
-    $('inv-empty').hidden = invoices.length > 0;
+    const rows = invoices.filter(v => inPeriod(v.issued_at || v.created_at, invPeriod));
+    $('inv-empty').hidden = rows.length > 0;
     const CLS = { draft:'', sent:'accent', paid:'good' };
-    $('inv-rows').innerHTML = invoices.map(v => {
+    $('inv-rows').innerHTML = rows.map(v => {
       const b = bookings.find(x => x.id === v.booking_id);
       return '<tr>' +
         '<td><span class="ref">' + esc(v.invoice_number) + '</span></td>' +
