@@ -24,7 +24,7 @@
     width:240px;flex:none;background:var(--surface);border-right:1px solid var(--ink-100);
     display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:800;
   }
-  .side-brand{display:flex;align-items:center;gap:11px;padding:20px 18px 18px;border-bottom:1px solid var(--ink-100);flex:none}
+  .side-brand{display:flex;align-items:center;gap:13px;padding:18px 18px 16px;border-bottom:1px solid var(--ink-100);flex:none}
   .side-brand .mark{flex:none;display:block}
   .side-brand .word{display:flex;flex-direction:column;gap:2px;min-width:0}
   .side-brand .wm{font:800 15px/1.1 var(--font);letter-spacing:.005em;color:var(--ink-900);white-space:nowrap}
@@ -167,19 +167,26 @@
 <div class="shell" id="shell" hidden>
 <aside class="sidebar">
   <div class="side-brand">
-    <svg class="mark" width="38" height="38" viewBox="0 0 40 40" aria-hidden="true">
+    <!-- Traced from the brand's crown reference: five-point crown (real V-notch
+         valleys, not rounded lobes - those read as a cloud) on an open cup,
+         a detached band, then a "D" built as a stem + true semicircular bowl
+         arc so it matches the crown's monoline stroke rather than a filled
+         glyph. 56px is the smallest size this reads clearly at; below that
+         the crown and D blur into each other and it's better to drop the D
+         and show the crown alone than to keep shrinking this. -->
+    <svg class="mark" width="56" height="56" viewBox="0 0 220 220" aria-hidden="true">
       <defs>
-        <linearGradient id="admBadge" gradientUnits="userSpaceOnUse" x1="1" y1="1" x2="39" y2="39">
+        <linearGradient id="admBadge" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="218" y2="218">
           <stop offset="0%" stop-color="var(--accent-deep)"/>
           <stop offset="100%" stop-color="var(--accent)"/>
         </linearGradient>
       </defs>
-      <rect x="1" y="1" width="38" height="38" rx="10" fill="url(#admBadge)"/>
-      <!-- crown: three pointed peaks with real V-notch valleys between them
-           (rounded lobes read as a cloud, not a crown), floating clear of the D -->
-      <path d="M11 16 L14 8 L17.5 13 L20 6 L22.5 13 L26 8 L29 16 Z" fill="#fff"/>
-      <rect x="10" y="15" width="20" height="3" rx="1.5" fill="#fff"/>
-      <text x="20" y="33" text-anchor="middle" font-family="Inter, sans-serif" font-weight="800" font-size="16" fill="#fff">D</text>
+      <rect x="2" y="2" width="216" height="216" rx="50" fill="url(#admBadge)"/>
+      <g fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M 44 96 L 28 44 L 70 68 L 70 88 L 82 88 L 82 62 L 110 24 L 138 62 L 138 88 L 150 88 L 150 68 L 192 44 L 176 96 Z"/>
+        <rect x="64" y="112" width="92" height="20" rx="2"/>
+        <path d="M 95 148 L 95 208 M 95 148 A 30 30 0 0 1 95 208"/>
+      </g>
     </svg>
     <div class="word">
       <span class="wm">DRIVE<span class="dot">·</span>ME</span>

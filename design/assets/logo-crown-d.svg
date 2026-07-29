@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+  <title>DriveMe</title>
+  <path d="M 44 96 L 28 44 L 70 68 L 70 88 L 82 88 L 82 62 L 110 24 L 138 62 L 138 88 L 150 88 L 150 68 L 192 44 L 176 96 Z"/>
+  <rect x="64" y="112" width="92" height="20" rx="2"/>
+  <path d="M 95 148 L 95 208 M 95 148 A 30 30 0 0 1 95 208"/>
+</svg>
