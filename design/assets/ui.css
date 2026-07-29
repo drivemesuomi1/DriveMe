@@ -1,0 +1,391 @@
+/* ==========================================================================
+   DriveMe UI kit — shared tokens + components for the app surfaces
+   (hero booking console, live tracking, driver, admin).
+
+   Design language: premium Scandinavian restraint. The project skill's default
+   palette is warm-neutral/forest; DriveMe's established brand is deep blue, so
+   the accent and neutrals are cooled to match the brand while keeping the
+   skill's discipline — one accent, generous air, single shadow logic, motion
+   tokens, one radius tier per component class.
+   ========================================================================== */
+
+:root{
+  /* neutrals — cool, tuned to the DriveMe blue */
+  --ink-900:#0B1524;
+  --ink-700:#3A4757;
+  --ink-500:#697687;
+  --ink-300:#C4CEDA;
+  --ink-100:#EAEFF6;
+  --paper:#F5F8FC;          /* page bg — never pure white */
+  --surface:#FFFFFF;
+
+  /* accent — one only */
+  --accent:#0F63BD;
+  --accent-deep:#0C4481;
+  --accent-soft:#E7EFF9;
+
+  /* semantic — meaning only, never decoration */
+  --positive:#1C7A4C;
+  --positive-soft:#E4F2EA;
+  --caution:#8A6414;
+  --caution-soft:#FBF1DC;
+  --critical:#98342F;
+  --critical-soft:#FAE9E8;
+
+  /* radii — one tier per component class */
+  --r-chip:999px;
+  --r-input:10px;
+  --r-card:16px;
+  --r-modal:22px;
+
+  /* elevation — single light source, two tiers + popover */
+  --sh-1:0 1px 2px rgba(11,21,36,.06), 0 1px 1px rgba(11,21,36,.04);
+  --sh-2:0 8px 24px rgba(11,21,36,.10);
+  --sh-pop:0 16px 44px rgba(11,21,36,.16);
+
+  /* motion */
+  --swift:120ms cubic-bezier(.4,0,1,1);
+  --standard:240ms cubic-bezier(.2,0,0,1);
+  --entrance:400ms cubic-bezier(.16,1,.3,1);
+
+  --font:"Inter",-apple-system,"Segoe UI",system-ui,sans-serif;
+}
+
+/* Dark scope — the same components sitting on the hero's video */
+.dm-dark{
+  --ink-900:#F2F5F9;
+  --ink-700:#C6D0DC;
+  --ink-500:#96A3B3;
+  --ink-300:#3E4C5E;
+  --ink-100:#1B2634;
+  --paper:#0E1620;
+  --surface:#131D2A;
+  --accent:#5B9BE0;
+  --accent-soft:#17293F;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+/* The UA's [hidden]{display:none} loses to any explicit display rule, and
+   several components below set display on classes that also get toggled with
+   the attribute. Restate it with priority so `hidden` always wins. */
+[hidden]{display:none!important}
+
+/* ---------- focus: visible on everything, never removed ---------- */
+.dm :focus-visible,
+.dm-field input:focus-visible,
+.dm-btn:focus-visible,
+.dm-select-btn:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+  border-radius:var(--r-input);
+}
+
+/* ==========================================================================
+   Fields — floating label, quiet until touched
+   ========================================================================== */
+.dm-field{position:relative}
+.dm-field > label{
+  display:block;font:500 11.5px/1.4 var(--font);letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-500);margin-bottom:7px;
+}
+.dm-input,
+.dm-select-btn{
+  width:100%;min-height:48px;                 /* ≥44px touch target */
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;
+  font:400 15px/1.4 var(--font);color:var(--ink-900);
+  background:var(--surface);
+  border:1px solid var(--ink-300);
+  border-radius:var(--r-input);
+  transition:border-color var(--swift), box-shadow var(--swift), background var(--swift);
+}
+.dm-input::placeholder{color:var(--ink-500)}
+.dm-input:hover,.dm-select-btn:hover{border-color:var(--ink-500)}
+.dm-input:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft);
+}
+.dm-field.invalid .dm-input,
+.dm-field.invalid .dm-select-btn{border-color:var(--critical)}
+.dm-note{
+  font:400 12.5px/1.45 var(--font);color:var(--ink-500);
+  margin-top:6px;min-height:0;
+  opacity:0;transform:translateY(-2px);
+  transition:opacity var(--standard), transform var(--standard);
+}
+.dm-note.on{opacity:1;transform:none}
+.dm-field.invalid .dm-note{color:var(--critical)}
+
+/* input with a leading icon (search, pin) */
+.dm-input-wrap{position:relative;display:block}
+.dm-input-wrap .dm-lead{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;color:var(--ink-500);pointer-events:none;
+}
+.dm-input-wrap .dm-lead svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.dm-input-wrap .dm-input{padding-left:40px}
+.dm-input-wrap .dm-spin{
+  position:absolute;right:13px;top:50%;width:15px;height:15px;margin-top:-7.5px;
+  border:1.5px solid var(--ink-300);border-top-color:var(--accent);border-radius:50%;
+  animation:dm-spin .7s linear infinite;display:none;
+}
+.dm-input-wrap.busy .dm-spin{display:block}
+@keyframes dm-spin{to{transform:rotate(360deg)}}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.dm-btn{
+  appearance:none;border:1px solid transparent;cursor:pointer;
+  min-height:48px;padding:12px 22px;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font:600 14.5px/1 var(--font);letter-spacing:.005em;
+  border-radius:var(--r-input);
+  background:var(--accent);color:#fff;
+  transition:transform var(--swift), box-shadow var(--swift), background var(--swift), opacity var(--swift);
+}
+.dm-btn:hover{background:var(--accent-deep);box-shadow:var(--sh-2)}
+.dm-btn:active{transform:translateY(1px)}
+.dm-btn[disabled]{opacity:.5;cursor:default;transform:none;box-shadow:none}
+.dm-btn.ghost{background:var(--surface);color:var(--accent);border-color:var(--ink-300)}
+.dm-btn.ghost:hover{background:var(--accent-soft);border-color:var(--accent);box-shadow:none}
+.dm-btn.quiet{background:transparent;color:var(--ink-700);border-color:transparent}
+.dm-btn.quiet:hover{background:var(--ink-100);box-shadow:none}
+.dm-btn.danger{background:var(--surface);color:var(--critical);border-color:var(--ink-300)}
+.dm-btn.danger:hover{background:var(--critical-soft);border-color:var(--critical);box-shadow:none}
+.dm-btn.sm{min-height:38px;padding:9px 15px;font-size:13px}
+.dm-btn.block{width:100%}
+.dm-btn .dm-btn-spin{
+  width:15px;height:15px;border:1.6px solid rgba(255,255,255,.45);
+  border-top-color:#fff;border-radius:50%;animation:dm-spin .7s linear infinite;display:none;
+}
+.dm-btn.busy .dm-btn-spin{display:block}
+
+/* ==========================================================================
+   Segmented control — booking mode, filters
+   ========================================================================== */
+.dm-seg{
+  display:inline-flex;padding:4px;gap:2px;
+  background:var(--ink-100);border-radius:var(--r-input);position:relative;
+}
+.dm-seg button{
+  appearance:none;border:0;background:transparent;cursor:pointer;
+  padding:9px 18px;min-height:40px;
+  font:600 13.5px/1 var(--font);color:var(--ink-500);
+  border-radius:7px;position:relative;z-index:1;white-space:nowrap;
+  transition:color var(--standard);
+}
+.dm-seg button[aria-pressed="true"]{color:var(--accent-deep)}
+.dm-seg .dm-seg-thumb{
+  position:absolute;top:4px;bottom:4px;left:0;width:0;
+  background:var(--surface);border-radius:7px;box-shadow:var(--sh-1);
+  transition:transform var(--standard), width var(--standard);
+}
+
+/* ==========================================================================
+   Custom select — native <select> is enhanced, not replaced
+   ========================================================================== */
+.dm-select{position:relative}
+.dm-select-btn{justify-content:space-between;cursor:pointer;text-align:left;background:var(--surface)}
+.dm-select-btn .dm-chev{
+  width:16px;height:16px;flex:none;color:var(--ink-500);
+  transition:transform var(--standard);
+}
+.dm-select-btn .dm-chev svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.dm-select.open .dm-select-btn{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.dm-select.open .dm-chev{transform:rotate(180deg)}
+
+/* popover shared by select / date / time / autocomplete */
+.dm-pop{
+  position:absolute;z-index:60;left:0;top:calc(100% + 6px);min-width:100%;
+  background:var(--surface);border:1px solid var(--ink-300);
+  border-radius:var(--r-input);box-shadow:var(--sh-pop);
+  padding:6px;overflow:hidden auto;max-height:290px;
+  opacity:0;transform:translateY(-6px) scale(.985);transform-origin:top;
+  pointer-events:none;
+  transition:opacity var(--standard), transform var(--standard);
+}
+.dm-pop.up{top:auto;bottom:calc(100% + 6px);transform-origin:bottom}
+.dm-pop.on{opacity:1;transform:none;pointer-events:auto}
+.dm-opt{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:11px 12px;min-height:44px;
+  font:400 14.5px/1.35 var(--font);color:var(--ink-900);text-align:left;
+  background:transparent;border:0;border-radius:8px;cursor:pointer;
+  transition:background var(--swift);
+}
+.dm-opt:hover,.dm-opt.active{background:var(--ink-100)}
+.dm-opt[aria-selected="true"]{color:var(--accent-deep);font-weight:600}
+.dm-opt .dm-opt-sub{display:block;font-size:12.5px;color:var(--ink-500);font-weight:400;margin-top:1px}
+.dm-opt .dm-tick{margin-left:auto;width:16px;height:16px;color:var(--accent);opacity:0}
+.dm-opt[aria-selected="true"] .dm-tick{opacity:1}
+.dm-opt .dm-tick svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dm-opt[disabled]{opacity:.45;cursor:default}
+.dm-opt-empty{padding:14px 12px;font:400 13.5px/1.4 var(--font);color:var(--ink-500)}
+
+/* ==========================================================================
+   Date picker
+   ========================================================================== */
+.dm-cal{width:290px;padding:6px 4px 4px}
+.dm-cal-head{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 10px}
+.dm-cal-title{font:600 14.5px/1 var(--font);color:var(--ink-900)}
+.dm-cal-nav{
+  width:34px;height:34px;display:grid;place-items:center;
+  border:0;background:transparent;border-radius:8px;cursor:pointer;color:var(--ink-700);
+  transition:background var(--swift);
+}
+.dm-cal-nav:hover{background:var(--ink-100)}
+.dm-cal-nav[disabled]{opacity:.3;cursor:default}
+.dm-cal-nav svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.dm-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dm-cal-dow{
+  font:500 11px/1 var(--font);letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink-500);text-align:center;padding:6px 0 8px;
+}
+.dm-cal-day{
+  aspect-ratio:1;min-height:36px;border:0;background:transparent;cursor:pointer;
+  font:400 13.5px/1 var(--font);color:var(--ink-900);
+  border-radius:9px;display:grid;place-items:center;
+  transition:background var(--swift), color var(--swift);
+}
+.dm-cal-day:hover:not([disabled]){background:var(--accent-soft)}
+.dm-cal-day[disabled]{color:var(--ink-300);cursor:default}
+.dm-cal-day.other{color:var(--ink-300)}
+.dm-cal-day.today{font-weight:700;color:var(--accent)}
+.dm-cal-day.sel{background:var(--accent);color:#fff;font-weight:600}
+.dm-cal-foot{display:flex;gap:6px;padding:8px 4px 2px;border-top:1px solid var(--ink-100);margin-top:6px}
+
+/* ==========================================================================
+   Time picker
+   ========================================================================== */
+.dm-time{width:210px;padding:4px}
+.dm-time-quick{display:flex;gap:5px;flex-wrap:wrap;padding:6px 6px 10px;border-bottom:1px solid var(--ink-100);margin-bottom:6px}
+.dm-time-quick button{
+  border:1px solid var(--ink-300);background:transparent;cursor:pointer;
+  padding:7px 11px;border-radius:var(--r-chip);
+  font:500 12.5px/1 var(--font);color:var(--ink-700);
+  transition:background var(--swift), border-color var(--swift), color var(--swift);
+}
+.dm-time-quick button:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-deep)}
+.dm-time-list{max-height:210px;overflow-y:auto}
+
+/* ==========================================================================
+   Map
+   ========================================================================== */
+.dm-map{
+  position:relative;width:100%;border-radius:var(--r-card);overflow:hidden;
+  background:var(--ink-100);
+}
+.dm-map .leaflet-container{
+  font-family:var(--font);background:#EBF0F5;
+}
+.dm-map-hint{
+  position:absolute;left:12px;bottom:12px;z-index:500;
+  display:flex;align-items:center;gap:8px;
+  padding:9px 13px;border-radius:var(--r-chip);
+  background:rgba(255,255,255,.94);backdrop-filter:blur(8px);
+  box-shadow:var(--sh-1);
+  font:500 12.5px/1 var(--font);color:var(--ink-700);
+  pointer-events:none;
+  transition:opacity var(--standard);
+}
+.dm-map-hint svg{width:15px;height:15px;flex:none;fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.dm-map-modes{
+  position:absolute;left:12px;top:12px;z-index:500;display:flex;gap:5px;
+  padding:4px;border-radius:var(--r-input);
+  background:rgba(255,255,255,.94);backdrop-filter:blur(8px);box-shadow:var(--sh-1);
+}
+.dm-map-modes button{
+  border:0;background:transparent;cursor:pointer;border-radius:7px;
+  padding:8px 13px;min-height:36px;
+  font:600 12.5px/1 var(--font);color:var(--ink-500);
+  display:flex;align-items:center;gap:7px;
+  transition:background var(--swift), color var(--swift);
+}
+.dm-map-modes button .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.dm-map-modes button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-deep)}
+.dm-map-locate{
+  position:absolute;right:12px;bottom:12px;z-index:500;
+  width:42px;height:42px;display:grid;place-items:center;
+  border:0;border-radius:12px;cursor:pointer;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(8px);box-shadow:var(--sh-1);
+  color:var(--ink-700);transition:color var(--swift), transform var(--swift);
+}
+.dm-map-locate:hover{color:var(--accent);transform:translateY(-1px)}
+.dm-map-locate svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* map pins — drawn, not image sprites */
+.dm-pin{position:relative;width:30px;height:38px}
+.dm-pin svg{width:100%;height:100%;filter:drop-shadow(0 3px 6px rgba(11,21,36,.28))}
+.dm-pin.drop{animation:dm-pin-drop 420ms cubic-bezier(.16,1,.3,1)}
+@keyframes dm-pin-drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.dm-car{width:34px;height:34px}
+.dm-car .pulse{
+  position:absolute;inset:0;border-radius:50%;background:rgba(15,99,189,.28);
+  animation:dm-pulse 2s ease-out infinite;
+}
+@keyframes dm-pulse{0%{transform:scale(.55);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+
+/* ==========================================================================
+   Toast
+   ========================================================================== */
+.dm-toasts{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+  z-index:9000;display:flex;flex-direction:column;gap:8px;align-items:center;
+  pointer-events:none;width:max-content;max-width:calc(100vw - 32px);
+}
+.dm-toast{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 18px;border-radius:var(--r-chip);
+  background:var(--ink-900);color:#fff;box-shadow:var(--sh-2);
+  font:500 14px/1.35 var(--font);
+  opacity:0;transform:translateY(10px);
+  transition:opacity var(--standard), transform var(--standard);
+}
+.dm-toast.on{opacity:1;transform:none}
+.dm-toast.good{background:var(--positive)}
+.dm-toast.bad{background:var(--critical)}
+.dm-toast svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ==========================================================================
+   Misc
+   ========================================================================== */
+.dm-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 11px;border-radius:var(--r-chip);
+  font:600 12px/1.3 var(--font);white-space:nowrap;
+  background:var(--ink-100);color:var(--ink-700);
+}
+.dm-pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.dm-pill.accent{background:var(--accent-soft);color:var(--accent-deep)}
+.dm-pill.good{background:var(--positive-soft);color:var(--positive)}
+.dm-pill.warn{background:var(--caution-soft);color:var(--caution)}
+.dm-pill.bad{background:var(--critical-soft);color:var(--critical)}
+.dm-pill.live .dot{animation:dm-blink 1.6s ease-in-out infinite}
+@keyframes dm-blink{0%,100%{opacity:.3}50%{opacity:1}}
+
+.dm-skel{
+  background:linear-gradient(90deg,var(--ink-100) 25%,var(--paper) 37%,var(--ink-100) 63%);
+  background-size:400% 100%;animation:dm-shimmer 1.3s ease-in-out infinite;
+  border-radius:8px;
+}
+@keyframes dm-shimmer{from{background-position:100% 0}to{background-position:0 0}}
+
+.dm-sr{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
+/* ==========================================================================
+   Reduced motion — opacity only, ≤100ms
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;animation-iteration-count:1!important;
+    transition-duration:.09ms!important;scroll-behavior:auto!important;
+  }
+  .dm-pop{transform:none!important}
+  .dm-pin.drop{animation:none}
+  .dm-car .pulse{animation:none;opacity:.35}
+}
