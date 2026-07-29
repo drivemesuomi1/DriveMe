@@ -4,7 +4,7 @@ import { send, fail, readJson, isEmail } from './_lib/http.js';
 
 const TIERS = new Set(['chauffeur', 'rental']);
 
-// Postgres unique_violation — the email is already on this tier's list.
+// Postgres unique_violation - the email is already on this tier's list.
 const UNIQUE_VIOLATION = '23505';
 
 export default async function handler(req, res) {

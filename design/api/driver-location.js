@@ -1,4 +1,4 @@
-// POST /api/driver-location — the assigned driver's GPS ping (§3.4).
+// POST /api/driver-location - the assigned driver's GPS ping (§3.4).
 // Body: { token, lat, lng, eta_minutes? }. The driver_token (sent to the driver
 // when an admin assigns them) is the credential; the first ping flips the
 // booking to "driver_en_route".

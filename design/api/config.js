@@ -1,6 +1,6 @@
-// GET /api/config — hands the admin dashboard the Supabase URL and PUBLIC
+// GET /api/config - hands the admin dashboard the Supabase URL and PUBLIC
 // (anon/publishable) key so it can sign in with Supabase Auth and work under
-// RLS. Both values are public by design — RLS + the admins table are the
+// RLS. Both values are public by design - RLS + the admins table are the
 // actual security boundary. The secret key is never involved.
 import { send, fail } from './_lib/http.js';
 

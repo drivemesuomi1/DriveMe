@@ -14,7 +14,7 @@ export function fail(res, status, error, field) {
 
 /**
  * Vercel usually parses JSON bodies for us, but not when the client omits or
- * mangles the content-type — so fall back to reading the stream by hand. Caps the
+ * mangles the content-type - so fall back to reading the stream by hand. Caps the
  * payload so a large body can't be used to burn function memory.
  */
 export async function readJson(req) {

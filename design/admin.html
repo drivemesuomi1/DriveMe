@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>DriveMe — Admin</title>
+<title>DriveMe - Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -227,7 +227,7 @@
     <div class="card">
       <h2>Add a driver</h2>
       <p class="muted" style="margin:0 0 18px">There is no public sign-up. Record each vetting check as it
-        clears — a driver can only be approved once all four are done.</p>
+        clears - a driver can only be approved once all four are done.</p>
       <form id="drv-add" class="grid2">
         <div class="dm-field" style="margin-bottom:12px">
           <label for="da-name">Full name</label>
@@ -270,7 +270,7 @@
   <section id="v-waitlist" hidden>
     <div class="card">
       <div class="head-row">
-        <div><h2>Waitlist</h2><p class="muted" style="margin:0" id="wl-count">—</p></div>
+        <div><h2>Waitlist</h2><p class="muted" style="margin:0" id="wl-count">-</p></div>
         <div class="row">
           <div class="filters" id="wl-filters">
             <button data-f="chauffeur" class="on">Luxury Chauffeur</button>
@@ -369,7 +369,7 @@
         <input class="dm-input" id="dw-company" placeholder="Nordkap Consulting Oy">
       </div>
       <div class="dm-field" style="margin-bottom:14px">
-        <label for="dw-bill-email">Billing email — optional</label>
+        <label for="dw-bill-email">Billing email - optional</label>
         <input class="dm-input" id="dw-bill-email" type="email" placeholder="invoices@company.fi">
       </div>
       <div class="row">
@@ -389,8 +389,8 @@
   const esc = DM.escapeHtml;
   let sb = null, bookings = [], drivers = [], invoices = [], waitlist = [], current = null;
 
-  const euro = n => n == null ? '—' : '€' + Number(n).toFixed(2);
-  const when = iso => iso ? new Date(iso).toLocaleString([], { dateStyle:'medium', timeStyle:'short' }) : '—';
+  const euro = n => n == null ? '-' : '€' + Number(n).toFixed(2);
+  const when = iso => iso ? new Date(iso).toLocaleString([], { dateStyle:'medium', timeStyle:'short' }) : '-';
   const refOf = b => b.id.slice(0, 8).toUpperCase();
   const STATUS = {
     requested:      { label:'Matching driver', cls:'warn' },
@@ -410,7 +410,7 @@
       cfg = await (await fetch('/api/config')).json();
       if (!cfg.success) throw 0;
     } catch {
-      $('li-msg').textContent = 'Backend is not configured — set SUPABASE_URL and SUPABASE_ANON_KEY.';
+      $('li-msg').textContent = 'Backend is not configured - set SUPABASE_URL and SUPABASE_ANON_KEY.';
       $('li-msg').style.color = 'var(--critical)';
       return;
     }
@@ -496,7 +496,7 @@
       return '<tr class="click" data-id="' + b.id + '">' +
         '<td><span class="ref">' + refOf(b) + '</span></td>' +
         '<td>' + esc(when(b.scheduled_for)) + '</td>' +
-        '<td>' + esc(b.customer_name || '—') +
+        '<td>' + esc(b.customer_name || '-') +
           '<span class="sub">' + esc(b.customer_phone || b.customer_email || '') + '</span></td>' +
         '<td>' + esc(b.pickup_location || '') +
           (b.destination ? '<span class="sub">→ ' + esc(b.destination) + '</span>' : '') + '</td>' +
@@ -526,16 +526,16 @@
     $('dw-pills').innerHTML = pill(s.label, s.cls) + (b.is_corporate ? pill('Corporate', 'accent') : '');
 
     $('dw-kv').innerHTML = [
-      ['Customer', esc(b.customer_name || '—')],
-      ['Phone', b.customer_phone ? '<a href="tel:' + esc(b.customer_phone) + '">' + esc(b.customer_phone) + '</a>' : '—'],
-      ['Email', esc(b.customer_email || '—')],
+      ['Customer', esc(b.customer_name || '-')],
+      ['Phone', b.customer_phone ? '<a href="tel:' + esc(b.customer_phone) + '">' + esc(b.customer_phone) + '</a>' : '-'],
+      ['Email', esc(b.customer_email || '-')],
       ['When', esc(when(b.scheduled_for))],
-      ['Pickup', esc(b.pickup_location || '—')],
+      ['Pickup', esc(b.pickup_location || '-')],
       ['Drop-off', esc(b.destination || 'Open-ended (by the hour)')],
       ['Type', b.mode === 'hourly' ? 'By the hour · ' + (b.duration_hours ?? '?') + ' h' : 'Point to point'],
-      ['Beyond metro', b.km_beyond_metro ? b.km_beyond_metro + ' km' : '—'],
+      ['Beyond metro', b.km_beyond_metro ? b.km_beyond_metro + ' km' : '-'],
       ['Quoted', euro(b.estimated_price)],
-      ['Payment', PAY[b.payment_method] || '—'],
+      ['Payment', PAY[b.payment_method] || '-'],
       ['Requested', esc(when(b.created_at))],
     ].map(([k, v]) => '<span class="k">' + k + '</span><span class="v">' + v + '</span>').join('');
 
@@ -567,7 +567,7 @@
         (day ? ' · same-day load shown for ' + day : '')
       : 'Approve a driver in the Drivers tab before assigning one.';
 
-    // A ride can't run ahead of its driver — the DB enforces this too, but the
+    // A ride can't run ahead of its driver - the DB enforces this too, but the
     // buttons shouldn't offer something that will bounce.
     const assigned = Boolean(b.driver_id);
     document.querySelectorAll('#dw-status-btns button[data-s]').forEach(btn => {
@@ -575,7 +575,7 @@
     });
     $('dw-status-hint').textContent = assigned
       ? 'The customer sees each change on their tracking link straight away.'
-      : 'Assign a driver first — a ride cannot go en route with nobody driving it.';
+      : 'Assign a driver first - a ride cannot go en route with nobody driving it.';
 
     $('dw-company').value = b.company_name || '';
     $('dw-bill-email').value = '';
@@ -623,7 +623,7 @@
       driver_id: driverId, status:'driver_assigned', assigned_at:new Date().toISOString()
     }).eq('id', current.id);
     if (error) return DM.toast(error.message, 'bad', 6000);
-    DM.toast('Driver assigned — send them the GPS link', 'good');
+    DM.toast('Driver assigned - send them the GPS link', 'good');
     refreshCurrent();
   });
 
@@ -649,7 +649,7 @@
       is_corporate:true, company_name:company, payment_method:'invoice'
     }).eq('id', current.id);
     if (error) return DM.toast(error.message, 'bad', 6000);
-    DM.toast('Flagged as corporate — billed to ' + company, 'good');
+    DM.toast('Flagged as corporate - billed to ' + company, 'good');
     refreshCurrent();
   });
 
@@ -666,7 +666,7 @@
     }).select().single();
     if (error){
       return DM.toast(error.code === '23505'
-        ? 'This booking already has an invoice — see the Invoices tab.'
+        ? 'This booking already has an invoice - see the Invoices tab.'
         : error.message, 'bad', 6000);
     }
     DM.toast('Invoice ' + data.invoice_number + ' created', 'good');
@@ -724,7 +724,7 @@
       notes: $('da-notes').value.trim() || null,
     });
     if (error) return DM.toast(error.message, 'bad', 6000);
-    DM.toast(name + ' added — status Pending until vetting clears', 'good');
+    DM.toast(name + ' added - status Pending until vetting clears', 'good');
     e.target.reset();
     loadDrivers();
   });
@@ -843,10 +843,10 @@
       '.muted{color:#697687;font-size:12.5px}</style></head><body>' +
       '<h1>Invoice ' + esc(v.invoice_number) + '</h1>' +
       '<p class="muted">Issued ' + v.issued_at + ' · Due ' + v.due_date + '</p>' +
-      '<p style="margin-top:22px"><b>Mansio Group Oy — DriveMe</b><br>Helsinki, Finland</p>' +
+      '<p style="margin-top:22px"><b>Mansio Group Oy - DriveMe</b><br>Helsinki, Finland</p>' +
       '<p>Billed to <b>' + esc(v.company_name) + '</b>' + (v.billing_email ? '<br>' + esc(v.billing_email) : '') + '</p>' +
       '<table><tr><th>Description</th><th style="text-align:right">Amount</th></tr>' +
-      '<tr><td>Chauffeur service — booking ' + (b.id ? refOf(b) : '') +
+      '<tr><td>Chauffeur service - booking ' + (b.id ? refOf(b) : '') +
         '<div class="muted">' + esc(b.pickup_location || '') +
         (b.destination ? ' → ' + esc(b.destination) : '') +
         (b.scheduled_for ? ' · ' + esc(when(b.scheduled_for)) : '') + '</div></td>' +

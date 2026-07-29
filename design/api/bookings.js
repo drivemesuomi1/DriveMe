@@ -6,7 +6,7 @@ const MODES = new Set(['hourly', 'point_to_point']);
 // Phase 1 payment methods (§3.5): cash is deliberately absent.
 const PAYMENT_METHODS = new Set(['card', 'mobilepay', 'invoice']);
 
-// Phase 1 pricing (§3.2) — the server owns the numbers; whatever estimate the
+// Phase 1 pricing (§3.2) - the server owns the numbers; whatever estimate the
 // client showed is recomputed here so the stored price can't be tampered with.
 const RATE_PER_HOUR = 35;
 const MIN_HOURS = 3;                 // 3-hour minimum, billed in half-hour increments
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
   if (!pickup) return fail(res, 400, 'Tell us where the car is.', 'pickup_location');
 
   // Guest checkout (§1): no account, but name, email and phone are the booking
-  // identity — they also feed the persistent customer record.
+  // identity - they also feed the persistent customer record.
   const name = optionalString(body.customer_name, 200);
   if (!name) return fail(res, 400, 'Tell us your name.', 'customer_name');
 
@@ -88,8 +88,8 @@ export default async function handler(req, res) {
   const kmRounded = km === undefined ? null : Math.round(km);
   const { total } = quote(mode, duration, kmRounded ?? 0);
 
-  // Coordinates from the map picker. Optional — a booking taken over the phone
-  // has none — but when present they save the tracking page re-geocoding text.
+  // Coordinates from the map picker. Optional - a booking taken over the phone
+  // has none - but when present they save the tracking page re-geocoding text.
   const coord = (v, limit) => {
     const n = optionalNumber(v, { min: -limit, max: limit });
     return n === undefined || n === null ? null : n;
@@ -105,7 +105,7 @@ export default async function handler(req, res) {
   // SELECT, an INSERT ... RETURNING would be rejected. Owning the id lets us confirm
   // the reference to the customer without ever reading the row back.
   const id = randomUUID();
-  // 128-bit share + driver tokens — the token is the credential for the
+  // 128-bit share + driver tokens - the token is the credential for the
   // no-login tracking link (§3.4) and the driver's GPS ping page.
   const trackingToken = randomBytes(16).toString('hex');
   const driverToken = randomBytes(16).toString('hex');
@@ -139,10 +139,10 @@ export default async function handler(req, res) {
   let { error } = await client.from('bookings').insert(row);
 
   // Migration 0003 adds the map columns. If it hasn't been applied yet, PostgREST
-  // rejects the whole insert for the unknown column — so drop the geometry and
+  // rejects the whole insert for the unknown column - so drop the geometry and
   // save the booking anyway. A booking is worth far more than its map preview.
   if (error?.code === 'PGRST204' && /pickup_lat|pickup_lng|dest_lat|dest_lng|route_km|route_minutes/.test(error.message || '')) {
-    console.warn('bookings: geometry columns missing — apply supabase/migrations/0003_coordinates.sql');
+    console.warn('bookings: geometry columns missing - apply supabase/migrations/0003_coordinates.sql');
     const { pickup_lat, pickup_lng, dest_lat, dest_lng, route_km, route_minutes, ...legacy } = row;
     ({ error } = await client.from('bookings').insert(legacy));
   }
@@ -152,7 +152,7 @@ export default async function handler(req, res) {
     return fail(res, 502, 'We could not save that booking. Please try again in a moment.');
   }
 
-  // Short, human-quotable reference — the uuid stays the real key.
+  // Short, human-quotable reference - the uuid stays the real key.
   return send(res, 201, {
     success: true,
     bookingId: id,

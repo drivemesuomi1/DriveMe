@@ -1,5 +1,5 @@
 <!--
-  DriveMe — Landing page concept v1
+  DriveMe - Landing page concept v1
   Journey stage: first-touch (investor + premium customer)
   Intent: communicate "your driver, your car" instantly, with Mercedes-grade
   restraint. Dark Scandinavian luxury; silver primary accent, gold reserved
@@ -10,13 +10,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DriveMe — Your Driver. Your Car. Your Way.</title>
+<title>DriveMe - Your Driver. Your Car. Your Way.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Geist is the typeface Blacklane itself uses -->
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- shared UI kit for the booking card (no map here — see track.html for that) -->
+<!-- shared UI kit for the booking card (no map here - see track.html for that) -->
 <link rel="stylesheet" href="assets/ui.css">
 <style>
   :root{
@@ -31,7 +31,7 @@
     --gold-light:#005EC2;
     --gold-deep:#0C4481;
     --gold-glow:rgba(15,99,189,.18);
-    /* validation only — a warm hairline, deliberately not red and not the brand blue
+    /* validation only - a warm hairline, deliberately not red and not the brand blue
        (blue means "primary action" everywhere else and would read as a CTA) */
     --warn:#A9761F;
     --gold-grad:linear-gradient(120deg,#0C4481 0%,#0F63BD 45%,#2E7FD4 100%);
@@ -49,7 +49,7 @@
     --font:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     --font-display:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
   }
-  /* gold leaf — shared by every display-scale figure and accent */
+  /* gold leaf - shared by every display-scale figure and accent */
   .gilt{
     background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;
     -webkit-text-fill-color:transparent;color:transparent;
@@ -58,7 +58,7 @@
   /* author display rules (e.g. .est-line{display:flex}) otherwise beat the UA's
      [hidden]{display:none}, leaving hidden rows visible */
   [hidden]{display:none!important}
-  /* `clip` (not `hidden`) — hidden makes the root its own scroll container, which
+  /* `clip` (not `hidden`) - hidden makes the root its own scroll container, which
      stops scroll events reaching window and silently kills every scroll-driven effect */
   html{scroll-behavior:smooth;overflow-x:clip}
   body{
@@ -181,7 +181,7 @@
   header{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg)}
   /* The poster is painted on the CONTAINER, not left to the <video> element.
      Mobile browsers routinely defer video loading (Low Power Mode, Data Saver,
-     cellular), and a deferred video never fires canplay — which would leave the
+     cellular), and a deferred video never fires canplay - which would leave the
      element at opacity:0 and hide its poster with it. This way the hero always
      shows imagery, and the video simply fades in on top when it is ready. */
   .hero-media{
@@ -301,7 +301,7 @@
   }
   .kicker::before{content:"";width:34px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
   h2{font-family:var(--font-display);font-size:clamp(32px,4.4vw,56px);font-weight:500;letter-spacing:-.005em;line-height:1.16;max-width:760px}
-  /* Playfair's italic is the emphasis device — set in gold leaf */
+  /* Playfair's italic is the emphasis device - set in gold leaf */
   h2 em{
     font-style:italic;font-weight:500;
     background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;
@@ -488,7 +488,7 @@
 
   /* ---------- form states: validation, sending, confirmation ---------- */
   /* Quiet by design: a warm hairline under the field and small silver helper text.
-     No red, no alert boxes, no shake — the brand voice does not raise its voice. */
+     No red, no alert boxes, no shake - the brand voice does not raise its voice. */
   .field-note{
     font-size:11.5px;line-height:1.5;letter-spacing:.02em;color:var(--silver-dim);
     margin-top:5px;opacity:0;transform:translateY(-2px);
@@ -498,7 +498,7 @@
   .hb-field.invalid,.wl.invalid .wl-form{box-shadow:inset 0 -1.5px 0 var(--warn)}
   .hb-field.invalid label{color:var(--warn)}
 
-  /* button busy state — a thin rotating ring, not a bouncing spinner */
+  /* button busy state - a thin rotating ring, not a bouncing spinner */
   .btn.busy{pointer-events:none;opacity:.72}
   .btn .spin{
     width:13px;height:13px;border-radius:50%;flex:none;display:none;
@@ -509,7 +509,7 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   @media (prefers-reduced-motion:reduce){ .btn .spin{animation-duration:2.4s} }
 
-  /* hero booking confirmation — replaces the form in place, same footprint */
+  /* hero booking confirmation - replaces the form in place, same footprint */
   .hb-done{
     background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(15,19,25,.22);
     padding:30px 34px;margin-top:44px;max-width:1000px;text-align:left;
@@ -621,7 +621,7 @@
   .appr-driver .app-avatar{width:42px;height:42px}
 
   /* ---------- fleet ---------- */
-  /* Phase 2 target, not an inventory grid — no vehicle has been acquired, so this
+  /* Phase 2 target, not an inventory grid - no vehicle has been acquired, so this
      shows one aspirational vehicle class rather than a browsable line-up. */
   .target{
     display:grid;grid-template-columns:1.05fr .95fr;margin-top:64px;
@@ -635,7 +635,7 @@
   .target:hover .target-media img{transform:scale(1.05)}
   .target-media::after{content:"";position:absolute;inset:0;
     background:linear-gradient(90deg,transparent 65%,rgba(10,16,25,.28) 100%)}
-  /* base styling only — the light theme repaints this as a solid white pill with
+  /* base styling only - the light theme repaints this as a solid white pill with
      ink text (see the "badges over photography" override), matching .svc .status */
   .ride-tag{
     position:absolute;left:20px;top:18px;z-index:2;
@@ -795,7 +795,7 @@
     -webkit-text-fill-color:transparent;color:transparent;
   }
   /* no opacity here: an opacity<1 child gets its own compositing layer, where the
-     parent's background-clip:text cutout has no background behind it — the € and M
+     parent's background-clip:text cutout has no background behind it - the € and M
      rendered fully transparent. Keep the affixes on the parent's painted layer. */
   .stat .num small{font-size:.55em;font-weight:500}
   .stat p{margin-top:10px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--silver-dim)}
@@ -820,7 +820,7 @@
   .stage .yr{font-size:11px;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:10px}
 
   /* ---------- founder's note ---------- */
-  /* One attributed note rather than a testimonial grid — pre-launch, there are no
+  /* One attributed note rather than a testimonial grid - pre-launch, there are no
      customers to quote, so the only honest first-person voice is the founder's. */
   .founder{
     max-width:840px;margin:72px auto 0;
@@ -894,7 +894,7 @@
   header .btn-ghost .play{border-color:rgba(255,255,255,.65);color:#fff}
   header .btn-ghost:hover .play{background:#fff;color:var(--gold-deep)}
 
-  /* Copy that sits ON photography stays light — the ink tokens are for white grounds only */
+  /* Copy that sits ON photography stays light - the ink tokens are for white grounds only */
   .cabin-copy h3{color:#fff}
   .cabin-copy p{color:rgba(255,255,255,.88)}
   .how-figure strong{color:#fff}
@@ -919,7 +919,7 @@
   .screen .app-avatar{background:rgba(15,99,189,.28);border-color:rgba(143,192,242,.45);color:#8FC0F2}
   .stars{color:#8FC0F2}
 
-  /* scoped to the nav — the footer logo sits on white and must stay blue */
+  /* scoped to the nav - the footer logo sits on white and must stay blue */
   nav .logo{background:linear-gradient(#fff,#fff);-webkit-background-clip:text;background-clip:text}
   nav.scrolled .logo{background:var(--gold-grad);-webkit-background-clip:text;background-clip:text}
   .contact-line{color:rgba(255,255,255,.82)}
@@ -936,7 +936,7 @@
   nav.scrolled .bar-links{border-top-color:var(--line)}
 
   /* ---------------------------------------------------------------------
-     Hero booking card — the details form, straight to the point. Modern
+     Hero booking card - the details form, straight to the point. Modern
      controls (custom select, calendar, time list, address autocomplete)
      come from the shared kit in assets/ui.css.
      --------------------------------------------------------------------- */
@@ -1023,7 +1023,7 @@
   .svc.soon .status .pulse{background:var(--gold);opacity:1}
   .avatar,.app-avatar{color:var(--gold-deep);font-weight:600}
 
-  /* section rhythm — alternating white / cream / mist grounds */
+  /* section rhythm - alternating white / cream / mist grounds */
   #how,#fleet,#roadmap{background:var(--bg-raised)}
   #approach,#app-story{background:var(--mist)}
   .final{background:var(--blue-100)}
@@ -1036,7 +1036,7 @@
     box-shadow:0 1px 3px rgba(15,19,25,.05);
   }
   .card:hover,.svc:hover,.target:hover{box-shadow:0 14px 34px rgba(15,19,25,.10)}
-  /* the founder note is a single editorial block, not one of a card grid —
+  /* the founder note is a single editorial block, not one of a card grid -
      cream keeps it distinct from the white cards above it */
   .founder{box-shadow:0 1px 3px rgba(15,19,25,.05)}
   .founder:hover{box-shadow:0 14px 34px rgba(15,19,25,.10)}
@@ -1124,7 +1124,7 @@
       <span class="l"><span class="gilt">Your Car.</span></span>
       <span class="l"><span>Your Way.</span></span>
     </h1>
-    <p class="hero-sub">A professionally licensed chauffeur arrives, takes the wheel of your own vehicle, and delivers you — and your car — home. No parking. No retrieval. No compromise.</p>
+    <p class="hero-sub">A professionally licensed chauffeur arrives, takes the wheel of your own vehicle, and delivers you - and your car - home. No parking. No retrieval. No compromise.</p>
     <section class="hero-book dm" id="bk" aria-label="Request a driver">
       <div class="hb-head">
         <div class="dm-seg" id="bk-mode" role="group" aria-label="Booking type">
@@ -1214,7 +1214,7 @@
         </div>
 
         <div class="hb-foot">
-          <p class="fine">A vetted, licensed chauffeur drives your own car. No account needed —
+          <p class="fine">A vetted, licensed chauffeur drives your own car. No account needed -
              we'll confirm by email and send you a live tracking link.</p>
           <button type="submit" class="dm-btn" id="hb-submit">
             <span class="dm-btn-spin" aria-hidden="true"></span>
@@ -1225,8 +1225,8 @@
 
       <div class="hb-done" id="hb-done" hidden role="status" aria-live="polite">
         <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>
-        <h4>Request received — matching your driver</h4>
-        <p>Your reference is <span class="ref" id="hb-ref">—</span>. A vetted driver is being assigned by hand;
+        <h4>Request received - matching your driver</h4>
+        <p>Your reference is <span class="ref" id="hb-ref">-</span>. A vetted driver is being assigned by hand;
            we'll confirm by email, usually within the hour.</p>
         <div class="acts">
           <a class="dm-btn" id="hb-track" href="#" target="_blank" rel="noopener" hidden>Follow your ride live</a>
@@ -1250,14 +1250,14 @@
   <div class="wrap">
     <p class="kicker reveal">The problem</p>
     <h2 class="reveal">Every ride-share makes you <em>abandon your own car.</em></h2>
-    <p class="lead reveal">A dinner, an event, one glass of wine — and your vehicle spends the night across the city. DriveMe is built to remove the trade-off entirely.</p>
+    <p class="lead reveal">A dinner, an event, one glass of wine - and your vehicle spends the night across the city. DriveMe is built to remove the trade-off entirely.</p>
     <div class="compare">
       <div class="card bad reveal" data-tilt>
         <p class="tag">The old way</p>
         <h3>Traditional apps</h3>
         <ul>
           <li><span class="ic">✕</span>Leave your car behind, wherever you parked it</li>
-          <li><span class="ic">✕</span>Return tomorrow to retrieve it — on your own time</li>
+          <li><span class="ic">✕</span>Return tomorrow to retrieve it - on your own time</li>
           <li><span class="ic">✕</span>Pay twice: the ride home, the ride back</li>
         </ul>
       </div>
@@ -1265,7 +1265,7 @@
         <p class="tag">The DriveMe way</p>
         <h3>DriveMe</h3>
         <ul>
-          <li><span class="ic">✓</span>Travel in your own vehicle — seats, settings, privacy</li>
+          <li><span class="ic">✓</span>Travel in your own vehicle - seats, settings, privacy</li>
           <li><span class="ic">✓</span>A professional, licensed driver takes the wheel</li>
           <li><span class="ic">✓</span>You and your car arrive home together, safely</li>
         </ul>
@@ -1288,7 +1288,7 @@
       </div>
       <div class="step">
         <div class="n">02</div>
-        <div><h4>Driver accepts</h4><p>A vetted, licensed professional confirms — profile, rating, and ETA up front.</p></div>
+        <div><h4>Driver accepts</h4><p>A vetted, licensed professional confirms - profile, rating, and ETA up front.</p></div>
       </div>
       <div class="step">
         <div class="n">03</div>
@@ -1303,7 +1303,7 @@
       <img src="assets/l-how-chauffeur.jpg" alt="A DriveMe chauffeur holding the door for a client stepping out of a black saloon" loading="lazy">
       <figcaption>
         <strong>Door to door.</strong>
-        <span>From the restaurant steps to your own driveway — one journey, one car, no handover.</span>
+        <span>From the restaurant steps to your own driveway - one journey, one car, no handover.</span>
       </figcaption>
     </figure>
     </div>
@@ -1355,7 +1355,7 @@
             <output id="hrs-out" for="hrs-minus hrs-plus">3<small>hours</small></output>
             <button type="button" id="hrs-plus" aria-label="Increase duration by half an hour">+</button>
           </div>
-          <p class="req-note">Three-hour minimum — billed in half hours thereafter.</p>
+          <p class="req-note">Three-hour minimum - billed in half hours thereafter.</p>
         </div>
 
         <!-- appears only when the destination falls outside the four capital-region
@@ -1367,7 +1367,7 @@
             <output id="km-out" for="km-minus km-plus">20<small>km</small></output>
             <button type="button" id="km-plus" aria-label="Increase distance by five kilometres">+</button>
           </div>
-          <p class="req-note">Charged at €0,50 per kilometre beyond the Helsinki Metro Area.</p>
+          <p class="req-note">Charged at €0.50 per kilometre beyond the Helsinki Metro Area.</p>
         </div>
 
         <div class="req-foot">
@@ -1383,8 +1383,8 @@
         <div class="est-line"><span>Professional driver</span><b id="est-driver">3 hr × €35</b></div>
         <div class="est-line" id="est-callout-row" hidden><span id="est-callout-label">Beyond the metro</span><b id="est-callout">€10</b></div>
         <div class="est-total"><span>Total</span><b id="est-total-2">€105</b></div>
-        <p class="est-fine">VAT included. No surge pricing, ever — the same rate at two in the afternoon and two in the morning.</p>
-        <p class="est-member">Subscription — <b>€100 / month</b> for five hours of driver time</p>
+        <p class="est-fine">VAT included. No surge pricing, ever - the same rate at two in the afternoon and two in the morning.</p>
+        <p class="est-member">Subscription - <b>€100 / month</b> for five hours of driver time</p>
       </aside>
     </div>
 
@@ -1398,7 +1398,7 @@
         </div>
         <div class="price">
           <span class="price-k">Beyond the metro</span>
-          <b>€0,50<small>/ km</small></b>
+          <b>€0.50<small>/ km</small></b>
           <p>Applies past Helsinki, Espoo, Vantaa and Kauniainen.</p>
         </div>
         <div class="price">
@@ -1429,7 +1429,7 @@
   <div class="wrap">
     <p class="kicker reveal">The approach</p>
     <h2 class="reveal">You'll know exactly <em>where they are.</em></h2>
-    <p class="lead reveal">The moment a request is confirmed, this becomes live — your driver's approach, their ETA, and their name. No wondering, no calling to ask.</p>
+    <p class="lead reveal">The moment a request is confirmed, this becomes live - your driver's approach, their ETA, and their name. No wondering, no calling to ask.</p>
     <div class="appr-grid">
       <div class="appr-map reveal">
         <span class="appr-badge"><i></i>Demonstration · Helsinki capital region</span>
@@ -1454,7 +1454,7 @@
           <circle id="car" cx="96" cy="430" r="7" fill="#0F63BD"/>
           <circle id="car-halo" cx="96" cy="430" r="15" fill="rgba(15,99,189,.16)"/>
         </svg>
-        <p class="appr-foot">Sample journey — positions refresh every 3 seconds.</p>
+        <p class="appr-foot">Sample journey - positions refresh every 3 seconds.</p>
       </div>
       <div class="appr-side">
         <div class="appr-stat reveal"><span>Status</span><b id="appr-status">Driver assigned</b></div>
@@ -1538,16 +1538,16 @@
   <div class="wrap">
     <p class="kicker reveal">The fleet · Phase 2</p>
     <h2 class="reveal">Today, your car. <em>In time, ours.</em></h2>
-    <p class="lead reveal">DriveMe owns no vehicles at launch, and that is the design — a professional drives the car you already have, which is precisely what lets Phase 1 begin without fleet financing. A small premium fleet comes later: two to three vehicles, acquired only once Phase 1 is generating consistent revenue, opening the chauffeur and rental tiers.</p>
+    <p class="lead reveal">DriveMe owns no vehicles at launch, and that is the design - a professional drives the car you already have, which is precisely what lets Phase 1 begin without fleet financing. A small premium fleet comes later: two to three vehicles, acquired only once Phase 1 is generating consistent revenue, opening the chauffeur and rental tiers.</p>
     <div class="target reveal" data-hover>
       <div class="target-media">
-        <img src="assets/l-fleet-s-class.jpg" alt="Reference image of a Mercedes-Benz S-Class saloon — the vehicle class DriveMe intends to acquire for its future chauffeur service" loading="lazy">
+        <img src="assets/l-fleet-s-class.jpg" alt="Reference image of a Mercedes-Benz S-Class saloon - the vehicle class DriveMe intends to acquire for its future chauffeur service" loading="lazy">
         <span class="ride-tag">Planned · Phase 2</span>
       </div>
       <div class="target-copy">
         <span class="ride-class">Intended vehicle class</span>
         <h3>Mercedes-Benz S-Class</h3>
-        <p>The standard we intend to buy into when the chauffeur tier opens — a reference point, not an inventory list. No vehicle shown here has been acquired, financed, or insured, and none will be until Phase 1 has proven the demand behind it.</p>
+        <p>The standard we intend to buy into when the chauffeur tier opens - a reference point, not an inventory list. No vehicle shown here has been acquired, financed, or insured, and none will be until Phase 1 has proven the demand behind it.</p>
         <ul class="ride-specs"><li>2–3 vehicles planned</li><li>Follows Phase 1</li><li>Chauffeur-driven</li></ul>
       </div>
     </div>
@@ -1555,7 +1555,7 @@
       <img src="assets/l-fleet-interior.jpg" alt="Reference image of a premium saloon cabin, illustrating the standard DriveMe is targeting" loading="lazy">
       <div class="cabin-copy">
         <h3>The standard we're building toward.</h3>
-        <p>Climate set before you step in. Phone paired. Conversation optional. That is the brief for the chauffeur tier when it opens — because the best luxury is the kind you don't have to ask for.</p>
+        <p>Climate set before you step in. Phone paired. Conversation optional. That is the brief for the chauffeur tier when it opens - because the best luxury is the kind you don't have to ask for.</p>
       </div>
     </div>
   </div>
@@ -1569,7 +1569,7 @@
     <div class="why-grid reveal">
       <div class="why">
         <svg viewBox="0 0 24 24"><path d="M12 2l7 4v5c0 5-3 8.5-7 11-4-2.5-7-6-7-11V6z"/><path d="M9 12l2 2 4-4"/></svg>
-        <h4>Professional drivers</h4><p>Licensed chauffeurs with verified professional driving records — never gig amateurs.</p>
+        <h4>Professional drivers</h4><p>Licensed chauffeurs with verified professional driving records - never gig amateurs.</p>
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>
@@ -1589,7 +1589,7 @@
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.2 5.6.6-4.2 3.9 1.2 5.6-5-2.9-5 2.9 1.2-5.6L4 8.8l5.6-.6z"/></svg>
-        <h4>Luxury experience</h4><p>Suited drivers, quiet rides, your preferences remembered — the standard every booking is held to.</p>
+        <h4>Luxury experience</h4><p>Suited drivers, quiet rides, your preferences remembered - the standard every booking is held to.</p>
       </div>
     </div>
   </div>
@@ -1609,7 +1609,7 @@
             <div class="story-step" data-i="2"><b>Payments</b>Cashless, itemised, corporate-ready.</div>
             <div class="story-step" data-i="3"><b>Arrival</b>Rate the journey. Your car sleeps at home.</div>
           </div>
-          <p class="story-note">Interface preview — screens shown are in development, with sample journey data.</p>
+          <p class="story-note">Interface preview - screens shown are in development, with sample journey data.</p>
         </div>
         <div class="phone" data-hover>
           <div class="screen">
@@ -1619,7 +1619,7 @@
               <div class="app-block"><div class="app-row"><span>Destination</span><b>Home · Westend</b></div></div>
               <div class="app-block"><div class="app-row"><span>Your vehicle</span><b>Mercedes EQS</b></div></div>
               <div class="app-map mini"><span class="route"></span><span class="car-dot"></span></div>
-              <div class="app-fare"><span>Fixed fare · 14,2 km</span><b>24,00 €</b></div>
+              <div class="app-fare"><span>Fixed fare · 14.2 km</span><b>24.00 €</b></div>
               <div class="app-btn">Request Driver</div>
             </div>
             <div class="app-screen" data-s="1">
@@ -1633,11 +1633,11 @@
             </div>
             <div class="app-screen" data-s="2">
               <div><div class="app-title">Payment</div><div class="app-sub">Receipt · Trip #48219</div></div>
-              <div class="app-block"><div class="app-row"><span>Journey · 14,2 km</span><b>21,00 €</b></div></div>
-              <div class="app-block"><div class="app-row"><span>Night hours</span><b>3,00 €</b></div></div>
+              <div class="app-block"><div class="app-row"><span>Journey · 14.2 km</span><b>21.00 €</b></div></div>
+              <div class="app-block"><div class="app-row"><span>Night hours</span><b>3.00 €</b></div></div>
               <div class="app-block"><div class="app-row"><span>Business account</span><b>Nordica Oy</b></div></div>
               <div class="app-map mini"><span class="route"></span><span class="car-dot"></span></div>
-              <div class="app-total"><span>Total</span><b>24,00 €</b></div>
+              <div class="app-total"><span>Total</span><b>24.00 €</b></div>
               <div class="app-btn">Paid · Apple Pay</div>
             </div>
             <div class="app-screen" data-s="3">
@@ -1670,7 +1670,7 @@
       <div class="stat"><div class="num"><span data-count="3">0</span></div><p>Service phases</p></div>
       <div class="stat"><div class="num"><span data-count="4">0</span></div><p>Vetting checks per driver</p></div>
     </div>
-    <p class="stats-note reveal">Market size and population are external estimates for Finland and the Helsinki capital region, not DriveMe figures. Every driver must clear four checks before a first booking — Finnish licence verification, a driving-record check, a criminal background check, and an in-person interview — and none is activated on a partial file.</p>
+    <p class="stats-note reveal">Market size and population are external estimates for Finland and the Helsinki capital region, not DriveMe figures. Every driver must clear four checks before a first booking - Finnish licence verification, a driving-record check, a criminal background check, and an in-person interview - and none is activated on a partial file.</p>
   </div>
 </section>
 
@@ -1701,9 +1701,9 @@
     <h2 class="reveal">Why I'm building <em>DriveMe.</em></h2>
     <div class="founder reveal" data-hover>
       <span class="mark">“</span>
-      <p>I kept running into the same evening in Helsinki. Dinner runs long, the weather turns, a glass of wine is poured — and a car you rely on becomes something to recover tomorrow morning. Every app in this city solves the passenger's journey. None of them solve the car's.</p>
+      <p>I kept running into the same evening in Helsinki. Dinner runs long, the weather turns, a glass of wine is poured - and a car you rely on becomes something to recover tomorrow morning. Every app in this city solves the passenger's journey. None of them solve the car's.</p>
       <p>So DriveMe starts deliberately narrow: one service, one city, licensed professional drivers who come to you and drive your own vehicle home. The chauffeur and rental tiers will open only once that first promise is being kept consistently. I would rather earn the second product than announce it.</p>
-      <p>If you are an early customer, a driver who takes the work seriously, or a venue that sends people home at midnight — I want to hear from you before we launch.</p>
+      <p>If you are an early customer, a driver who takes the work seriously, or a venue that sends people home at midnight - I want to hear from you before we launch.</p>
       <div class="who">
         <span class="avatar">SN</span>
         <div><b>Sohail Noman</b><span>Founder &amp; Chief Executive Officer<br>Mansio Group Oy · Helsinki</span></div>
@@ -1744,7 +1744,7 @@
       </div>
     </div>
     <div class="legal">
-      <span>© 2026 DriveMe — Mansio Group Oy · Y-tunnus 3631044-9 · Helsinki, Finland</span>
+      <span>© 2026 DriveMe - Mansio Group Oy · Y-tunnus 3631044-9 · Helsinki, Finland</span>
       <span>Privacy · Terms · Licensing</span>
     </div>
   </div>
@@ -1757,7 +1757,7 @@
   /* loader */
   const loader = document.getElementById('loader');
   const release = () => { loader.classList.add('done'); document.body.classList.add('loaded'); };
-  /* Fire on DOM + fonts, NOT window.load — the hero video is ~7.5MB and would
+  /* Fire on DOM + fonts, NOT window.load - the hero video is ~7.5MB and would
      otherwise hold the loader open for the length of that download. */
   const ready = Promise.all([
     document.fonts ? document.fonts.ready : Promise.resolve(),
@@ -1789,11 +1789,11 @@
     el.addEventListener('mouseleave', () => cursor.classList.remove('on'));
   });
 
-  /* hero video — cinematic background, fades in once playable */
+  /* hero video - cinematic background, fades in once playable */
   const heroVideo = document.getElementById('hero-video');
   if (heroVideo){
     const reveal = () => heroVideo.classList.add('ready');
-    /* Safari honours the muted PROPERTY, not just the attribute — without this it
+    /* Safari honours the muted PROPERTY, not just the attribute - without this it
        treats the play() call as unmuted and rejects it. */
     heroVideo.muted = true;
     heroVideo.defaultMuted = true;
@@ -1809,7 +1809,7 @@
     const saveData = conn && (conn.saveData || /^(slow-)?2g$/.test(conn.effectiveType || ''));
 
     const tryPlay = () => {
-      if (saveData) return;                 // respect Data Saver — poster carries the hero
+      if (saveData) return;                 // respect Data Saver - poster carries the hero
       const p = heroVideo.play();
       if (p && p.catch) p.catch(()=>{});
     };
@@ -1834,7 +1834,7 @@
 
   /* ---- the request: live estimate ---- */
   /* Phase 1 pricing (§3.2): €35/hr with a three-hour minimum billed in half-hour
-     increments, plus €0.50 per km beyond the Helsinki Metro Area — a per-km
+     increments, plus €0.50 per km beyond the Helsinki Metro Area - a per-km
      surcharge, not a flat callout fee. The API recomputes this server-side. */
   const RATE = 35, PER_KM = 0.5, MIN_HOURS = 3;
   const modeHour = document.getElementById('mode-hour'), modeP2P = document.getElementById('mode-p2p');
@@ -1849,10 +1849,10 @@
     const eCalloutLabel = document.getElementById('est-callout-label');
     const eCalloutVal = document.getElementById('est-callout');
     const dest = document.getElementById('dest');
-    const euro = n => '€' + (Number.isInteger(n) ? n : n.toFixed(2).replace('.', ','));
+    const euro = n => '€' + (Number.isInteger(n) ? n : n.toFixed(2));
 
     function render(){
-      out.innerHTML = (Number.isInteger(hours) ? hours : hours.toFixed(1).replace('.', ',')) + '<small>hours</small>';
+      out.innerHTML = (Number.isInteger(hours) ? hours : hours.toFixed(1)) + '<small>hours</small>';
       kmOutEl.innerHTML = kmOut + '<small>km</small>';
       fHours.hidden = !byHour; fDest.hidden = byHour;
       // point-to-point is priced off an assumed ~45 min engagement, same hourly rate
@@ -1863,11 +1863,11 @@
       const surcharge = outside ? kmOut * PER_KM : 0;
       const total = billed * RATE + surcharge;
       eCallout.hidden = !outside; fKm.hidden = !outside;
-      eCalloutLabel.textContent = 'Beyond the metro · ' + kmOut + ' km × €0,50';
+      eCalloutLabel.textContent = 'Beyond the metro · ' + kmOut + ' km × €0.50';
       eCalloutVal.textContent = euro(surcharge);
-      eDriver.textContent = (Number.isInteger(billed) ? billed : billed.toFixed(2).replace('.', ',')) + ' hr × ' + euro(RATE);
+      eDriver.textContent = (Number.isInteger(billed) ? billed : billed.toFixed(2)) + ' hr × ' + euro(RATE);
       eMode.textContent = byHour
-        ? (Number.isInteger(hours) ? hours : hours.toFixed(1).replace('.', ',')) + ' hr · By the hour'
+        ? (Number.isInteger(hours) ? hours : hours.toFixed(1)) + ' hr · By the hour'
         : 'Point to point · ' + (dest.value.trim() || 'destination');
       eTotal.textContent = euro(total); eTotal2.textContent = euro(total);
     }
@@ -1899,7 +1899,7 @@
     let t = 0;
     const sec = document.getElementById('approach');
     setInterval(() => {
-      // idle while off-screen — a rect check rather than IntersectionObserver, which
+      // idle while off-screen - a rect check rather than IntersectionObserver, which
       // never fires in headless/non-compositing contexts
       const r = sec.getBoundingClientRect();
       if (r.bottom < 0 || r.top > innerHeight) return;
@@ -1942,7 +1942,7 @@
     const t0 = performance.now(), dur = 1800;
     (function tick(t){
       const p = Math.min((t-t0)/dur, 1), e = 1 - Math.pow(1-p, 4);
-      el.textContent = (target*e).toFixed(dec).replace('.', ',');
+      el.textContent = (target*e).toFixed(dec);
       if (p < 1) requestAnimationFrame(tick);
     })(t0);
   }), {threshold:.6});
@@ -2052,7 +2052,7 @@
   /* ======================= hero booking form =======================
      One card, all the details. The address fields autocomplete against real
      places (and carry coordinates through to the tracking map), but there is
-     no map in the hero — the form is the whole interaction.
+     no map in the hero - the form is the whole interaction.
      Pricing mirrors api/bookings.js; the server still recomputes it. */
   const form = document.getElementById('hero-book');
   if (form && window.DM){
@@ -2069,7 +2069,7 @@
       onPick: p => { state.dropoff = p; markField($('f-drop'), false); setNote($('note-drop'), ''); measure(); }
     });
 
-    /* Distance beyond the metro drives the surcharge, so it needs the route —
+    /* Distance beyond the metro drives the surcharge, so it needs the route -
        but only when both ends are known and it's a point-to-point booking. */
     async function measure(){
       if (state.mode !== 'point_to_point' || !state.pickup || !state.dropoff){
@@ -2097,7 +2097,7 @@
     /* ---------- duration ---------- */
     function renderHours(){
       $('bk-dur-out').innerHTML =
-        (Number.isInteger(state.hours) ? state.hours : state.hours.toFixed(1).replace('.', ',')) +
+        (Number.isInteger(state.hours) ? state.hours : state.hours.toFixed(1)) +
         ' hours<small>' + (state.hours <= MIN_HOURS ? '3-hour minimum' : 'billed in half hours') + '</small>';
       $('bk-dur-minus').disabled = state.hours <= MIN_HOURS;
     }
@@ -2117,7 +2117,7 @@
     });
 
     /* ---------- quote (mirrors api/bookings.js) ---------- */
-    const euro = n => '€' + (Number.isInteger(n) ? n : n.toFixed(2).replace('.', ','));
+    const euro = n => '€' + (Number.isInteger(n) ? n : n.toFixed(2));
     function quote(){
       const km = state.kmBeyond * PER_KM;
       let billed, sum;
@@ -2131,11 +2131,11 @@
       $('bk-amt').textContent = euro(sum);
       const bits = [];
       if (state.mode === 'hourly'){
-        bits.push('<b>' + (Number.isInteger(billed) ? billed : String(billed).replace('.', ',')) + ' h</b> × €35');
+        bits.push('<b>' + (Number.isInteger(billed) ? billed : String(billed)) + ' h</b> × €35');
       } else {
         bits.push('<b>Fixed fare</b> · quoted now');
       }
-      if (state.kmBeyond) bits.push(state.kmBeyond + ' km beyond the metro × €0,50');
+      if (state.kmBeyond) bits.push(state.kmBeyond + ' km beyond the metro × €0.50');
       if (state.routeMin) bits.push('~' + state.routeMin + ' min drive');
       bits.push('VAT included · no surge, ever');
       $('bk-brk').innerHTML = bits.join(' · ');
@@ -2233,7 +2233,7 @@
         form.hidden = true;
         document.querySelector('.hb-head').hidden = true;
         $('hb-done').hidden = false;
-        DM.toast('Booking confirmed — reference ' + $('hb-ref').textContent, 'good');
+        DM.toast('Booking confirmed - reference ' + $('hb-ref').textContent, 'good');
         return;
       }
 
@@ -2279,8 +2279,8 @@
     if (!open || !wlForm || !input) return;
 
     const COPY = {
-      chauffeur: "You're on the list — we'll reach out before the S-Class fleet launches.",
-      rental:    "You're on the list — we'll reach out before the rental fleet opens."
+      chauffeur: "You're on the list - we'll reach out before the S-Class fleet launches.",
+      rental:    "You're on the list - we'll reach out before the rental fleet opens."
     };
 
     open.addEventListener('click', () => {

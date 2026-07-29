@@ -1,5 +1,5 @@
 /* ==========================================================================
-   DriveMe UI kit — behaviour for the shared components in assets/ui.css.
+   DriveMe UI kit - behaviour for the shared components in assets/ui.css.
    Vanilla, no build step, no framework. Exposes a single global: DM.
 
    Native controls are *enhanced*, never discarded: every custom select keeps
@@ -76,7 +76,7 @@ window.DM = (function () {
   }
 
   /* ====================================================================
-     Segmented control — animated thumb follows the pressed button
+     Segmented control - animated thumb follows the pressed button
      ==================================================================== */
   function segmented(root, onChange) {
     const btns = [...root.querySelectorAll('button')];
@@ -100,7 +100,7 @@ window.DM = (function () {
   }
 
   /* ====================================================================
-     Select — enhances a native <select> into a listbox
+     Select - enhances a native <select> into a listbox
      ==================================================================== */
   function select(native, opts) {
     opts = opts || {};
@@ -232,7 +232,7 @@ window.DM = (function () {
   }
 
   /* ====================================================================
-     Date picker — readonly text input + calendar popover
+     Date picker - readonly text input + calendar popover
      Value is kept ISO (yyyy-mm-dd) on input.dataset.value
      ==================================================================== */
   const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -362,7 +362,7 @@ window.DM = (function () {
   }
 
   /* ====================================================================
-     Time picker — 15-minute list + evening quick picks
+     Time picker - 15-minute list + evening quick picks
      Value kept as HH:MM on input.dataset.value
      ==================================================================== */
   function timePicker(input, opts) {
@@ -453,7 +453,7 @@ window.DM = (function () {
   }
 
   /* ====================================================================
-     Geocoding / routing — Photon (OSM) + OSRM, both CORS-friendly & free
+     Geocoding / routing - Photon (OSM) + OSRM, both CORS-friendly & free
      ==================================================================== */
   const HELSINKI = { lat: 60.1699, lng: 24.9384 };
   const METRO = ['helsinki', 'espoo', 'vantaa', 'kauniainen'];
@@ -538,7 +538,7 @@ window.DM = (function () {
   };
 
   /* ====================================================================
-     Address autocomplete — Photon-backed suggestions under a text input
+     Address autocomplete - Photon-backed suggestions under a text input
      ==================================================================== */
   function autocomplete(input, opts) {
     opts = opts || {};
@@ -574,7 +574,7 @@ window.DM = (function () {
     function draw() {
       panel.innerHTML = '';
       if (!results.length) {
-        panel.appendChild(h('div', 'dm-opt-empty', 'No matches — try a street or venue name'));
+        panel.appendChild(h('div', 'dm-opt-empty', 'No matches - try a street or venue name'));
         return;
       }
       results.forEach((r, i) => {
@@ -655,7 +655,7 @@ window.DM = (function () {
   }
 
   /* ====================================================================
-     Leaflet helpers — muted CARTO basemap + drawn pins
+     Leaflet helpers - muted CARTO basemap + drawn pins
      ==================================================================== */
   const TILES = {
     url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',

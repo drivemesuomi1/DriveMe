@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>DriveMe — Follow this ride</title>
+<title>DriveMe - Follow this ride</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -152,7 +152,7 @@
             <p class="sub" id="ref"></p>
           </div>
           <div class="eta-badge" id="eta" hidden>
-            <div class="n" id="eta-n">—</div>
+            <div class="n" id="eta-n">-</div>
             <div class="l" id="eta-l">min away</div>
           </div>
         </div>
@@ -174,13 +174,13 @@
         <h2>Your ride</h2>
         <div class="leg">
           <div class="marker"><i></i><span></span></div>
-          <div class="where"><div class="k">Pickup</div><div class="v" id="r-pickup">—</div></div>
+          <div class="where"><div class="k">Pickup</div><div class="v" id="r-pickup">-</div></div>
           <div class="marker"><i class="end"></i></div>
-          <div class="where"><div class="k">Drop-off</div><div class="v" id="r-dest">—</div></div>
+          <div class="where"><div class="k">Drop-off</div><div class="v" id="r-dest">-</div></div>
         </div>
         <div class="meta">
-          <div><div class="k">When</div><div class="v" id="r-when">—</div></div>
-          <div><div class="k">Booking</div><div class="v" id="r-mode">—</div></div>
+          <div><div class="k">When</div><div class="v" id="r-when">-</div></div>
+          <div><div class="k">Booking</div><div class="v" id="r-mode">-</div></div>
         </div>
       </div>
     </div>
@@ -204,7 +204,7 @@
 
   <div class="err-wrap" id="err" hidden>
     <h1 id="err-title">We couldn't find that ride</h1>
-    <p style="color:var(--ink-500)" id="err-body">Check the link you were sent — it may have been mistyped or the ride may have been removed.</p>
+    <p style="color:var(--ink-500)" id="err-body">Check the link you were sent - it may have been mistyped or the ride may have been removed.</p>
   </div>
 </main>
 
@@ -329,7 +329,7 @@
     $('pulse').hidden = !c.live;
     $('share').hidden = false;
 
-    // ETA — only meaningful while a driver is actually approaching
+    // ETA - only meaningful while a driver is actually approaching
     const loc = ride.location;
     const showEta = loc && loc.eta_minutes != null && ride.status === 'driver_en_route';
     $('eta').hidden = !showEta;
@@ -349,15 +349,15 @@
     });
 
     // ride detail
-    $('r-pickup').textContent = ride.pickup || '—';
-    $('r-dest').textContent = ride.destination || 'Open-ended — driver stays with you';
+    $('r-pickup').textContent = ride.pickup || '-';
+    $('r-dest').textContent = ride.destination || 'Open-ended - driver stays with you';
     $('r-when').textContent = ride.scheduled_for
       ? new Date(ride.scheduled_for).toLocaleString([], { dateStyle:'medium', timeStyle:'short' })
-      : '—';
+      : '-';
     $('r-mode').textContent = (ride.mode === 'hourly' ? 'By the hour' : 'Point to point') +
       (ride.route_minutes ? ' · ~' + ride.route_minutes + ' min' : '');
 
-    // map — the overlay only stands while we genuinely have nothing to draw
+    // map - the overlay only stands while we genuinely have nothing to draw
     paintRoute(ride);
     if (loc){ paintCar(loc); $('map-empty').hidden = true; }
 
@@ -382,12 +382,12 @@
         $('loading').hidden = true;
         $('shell').hidden = true;
         $('err').hidden = false;
-        return;                                   // dead link — stop polling
+        return;                                   // dead link - stop polling
       } else {
         delay = Math.min(delay * 1.6, 60000);     // back off on server trouble
       }
     } catch {
-      delay = Math.min(delay * 1.6, 60000);       // offline — back off, keep trying
+      delay = Math.min(delay * 1.6, 60000);       // offline - back off, keep trying
     }
     if (!done) setTimeout(poll, delay);
   }

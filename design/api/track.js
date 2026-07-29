@@ -1,4 +1,4 @@
-// GET /api/track?t=<tracking_token> — public, no login (§3.4).
+// GET /api/track?t=<tracking_token> - public, no login (§3.4).
 // The 128-bit token is the credential; anon has no table access, only this RPC.
 import { getClient, isConfigured } from './_lib/supabase.js';
 import { send, fail } from './_lib/http.js';
