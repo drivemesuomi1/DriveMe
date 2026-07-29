@@ -37,7 +37,6 @@
     display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:800;
   }
   .side-brand{display:flex;align-items:center;gap:13px;padding:18px 18px 16px;border-bottom:1px solid var(--ink-100);flex:none}
-  .side-brand .mark{flex:none;display:block}
   .side-brand .word{display:flex;flex-direction:column;gap:2px;min-width:0}
   .side-brand .wm{font:800 15px/1.1 var(--font);letter-spacing:.005em;color:var(--ink-900);white-space:nowrap}
   .side-brand .wm .dot{color:var(--accent)}
@@ -176,49 +175,6 @@
 </head>
 <body class="dm">
 
-<div class="shell" id="shell" hidden>
-<aside class="sidebar">
-  <div class="side-brand">
-    <!-- Traced from the brand's crown reference: five-point crown (real V-notch
-         valleys, not rounded lobes - those read as a cloud) on an open cup,
-         a detached band, then a "D" built as a stem + true semicircular bowl
-         arc so it matches the crown's monoline stroke rather than a filled
-         glyph. 56px is the smallest size this reads clearly at; below that
-         the crown and D blur into each other and it's better to drop the D
-         and show the crown alone than to keep shrinking this. -->
-    <svg class="mark" width="56" height="56" viewBox="0 0 220 220" aria-hidden="true">
-      <defs>
-        <linearGradient id="admBadge" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="218" y2="218">
-          <stop offset="0%" stop-color="var(--accent-deep)"/>
-          <stop offset="100%" stop-color="var(--accent)"/>
-        </linearGradient>
-      </defs>
-      <rect x="2" y="2" width="216" height="216" rx="50" fill="url(#admBadge)"/>
-      <g fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M 44 96 L 28 44 L 70 68 L 70 88 L 82 88 L 82 62 L 110 24 L 138 62 L 138 88 L 150 88 L 150 68 L 192 44 L 176 96 Z"/>
-        <rect x="64" y="112" width="92" height="20" rx="2"/>
-        <path d="M 95 148 L 95 208 M 95 148 A 30 30 0 0 1 95 208"/>
-      </g>
-    </svg>
-    <div class="word">
-      <span class="wm">DRIVE<span class="dot">·</span>ME</span>
-      <span class="tag">Admin</span>
-    </div>
-  </div>
-  <nav id="nav" aria-label="Admin sections">
-    <button type="button" data-v="metrics" class="on">Metrics</button>
-    <button type="button" data-v="bookings">Bookings<span class="n" id="n-bookings">0</span></button>
-    <button type="button" data-v="drivers">Drivers<span class="n" id="n-drivers">0</span></button>
-    <button type="button" data-v="waitlist">Waitlist<span class="n" id="n-waitlist">0</span></button>
-    <button type="button" data-v="invoices">Invoices<span class="n" id="n-invoices">0</span></button>
-  </nav>
-  <div class="who">
-    <span class="em" id="who"></span>
-    <button type="button" class="dm-btn ghost sm block" id="signout">Sign out</button>
-  </div>
-</aside>
-<div class="main-col">
-
 <!-- ==================== sign in ==================== -->
 <main id="gate" aria-label="Admin sign-in">
   <div class="card">
@@ -240,6 +196,28 @@
     </form>
   </div>
 </main>
+
+<div class="shell" id="shell" hidden>
+<aside class="sidebar">
+  <div class="side-brand">
+    <div class="word">
+      <span class="wm">DRIVE<span class="dot">·</span>ME</span>
+      <span class="tag">Admin</span>
+    </div>
+  </div>
+  <nav id="nav" aria-label="Admin sections">
+    <button type="button" data-v="metrics" class="on">Metrics</button>
+    <button type="button" data-v="bookings">Bookings<span class="n" id="n-bookings">0</span></button>
+    <button type="button" data-v="drivers">Drivers<span class="n" id="n-drivers">0</span></button>
+    <button type="button" data-v="waitlist">Waitlist<span class="n" id="n-waitlist">0</span></button>
+    <button type="button" data-v="invoices">Invoices<span class="n" id="n-invoices">0</span></button>
+  </nav>
+  <div class="who">
+    <span class="em" id="who"></span>
+    <button type="button" class="dm-btn ghost sm block" id="signout">Sign out</button>
+  </div>
+</aside>
+<div class="main-col">
 
 <div class="wrap" id="app" hidden>
 
@@ -461,7 +439,6 @@
 
   /* ================= boot ================= */
   async function boot(){
-    $('shell').hidden = false;
     let cfg;
     try {
       cfg = await (await fetch('/api/config')).json();
