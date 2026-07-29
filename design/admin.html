@@ -522,7 +522,7 @@
     }
     sb = window.supabase.createClient(cfg.url, cfg.anonKey);
     const { data:{ session } } = await sb.auth.getSession();
-    if (session) enter(session);
+    if (session) await sb.auth.signOut();
   }
 
   $('login').addEventListener('submit', async e => {
