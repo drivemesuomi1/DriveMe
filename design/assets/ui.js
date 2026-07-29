@@ -9,7 +9,6 @@
 window.DM = (function () {
   'use strict';
 
-  const svgNS = 'http://www.w3.org/2000/svg';
   const ICONS = {
     chev: '<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
     tick: '<svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg>',
@@ -119,13 +118,21 @@ window.DM = (function () {
     const panel = h('div', 'dm-pop');
     panel.setAttribute('role', 'listbox');
     panel.tabIndex = -1;
+    panel.id = (native.id || 'dm-select') + '-listbox';
+    btn.setAttribute('aria-controls', panel.id);
 
     native.classList.add('dm-sr');
     native.parentNode.insertBefore(root, native);
     root.append(btn, panel, native);
     if (native.id) {
       const lab = document.querySelector('label[for="' + native.id + '"]');
-      if (lab) btn.setAttribute('aria-labelledby', lab.id || (lab.id = native.id + '-lab'));
+      if (lab) {
+        btn.setAttribute('aria-labelledby', lab.id || (lab.id = native.id + '-lab'));
+        panel.setAttribute('aria-labelledby', lab.id);
+      }
+    }
+    if (!panel.hasAttribute('aria-labelledby')) {
+      panel.setAttribute('aria-label', opts.label || native.getAttribute('aria-label') || 'Options');
     }
 
     let items = [], active = -1, open = false;
@@ -136,6 +143,7 @@ window.DM = (function () {
         const b = h('button', 'dm-opt');
         b.type = 'button';
         b.setAttribute('role', 'option');
+        b.id = panel.id + '-opt-' + i;
         b.dataset.i = i;
         if (o.disabled) b.disabled = true;
         const sub = o.dataset.sub;
@@ -408,6 +416,7 @@ window.DM = (function () {
 
       const list = h('div', 'dm-time-list');
       list.setAttribute('role', 'listbox');
+      list.setAttribute('aria-label', opts.label || 'Choose a time');
       const cur = input.dataset.value;
       let selected = null;
       for (let m = 0; m < 24 * 60; m += 15) {
@@ -554,6 +563,9 @@ window.DM = (function () {
 
     const panel = h('div', 'dm-pop');
     panel.setAttribute('role', 'listbox');
+    panel.id = (input.id || 'dm-autocomplete') + '-listbox';
+    panel.setAttribute('aria-label', opts.label || input.getAttribute('aria-label') || 'Address suggestions');
+    input.setAttribute('aria-controls', panel.id);
     wrap.appendChild(panel);
 
     let results = [], active = -1, timer = null, ctrl = null, chosen = null;
@@ -561,6 +573,7 @@ window.DM = (function () {
     function close() {
       panel.classList.remove('on');
       input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
       openPops.delete(api);
     }
     function open() {
@@ -581,10 +594,10 @@ window.DM = (function () {
         const b = h('button', 'dm-opt');
         b.type = 'button';
         b.setAttribute('role', 'option');
-        b.innerHTML = '<span class="dm-lead-ic" style="width:16px;height:16px;color:var(--ink-500);flex:none">' + ICONS.pin + '</span>' +
+        b.id = panel.id + '-opt-' + i;
+        b.innerHTML = '<span class="dm-lead-ic">' + ICONS.pin + '</span>' +
           '<span><span>' + escapeHtml(r.primary) + '</span>' +
           (r.secondary ? '<span class="dm-opt-sub">' + escapeHtml(r.secondary) + '</span>' : '') + '</span>';
-        b.querySelector('svg').style.cssText = 'width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.5';
         b.addEventListener('click', () => choose(i));
         panel.appendChild(b);
       });
@@ -596,6 +609,7 @@ window.DM = (function () {
       active = ((i % n) + n) % n;
       [...panel.children].forEach((c, k) => c.classList && c.classList.toggle('active', k === active));
       const el = panel.children[active];
+      if (el && el.id) input.setAttribute('aria-activedescendant', el.id);
       if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
     }
 
@@ -669,8 +683,8 @@ window.DM = (function () {
     if (kind === 'car') {
       return L.divIcon({
         className: '',
-        html: '<div class="dm-car" style="position:relative"><span class="pulse"></span>' +
-          '<svg viewBox="0 0 34 34" style="position:relative;display:block">' +
+        html: '<div class="dm-car"><span class="pulse"></span>' +
+          '<svg viewBox="0 0 34 34">' +
           '<circle cx="17" cy="17" r="9" fill="#0F63BD" stroke="#fff" stroke-width="3"/></svg></div>',
         iconSize: [34, 34], iconAnchor: [17, 17],
       });

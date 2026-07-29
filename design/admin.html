@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/logo-crown-d.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/ui.css">
 <style>
   body{
@@ -17,6 +18,17 @@
   h2{font:500 19px/1.3 var(--font);letter-spacing:-.01em;margin:0 0 4px}
   h3{font:600 12px/1 var(--font);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-500);margin:0 0 14px}
   .muted{color:var(--ink-500);font-size:13.5px}
+  .flush{margin:0}
+  .below-sm{margin-bottom:12px}
+  .below-md{margin-bottom:14px}
+  .below-lg{margin-bottom:18px}
+  .below-xl{margin-bottom:20px}
+  .grid-span-all{grid-column:1/-1}
+  .drawer-title{margin:0}
+  .pill-row{margin-top:6px}
+  .row-top{margin-top:18px}
+  .select-offset{margin-top:12px}
+  .heading-note{text-transform:none;letter-spacing:0;font-weight:400}
 
   /* ---------------- shell ---------------- */
   .shell{display:flex;align-items:stretch;min-height:100vh}
@@ -193,25 +205,25 @@
       <span class="tag">Admin</span>
     </div>
   </div>
-  <nav id="nav">
-    <button data-v="metrics" class="on">Metrics</button>
-    <button data-v="bookings">Bookings<span class="n" id="n-bookings">0</span></button>
-    <button data-v="drivers">Drivers<span class="n" id="n-drivers">0</span></button>
-    <button data-v="waitlist">Waitlist<span class="n" id="n-waitlist">0</span></button>
-    <button data-v="invoices">Invoices<span class="n" id="n-invoices">0</span></button>
+  <nav id="nav" aria-label="Admin sections">
+    <button type="button" data-v="metrics" class="on">Metrics</button>
+    <button type="button" data-v="bookings">Bookings<span class="n" id="n-bookings">0</span></button>
+    <button type="button" data-v="drivers">Drivers<span class="n" id="n-drivers">0</span></button>
+    <button type="button" data-v="waitlist">Waitlist<span class="n" id="n-waitlist">0</span></button>
+    <button type="button" data-v="invoices">Invoices<span class="n" id="n-invoices">0</span></button>
   </nav>
   <div class="who">
     <span class="em" id="who"></span>
-    <button class="dm-btn ghost sm block" id="signout">Sign out</button>
+    <button type="button" class="dm-btn ghost sm block" id="signout">Sign out</button>
   </div>
 </aside>
 <div class="main-col">
 
 <!-- ==================== sign in ==================== -->
-<div id="gate">
+<main id="gate" aria-label="Admin sign-in">
   <div class="card">
-    <h2>Admin sign-in</h2>
-    <p class="muted" style="margin:0 0 20px">Use the Supabase Auth account listed in the <code>admins</code> table.</p>
+    <h1 class="drawer-title">Admin sign-in</h1>
+    <p class="muted below-xl">Use the Supabase Auth account listed in the <code>admins</code> table.</p>
     <form id="login" class="stack">
       <div class="dm-field">
         <label for="li-email">Email</label>
@@ -224,18 +236,18 @@
       <button class="dm-btn block" id="li-go" type="submit">
         <span class="dm-btn-spin" aria-hidden="true"></span><span>Sign in</span>
       </button>
-      <p class="muted" id="li-msg" role="status" style="margin:0"></p>
+      <p class="muted flush" id="li-msg" role="status"></p>
     </form>
   </div>
-</div>
+</main>
 
-<main class="wrap" id="app">
+<div class="wrap" id="app" hidden>
 
   <!-- ==================== metrics ==================== -->
   <section id="v-metrics">
     <div class="stat-row" id="m-stats"></div>
     <div class="card">
-      <h3>Bookings per week <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">· last 8 weeks</span></h3>
+      <h3>Bookings per week <span class="muted heading-note">· last 8 weeks</span></h3>
       <div class="bars" id="m-weeks"></div>
     </div>
     <div class="cols">
@@ -250,21 +262,21 @@
       <div class="head-row">
         <div>
           <h2>Bookings</h2>
-          <p class="muted" style="margin:0">Assign a vetted driver, move the ride along, and bill it.</p>
+          <p class="muted flush">Assign a vetted driver, move the ride along, and bill it.</p>
         </div>
         <div class="filters" id="bk-filters">
-          <button data-f="upcoming" class="on">Upcoming</button>
-          <button data-f="active">Active</button>
-          <button data-f="completed">Completed</button>
-          <button data-f="cancelled">Cancelled</button>
-          <button data-f="all">All</button>
+          <button type="button" data-f="upcoming" class="on">Upcoming</button>
+          <button type="button" data-f="active">Active</button>
+          <button type="button" data-f="completed">Completed</button>
+          <button type="button" data-f="cancelled">Cancelled</button>
+          <button type="button" data-f="all">All</button>
         </div>
       </div>
       <div class="scroll">
         <table>
           <thead><tr>
-            <th>Ref</th><th>When</th><th>Customer</th><th>Route</th>
-            <th>Type</th><th>Driver</th><th>Price</th><th>Status</th>
+            <th scope="col">Ref</th><th scope="col">When</th><th scope="col">Customer</th><th scope="col">Route</th>
+            <th scope="col">Type</th><th scope="col">Driver</th><th scope="col">Price</th><th scope="col">Status</th>
           </tr></thead>
           <tbody id="bk-rows"></tbody>
         </table>
@@ -280,26 +292,26 @@
   <section id="v-drivers" hidden>
     <div class="card">
       <h2>Add a driver</h2>
-      <p class="muted" style="margin:0 0 18px">There is no public sign-up. Record each vetting check as it
+      <p class="muted below-lg">There is no public sign-up. Record each vetting check as it
         clears - a driver can only be approved once all four are done.</p>
       <form id="drv-add" class="grid2">
-        <div class="dm-field" style="margin-bottom:12px">
+        <div class="dm-field below-sm">
           <label for="da-name">Full name</label>
-          <input class="dm-input" id="da-name" required placeholder="Tamim Haddad">
+          <input class="dm-input" id="da-name" type="text" required placeholder="Tamim Haddad">
         </div>
-        <div class="dm-field" style="margin-bottom:12px">
+        <div class="dm-field below-sm">
           <label for="da-phone">Phone</label>
           <input class="dm-input" id="da-phone" type="tel" placeholder="+358 40 123 4567">
         </div>
-        <div class="dm-field" style="margin-bottom:12px">
+        <div class="dm-field below-sm">
           <label for="da-email">Email</label>
           <input class="dm-input" id="da-email" type="email" placeholder="driver@example.com">
         </div>
-        <div class="dm-field" style="margin-bottom:12px">
+        <div class="dm-field below-sm">
           <label for="da-notes">Notes</label>
-          <input class="dm-input" id="da-notes" placeholder="Weekends only, speaks FI/EN/SV">
+          <input class="dm-input" id="da-notes" type="text" placeholder="Weekends only, speaks FI/EN/SV">
         </div>
-        <div style="grid-column:1/-1">
+        <div class="grid-span-all">
           <button class="dm-btn" type="submit">Add driver</button>
         </div>
       </form>
@@ -309,7 +321,7 @@
       <h3>Roster</h3>
       <div class="scroll">
         <table>
-          <thead><tr><th>Driver</th><th>Contact</th><th>Vetting</th><th>Status</th></tr></thead>
+          <thead><tr><th scope="col">Driver</th><th scope="col">Contact</th><th scope="col">Vetting</th><th scope="col">Status</th></tr></thead>
           <tbody id="drv-rows"></tbody>
         </table>
       </div>
@@ -324,18 +336,18 @@
   <section id="v-waitlist" hidden>
     <div class="card">
       <div class="head-row">
-        <div><h2>Waitlist</h2><p class="muted" style="margin:0" id="wl-count">-</p></div>
+        <div><h2>Waitlist</h2><p class="muted flush" id="wl-count">-</p></div>
         <div class="row">
           <div class="filters" id="wl-filters">
-            <button data-f="chauffeur" class="on">Luxury Chauffeur</button>
-            <button data-f="rental">Premium Rental</button>
+            <button type="button" data-f="chauffeur" class="on">Luxury Chauffeur</button>
+            <button type="button" data-f="rental">Premium Rental</button>
           </div>
-          <button class="dm-btn ghost sm" id="wl-export">Export CSV</button>
+          <button type="button" class="dm-btn ghost sm" id="wl-export">Export CSV</button>
         </div>
       </div>
       <div class="scroll">
         <table>
-          <thead><tr><th>Email</th><th>Signed up</th></tr></thead>
+          <thead><tr><th scope="col">Email</th><th scope="col">Signed up</th></tr></thead>
           <tbody id="wl-rows"></tbody>
         </table>
       </div>
@@ -350,10 +362,10 @@
   <section id="v-invoices" hidden>
     <div class="card">
       <h2>Corporate invoices</h2>
-      <p class="muted" style="margin:0 0 18px">Raised from a booking: open it, name the company, then generate.</p>
+      <p class="muted below-lg">Raised from a booking: open it, name the company, then generate.</p>
       <div class="scroll">
         <table>
-          <thead><tr><th>Number</th><th>Company</th><th>Booking</th><th>Amount</th><th>Issued</th><th>Due</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th scope="col">Number</th><th scope="col">Company</th><th scope="col">Booking</th><th scope="col">Amount</th><th scope="col">Issued</th><th scope="col">Due</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
           <tbody id="inv-rows"></tbody>
         </table>
       </div>
@@ -364,7 +376,7 @@
     </div>
   </section>
 
-</main>
+</div>
 </div>
 </div>
 
@@ -373,52 +385,52 @@
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dw-title" hidden>
   <div class="drawer-head">
     <div>
-      <h2 id="dw-title" style="margin:0"></h2>
-      <div class="row" id="dw-pills" style="margin-top:6px"></div>
+      <h2 id="dw-title" class="drawer-title">Booking details</h2>
+      <div class="row pill-row" id="dw-pills"></div>
     </div>
-    <button class="dm-btn ghost sm" id="dw-close">Close</button>
+    <button type="button" class="dm-btn ghost sm" id="dw-close">Close</button>
   </div>
   <div class="drawer-body">
     <div class="card">
       <h3>Booking</h3>
       <div class="kv" id="dw-kv"></div>
-      <div class="row" style="margin-top:18px">
-        <button class="dm-btn ghost sm" id="dw-copy-track">Copy tracking link</button>
-        <button class="dm-btn ghost sm" id="dw-copy-driver">Copy driver GPS link</button>
+      <div class="row row-top">
+        <button type="button" class="dm-btn ghost sm" id="dw-copy-track">Copy tracking link</button>
+        <button type="button" class="dm-btn ghost sm" id="dw-copy-driver">Copy driver GPS link</button>
       </div>
     </div>
 
     <div class="card">
       <h3>Driver</h3>
-      <p class="muted" id="dw-availability" style="margin:0 0 12px"></p>
+      <p class="muted below-sm" id="dw-availability"></p>
       <div class="dm-field"><select id="dw-driver"></select></div>
-      <button class="dm-btn" id="dw-assign" style="margin-top:12px">Assign driver</button>
+      <button type="button" class="dm-btn select-offset" id="dw-assign">Assign driver</button>
     </div>
 
     <div class="card">
       <h3>Move this ride along</h3>
-      <p class="muted" id="dw-status-hint" style="margin:0 0 12px"></p>
+      <p class="muted below-sm" id="dw-status-hint"></p>
       <div class="row" id="dw-status-btns">
-        <button class="dm-btn sm" data-s="driver_en_route">Driver en route</button>
-        <button class="dm-btn sm" data-s="ride_started">Ride started</button>
-        <button class="dm-btn sm" data-s="completed">Completed</button>
-        <button class="dm-btn danger sm" data-s="cancelled">Cancel booking</button>
+        <button type="button" class="dm-btn sm" data-s="driver_en_route">Driver en route</button>
+        <button type="button" class="dm-btn sm" data-s="ride_started">Ride started</button>
+        <button type="button" class="dm-btn sm" data-s="completed">Completed</button>
+        <button type="button" class="dm-btn danger sm" data-s="cancelled">Cancel booking</button>
       </div>
     </div>
 
     <div class="card">
       <h3>Corporate billing</h3>
-      <div class="dm-field" style="margin-bottom:12px">
+      <div class="dm-field below-sm">
         <label for="dw-company">Company</label>
-        <input class="dm-input" id="dw-company" placeholder="Nordkap Consulting Oy">
+        <input class="dm-input" id="dw-company" type="text" placeholder="Nordkap Consulting Oy">
       </div>
-      <div class="dm-field" style="margin-bottom:14px">
+      <div class="dm-field below-md">
         <label for="dw-bill-email">Billing email - optional</label>
         <input class="dm-input" id="dw-bill-email" type="email" placeholder="invoices@company.fi">
       </div>
       <div class="row">
-        <button class="dm-btn ghost sm" id="dw-flag">Flag as corporate</button>
-        <button class="dm-btn sm" id="dw-invoice">Generate invoice</button>
+        <button type="button" class="dm-btn ghost sm" id="dw-flag">Flag as corporate</button>
+        <button type="button" class="dm-btn sm" id="dw-invoice">Generate invoice</button>
       </div>
     </div>
   </div>
@@ -449,6 +461,7 @@
 
   /* ================= boot ================= */
   async function boot(){
+    $('shell').hidden = false;
     let cfg;
     try {
       cfg = await (await fetch('/api/config')).json();
@@ -491,6 +504,7 @@
       return;
     }
     $('gate').hidden = true; $('shell').hidden = false;
+    $('app').hidden = false;
     $('who').textContent = session.user.email;
     loadAll();
   }
@@ -740,7 +754,7 @@
       const checks = CHECKS.map(([col, lab]) => d[col]
         ? '<span class="chk done" title="Cleared ' + d[col] + '">' +
             '<svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg>' + lab + '</span>'
-        : '<button class="chk" data-check="' + col + '" data-id="' + d.id + '">' + lab + '</button>'
+        : '<button type="button" class="chk" data-check="' + col + '" data-id="' + d.id + '">' + lab + '</button>'
       ).join('');
       return '<tr>' +
         '<td><b>' + esc(d.full_name) + '</b>' + (d.notes ? '<span class="sub">' + esc(d.notes) + '</span>' : '') + '</td>' +
@@ -851,9 +865,9 @@
         '<td class="muted">' + v.issued_at + '</td><td class="muted">' + v.due_date + '</td>' +
         '<td>' + pill(v.status.charAt(0).toUpperCase() + v.status.slice(1), CLS[v.status]) + '</td>' +
         '<td><div class="row">' +
-          (v.status === 'draft' ? '<button class="dm-btn ghost sm" data-inv-status="sent" data-id="' + v.id + '">Mark sent</button>' : '') +
-          (v.status !== 'paid'  ? '<button class="dm-btn ghost sm" data-inv-status="paid" data-id="' + v.id + '">Mark paid</button>' : '') +
-          '<button class="dm-btn sm" data-inv-print="' + v.id + '">Print</button>' +
+          (v.status === 'draft' ? '<button type="button" class="dm-btn ghost sm" data-inv-status="sent" data-id="' + v.id + '">Mark sent</button>' : '') +
+          (v.status !== 'paid'  ? '<button type="button" class="dm-btn ghost sm" data-inv-status="paid" data-id="' + v.id + '">Mark paid</button>' : '') +
+          '<button type="button" class="dm-btn sm" data-inv-print="' + v.id + '">Print</button>' +
         '</div></td>' +
       '</tr>';
     }).join('');

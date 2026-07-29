@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/logo-crown-d.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/ui.css">
 <style>
   body{
@@ -46,6 +47,7 @@
   .err{margin-top:14px;color:var(--critical);font-weight:600;font-size:14px;display:none}
   .err.on{display:block}
   .hint{margin-top:16px;color:var(--ink-500);font-size:12.5px;line-height:1.55}
+  .eta-field{margin-top:20px}
 </style>
 </head>
 <body class="dm">
@@ -57,7 +59,7 @@
   <p class="lead">Keep this page open for the assignment. Your location goes to the
      customer's tracking page every 15 seconds, and stops the moment you do.</p>
 
-  <div class="dm-field" style="margin-top:20px">
+  <div class="dm-field eta-field">
     <label for="eta">ETA to pickup - optional</label>
     <select id="eta">
       <option value="">Don't send an ETA</option>
@@ -69,7 +71,7 @@
     </select>
   </div>
 
-  <button class="dm-btn big" id="go">Start sharing</button>
+  <button type="button" class="dm-btn big" id="go">Start sharing</button>
 
   <div class="status" id="status">
     <div class="row"><span class="k">Last sent</span><span class="v" id="last">-</span></div>

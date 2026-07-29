@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -9,7 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
+<link rel="icon" href="assets/logo-crown-d.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/ui.css">
 <style>
   body{
@@ -28,6 +29,18 @@
   .shell{max-width:1180px;margin:0 auto;padding:22px 16px 56px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
   .card{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);padding:22px;box-shadow:var(--sh-1)}
   .card + .card{margin-top:14px}
+  .top-actions{display:flex;gap:8px;align-items:center}
+  .map-card{padding:0;position:relative;overflow:hidden}
+  .min-0{min-width:0}
+  .driver-line{margin-top:14px}
+  .skeleton-card{padding:0}
+  .skeleton-map{height:460px;border-radius:16px}
+  .skel-w-62{width:62%;height:22px}
+  .skel-w-40{width:40%}
+  .skel-w-80{width:80%}
+  .skel-w-70{width:70%}
+  .skel-w-75{width:75%}
+  .err-body{color:var(--ink-700)}
 
   /* ---------- status headline ---------- */
   .hero-status{display:flex;align-items:flex-start;gap:14px}
@@ -119,9 +132,9 @@
 
 <header class="top">
   <a class="brand" href="/">DRIVE<span>·</span>ME<small>Live tracking</small></a>
-  <div style="display:flex;gap:8px;align-items:center">
+  <div class="top-actions">
     <span class="dm-pill live" id="pulse" hidden><span class="dot"></span>Live</span>
-    <button class="dm-btn ghost sm" id="share" hidden>Share ride</button>
+    <button type="button" class="dm-btn ghost sm" id="share" hidden>Share ride</button>
   </div>
 </header>
 
@@ -129,7 +142,7 @@
   <div class="shell" id="shell" hidden>
     <!-- ---------- left: map ---------- -->
     <div>
-      <div class="dm-map card" style="padding:0;position:relative;overflow:hidden">
+      <div class="dm-map card map-card">
         <div id="map"></div>
         <div class="map-empty" id="map-empty" hidden>
           <div>
@@ -147,7 +160,7 @@
           <span class="ring" id="ring">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
           </span>
-          <div style="min-width:0">
+          <div class="min-0">
             <h1 id="title">Loading…</h1>
             <p class="sub" id="ref"></p>
           </div>
@@ -156,7 +169,7 @@
             <div class="l" id="eta-l">min away</div>
           </div>
         </div>
-        <p class="sub" id="driver-line" style="margin-top:14px"></p>
+        <p class="sub driver-line" id="driver-line"></p>
       </div>
 
       <div class="card">
@@ -188,28 +201,28 @@
 
   <!-- loading skeleton -->
   <div class="shell" id="loading">
-    <div class="card" style="padding:0"><div class="dm-skel" style="height:460px;border-radius:16px"></div></div>
+    <div class="card skeleton-card"><div class="dm-skel skeleton-map"></div></div>
     <div>
       <div class="card">
-        <div class="dm-skel skel-line" style="width:62%;height:22px"></div>
-        <div class="dm-skel skel-line" style="width:40%"></div>
+        <div class="dm-skel skel-line skel-w-62"></div>
+        <div class="dm-skel skel-line skel-w-40"></div>
       </div>
       <div class="card">
-        <div class="dm-skel skel-line" style="width:80%"></div>
-        <div class="dm-skel skel-line" style="width:70%"></div>
-        <div class="dm-skel skel-line" style="width:75%"></div>
+        <div class="dm-skel skel-line skel-w-80"></div>
+        <div class="dm-skel skel-line skel-w-70"></div>
+        <div class="dm-skel skel-line skel-w-75"></div>
       </div>
     </div>
   </div>
 
   <div class="err-wrap" id="err" hidden>
     <h1 id="err-title">We couldn't find that ride</h1>
-    <p style="color:var(--ink-500)" id="err-body">Check the link you were sent - it may have been mistyped or the ride may have been removed.</p>
+    <p class="err-body" id="err-body">Check the link you were sent - it may have been mistyped or the ride may have been removed.</p>
   </div>
 </main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>
 <script src="assets/ui.js"></script>
 <script>
 (function(){

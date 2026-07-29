@@ -143,7 +143,13 @@ export default async function handler(req, res) {
   // save the booking anyway. A booking is worth far more than its map preview.
   if (error?.code === 'PGRST204' && /pickup_lat|pickup_lng|dest_lat|dest_lng|route_km|route_minutes/.test(error.message || '')) {
     console.warn('bookings: geometry columns missing - apply supabase/migrations/0003_coordinates.sql');
-    const { pickup_lat, pickup_lng, dest_lat, dest_lng, route_km, route_minutes, ...legacy } = row;
+    const legacy = { ...row };
+    delete legacy.pickup_lat;
+    delete legacy.pickup_lng;
+    delete legacy.dest_lat;
+    delete legacy.dest_lng;
+    delete legacy.route_km;
+    delete legacy.route_minutes;
     ({ error } = await client.from('bookings').insert(legacy));
   }
 

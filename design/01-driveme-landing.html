@@ -19,6 +19,7 @@
      small UI text and tracked-out uppercase labels, where a Didone loses legibility. -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500,600&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/logo-crown-d.svg" type="image/svg+xml">
 <style>
   :root{
     --bg:#0A0A0A;
@@ -91,7 +92,7 @@
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
     transition:opacity 900ms cubic-bezier(.16,1,.3,1),visibility 900ms;
   }
-  #loader.done{opacity:0;visibility:hidden}
+  #loader.done{opacity:0;visibility:hidden;pointer-events:none}
   .loader-mark{
     font-family:var(--font-display);
     font-size:22px;font-weight:600;letter-spacing:.42em;text-transform:uppercase;overflow:hidden;
@@ -361,7 +362,7 @@
   .step.lit .n{border-color:var(--gold);color:var(--gold-light);
     background:radial-gradient(circle,rgba(201,169,97,.14),transparent 70%);
     box-shadow:0 0 26px rgba(201,169,97,.30)}
-  .step h4{font-family:var(--font-display);font-size:24px;font-weight:500;margin-bottom:6px;letter-spacing:-.005em}
+  .step h3{font-family:var(--font-display);font-size:24px;font-weight:500;margin-bottom:6px;letter-spacing:-.005em}
   .step p{font-size:15px;font-weight:300;color:var(--silver);max-width:400px}
 
   /* ---------- services ---------- */
@@ -611,6 +612,7 @@
   .appr-eta small{font-size:14px;color:var(--silver);margin-left:6px;font-family:var(--font)}
   .appr-driver{display:flex;align-items:center;gap:13px}
   .appr-driver .app-avatar{width:42px;height:42px}
+  .appr-driver-name{font-size:16px}
 
   /* ---------- fleet ---------- */
   /* Phase 2 target, not an inventory grid - no vehicle has been acquired, so this
@@ -680,7 +682,7 @@
   .why svg{width:30px;height:30px;stroke:var(--gold);stroke-width:1.25;fill:none;
     stroke-linecap:round;stroke-linejoin:round;margin-bottom:22px;transition:stroke var(--standard)}
   .why:hover svg{stroke:var(--gold-light)}
-  .why h4{font-family:var(--font-display);font-size:21px;font-weight:500;margin-bottom:8px;letter-spacing:-.005em}
+  .why h3{font-family:var(--font-display);font-size:21px;font-weight:500;margin-bottom:8px;letter-spacing:-.005em}
   .why p{font-size:14px;font-weight:300;color:var(--silver);line-height:1.65}
 
   /* ---------- app scroll story ---------- */
@@ -805,7 +807,7 @@
     width:11px;height:11px;border-radius:50%;border:1px solid var(--silver-dim);background:var(--bg);
     transition:border-color 500ms,box-shadow 500ms,background 500ms}
   .stage.lit::before{border-color:var(--gold-light);background:var(--gold);box-shadow:0 0 20px rgba(201,169,97,.65)}
-  .stage h4{font-family:var(--font-display);font-size:23px;font-weight:500;letter-spacing:-.005em}
+  .stage h3{font-family:var(--font-display);font-size:23px;font-weight:500;letter-spacing:-.005em}
   .stage p{font-size:13px;color:var(--silver-dim);margin-top:6px;letter-spacing:.05em}
   .stage .yr{font-size:11px;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:10px}
 
@@ -847,6 +849,7 @@
   .final::after{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
     width:min(680px,70%);height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
   .final h2{margin:0 auto;max-width:820px}
+  .final .kicker{justify-content:center}
   .final .hero-ctas{justify-content:center;opacity:1;transform:none;animation:none}
   footer{border-top:1px solid var(--line);padding:64px 0 48px}
   .foot{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap}
@@ -881,9 +884,9 @@
 
 <nav id="nav">
   <div class="bar-top">
-    <a class="contact-line" href="tel:+358451878083" data-hover>
+    <a class="contact-line" href="tel:+358451878083" aria-label="Call DriveMe at +358 45 187 8083" data-hover>
       <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1.2 1.2 0 0 1 1.2-.3c1.3.4 2.7.6 4.1.6.7 0 1.3.6 1.3 1.3V21c0 .7-.6 1.3-1.3 1.3C10.3 22.3 1.7 13.7 1.7 3.3 1.7 2.6 2.3 2 3 2h3.8c.7 0 1.3.6 1.3 1.3 0 1.4.2 2.8.6 4.1.1.4 0 .9-.3 1.2z"/></svg>
-      <span>+358 45 187 8083</span>
+      <span>+358&nbsp;45&nbsp;187&nbsp;8083</span>
     </a>
     <a class="logo" href="#top">DRIVE<span class="dot">·</span>ME</a>
     <a class="nav-cta" href="#request" data-hover>Book a Driver</a>
@@ -900,9 +903,10 @@
   </div>
 </nav>
 
+<main id="main">
 <header id="top">
   <div class="hero-media">
-    <video id="hero-video" autoplay muted loop playsinline webkit-playsinline
+    <video id="hero-video" muted loop playsinline webkit-playsinline
            preload="metadata" poster="assets/hero-poster.jpg" aria-hidden="true">
       <source src="assets/hero-montage.mp4" type="video/mp4">
     </video>
@@ -967,19 +971,19 @@
       <div class="rail" aria-hidden="true"><i id="rail-fill"></i></div>
       <div class="step">
         <div class="n">01</div>
-        <div><h4>Request a driver</h4><p>Set your pickup and destination. Your driver is matched in minutes.</p></div>
+        <div><h3>Request a driver</h3><p>Set your pickup and destination. Your driver is matched in minutes.</p></div>
       </div>
       <div class="step">
         <div class="n">02</div>
-        <div><h4>Driver accepts</h4><p>A vetted, licensed professional confirms - profile, rating, and ETA up front.</p></div>
+        <div><h3>Driver accepts</h3><p>A vetted, licensed professional confirms - profile, rating, and ETA up front.</p></div>
       </div>
       <div class="step">
         <div class="n">03</div>
-        <div><h4>Live tracking</h4><p>Follow the journey in real time. Share your route with anyone you trust.</p></div>
+        <div><h3>Live tracking</h3><p>Follow the journey in real time. Share your route with anyone you trust.</p></div>
       </div>
       <div class="step">
         <div class="n">04</div>
-        <div><h4>Safe arrival</h4><p>You step out at your door. Your car is parked where it belongs.</p></div>
+        <div><h3>Safe arrival</h3><p>You step out at your door. Your car is parked where it belongs.</p></div>
       </div>
     </div>
     <figure class="how-figure reveal">
@@ -1059,7 +1063,7 @@
         </div>
       </div>
 
-      <aside class="est-card reveal" aria-live="polite">
+      <div class="est-card reveal" aria-live="polite">
         <p class="est-tag">Estimate · Indicative</p>
         <p class="est-big" id="est-total">€105</p>
         <p class="est-mode" id="est-mode">3 hr · By the hour</p>
@@ -1068,7 +1072,7 @@
         <div class="est-total"><span>Total</span><b id="est-total-2">€105</b></div>
         <p class="est-fine">VAT included. No surge pricing, ever - the same rate at two in the afternoon and two in the morning.</p>
         <p class="est-member">Subscription - <b>€100 / month</b> for five hours of driver time</p>
-      </aside>
+      </div>
     </div>
 
     <!-- full pricing architecture per plan §3.4, plus supported payment methods -->
@@ -1146,7 +1150,7 @@
           <span>Driver</span>
           <div class="appr-driver">
             <span class="app-avatar">MK</span>
-            <div><b style="font-size:16px">Mikael Korpi</b></div>
+            <div><b class="appr-driver-name">Mikael Korpi</b></div>
           </div>
         </div>
         <div class="appr-stat reveal"><span>Your vehicle</span><b>Mercedes EQS</b></div>
@@ -1252,27 +1256,27 @@
     <div class="why-grid reveal">
       <div class="why">
         <svg viewBox="0 0 24 24"><path d="M12 2l7 4v5c0 5-3 8.5-7 11-4-2.5-7-6-7-11V6z"/><path d="M9 12l2 2 4-4"/></svg>
-        <h4>Professional drivers</h4><p>Licensed chauffeurs with verified professional driving records - never gig amateurs.</p>
+        <h3>Professional drivers</h3><p>Licensed chauffeurs with verified professional driving records - never gig amateurs.</p>
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>
-        <h4>Background checked</h4><p>Four checks before activation: licence verification, driving record, criminal background, and an in-person interview.</p>
+        <h3>Background checked</h3><p>Four checks before activation: licence verification, driving record, criminal background, and an in-person interview.</p>
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="11" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.5-8 12-8 12S4 15.5 4 10a8 8 0 0 1 8-8z"/></svg>
-        <h4>GPS tracking</h4><p>Every journey tracked end-to-end, shareable in one tap with family or colleagues.</p>
+        <h3>GPS tracking</h3><p>Every journey tracked end-to-end, shareable in one tap with family or colleagues.</p>
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
-        <h4>Transparent pricing</h4><p>The price you see is the price you pay. No surge games, no hidden fees.</p>
+        <h3>Transparent pricing</h3><p>The price you see is the price you pay. No surge games, no hidden fees.</p>
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>
-        <h4>Corporate accounts</h4><p>Consolidated billing and duty-of-care reporting for executive teams.</p>
+        <h3>Corporate accounts</h3><p>Consolidated billing and duty-of-care reporting for executive teams.</p>
       </div>
       <div class="why">
         <svg viewBox="0 0 24 24"><path d="M12 3l2.4 5.2 5.6.6-4.2 3.9 1.2 5.6-5-2.9-5 2.9 1.2-5.6L4 8.8l5.6-.6z"/></svg>
-        <h4>Luxury experience</h4><p>Suited drivers, quiet rides, your preferences remembered - the standard every booking is held to.</p>
+        <h3>Luxury experience</h3><p>Suited drivers, quiet rides, your preferences remembered - the standard every booking is held to.</p>
       </div>
     </div>
   </div>
@@ -1368,10 +1372,10 @@
            month-based windows and must not read as the same sequence. -->
       <div class="stages" id="stages">
         <div class="track"><i id="track-fill"></i></div>
-        <div class="stage"><span class="yr">Stage 1 · Months 0–6</span><h4>Helsinki</h4><p>Helsinki · Espoo · Vantaa</p></div>
-        <div class="stage"><span class="yr">Stage 2 · Months 6–18</span><h4>Finland</h4><p>Tampere · Turku · Oulu · Lapland</p></div>
-        <div class="stage"><span class="yr">Stage 3 · Months 18–36</span><h4>Nordics</h4><p>Sweden · Norway · Denmark</p></div>
-        <div class="stage"><span class="yr">Long-term</span><h4>Global</h4><p>Franchise &amp; licensing model</p></div>
+        <div class="stage"><span class="yr">Stage 1 · Months 0–6</span><h3>Helsinki</h3><p>Helsinki · Espoo · Vantaa</p></div>
+        <div class="stage"><span class="yr">Stage 2 · Months 6–18</span><h3>Finland</h3><p>Tampere · Turku · Oulu · Lapland</p></div>
+        <div class="stage"><span class="yr">Stage 3 · Months 18–36</span><h3>Nordics</h3><p>Sweden · Norway · Denmark</p></div>
+        <div class="stage"><span class="yr">Long-term</span><h3>Global</h3><p>Franchise &amp; licensing model</p></div>
       </div>
     </div>
   </div>
@@ -1398,7 +1402,7 @@
 <!-- Final CTA -->
 <section class="final" id="book">
   <div class="wrap">
-    <p class="kicker reveal" style="justify-content:center">Begin</p>
+    <p class="kicker reveal">Begin</p>
     <h2 class="reveal">Your car deserves a <em>better way home.</em></h2>
     <div class="hero-ctas reveal">
       <a class="btn btn-primary" href="#request" data-hover>Book Your Driver</a>
@@ -1406,6 +1410,8 @@
     </div>
   </div>
 </section>
+
+</main>
 
 <footer>
   <div class="wrap">
@@ -1422,7 +1428,7 @@
         <li><a href="mailto:info@driveme.fi" data-hover>Contact</a></li>
       </ul>
       <div class="foot-contact">
-        <a href="tel:+358451878083" data-hover>+358 45 187 8083</a>
+        <a href="tel:+358451878083" data-hover>+358&nbsp;45&nbsp;187&nbsp;8083</a>
         <a href="mailto:info@driveme.fi" data-hover>info@driveme.fi</a>
       </div>
     </div>
@@ -1447,9 +1453,9 @@
     new Promise(r => document.readyState === 'loading'
       ? document.addEventListener('DOMContentLoaded', r, {once:true}) : r())
   ]);
-  ready.then(() => setTimeout(release, reduced ? 0 : 1400));
+  ready.then(() => setTimeout(release, reduced ? 0 : 500));
   /* safety: never trap the user behind the loader */
-  setTimeout(release, 3500);
+  setTimeout(release, 1800);
 
   /* Scroll-driven effects run off a single rAF loop rather than scroll events.
      Scroll events depend on which element ends up being the scroll container;
@@ -1888,4 +1894,3 @@
 </script>
 </body>
 </html>
-
