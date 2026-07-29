@@ -68,6 +68,19 @@
 
   /* ---------- map ---------- */
   #map{height:460px}
+  .map-hud{
+    position:absolute;top:14px;left:14px;z-index:550;display:flex;align-items:center;gap:8px;
+    max-width:calc(100% - 84px);pointer-events:none;
+  }
+  .map-hud .dm-pill{box-shadow:0 2px 10px rgba(11,21,36,.12)}
+  .map-hud .dm-pill.stale{background:var(--critical-soft);color:var(--critical)}
+  .map-center{
+    position:absolute;right:14px;bottom:28px;z-index:550;width:38px;height:38px;padding:0;
+    display:grid;place-items:center;border:1px solid var(--ink-200);border-radius:50%;background:var(--surface);
+    color:var(--accent-deep);box-shadow:var(--sh-1);cursor:pointer;
+  }
+  .map-center:hover{color:var(--accent);border-color:var(--accent);transform:translateY(-1px)}
+  .map-center svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .map-empty{
     position:absolute;inset:0;display:grid;place-items:center;z-index:600;
     background:rgba(245,248,252,.86);backdrop-filter:blur(2px);text-align:center;padding:24px;
@@ -144,10 +157,16 @@
     <div>
       <div class="dm-map card map-card">
         <div id="map"></div>
+        <div class="map-hud" id="map-hud" hidden>
+          <span class="dm-pill live" id="map-live"><span class="dot"></span><span id="map-live-text">Chauffeur live</span></span>
+        </div>
+        <button type="button" class="map-center" id="map-center" title="Center on your chauffeur" aria-label="Center on your chauffeur" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>
+        </button>
         <div class="map-empty" id="map-empty" hidden>
           <div>
             <span class="dm-pill accent"><span class="dot"></span>Waiting for the driver</span>
-            <p>The live map opens the moment your driver starts sharing their position.</p>
+            <p>Your route is ready. The chauffeur's live location appears here as soon as they start sharing.</p>
           </div>
         </div>
       </div>
@@ -256,18 +275,38 @@
   };
 
   let map = null, carMarker = null, pickPin = null, destPin = null, routeLine = null;
-  let framedOnce = false, lastStatus = null, routeDrawn = false;
+  let framedOnce = false, lastStatus = null, routeDrawn = false, followChauffeur = true;
+  let lastLocationAt = null, carAnimation = null;
 
   function ensureMap(){
     if (map || typeof L === 'undefined') return map;
     map = DM.map($('map'), { zoom: 12, scrollWheelZoom: false });
     map.on('focus', () => map.scrollWheelZoom.enable());
     map.on('blur',  () => map.scrollWheelZoom.disable());
+    map.on('dragstart', () => { followChauffeur = false; });
     return map;
   }
 
   function fmtTime(iso){
     return iso ? new Date(iso).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '';
+  }
+
+  function ageText(iso){
+    if (!iso) return 'Waiting for location';
+    const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+    if (seconds < 10) return 'Chauffeur live';
+    if (seconds < 60) return 'Updated ' + seconds + ' sec ago';
+    return 'Updated ' + Math.floor(seconds / 60) + ' min ago';
+  }
+
+  function refreshLiveState(){
+    const hud = $('map-hud'), pill = $('map-live');
+    if (!lastLocationAt){ hud.hidden = true; return; }
+    const seconds = Math.max(0, (Date.now() - new Date(lastLocationAt).getTime()) / 1000);
+    hud.hidden = false;
+    pill.classList.toggle('live', seconds < 45);
+    pill.classList.toggle('stale', seconds >= 45);
+    $('map-live-text').textContent = ageText(lastLocationAt);
   }
 
   /** Bookings taken before the map picker (or over the phone) have no stored
@@ -312,15 +351,35 @@
     else map.fitBounds(L.latLngBounds(pts).pad(.18), { maxZoom: 15 });
   }
 
+  function animateCar(from, to){
+    if (!carMarker) return;
+    if (carAnimation) cancelAnimationFrame(carAnimation);
+    const began = performance.now(), duration = 850;
+    const step = now => {
+      const progress = Math.min(1, (now - began) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      carMarker.setLatLng([
+        from.lat + (to.lat - from.lat) * eased,
+        from.lng + (to.lng - from.lng) * eased,
+      ]);
+      if (progress < 1) carAnimation = requestAnimationFrame(step);
+    };
+    carAnimation = requestAnimationFrame(step);
+  }
+
   function paintCar(loc){
     if (!ensureMap() || !loc) return;
     const ll = [loc.lat, loc.lng];
-    if (carMarker) carMarker.setLatLng(ll);
+    const current = carMarker && carMarker.getLatLng();
+    if (current) animateCar(current, { lat:loc.lat, lng:loc.lng });
     else {
       carMarker = L.marker(ll, { icon: DM.pinIcon('car'), zIndexOffset: 1000 }).addTo(map)
         .bindTooltip('Your driver', { direction:'top', offset:[0,-20] });
     }
-    if (!framedOnce){ fitAll(); framedOnce = true; }
+    lastLocationAt = loc.recorded_at || new Date().toISOString();
+    refreshLiveState();
+    $('map-center').hidden = false;
+    if (!framedOnce || followChauffeur){ fitAll(); framedOnce = true; }
   }
 
   function render(ride){
@@ -373,6 +432,7 @@
     // map - the overlay only stands while we genuinely have nothing to draw
     paintRoute(ride);
     if (loc){ paintCar(loc); $('map-empty').hidden = true; }
+    else { refreshLiveState(); }
 
     // a status change is worth announcing while the page sits open
     if (lastStatus && lastStatus !== ride.status && COPY[ride.status]){
@@ -390,7 +450,7 @@
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.success){
         done = render(data.ride);
-        delay = 8000;
+        delay = data.ride.location && ['driver_en_route', 'ride_started'].includes(data.ride.status) ? 5000 : 12000;
       } else if (res.status === 404){
         $('loading').hidden = true;
         $('shell').hidden = true;
@@ -410,6 +470,12 @@
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && !$('shell').hidden) poll();
   });
+
+  $('map-center').addEventListener('click', () => {
+    followChauffeur = true;
+    fitAll();
+  });
+  setInterval(refreshLiveState, 10000);
 
   $('share').addEventListener('click', async () => {
     const url = location.href;
