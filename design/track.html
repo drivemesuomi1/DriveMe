@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>DriveMe — Follow this ride</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="assets/ui.css">
+<style>
+  body{
+    margin:0;font:400 15px/1.6 var(--font);background:var(--paper);color:var(--ink-900);
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  .top{
+    background:var(--surface);border-bottom:1px solid var(--ink-100);
+    padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    position:sticky;top:0;z-index:800;
+  }
+  .brand{font:700 17px/1 var(--font);color:var(--accent-deep);text-decoration:none;letter-spacing:.01em}
+  .brand span{color:var(--accent)}
+  .brand small{display:block;font:500 11px/1.4 var(--font);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-500);margin-top:3px}
+
+  .shell{max-width:1180px;margin:0 auto;padding:22px 16px 56px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+  .card{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);padding:22px;box-shadow:var(--sh-1)}
+  .card + .card{margin-top:14px}
+
+  /* ---------- status headline ---------- */
+  .hero-status{display:flex;align-items:flex-start;gap:14px}
+  .hero-status .ring{
+    width:44px;height:44px;flex:none;border-radius:50%;display:grid;place-items:center;position:relative;
+    background:var(--accent-soft);color:var(--accent);
+  }
+  .hero-status .ring svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .hero-status.live .ring::after{
+    content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--accent);
+    opacity:0;animation:ring 2.2s cubic-bezier(.16,1,.3,1) infinite;
+  }
+  @keyframes ring{0%{transform:scale(.86);opacity:.7}100%{transform:scale(1.28);opacity:0}}
+  .hero-status.done .ring{background:var(--positive-soft);color:var(--positive)}
+  .hero-status.off .ring{background:var(--critical-soft);color:var(--critical)}
+  h1{font:500 25px/1.25 var(--font);letter-spacing:-.015em;margin:0}
+  .sub{color:var(--ink-500);font-size:13.5px;margin:3px 0 0}
+  .sub b{color:var(--accent);font-weight:700;letter-spacing:.07em}
+  .eta-badge{
+    margin-left:auto;text-align:right;flex:none;
+    padding:8px 14px;border-radius:var(--r-input);background:var(--accent-soft);
+  }
+  .eta-badge .n{font:700 21px/1 var(--font);color:var(--accent-deep);font-feature-settings:"tnum"}
+  .eta-badge .l{font:500 10.5px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-top:3px}
+
+  /* ---------- map ---------- */
+  #map{height:460px}
+  .map-empty{
+    position:absolute;inset:0;display:grid;place-items:center;z-index:600;
+    background:rgba(245,248,252,.86);backdrop-filter:blur(2px);text-align:center;padding:24px;
+  }
+  .map-empty p{max-width:280px;color:var(--ink-500);font-size:13.5px;margin:10px auto 0}
+
+  /* ---------- timeline ---------- */
+  .stages{list-style:none;margin:0;padding:0}
+  .stages li{position:relative;padding:0 0 20px 30px;color:var(--ink-500);font-size:14px}
+  .stages li:last-child{padding-bottom:0}
+  .stages li::before{
+    content:"";position:absolute;left:5px;top:5px;width:10px;height:10px;border-radius:50%;
+    background:var(--surface);border:2px solid var(--ink-300);
+    transition:background var(--standard), border-color var(--standard), box-shadow var(--standard);
+  }
+  .stages li:not(:last-child)::after{
+    content:"";position:absolute;left:9.5px;top:19px;bottom:1px;width:2px;background:var(--ink-100);
+  }
+  .stages li.done{color:var(--ink-700)}
+  .stages li.done::before{background:var(--positive);border-color:var(--positive)}
+  .stages li.done:not(:last-child)::after{background:var(--positive-soft)}
+  .stages li.now{color:var(--ink-900);font-weight:600}
+  .stages li.now::before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+  .stages li .t{display:block;font:400 12.5px/1.4 var(--font);color:var(--ink-500);margin-top:2px}
+
+  /* ---------- route summary ---------- */
+  .leg{display:grid;grid-template-columns:18px 1fr;gap:0 12px}
+  .leg .marker{display:flex;flex-direction:column;align-items:center;padding-top:5px}
+  .leg .marker i{width:10px;height:10px;border-radius:50%;background:var(--accent);display:block}
+  .leg .marker i.end{background:var(--ink-900);border-radius:2px}
+  .leg .marker span{flex:1;width:2px;background:var(--ink-100);margin:4px 0;min-height:22px}
+  .leg .where{padding-bottom:16px;min-width:0}
+  .leg .where:last-child{padding-bottom:0}
+  .leg .k{font:500 10.5px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-500)}
+  .leg .v{font-size:14.5px;color:var(--ink-900);margin-top:2px;overflow-wrap:anywhere}
+
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;padding-top:16px;border-top:1px solid var(--ink-100)}
+  .meta .k{font:500 10.5px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-500)}
+  .meta .v{font-size:14.5px;color:var(--ink-900);margin-top:3px}
+
+  h2{font:600 12px/1 var(--font);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-500);margin:0 0 16px}
+
+  .err-wrap{max-width:520px;margin:80px auto;text-align:center}
+  .err-wrap h1{margin-bottom:8px}
+
+  .skel-line{height:13px;margin-bottom:9px}
+  @media(max-width:940px){
+    .shell{grid-template-columns:1fr;padding-top:16px}
+    #map{height:320px}
+    .side{order:2}
+  }
+  @media(max-width:560px){
+    .top{padding:12px 16px}
+    h1{font-size:21px}
+    .meta{grid-template-columns:1fr}
+    .eta-badge{margin-left:0}
+    .hero-status{flex-wrap:wrap}
+  }
+</style>
+</head>
+<body class="dm">
+
+<header class="top">
+  <a class="brand" href="/">DRIVE<span>·</span>ME<small>Live tracking</small></a>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="dm-pill live" id="pulse" hidden><span class="dot"></span>Live</span>
+    <button class="dm-btn ghost sm" id="share" hidden>Share ride</button>
+  </div>
+</header>
+
+<main id="app">
+  <div class="shell" id="shell" hidden>
+    <!-- ---------- left: map ---------- -->
+    <div>
+      <div class="dm-map card" style="padding:0;position:relative;overflow:hidden">
+        <div id="map"></div>
+        <div class="map-empty" id="map-empty" hidden>
+          <div>
+            <span class="dm-pill accent"><span class="dot"></span>Waiting for the driver</span>
+            <p>The live map opens the moment your driver starts sharing their position.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- right: status ---------- -->
+    <div class="side">
+      <div class="card">
+        <div class="hero-status" id="hero-status">
+          <span class="ring" id="ring">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+          </span>
+          <div style="min-width:0">
+            <h1 id="title">Loading…</h1>
+            <p class="sub" id="ref"></p>
+          </div>
+          <div class="eta-badge" id="eta" hidden>
+            <div class="n" id="eta-n">—</div>
+            <div class="l" id="eta-l">min away</div>
+          </div>
+        </div>
+        <p class="sub" id="driver-line" style="margin-top:14px"></p>
+      </div>
+
+      <div class="card">
+        <h2>Progress</h2>
+        <ul class="stages" id="stages">
+          <li data-s="requested">Requested<span class="t" data-t="requested"></span></li>
+          <li data-s="driver_assigned">Driver assigned<span class="t" data-t="assigned_at"></span></li>
+          <li data-s="driver_en_route">Driver en route<span class="t" data-t="en_route_at"></span></li>
+          <li data-s="ride_started">Ride started<span class="t" data-t="started_at"></span></li>
+          <li data-s="completed">Completed<span class="t" data-t="completed_at"></span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Your ride</h2>
+        <div class="leg">
+          <div class="marker"><i></i><span></span></div>
+          <div class="where"><div class="k">Pickup</div><div class="v" id="r-pickup">—</div></div>
+          <div class="marker"><i class="end"></i></div>
+          <div class="where"><div class="k">Drop-off</div><div class="v" id="r-dest">—</div></div>
+        </div>
+        <div class="meta">
+          <div><div class="k">When</div><div class="v" id="r-when">—</div></div>
+          <div><div class="k">Booking</div><div class="v" id="r-mode">—</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- loading skeleton -->
+  <div class="shell" id="loading">
+    <div class="card" style="padding:0"><div class="dm-skel" style="height:460px;border-radius:16px"></div></div>
+    <div>
+      <div class="card">
+        <div class="dm-skel skel-line" style="width:62%;height:22px"></div>
+        <div class="dm-skel skel-line" style="width:40%"></div>
+      </div>
+      <div class="card">
+        <div class="dm-skel skel-line" style="width:80%"></div>
+        <div class="dm-skel skel-line" style="width:70%"></div>
+        <div class="dm-skel skel-line" style="width:75%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="err-wrap" id="err" hidden>
+    <h1 id="err-title">We couldn't find that ride</h1>
+    <p style="color:var(--ink-500)" id="err-body">Check the link you were sent — it may have been mistyped or the ride may have been removed.</p>
+  </div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="assets/ui.js"></script>
+<script>
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const token = (new URLSearchParams(location.search).get('t') || '').trim();
+
+  if (!/^[0-9a-f]{32}$/.test(token)){
+    $('loading').hidden = true;
+    $('err').hidden = false;
+    $('err-title').textContent = 'That tracking link is not valid';
+    $('err-body').textContent = 'The link looks incomplete. Ask whoever booked to send it again.';
+    return;
+  }
+
+  /* "requested" is deliberately shown as "Matching driver…": an admin assigns by
+     hand (Phase 1 §3.3), and the customer should see progress, not mechanism. */
+  const COPY = {
+    requested:       { title:'Matching your driver',      note:'A vetted driver is being assigned to your booking by hand.', live:true },
+    driver_assigned: { title:'Driver assigned',            note:'Your driver has the booking and will set off shortly.',     live:true },
+    driver_en_route: { title:'Your driver is on the way',  note:'Follow their approach on the map.',                          live:true },
+    ride_started:    { title:'Ride in progress',           note:'You and your car are on the way home.',                      live:true },
+    completed:       { title:'Ride completed',             note:'Thank you for riding with DriveMe.',                         live:false, cls:'done' },
+    cancelled:       { title:'This booking was cancelled', note:'Nothing further is scheduled for this ride.',                live:false, cls:'off' },
+  };
+  const ORDER = ['requested','driver_assigned','driver_en_route','ride_started','completed'];
+  const ICON = {
+    live:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+    done:'<svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg>',
+    off:'<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+  };
+
+  let map = null, carMarker = null, pickPin = null, destPin = null, routeLine = null;
+  let framedOnce = false, lastStatus = null, routeDrawn = false;
+
+  function ensureMap(){
+    if (map || typeof L === 'undefined') return map;
+    map = DM.map($('map'), { zoom: 12, scrollWheelZoom: false });
+    map.on('focus', () => map.scrollWheelZoom.enable());
+    map.on('blur',  () => map.scrollWheelZoom.disable());
+    return map;
+  }
+
+  function fmtTime(iso){
+    return iso ? new Date(iso).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '';
+  }
+
+  /** Bookings taken before the map picker (or over the phone) have no stored
+      geometry, so fall back to geocoding the address text. Slower and less
+      exact than the stored point, but it means every ride gets a map. */
+  async function resolvePoints(ride){
+    let p = ride.pickup_point, d = ride.dest_point;
+    if (!p && ride.pickup){
+      try { const r = await DM.geo.search(ride.pickup); if (r[0]) p = { lat:r[0].lat, lng:r[0].lng }; } catch {}
+    }
+    if (!d && ride.destination){
+      try { const r = await DM.geo.search(ride.destination); if (r[0]) d = { lat:r[0].lat, lng:r[0].lng }; } catch {}
+    }
+    return { p, d };
+  }
+
+  async function paintRoute(ride){
+    if (!ensureMap() || routeDrawn) return;
+    routeDrawn = true;                          // claim it now; the lookup is async
+    const { p, d } = await resolvePoints(ride);
+    if (!p){ routeDrawn = false; return; }
+    pickPin = L.marker([p.lat, p.lng], { icon: DM.pinIcon('pickup') }).addTo(map)
+      .bindTooltip('Pickup', { direction:'top', offset:[0,-34] });
+    if (d){
+      destPin = L.marker([d.lat, d.lng], { icon: DM.pinIcon('dropoff') }).addTo(map)
+        .bindTooltip('Drop-off', { direction:'top', offset:[0,-34] });
+      const r = await DM.geo.route(p, d);
+      routeLine = L.polyline(r.line, { color:'#0F63BD', weight:4, opacity:.8, lineJoin:'round' }).addTo(map);
+    }
+    $('map-empty').hidden = true;
+    fitAll();
+  }
+
+  function fitAll(){
+    if (!map) return;
+    const pts = [];
+    if (pickPin) pts.push(pickPin.getLatLng());
+    if (destPin) pts.push(destPin.getLatLng());
+    if (carMarker) pts.push(carMarker.getLatLng());
+    if (!pts.length) return;
+    if (pts.length === 1) map.setView(pts[0], 14);
+    else map.fitBounds(L.latLngBounds(pts).pad(.18), { maxZoom: 15 });
+  }
+
+  function paintCar(loc){
+    if (!ensureMap() || !loc) return;
+    const ll = [loc.lat, loc.lng];
+    if (carMarker) carMarker.setLatLng(ll);
+    else {
+      carMarker = L.marker(ll, { icon: DM.pinIcon('car'), zIndexOffset: 1000 }).addTo(map)
+        .bindTooltip('Your driver', { direction:'top', offset:[0,-20] });
+    }
+    if (!framedOnce){ fitAll(); framedOnce = true; }
+  }
+
+  function render(ride){
+    $('loading').hidden = true;
+    $('shell').hidden = false;
+
+    const c = COPY[ride.status] || COPY.requested;
+    const finished = ride.status === 'completed' || ride.status === 'cancelled';
+
+    $('title').textContent = c.title;
+    $('ref').innerHTML = 'Booking reference <b>' + DM.escapeHtml(ride.reference) + '</b>';
+    $('driver-line').textContent = ride.driver_name
+      ? ride.driver_name + ' is driving you tonight.'
+      : c.note;
+
+    const hs = $('hero-status');
+    hs.className = 'hero-status' + (c.live ? ' live' : '') + (c.cls ? ' ' + c.cls : '');
+    $('ring').innerHTML = c.cls === 'done' ? ICON.done : c.cls === 'off' ? ICON.off : ICON.live;
+    $('pulse').hidden = !c.live;
+    $('share').hidden = false;
+
+    // ETA — only meaningful while a driver is actually approaching
+    const loc = ride.location;
+    const showEta = loc && loc.eta_minutes != null && ride.status === 'driver_en_route';
+    $('eta').hidden = !showEta;
+    if (showEta){ $('eta-n').textContent = loc.eta_minutes; $('eta-l').textContent = 'min away'; }
+
+    // timeline
+    const idx = ride.status === 'cancelled' ? -1 : ORDER.indexOf(ride.status);
+    const times = { assigned_at:ride.assigned_at, en_route_at:ride.en_route_at,
+                    started_at:ride.started_at, completed_at:ride.completed_at };
+    document.querySelectorAll('#stages li').forEach((li, i) => {
+      li.classList.toggle('done', idx > i);
+      li.classList.toggle('now', idx === i);
+    });
+    document.querySelectorAll('#stages .t').forEach(t => {
+      const v = times[t.dataset.t];
+      if (v) t.textContent = fmtTime(v);
+    });
+
+    // ride detail
+    $('r-pickup').textContent = ride.pickup || '—';
+    $('r-dest').textContent = ride.destination || 'Open-ended — driver stays with you';
+    $('r-when').textContent = ride.scheduled_for
+      ? new Date(ride.scheduled_for).toLocaleString([], { dateStyle:'medium', timeStyle:'short' })
+      : '—';
+    $('r-mode').textContent = (ride.mode === 'hourly' ? 'By the hour' : 'Point to point') +
+      (ride.route_minutes ? ' · ~' + ride.route_minutes + ' min' : '');
+
+    // map — the overlay only stands while we genuinely have nothing to draw
+    paintRoute(ride);
+    if (loc){ paintCar(loc); $('map-empty').hidden = true; }
+
+    // a status change is worth announcing while the page sits open
+    if (lastStatus && lastStatus !== ride.status && COPY[ride.status]){
+      DM.toast(COPY[ride.status].title, finished ? 'good' : null);
+    }
+    lastStatus = ride.status;
+    return finished;
+  }
+
+  let delay = 8000;
+  async function poll(){
+    let done = false;
+    try {
+      const res = await fetch('/api/track?t=' + token, { cache:'no-store' });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success){
+        done = render(data.ride);
+        delay = 8000;
+      } else if (res.status === 404){
+        $('loading').hidden = true;
+        $('shell').hidden = true;
+        $('err').hidden = false;
+        return;                                   // dead link — stop polling
+      } else {
+        delay = Math.min(delay * 1.6, 60000);     // back off on server trouble
+      }
+    } catch {
+      delay = Math.min(delay * 1.6, 60000);       // offline — back off, keep trying
+    }
+    if (!done) setTimeout(poll, delay);
+  }
+  poll();
+
+  // pause polling when the tab is hidden; resume immediately on return
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && !$('shell').hidden) poll();
+  });
+
+  $('share').addEventListener('click', async () => {
+    const url = location.href;
+    if (navigator.share){
+      try { await navigator.share({ title:'Follow my DriveMe ride', url }); return; } catch {}
+    }
+    try { await navigator.clipboard.writeText(url); DM.toast('Tracking link copied', 'good'); }
+    catch { DM.toast(url, null, 8000); }
+  });
+})();
+</script>
+</body>
+</html>

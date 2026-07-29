@@ -1,0 +1,916 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>DriveMe — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ui.css">
+<style>
+  body{
+    margin:0;font:400 14.5px/1.6 var(--font);background:var(--paper);color:var(--ink-900);
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  h2{font:500 19px/1.3 var(--font);letter-spacing:-.01em;margin:0 0 4px}
+  h3{font:600 12px/1 var(--font);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-500);margin:0 0 14px}
+  .muted{color:var(--ink-500);font-size:13.5px}
+
+  /* ---------------- shell ---------------- */
+  .top{
+    background:var(--surface);border-bottom:1px solid var(--ink-100);
+    padding:0 22px;display:flex;align-items:center;gap:26px;
+    position:sticky;top:0;z-index:800;height:62px;
+  }
+  .brand{font:700 16px/1 var(--font);color:var(--accent-deep);flex:none}
+  .brand span{color:var(--accent)}
+  .brand small{font-weight:500;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-500);margin-left:9px}
+  nav{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav button{
+    appearance:none;border:0;background:none;cursor:pointer;white-space:nowrap;
+    padding:0 14px;height:62px;position:relative;
+    font:600 13.5px/1 var(--font);color:var(--ink-500);
+    transition:color var(--swift);
+  }
+  nav button::after{
+    content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;
+    background:var(--accent);transform:scaleX(0);transform-origin:center;
+    transition:transform var(--standard);
+  }
+  nav button:hover{color:var(--ink-900)}
+  nav button.on{color:var(--accent-deep)}
+  nav button.on::after{transform:scaleX(1)}
+  nav button .n{
+    display:inline-block;margin-left:7px;padding:1px 7px;border-radius:999px;
+    background:var(--ink-100);color:var(--ink-500);font-size:11px;font-weight:700;
+  }
+  nav button.on .n{background:var(--accent-soft);color:var(--accent-deep)}
+  .who{display:flex;align-items:center;gap:10px;flex:none}
+  .who .em{font-size:12.5px;color:var(--ink-500);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:22px 18px 70px}
+  .card{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);padding:22px;box-shadow:var(--sh-1)}
+  .card + .card{margin-top:14px}
+  .head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+
+  /* ---------------- filters ---------------- */
+  .filters{display:flex;gap:6px;flex-wrap:wrap}
+  .filters button{
+    border:1px solid var(--ink-300);background:var(--surface);cursor:pointer;
+    padding:8px 15px;min-height:38px;border-radius:var(--r-chip);
+    font:600 12.5px/1 var(--font);color:var(--ink-500);
+    transition:background var(--swift), border-color var(--swift), color var(--swift);
+  }
+  .filters button:hover{border-color:var(--accent);color:var(--accent)}
+  .filters button.on{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff}
+  .filters button .n{opacity:.65;margin-left:5px}
+
+  /* ---------------- tables ---------------- */
+  .scroll{overflow-x:auto;margin:0 -22px;padding:0 22px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;font-feature-settings:"tnum"}
+  th{
+    font:600 10.5px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-500);
+    text-align:left;padding:0 12px 10px;border-bottom:1px solid var(--ink-100);white-space:nowrap;
+  }
+  td{padding:13px 12px;border-bottom:1px solid var(--ink-100);vertical-align:top}
+  tbody tr{transition:background var(--swift)}
+  tbody tr.click{cursor:pointer}
+  tbody tr.click:hover{background:var(--paper)}
+  td .sub{display:block;color:var(--ink-500);font-size:12.5px;margin-top:2px}
+  .ref{font-weight:700;letter-spacing:.05em;color:var(--accent-deep)}
+  .empty{text-align:center;padding:52px 20px;color:var(--ink-500)}
+  .empty .big{font-size:15px;color:var(--ink-700);margin-bottom:4px;font-weight:500}
+
+  /* ---------------- drawer ---------------- */
+  .scrim{
+    position:fixed;inset:0;background:rgba(11,21,36,.42);z-index:900;
+    opacity:0;pointer-events:none;transition:opacity var(--standard);
+  }
+  .scrim.on{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);z-index:901;
+    background:var(--paper);overflow-y:auto;
+    transform:translateX(100%);transition:transform var(--entrance);
+    box-shadow:var(--sh-pop);
+  }
+  .drawer.on{transform:none}
+  .drawer-head{
+    position:sticky;top:0;z-index:2;background:var(--surface);border-bottom:1px solid var(--ink-100);
+    padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  }
+  .drawer-body{padding:18px 22px 40px}
+  .kv{display:grid;grid-template-columns:132px minmax(0,1fr);gap:10px 14px;font-size:14px}
+  .kv .k{font:500 10.5px/1.5 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-500)}
+  .kv .v{overflow-wrap:anywhere}
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+  .stack > * + *{margin-top:12px}
+
+  /* ---------------- vetting ---------------- */
+  .checks{display:flex;gap:6px;flex-wrap:wrap}
+  .chk{
+    display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+    padding:6px 11px;min-height:34px;border-radius:var(--r-chip);
+    border:1px solid var(--ink-300);background:var(--surface);
+    font:600 11.5px/1 var(--font);color:var(--ink-500);
+    transition:background var(--swift), border-color var(--swift), color var(--swift);
+  }
+  .chk:hover{border-color:var(--accent);color:var(--accent)}
+  .chk.done{background:var(--positive-soft);border-color:transparent;color:var(--positive);cursor:default}
+  .chk svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------------- metrics ---------------- */
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:14px}
+  .stat{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);padding:18px 20px}
+  .stat .k{font:500 10.5px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-500)}
+  .stat .v{font:600 27px/1.1 var(--font);letter-spacing:-.02em;margin-top:6px;font-feature-settings:"tnum"}
+  .bars{display:grid;gap:9px}
+  .bar{display:grid;grid-template-columns:104px minmax(0,1fr) 34px;gap:12px;align-items:center;font-size:12.5px}
+  .bar .track{height:9px;border-radius:5px;background:var(--ink-100);overflow:hidden}
+  .bar .track i{display:block;height:100%;border-radius:5px;background:var(--accent);width:0;transition:width 600ms cubic-bezier(.16,1,.3,1)}
+  .bar b{text-align:right;font-feature-settings:"tnum"}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+  /* ---------------- sign in ---------------- */
+  #gate{max-width:400px;margin:min(14vh,120px) auto;padding:0 18px}
+  #gate .card{padding:30px}
+
+  @media(max-width:820px){
+    .cols,.grid2{grid-template-columns:1fr}
+    .top{gap:14px;padding:0 14px}
+    .brand small{display:none}
+    .who .em{display:none}
+    .wrap{padding:16px 12px 60px}
+    .card{padding:18px}
+    .scroll{margin:0 -18px;padding:0 18px}
+  }
+</style>
+</head>
+<body class="dm">
+
+<header class="top" id="topbar" hidden>
+  <span class="brand">DRIVE<span>·</span>ME<small>Admin</small></span>
+  <nav id="nav">
+    <button data-v="bookings" class="on">Bookings<span class="n" id="n-bookings">0</span></button>
+    <button data-v="drivers">Drivers<span class="n" id="n-drivers">0</span></button>
+    <button data-v="waitlist">Waitlist<span class="n" id="n-waitlist">0</span></button>
+    <button data-v="invoices">Invoices<span class="n" id="n-invoices">0</span></button>
+    <button data-v="metrics">Metrics</button>
+  </nav>
+  <div class="who">
+    <span class="em" id="who"></span>
+    <button class="dm-btn ghost sm" id="signout">Sign out</button>
+  </div>
+</header>
+
+<!-- ==================== sign in ==================== -->
+<div id="gate">
+  <div class="card">
+    <h2>Admin sign-in</h2>
+    <p class="muted" style="margin:0 0 20px">Use the Supabase Auth account listed in the <code>admins</code> table.</p>
+    <form id="login" class="stack">
+      <div class="dm-field">
+        <label for="li-email">Email</label>
+        <input class="dm-input" id="li-email" type="email" autocomplete="username" required>
+      </div>
+      <div class="dm-field">
+        <label for="li-pass">Password</label>
+        <input class="dm-input" id="li-pass" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="dm-btn block" id="li-go" type="submit">
+        <span class="dm-btn-spin" aria-hidden="true"></span><span>Sign in</span>
+      </button>
+      <p class="muted" id="li-msg" role="status" style="margin:0"></p>
+    </form>
+  </div>
+</div>
+
+<main class="wrap" id="app" hidden>
+
+  <!-- ==================== bookings ==================== -->
+  <section id="v-bookings">
+    <div class="card">
+      <div class="head-row">
+        <div>
+          <h2>Bookings</h2>
+          <p class="muted" style="margin:0">Assign a vetted driver, move the ride along, and bill it.</p>
+        </div>
+        <div class="filters" id="bk-filters">
+          <button data-f="upcoming" class="on">Upcoming</button>
+          <button data-f="active">Active</button>
+          <button data-f="completed">Completed</button>
+          <button data-f="cancelled">Cancelled</button>
+          <button data-f="all">All</button>
+        </div>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th>Ref</th><th>When</th><th>Customer</th><th>Route</th>
+            <th>Type</th><th>Driver</th><th>Price</th><th>Status</th>
+          </tr></thead>
+          <tbody id="bk-rows"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="bk-empty" hidden>
+        <div class="big">Nothing in this view</div>
+        <div class="muted">New bookings land here the moment a customer submits the form.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== drivers ==================== -->
+  <section id="v-drivers" hidden>
+    <div class="card">
+      <h2>Add a driver</h2>
+      <p class="muted" style="margin:0 0 18px">There is no public sign-up. Record each vetting check as it
+        clears — a driver can only be approved once all four are done.</p>
+      <form id="drv-add" class="grid2">
+        <div class="dm-field" style="margin-bottom:12px">
+          <label for="da-name">Full name</label>
+          <input class="dm-input" id="da-name" required placeholder="Tamim Haddad">
+        </div>
+        <div class="dm-field" style="margin-bottom:12px">
+          <label for="da-phone">Phone</label>
+          <input class="dm-input" id="da-phone" type="tel" placeholder="+358 40 123 4567">
+        </div>
+        <div class="dm-field" style="margin-bottom:12px">
+          <label for="da-email">Email</label>
+          <input class="dm-input" id="da-email" type="email" placeholder="driver@example.com">
+        </div>
+        <div class="dm-field" style="margin-bottom:12px">
+          <label for="da-notes">Notes</label>
+          <input class="dm-input" id="da-notes" placeholder="Weekends only, speaks FI/EN/SV">
+        </div>
+        <div style="grid-column:1/-1">
+          <button class="dm-btn" type="submit">Add driver</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Roster</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Driver</th><th>Contact</th><th>Vetting</th><th>Status</th></tr></thead>
+          <tbody id="drv-rows"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="drv-empty" hidden>
+        <div class="big">No drivers yet</div>
+        <div class="muted">Add your first vetted driver above.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== waitlist ==================== -->
+  <section id="v-waitlist" hidden>
+    <div class="card">
+      <div class="head-row">
+        <div><h2>Waitlist</h2><p class="muted" style="margin:0" id="wl-count">—</p></div>
+        <div class="row">
+          <div class="filters" id="wl-filters">
+            <button data-f="chauffeur" class="on">Luxury Chauffeur</button>
+            <button data-f="rental">Premium Rental</button>
+          </div>
+          <button class="dm-btn ghost sm" id="wl-export">Export CSV</button>
+        </div>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Email</th><th>Signed up</th></tr></thead>
+          <tbody id="wl-rows"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="wl-empty" hidden>
+        <div class="big">No signups on this list yet</div>
+        <div class="muted">The tiles on the landing page feed this directly.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== invoices ==================== -->
+  <section id="v-invoices" hidden>
+    <div class="card">
+      <h2>Corporate invoices</h2>
+      <p class="muted" style="margin:0 0 18px">Raised from a booking: open it, name the company, then generate.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Number</th><th>Company</th><th>Booking</th><th>Amount</th><th>Issued</th><th>Due</th><th>Status</th><th></th></tr></thead>
+          <tbody id="inv-rows"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="inv-empty" hidden>
+        <div class="big">No invoices yet</div>
+        <div class="muted">Flag a booking as corporate to raise the first one.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== metrics ==================== -->
+  <section id="v-metrics" hidden>
+    <div class="stat-row" id="m-stats"></div>
+    <div class="card">
+      <h3>Bookings per week <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">· last 8 weeks</span></h3>
+      <div class="bars" id="m-weeks"></div>
+    </div>
+    <div class="cols">
+      <div class="card"><h3>By booking type</h3><div class="bars" id="m-types"></div></div>
+      <div class="card"><h3>By pickup area</h3><div class="bars" id="m-areas"></div></div>
+    </div>
+  </section>
+</main>
+
+<!-- ==================== booking drawer ==================== -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dw-title" hidden>
+  <div class="drawer-head">
+    <div>
+      <h2 id="dw-title" style="margin:0"></h2>
+      <div class="row" id="dw-pills" style="margin-top:6px"></div>
+    </div>
+    <button class="dm-btn ghost sm" id="dw-close">Close</button>
+  </div>
+  <div class="drawer-body">
+    <div class="card">
+      <h3>Booking</h3>
+      <div class="kv" id="dw-kv"></div>
+      <div class="row" style="margin-top:18px">
+        <button class="dm-btn ghost sm" id="dw-copy-track">Copy tracking link</button>
+        <button class="dm-btn ghost sm" id="dw-copy-driver">Copy driver GPS link</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Driver</h3>
+      <p class="muted" id="dw-availability" style="margin:0 0 12px"></p>
+      <div class="dm-field"><select id="dw-driver"></select></div>
+      <button class="dm-btn" id="dw-assign" style="margin-top:12px">Assign driver</button>
+    </div>
+
+    <div class="card">
+      <h3>Move this ride along</h3>
+      <p class="muted" id="dw-status-hint" style="margin:0 0 12px"></p>
+      <div class="row" id="dw-status-btns">
+        <button class="dm-btn sm" data-s="driver_en_route">Driver en route</button>
+        <button class="dm-btn sm" data-s="ride_started">Ride started</button>
+        <button class="dm-btn sm" data-s="completed">Completed</button>
+        <button class="dm-btn danger sm" data-s="cancelled">Cancel booking</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Corporate billing</h3>
+      <div class="dm-field" style="margin-bottom:12px">
+        <label for="dw-company">Company</label>
+        <input class="dm-input" id="dw-company" placeholder="Nordkap Consulting Oy">
+      </div>
+      <div class="dm-field" style="margin-bottom:14px">
+        <label for="dw-bill-email">Billing email — optional</label>
+        <input class="dm-input" id="dw-bill-email" type="email" placeholder="invoices@company.fi">
+      </div>
+      <div class="row">
+        <button class="dm-btn ghost sm" id="dw-flag">Flag as corporate</button>
+        <button class="dm-btn sm" id="dw-invoice">Generate invoice</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const esc = DM.escapeHtml;
+  let sb = null, bookings = [], drivers = [], invoices = [], waitlist = [], current = null;
+
+  const euro = n => n == null ? '—' : '€' + Number(n).toFixed(2);
+  const when = iso => iso ? new Date(iso).toLocaleString([], { dateStyle:'medium', timeStyle:'short' }) : '—';
+  const refOf = b => b.id.slice(0, 8).toUpperCase();
+  const STATUS = {
+    requested:      { label:'Matching driver', cls:'warn' },
+    driver_assigned:{ label:'Driver assigned', cls:'accent' },
+    driver_en_route:{ label:'En route',        cls:'accent' },
+    ride_started:   { label:'Ride started',    cls:'good' },
+    completed:      { label:'Completed',       cls:'' },
+    cancelled:      { label:'Cancelled',       cls:'bad' },
+  };
+  const PAY = { card:'Card', mobilepay:'MobilePay', invoice:'Corporate invoice' };
+  const pill = (label, cls) => '<span class="dm-pill ' + cls + '">' + esc(label) + '</span>';
+
+  /* ================= boot ================= */
+  async function boot(){
+    let cfg;
+    try {
+      cfg = await (await fetch('/api/config')).json();
+      if (!cfg.success) throw 0;
+    } catch {
+      $('li-msg').textContent = 'Backend is not configured — set SUPABASE_URL and SUPABASE_ANON_KEY.';
+      $('li-msg').style.color = 'var(--critical)';
+      return;
+    }
+    sb = window.supabase.createClient(cfg.url, cfg.anonKey);
+    const { data:{ session } } = await sb.auth.getSession();
+    if (session) enter(session);
+  }
+
+  $('login').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!sb) return;
+    const btn = $('li-go');
+    btn.classList.add('busy'); btn.disabled = true;
+    $('li-msg').textContent = ''; $('li-msg').style.color = '';
+    const { data, error } = await sb.auth.signInWithPassword({
+      email: $('li-email').value.trim(), password: $('li-pass').value
+    });
+    btn.classList.remove('busy'); btn.disabled = false;
+    if (error){
+      $('li-msg').textContent = error.message;
+      $('li-msg').style.color = 'var(--critical)';
+      return;
+    }
+    enter(data.session);
+  });
+
+  async function enter(session){
+    // a signed-in non-admin would otherwise just see empty tables
+    const { data:isAdmin } = await sb.rpc('is_admin');
+    if (!isAdmin){
+      await sb.auth.signOut();
+      $('li-msg').textContent = 'This account is not in the admins table.';
+      $('li-msg').style.color = 'var(--critical)';
+      return;
+    }
+    $('gate').hidden = true; $('topbar').hidden = false; $('app').hidden = false;
+    $('who').textContent = session.user.email;
+    loadAll();
+  }
+
+  $('signout').addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
+
+  $('nav').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#nav button').forEach(x => x.classList.toggle('on', x === b));
+    ['bookings','drivers','waitlist','invoices','metrics']
+      .forEach(v => $('v-' + v).hidden = v !== b.dataset.v);
+  });
+
+  function loadAll(){ loadBookings(); loadDrivers(); loadWaitlist(); loadInvoices(); }
+
+  /* ================= bookings ================= */
+  let bkFilter = 'upcoming';
+  $('bk-filters').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    bkFilter = b.dataset.f;
+    document.querySelectorAll('#bk-filters button').forEach(x => x.classList.toggle('on', x === b));
+    renderBookings();
+  });
+
+  async function loadBookings(){
+    const { data, error } = await sb.from('bookings').select('*')
+      .order('scheduled_for', { ascending:true, nullsFirst:false }).limit(500);
+    if (error) return DM.toast(error.message, 'bad');
+    bookings = data || [];
+    $('n-bookings').textContent = bookings.filter(b => bucket(b) === 'upcoming' || bucket(b) === 'active').length;
+    renderBookings(); renderMetrics(); renderInvoices();
+  }
+
+  function bucket(b){
+    if (b.status === 'cancelled') return 'cancelled';
+    if (b.status === 'completed') return 'completed';
+    if (b.status === 'driver_en_route' || b.status === 'ride_started') return 'active';
+    return 'upcoming';
+  }
+
+  function renderBookings(){
+    const rows = bookings.filter(b => bkFilter === 'all' || bucket(b) === bkFilter);
+    $('bk-empty').hidden = rows.length > 0;
+    $('bk-rows').innerHTML = rows.map(b => {
+      const d = drivers.find(x => x.id === b.driver_id);
+      const s = STATUS[b.status] || STATUS.requested;
+      return '<tr class="click" data-id="' + b.id + '">' +
+        '<td><span class="ref">' + refOf(b) + '</span></td>' +
+        '<td>' + esc(when(b.scheduled_for)) + '</td>' +
+        '<td>' + esc(b.customer_name || '—') +
+          '<span class="sub">' + esc(b.customer_phone || b.customer_email || '') + '</span></td>' +
+        '<td>' + esc(b.pickup_location || '') +
+          (b.destination ? '<span class="sub">→ ' + esc(b.destination) + '</span>' : '') + '</td>' +
+        '<td>' + (b.mode === 'hourly'
+            ? 'By the hour' + (b.duration_hours ? '<span class="sub">' + b.duration_hours + ' h</span>' : '')
+            : 'Point to point') + '</td>' +
+        '<td>' + (d ? esc(d.full_name) : '<span class="muted">Unassigned</span>') + '</td>' +
+        '<td>' + euro(b.estimated_price) + '</td>' +
+        '<td>' + pill(s.label, s.cls) + (b.is_corporate ? ' ' + pill('Corp', 'accent') : '') + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  $('bk-rows').addEventListener('click', e => {
+    const tr = e.target.closest('tr[data-id]'); if (!tr) return;
+    openDrawer(bookings.find(b => b.id === tr.dataset.id));
+  });
+
+  /* ================= drawer ================= */
+  let driverSelect = null;
+
+  function openDrawer(b){
+    if (!b) return;
+    current = b;
+    const s = STATUS[b.status] || STATUS.requested;
+    $('dw-title').textContent = 'Booking ' + refOf(b);
+    $('dw-pills').innerHTML = pill(s.label, s.cls) + (b.is_corporate ? pill('Corporate', 'accent') : '');
+
+    $('dw-kv').innerHTML = [
+      ['Customer', esc(b.customer_name || '—')],
+      ['Phone', b.customer_phone ? '<a href="tel:' + esc(b.customer_phone) + '">' + esc(b.customer_phone) + '</a>' : '—'],
+      ['Email', esc(b.customer_email || '—')],
+      ['When', esc(when(b.scheduled_for))],
+      ['Pickup', esc(b.pickup_location || '—')],
+      ['Drop-off', esc(b.destination || 'Open-ended (by the hour)')],
+      ['Type', b.mode === 'hourly' ? 'By the hour · ' + (b.duration_hours ?? '?') + ' h' : 'Point to point'],
+      ['Beyond metro', b.km_beyond_metro ? b.km_beyond_metro + ' km' : '—'],
+      ['Quoted', euro(b.estimated_price)],
+      ['Payment', PAY[b.payment_method] || '—'],
+      ['Requested', esc(when(b.created_at))],
+    ].map(([k, v]) => '<span class="k">' + k + '</span><span class="v">' + v + '</span>').join('');
+
+    // driver availability at a glance
+    const dayOf = iso => iso ? iso.slice(0, 10) : null;
+    const day = dayOf(b.scheduled_for);
+    const load = {};
+    bookings.forEach(x => {
+      if (!x.driver_id || x.id === b.id) return;
+      if (['driver_assigned','driver_en_route','ride_started'].includes(x.status)){
+        load[x.driver_id] = load[x.driver_id] || { active:0, sameDay:0 };
+        load[x.driver_id].active++;
+        if (day && dayOf(x.scheduled_for) === day) load[x.driver_id].sameDay++;
+      }
+    });
+    const approved = drivers.filter(d => d.status === 'approved');
+    const sel = $('dw-driver');
+    sel.innerHTML = approved.length
+      ? approved.map(d => {
+          const l = load[d.id];
+          const tag = !l ? 'Free' : (l.sameDay ? l.sameDay + ' same-day booking(s)' : l.active + ' active');
+          return '<option value="' + d.id + '"' + (d.id === b.driver_id ? ' selected' : '') +
+                 ' data-sub="' + esc(tag) + '">' + esc(d.full_name) + '</option>';
+        }).join('')
+      : '<option value="">No approved drivers yet</option>';
+    if (driverSelect) driverSelect.refresh(); else driverSelect = DM.select(sel);
+    $('dw-availability').textContent = approved.length
+      ? approved.length + ' approved driver' + (approved.length > 1 ? 's' : '') +
+        (day ? ' · same-day load shown for ' + day : '')
+      : 'Approve a driver in the Drivers tab before assigning one.';
+
+    // A ride can't run ahead of its driver — the DB enforces this too, but the
+    // buttons shouldn't offer something that will bounce.
+    const assigned = Boolean(b.driver_id);
+    document.querySelectorAll('#dw-status-btns button[data-s]').forEach(btn => {
+      btn.disabled = !assigned && btn.dataset.s !== 'cancelled';
+    });
+    $('dw-status-hint').textContent = assigned
+      ? 'The customer sees each change on their tracking link straight away.'
+      : 'Assign a driver first — a ride cannot go en route with nobody driving it.';
+
+    $('dw-company').value = b.company_name || '';
+    $('dw-bill-email').value = '';
+
+    $('drawer').hidden = false;
+    requestAnimationFrame(() => { $('drawer').classList.add('on'); $('scrim').classList.add('on'); });
+    $('dw-close').focus();
+  }
+
+  function closeDrawer(){
+    $('drawer').classList.remove('on');
+    $('scrim').classList.remove('on');
+    setTimeout(() => { $('drawer').hidden = true; }, 260);
+  }
+  $('dw-close').addEventListener('click', closeDrawer);
+  $('scrim').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !$('drawer').hidden) closeDrawer();
+  });
+
+  async function refreshCurrent(){
+    await loadBookings();
+    if (current){
+      const fresh = bookings.find(x => x.id === current.id);
+      if (fresh) openDrawer(fresh);
+    }
+  }
+
+  async function copyLink(path, label){
+    if (!current) return;
+    try {
+      await navigator.clipboard.writeText(location.origin + path);
+      DM.toast(label + ' copied to your clipboard', 'good');
+    } catch {
+      DM.toast(location.origin + path, null, 9000);
+    }
+  }
+  $('dw-copy-track').addEventListener('click', () => copyLink('/track?t=' + current.tracking_token, 'Tracking link'));
+  $('dw-copy-driver').addEventListener('click', () => copyLink('/driver?t=' + current.driver_token, 'Driver GPS link'));
+
+  $('dw-assign').addEventListener('click', async () => {
+    const driverId = $('dw-driver').value;
+    if (!current || !driverId) return DM.toast('No approved driver to assign.', 'bad');
+    const { error } = await sb.from('bookings').update({
+      driver_id: driverId, status:'driver_assigned', assigned_at:new Date().toISOString()
+    }).eq('id', current.id);
+    if (error) return DM.toast(error.message, 'bad', 6000);
+    DM.toast('Driver assigned — send them the GPS link', 'good');
+    refreshCurrent();
+  });
+
+  $('dw-status-btns').addEventListener('click', async e => {
+    const btn = e.target.closest('button[data-s]');
+    if (!btn || btn.disabled || !current) return;
+    const s = btn.dataset.s;
+    if (s === 'cancelled' && !confirm('Cancel booking ' + refOf(current) + '? The customer keeps the link but it will show as cancelled.')) return;
+    const stamp = { driver_en_route:'en_route_at', ride_started:'started_at', completed:'completed_at', cancelled:'cancelled_at' }[s];
+    const patch = { status:s };
+    if (stamp) patch[stamp] = new Date().toISOString();
+    const { error } = await sb.from('bookings').update(patch).eq('id', current.id);
+    if (error) return DM.toast(error.message, 'bad', 6000);
+    DM.toast('Status set to “' + STATUS[s].label + '”', 'good');
+    refreshCurrent();
+  });
+
+  $('dw-flag').addEventListener('click', async () => {
+    if (!current) return;
+    const company = $('dw-company').value.trim();
+    if (!company) return DM.toast('Enter the company name first.', 'bad');
+    const { error } = await sb.from('bookings').update({
+      is_corporate:true, company_name:company, payment_method:'invoice'
+    }).eq('id', current.id);
+    if (error) return DM.toast(error.message, 'bad', 6000);
+    DM.toast('Flagged as corporate — billed to ' + company, 'good');
+    refreshCurrent();
+  });
+
+  $('dw-invoice').addEventListener('click', async () => {
+    if (!current) return;
+    const company = $('dw-company').value.trim() || current.company_name;
+    if (!company) return DM.toast('Enter the company name first.', 'bad');
+    if (current.estimated_price == null) return DM.toast('This booking has no price to invoice.', 'bad');
+    const billEmail = $('dw-bill-email').value.trim();
+    await sb.from('bookings').update({ is_corporate:true, company_name:company, payment_method:'invoice' }).eq('id', current.id);
+    const { data, error } = await sb.from('invoices').insert({
+      booking_id: current.id, company_name: company,
+      billing_email: billEmail || null, amount: current.estimated_price
+    }).select().single();
+    if (error){
+      return DM.toast(error.code === '23505'
+        ? 'This booking already has an invoice — see the Invoices tab.'
+        : error.message, 'bad', 6000);
+    }
+    DM.toast('Invoice ' + data.invoice_number + ' created', 'good');
+    loadInvoices(); refreshCurrent();
+  });
+
+  /* ================= drivers ================= */
+  const CHECKS = [
+    ['licence_verified_at', 'Licence'],
+    ['driving_record_checked_at', 'Driving record'],
+    ['background_checked_at', 'Background'],
+    ['interviewed_at', 'Interview'],
+  ];
+
+  async function loadDrivers(){
+    const { data, error } = await sb.from('drivers').select('*').order('created_at');
+    if (error) return DM.toast(error.message, 'bad');
+    drivers = data || [];
+    $('n-drivers').textContent = drivers.filter(d => d.status === 'approved').length;
+    renderDrivers(); renderBookings();
+  }
+
+  function renderDrivers(){
+    $('drv-empty').hidden = drivers.length > 0;
+    $('drv-rows').innerHTML = drivers.map(d => {
+      const vetted = CHECKS.every(([col]) => d[col]);
+      const checks = CHECKS.map(([col, lab]) => d[col]
+        ? '<span class="chk done" title="Cleared ' + d[col] + '">' +
+            '<svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg>' + lab + '</span>'
+        : '<button class="chk" data-check="' + col + '" data-id="' + d.id + '">' + lab + '</button>'
+      ).join('');
+      return '<tr>' +
+        '<td><b>' + esc(d.full_name) + '</b>' + (d.notes ? '<span class="sub">' + esc(d.notes) + '</span>' : '') + '</td>' +
+        '<td class="muted">' + esc(d.phone || '') + (d.phone && d.email ? '<span class="sub">' + esc(d.email) + '</span>' : esc(d.email || '')) + '</td>' +
+        '<td><div class="checks">' + checks + '</div></td>' +
+        '<td><select data-status data-id="' + d.id + '">' +
+          ['pending','vetting','approved','suspended'].map(s =>
+            '<option value="' + s + '"' + (s === d.status ? ' selected' : '') +
+            (s === 'approved' && !vetted ? ' disabled' : '') + '>' +
+            s.charAt(0).toUpperCase() + s.slice(1) + '</option>').join('') +
+        '</select></td>' +
+      '</tr>';
+    }).join('');
+    document.querySelectorAll('#drv-rows select[data-status]').forEach(s => DM.select(s));
+  }
+
+  $('drv-add').addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = $('da-name').value.trim();
+    if (!name) return;
+    const { error } = await sb.from('drivers').insert({
+      full_name: name,
+      phone: $('da-phone').value.trim() || null,
+      email: $('da-email').value.trim() || null,
+      notes: $('da-notes').value.trim() || null,
+    });
+    if (error) return DM.toast(error.message, 'bad', 6000);
+    DM.toast(name + ' added — status Pending until vetting clears', 'good');
+    e.target.reset();
+    loadDrivers();
+  });
+
+  $('drv-rows').addEventListener('click', async e => {
+    const btn = e.target.closest('button[data-check]'); if (!btn) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const { error } = await sb.from('drivers').update({ [btn.dataset.check]: today }).eq('id', btn.dataset.id);
+    if (error) return DM.toast(error.message, 'bad');
+    DM.toast('Check recorded', 'good');
+    loadDrivers();
+  });
+
+  $('drv-rows').addEventListener('change', async e => {
+    const sel = e.target.closest('select[data-status]'); if (!sel) return;
+    const { error } = await sb.from('drivers').update({ status: sel.value }).eq('id', sel.dataset.id);
+    if (error) DM.toast(error.message, 'bad', 6000);
+    else DM.toast('Driver status updated', 'good');
+    loadDrivers();
+  });
+
+  /* ================= waitlist ================= */
+  let wlTier = 'chauffeur';
+  $('wl-filters').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    wlTier = b.dataset.f;
+    document.querySelectorAll('#wl-filters button').forEach(x => x.classList.toggle('on', x === b));
+    renderWaitlist();
+  });
+
+  async function loadWaitlist(){
+    const { data, error } = await sb.from('waitlist').select('*').order('created_at', { ascending:false });
+    if (error) return DM.toast(error.message, 'bad');
+    waitlist = data || [];
+    $('n-waitlist').textContent = waitlist.length;
+    renderWaitlist();
+  }
+
+  function renderWaitlist(){
+    const rows = waitlist.filter(w => w.tier === wlTier);
+    $('wl-count').textContent = rows.length + ' signup' + (rows.length === 1 ? '' : 's') +
+      ' on the ' + (wlTier === 'chauffeur' ? 'Luxury Chauffeur' : 'Premium Rental') + ' list';
+    $('wl-empty').hidden = rows.length > 0;
+    $('wl-rows').innerHTML = rows.map(w =>
+      '<tr><td>' + esc(w.email) + '</td><td class="muted">' + esc(when(w.created_at)) + '</td></tr>').join('');
+  }
+
+  $('wl-export').addEventListener('click', () => {
+    const rows = waitlist.filter(w => w.tier === wlTier);
+    if (!rows.length) return DM.toast('Nothing to export on this list.', 'bad');
+    const csv = 'email,tier,signed_up\n' + rows.map(w =>
+      '"' + w.email.replace(/"/g, '""') + '",' + w.tier + ',' + w.created_at).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
+    a.download = 'driveme-waitlist-' + wlTier + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    DM.toast(rows.length + ' signups exported', 'good');
+  });
+
+  /* ================= invoices ================= */
+  async function loadInvoices(){
+    const { data, error } = await sb.from('invoices').select('*').order('created_at', { ascending:false });
+    if (error) return DM.toast(error.message, 'bad');
+    invoices = data || [];
+    $('n-invoices').textContent = invoices.filter(v => v.status !== 'paid').length;
+    renderInvoices();
+  }
+
+  function renderInvoices(){
+    $('inv-empty').hidden = invoices.length > 0;
+    const CLS = { draft:'', sent:'accent', paid:'good' };
+    $('inv-rows').innerHTML = invoices.map(v => {
+      const b = bookings.find(x => x.id === v.booking_id);
+      return '<tr>' +
+        '<td><span class="ref">' + esc(v.invoice_number) + '</span></td>' +
+        '<td>' + esc(v.company_name) + (v.billing_email ? '<span class="sub">' + esc(v.billing_email) + '</span>' : '') + '</td>' +
+        '<td class="muted">' + (b ? refOf(b) : v.booking_id.slice(0, 8).toUpperCase()) + '</td>' +
+        '<td>' + euro(v.amount) + '</td>' +
+        '<td class="muted">' + v.issued_at + '</td><td class="muted">' + v.due_date + '</td>' +
+        '<td>' + pill(v.status.charAt(0).toUpperCase() + v.status.slice(1), CLS[v.status]) + '</td>' +
+        '<td><div class="row">' +
+          (v.status === 'draft' ? '<button class="dm-btn ghost sm" data-inv-status="sent" data-id="' + v.id + '">Mark sent</button>' : '') +
+          (v.status !== 'paid'  ? '<button class="dm-btn ghost sm" data-inv-status="paid" data-id="' + v.id + '">Mark paid</button>' : '') +
+          '<button class="dm-btn sm" data-inv-print="' + v.id + '">Print</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  $('inv-rows').addEventListener('click', async e => {
+    const st = e.target.closest('button[data-inv-status]');
+    if (st){
+      const { error } = await sb.from('invoices').update({ status: st.dataset.invStatus }).eq('id', st.dataset.id);
+      if (error) DM.toast(error.message, 'bad'); else { DM.toast('Invoice marked ' + st.dataset.invStatus, 'good'); loadInvoices(); }
+      return;
+    }
+    const pr = e.target.closest('button[data-inv-print]');
+    if (pr) printInvoice(invoices.find(v => v.id === pr.dataset.invPrint));
+  });
+
+  function printInvoice(v){
+    if (!v) return;
+    const b = bookings.find(x => x.id === v.booking_id) || {};
+    const gross = Number(v.amount);
+    const vat = gross - gross / (1 + Number(v.vat_rate) / 100);
+    const w = window.open('', '_blank');
+    if (!w) return DM.toast('Allow pop-ups to print the invoice.', 'bad');
+    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + esc(v.invoice_number) + '</title>' +
+      '<style>body{font:400 14px/1.65 Inter,Segoe UI,sans-serif;color:#0B1524;max-width:660px;margin:48px auto;padding:0 24px}' +
+      'h1{font-size:23px;font-weight:600;letter-spacing:-.01em;margin:0 0 4px}' +
+      'table{width:100%;border-collapse:collapse;margin:26px 0}' +
+      'td,th{padding:11px 8px;border-bottom:1px solid #EAEFF6;text-align:left}' +
+      'th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#697687;font-weight:600}' +
+      '.tot td{font-weight:700;border-top:2px solid #0B1524;border-bottom:0}' +
+      '.muted{color:#697687;font-size:12.5px}</style></head><body>' +
+      '<h1>Invoice ' + esc(v.invoice_number) + '</h1>' +
+      '<p class="muted">Issued ' + v.issued_at + ' · Due ' + v.due_date + '</p>' +
+      '<p style="margin-top:22px"><b>Mansio Group Oy — DriveMe</b><br>Helsinki, Finland</p>' +
+      '<p>Billed to <b>' + esc(v.company_name) + '</b>' + (v.billing_email ? '<br>' + esc(v.billing_email) : '') + '</p>' +
+      '<table><tr><th>Description</th><th style="text-align:right">Amount</th></tr>' +
+      '<tr><td>Chauffeur service — booking ' + (b.id ? refOf(b) : '') +
+        '<div class="muted">' + esc(b.pickup_location || '') +
+        (b.destination ? ' → ' + esc(b.destination) : '') +
+        (b.scheduled_for ? ' · ' + esc(when(b.scheduled_for)) : '') + '</div></td>' +
+        '<td style="text-align:right">' + euro(gross) + '</td></tr>' +
+      '<tr><td class="muted">of which VAT (' + v.vat_rate + '%)</td>' +
+        '<td class="muted" style="text-align:right">' + euro(vat) + '</td></tr>' +
+      '<tr class="tot"><td>Total due</td><td style="text-align:right">' + euro(gross) + '</td></tr></table>' +
+      '<p class="muted">Payment within 14 days of the issue date. Thank you for riding with DriveMe.</p>' +
+      '<' + 'script>window.print()<\/script></body></html>');
+    w.document.close();
+  }
+
+  /* ================= metrics ================= */
+  function bars(el, entries){
+    const max = Math.max(1, ...entries.map(e => e[1]));
+    el.innerHTML = entries.map(([label, n]) =>
+      '<div class="bar"><span class="muted">' + esc(label) + '</span>' +
+      '<span class="track"><i data-w="' + (n / max * 100) + '"></i></span>' +
+      '<b>' + n + '</b></div>').join('') || '<p class="muted">No data yet.</p>';
+    requestAnimationFrame(() => el.querySelectorAll('.track i').forEach(i => i.style.width = i.dataset.w + '%'));
+  }
+
+  function renderMetrics(){
+    const live = bookings.filter(b => ['driver_assigned','driver_en_route','ride_started'].includes(b.status)).length;
+    const revenue = bookings.filter(b => b.status === 'completed')
+      .reduce((s, b) => s + Number(b.estimated_price || 0), 0);
+    $('m-stats').innerHTML = [
+      ['Bookings', bookings.length],
+      ['In progress', live],
+      ['Completed', bookings.filter(b => b.status === 'completed').length],
+      ['Completed value', euro(revenue)],
+    ].map(([k, v]) => '<div class="stat"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>').join('');
+
+    const weekStart = d => {
+      const x = new Date(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+      x.setHours(0, 0, 0, 0); return x;
+    };
+    const weeks = [];
+    for (let i = 7; i >= 0; i--){
+      const s = weekStart(new Date()); s.setDate(s.getDate() - i * 7); weeks.push(s);
+    }
+    bars($('m-weeks'), weeks.map(s => {
+      const e = new Date(s); e.setDate(e.getDate() + 7);
+      const n = bookings.filter(b => { const t = new Date(b.created_at); return t >= s && t < e; }).length;
+      return [s.toLocaleDateString([], { day:'numeric', month:'short' }), n];
+    }));
+
+    bars($('m-types'), [
+      ['By the hour', bookings.filter(b => b.mode === 'hourly').length],
+      ['Point to point', bookings.filter(b => b.mode === 'point_to_point').length],
+    ]);
+
+    const AREAS = ['Helsinki','Espoo','Vantaa','Kauniainen'];
+    const counts = Object.fromEntries(AREAS.map(a => [a, 0]));
+    let other = 0;
+    bookings.forEach(b => {
+      const hit = AREAS.find(a => (b.pickup_location || '').toLowerCase().includes(a.toLowerCase()));
+      if (hit) counts[hit]++; else other++;
+    });
+    bars($('m-areas'), [...AREAS.map(a => [a, counts[a]]), ['Elsewhere', other]]);
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

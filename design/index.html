@@ -15,6 +15,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Geist is the typeface Blacklane itself uses -->
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- shared UI kit for the booking card (no map here — see track.html for that) -->
+<link rel="stylesheet" href="assets/ui.css">
 <style>
   :root{
     /* Blacklane-derived palette: brand blue #0F63BD, ink #0F1319,
@@ -201,7 +204,8 @@
   /* scrim only where type sits, so the daylight film stays bright */
   .hero-fade{position:absolute;inset:0;background:
     linear-gradient(180deg,rgba(10,16,25,.52) 0%,rgba(10,16,25,.22) 22%,rgba(10,16,25,.10) 45%,rgba(10,16,25,.42) 78%,rgba(10,16,25,.62) 100%)}
-  .hero-inner{position:relative;z-index:2;padding:200px 0 120px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  .hero-inner{position:relative;z-index:2;padding:168px 0 140px;text-align:center;display:flex;flex-direction:column;align-items:center}
+  @media(max-width:980px){ .hero-inner{padding:132px 0 120px} }
   .eyebrow{
     display:inline-flex;align-items:center;gap:14px;justify-content:center;
     font-size:12px;font-weight:500;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);
@@ -931,36 +935,80 @@
   .bar-links{border-top-color:rgba(255,255,255,.18)}
   nav.scrolled .bar-links{border-top-color:var(--line)}
 
-  /* Blacklane's signature: a white booking card sitting in the hero */
+  /* ---------------------------------------------------------------------
+     Hero booking card — the details form, straight to the point. Modern
+     controls (custom select, calendar, time list, address autocomplete)
+     come from the shared kit in assets/ui.css.
+     --------------------------------------------------------------------- */
   .hero-book{
-    /* date/time need real room: the native pickers carry their own icon and the
-       rendered value is locale-dependent, so they clip badly if squeezed */
-    display:grid;grid-template-columns:1fr 1fr 1.15fr .92fr .8fr auto;gap:0;
-    background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(15,19,25,.22);
-    padding:10px;margin-top:44px;max-width:1120px;align-items:stretch;text-align:left;
+    padding:0;
+    width:100%;max-width:1080px;margin:44px auto 0;text-align:left;
+    background:#fff;border-radius:20px;box-shadow:0 26px 70px rgba(11,21,36,.28);
     opacity:0;transform:translateY(16px);
   }
   body.loaded .hero-book{animation:fadeUp 900ms cubic-bezier(.16,1,.3,1) .7s forwards}
-  .hb-field{padding:12px 18px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;min-width:0}
-  .hb-field:nth-last-child(2){border-right:0}
-  .hb-field label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--silver-dim)}
-  .hb-field input{
-    border:0;background:transparent;font-family:inherit;font-size:15px;color:var(--white);
-    padding:2px 0;width:100%;min-width:0;
-  }
-  .hb-field input::placeholder{color:var(--silver-dim)}
-  /* keep the native date/time chrome from overflowing its column */
-  .hb-field input[type="date"],.hb-field input[type="time"]{font-size:14px;max-width:100%}
-  .hb-field input:focus{outline:none}
-  .hb-field:focus-within{background:var(--blue-100);border-radius:10px}
-  .hero-book .btn{margin:0;white-space:nowrap;align-self:center}
-  @media(max-width:900px){
-    .hero-book{grid-template-columns:1fr 1fr;gap:4px;max-width:520px;margin-top:32px}
-    .hb-field{border-right:0;border-bottom:1px solid var(--line)}
-    .hero-book .btn{grid-column:1/-1;justify-content:center;margin-top:8px}
-  }
-  @media(max-width:520px){ .hero-book{grid-template-columns:1fr} }
 
+  .hb-head{
+    display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    padding:16px 22px;border-bottom:1px solid var(--line);
+  }
+  .hb-quote{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .hb-quote .amt{font:600 24px/1 "Inter",system-ui,sans-serif;color:#0B1524;letter-spacing:-.02em;font-feature-settings:"tnum"}
+  .hb-quote .brk{font:400 12.5px/1.5 "Inter",system-ui,sans-serif;color:#697687}
+
+  .hb-grid{
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px;padding:22px;
+  }
+  .hb-grid .span2{grid-column:span 2}
+  .hb-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding:0 22px 22px;
+  }
+  .hb-foot .fine{font:400 12.5px/1.5 "Inter",system-ui,sans-serif;color:#697687;max-width:440px}
+  .hb-foot .dm-btn{min-width:210px}
+
+  /* duration stepper */
+  .hb-step{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    border:1px solid #C4CEDA;border-radius:10px;padding:5px 7px;min-height:48px;background:#fff;
+  }
+  .hb-step button{
+    width:36px;height:36px;flex:none;border:0;border-radius:9px;background:#EAEFF6;cursor:pointer;
+    font-size:18px;line-height:1;color:#0B1524;
+    transition:background 120ms cubic-bezier(.4,0,1,1), transform 120ms cubic-bezier(.4,0,1,1);
+  }
+  .hb-step button:hover{background:#E7EFF9;color:#0C4481}
+  .hb-step button:active{transform:scale(.94)}
+  .hb-step button[disabled]{opacity:.35;cursor:default}
+  .hb-step output{font:600 15px/1 "Inter",system-ui,sans-serif;color:#0B1524;text-align:center}
+  .hb-step output small{display:block;font-size:10.5px;font-weight:500;color:#697687;letter-spacing:.05em;text-transform:uppercase;margin-top:3px}
+
+  .hb-done{padding:44px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .hb-done .tick{
+    width:52px;height:52px;border-radius:50%;background:#E4F2EA;display:grid;place-items:center;margin-bottom:10px;
+    animation:hbPop 600ms cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes hbPop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+  .hb-done .tick svg{width:26px;height:26px;fill:none;stroke:#1C7A4C;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .hb-done h4{font:500 22px/1.25 "Inter",system-ui,sans-serif;color:#0B1524;letter-spacing:-.01em}
+  .hb-done p{font:400 14.5px/1.6 "Inter",system-ui,sans-serif;color:#697687;max-width:460px}
+  .hb-done .ref{font-weight:700;color:#0F63BD;letter-spacing:.08em}
+  .hb-done .acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+
+  @media(max-width:980px){
+    .hero-book{margin-top:32px;border-radius:16px;max-width:560px}
+    .hb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px}
+    .hb-foot{padding:0 18px 18px}
+    .hb-foot .dm-btn{flex:1}
+  }
+  @media(max-width:560px){
+    .hb-head{padding:14px 16px}
+    .hb-grid{grid-template-columns:1fr;padding:16px}
+    .hb-grid .span2{grid-column:span 1}
+    .hb-foot{padding:0 16px 16px}
+    .hb-quote .amt{font-size:21px}
+  }
   /* Blacklane sets emphasis in weight and colour, not italics */
   h2 em{font-style:normal;font-weight:600;color:var(--gold);-webkit-text-fill-color:var(--gold);background:none}
   .kicker{color:var(--gold)}
@@ -1077,43 +1125,115 @@
       <span class="l"><span>Your Way.</span></span>
     </h1>
     <p class="hero-sub">A professionally licensed chauffeur arrives, takes the wheel of your own vehicle, and delivers you — and your car — home. No parking. No retrieval. No compromise.</p>
-    <form class="hero-book" id="hero-book" novalidate aria-label="Request a driver">
-      <div class="hb-field">
-        <label for="hb-pickup">Pickup location</label>
-        <input id="hb-pickup" name="pickup" type="text" autocomplete="street-address" placeholder="Where your car is now">
-        <p class="field-note" id="note-pickup" role="status"></p>
+    <section class="hero-book dm" id="bk" aria-label="Request a driver">
+      <div class="hb-head">
+        <div class="dm-seg" id="bk-mode" role="group" aria-label="Booking type">
+          <button type="button" data-value="hourly" aria-pressed="true">By the hour</button>
+          <button type="button" data-value="point_to_point" aria-pressed="false">Point to point</button>
+        </div>
+        <div class="hb-quote">
+          <span class="amt" id="bk-amt">€105</span>
+          <span class="brk" id="bk-brk"><b>3 h</b> × €35 · VAT included · no surge, ever</span>
+        </div>
       </div>
-      <div class="hb-field">
-        <label for="hb-drop">Drop-off</label>
-        <input id="hb-drop" name="drop" type="text" autocomplete="street-address" placeholder="Where it needs to go">
+
+      <form id="hero-book" novalidate>
+        <div class="hb-grid">
+          <div class="dm-field span2" id="f-pickup">
+            <label for="bk-pickup">Pickup location</label>
+            <span class="dm-input-wrap">
+              <span class="dm-lead"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.4 7-11a7 7 0 10-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></span>
+              <input class="dm-input" id="bk-pickup" type="text" placeholder="Where your car is now">
+              <span class="dm-spin" aria-hidden="true"></span>
+            </span>
+            <p class="dm-note" id="note-pickup" role="status"></p>
+          </div>
+
+          <div class="dm-field span2" id="f-drop" hidden>
+            <label for="bk-drop">Drop-off</label>
+            <span class="dm-input-wrap">
+              <span class="dm-lead"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.4 7-11a7 7 0 10-14 0c0 4.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></span>
+              <input class="dm-input" id="bk-drop" type="text" placeholder="Where it needs to go">
+              <span class="dm-spin" aria-hidden="true"></span>
+            </span>
+            <p class="dm-note" id="note-drop" role="status"></p>
+          </div>
+
+          <div class="dm-field span2" id="f-dur">
+            <label for="bk-dur-out">Duration</label>
+            <div class="hb-step">
+              <button type="button" id="bk-dur-minus" aria-label="Half an hour less">&minus;</button>
+              <output id="bk-dur-out" for="bk-dur-minus bk-dur-plus">3 hours<small>3-hour minimum</small></output>
+              <button type="button" id="bk-dur-plus" aria-label="Half an hour more">+</button>
+            </div>
+          </div>
+
+          <div class="dm-field">
+            <label for="bk-date">Date</label>
+            <span class="dm-input-wrap">
+              <span class="dm-lead"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+              <input class="dm-input" id="bk-date" type="text" placeholder="Pick a date">
+            </span>
+            <p class="dm-note" id="note-date" role="status"></p>
+          </div>
+
+          <div class="dm-field">
+            <label for="bk-time">Time</label>
+            <span class="dm-input-wrap">
+              <span class="dm-lead"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+              <input class="dm-input" id="bk-time" type="text" placeholder="Pick a time">
+            </span>
+          </div>
+
+          <div class="dm-field">
+            <label for="bk-name">Name</label>
+            <input class="dm-input" id="bk-name" type="text" autocomplete="name" placeholder="Aino Virtanen">
+            <p class="dm-note" id="note-name" role="status"></p>
+          </div>
+
+          <div class="dm-field">
+            <label for="bk-phone">Phone</label>
+            <input class="dm-input" id="bk-phone" type="tel" autocomplete="tel" placeholder="+358 40 123 4567">
+            <p class="dm-note" id="note-phone" role="status"></p>
+          </div>
+
+          <div class="dm-field">
+            <label for="bk-email">Email</label>
+            <input class="dm-input" id="bk-email" type="email" autocomplete="email" placeholder="you@example.com">
+            <p class="dm-note" id="note-email" role="status"></p>
+          </div>
+
+          <div class="dm-field">
+            <label for="bk-pay">Payment</label>
+            <select id="bk-pay">
+              <option value="card" selected data-sub="Charged after the ride">Card</option>
+              <option value="mobilepay" data-sub="Finland's everyday wallet">MobilePay</option>
+              <option value="invoice" data-sub="Billed to your company">Corporate invoice</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="hb-foot">
+          <p class="fine">A vetted, licensed chauffeur drives your own car. No account needed —
+             we'll confirm by email and send you a live tracking link.</p>
+          <button type="submit" class="dm-btn" id="hb-submit">
+            <span class="dm-btn-spin" aria-hidden="true"></span>
+            <span class="hb-label">Request a driver</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="hb-done" id="hb-done" hidden role="status" aria-live="polite">
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></span>
+        <h4>Request received — matching your driver</h4>
+        <p>Your reference is <span class="ref" id="hb-ref">—</span>. A vetted driver is being assigned by hand;
+           we'll confirm by email, usually within the hour.</p>
+        <div class="acts">
+          <a class="dm-btn" id="hb-track" href="#" target="_blank" rel="noopener" hidden>Follow your ride live</a>
+          <button type="button" class="dm-btn ghost" id="hb-again">Book another</button>
+        </div>
       </div>
-      <div class="hb-field">
-        <label for="hb-email">Email</label>
-        <input id="hb-email" name="email" type="email" autocomplete="email" placeholder="you@example.com">
-        <p class="field-note" id="note-email" role="status"></p>
-      </div>
-      <div class="hb-field">
-        <label for="hb-date">Date</label>
-        <input id="hb-date" name="date" type="date">
-        <p class="field-note" id="note-date" role="status"></p>
-      </div>
-      <div class="hb-field">
-        <label for="hb-time">Time</label>
-        <input id="hb-time" name="time" type="time" value="22:30">
-      </div>
-      <button class="btn btn-primary" type="submit" id="hb-submit" data-hover>
-        <span class="spin" aria-hidden="true"></span><span class="hb-label">Request a driver</span>
-      </button>
-    </form>
-    <div class="hb-done" id="hb-done" hidden role="status" aria-live="polite">
-      <span class="tick" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg>
-      </span>
-      <div>
-        <h4>Request received.</h4>
-        <p>Your reference is <b id="hb-ref">—</b>. We'll confirm your driver by email shortly — usually within the hour.</p>
-      </div>
-    </div>
+    </section>
     <div class="hero-ctas">
       <a class="btn btn-ghost" href="#how" data-hover><span class="play">▶</span> Watch the film</a>
     </div>
@@ -1232,10 +1352,10 @@
           <label for="hrs-out">Duration</label>
           <div class="stepper">
             <button type="button" id="hrs-minus" aria-label="Decrease duration by half an hour">−</button>
-            <output id="hrs-out" for="hrs-minus hrs-plus">2<small>hours</small></output>
+            <output id="hrs-out" for="hrs-minus hrs-plus">3<small>hours</small></output>
             <button type="button" id="hrs-plus" aria-label="Increase duration by half an hour">+</button>
           </div>
-          <p class="req-note">One-hour minimum — billed in half hours.</p>
+          <p class="req-note">Three-hour minimum — billed in half hours thereafter.</p>
         </div>
 
         <!-- appears only when the destination falls outside the four capital-region
@@ -1258,11 +1378,11 @@
 
       <aside class="est-card reveal" aria-live="polite">
         <p class="est-tag">Estimate · Indicative</p>
-        <p class="est-big" id="est-total">€50</p>
-        <p class="est-mode" id="est-mode">2 hr · By the hour</p>
-        <div class="est-line"><span>Professional driver</span><b id="est-driver">2 hr × €25</b></div>
+        <p class="est-big" id="est-total">€105</p>
+        <p class="est-mode" id="est-mode">3 hr · By the hour</p>
+        <div class="est-line"><span>Professional driver</span><b id="est-driver">3 hr × €35</b></div>
         <div class="est-line" id="est-callout-row" hidden><span id="est-callout-label">Beyond the metro</span><b id="est-callout">€10</b></div>
-        <div class="est-total"><span>Total</span><b id="est-total-2">€50</b></div>
+        <div class="est-total"><span>Total</span><b id="est-total-2">€105</b></div>
         <p class="est-fine">VAT included. No surge pricing, ever — the same rate at two in the afternoon and two in the morning.</p>
         <p class="est-member">Subscription — <b>€100 / month</b> for five hours of driver time</p>
       </aside>
@@ -1273,8 +1393,8 @@
       <div class="price-grid">
         <div class="price">
           <span class="price-k">Professional driver</span>
-          <b>€25<small>/ hour</small></b>
-          <p>One-hour minimum, billed in half hours thereafter.</p>
+          <b>€35<small>/ hour</small></b>
+          <p>Three-hour minimum, billed in half hours thereafter.</p>
         </div>
         <div class="price">
           <span class="price-k">Beyond the metro</span>
@@ -1298,7 +1418,6 @@
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Card</li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10.5 18.5h3"/></svg>MobilePay</li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg>Corporate invoicing</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Cash</li>
         </ul>
       </div>
     </div>
@@ -1714,12 +1833,13 @@
   }
 
   /* ---- the request: live estimate ---- */
-  /* Plan §3.4: €25/hr with a one-hour minimum, plus €0.50 per km beyond the
-     Helsinki Metro Area — a per-km surcharge, not a flat callout fee. */
-  const RATE = 25, PER_KM = 0.5;
+  /* Phase 1 pricing (§3.2): €35/hr with a three-hour minimum billed in half-hour
+     increments, plus €0.50 per km beyond the Helsinki Metro Area — a per-km
+     surcharge, not a flat callout fee. The API recomputes this server-side. */
+  const RATE = 35, PER_KM = 0.5, MIN_HOURS = 3;
   const modeHour = document.getElementById('mode-hour'), modeP2P = document.getElementById('mode-p2p');
   if (modeHour){
-    let byHour = true, hours = 2, kmOut = 20;
+    let byHour = true, hours = 3, kmOut = 20;
     const fHours = document.getElementById('field-hours'), fDest = document.getElementById('field-dest');
     const fKm = document.getElementById('field-km');
     const out = document.getElementById('hrs-out'), kmOutEl = document.getElementById('km-out');
@@ -1759,7 +1879,7 @@
     }
     modeHour.addEventListener('click', () => setMode(true));
     modeP2P.addEventListener('click', () => setMode(false));
-    document.getElementById('hrs-minus').addEventListener('click', () => { hours = Math.max(1, hours - .5); render(); });
+    document.getElementById('hrs-minus').addEventListener('click', () => { hours = Math.max(MIN_HOURS, hours - .5); render(); });
     document.getElementById('hrs-plus').addEventListener('click',  () => { hours = Math.min(12, hours + .5); render(); });
     document.getElementById('km-minus').addEventListener('click', () => { kmOut = Math.max(5, kmOut - 5); render(); });
     document.getElementById('km-plus').addEventListener('click',  () => { kmOut = Math.min(400, kmOut + 5); render(); });
@@ -1890,6 +2010,8 @@
 })();
 </script>
 
+<script src="assets/ui.js"></script>
+
 <!-- ===================== lead capture ===================== -->
 <script>
 (function(){
@@ -1927,105 +2049,222 @@
     if (wrapEl) wrapEl.classList.toggle('invalid', Boolean(invalid));
   }
 
-  /* ======================= hero booking form ======================= */
+  /* ======================= hero booking form =======================
+     One card, all the details. The address fields autocomplete against real
+     places (and carry coordinates through to the tracking map), but there is
+     no map in the hero — the form is the whole interaction.
+     Pricing mirrors api/bookings.js; the server still recomputes it. */
   const form = document.getElementById('hero-book');
-  if (form){
-    const pickup = document.getElementById('hb-pickup');
-    const drop   = document.getElementById('hb-drop');
-    const email  = document.getElementById('hb-email');
-    const date   = document.getElementById('hb-date');
-    const time   = document.getElementById('hb-time');
-    const submit = document.getElementById('hb-submit');
-    const label  = submit.querySelector('.hb-label');
-    const done   = document.getElementById('hb-done');
-    const refEl  = document.getElementById('hb-ref');
+  if (form && window.DM){
+    const $ = id => document.getElementById(id);
+    const RATE = 35, MIN_HOURS = 3, PER_KM = 0.5, P2P_HOURS = 0.75;
 
-    const wrapOf = el => el.closest('.hb-field');
-    const noteOf = id => document.getElementById(id);
+    const state = { mode:'hourly', pickup:null, dropoff:null, hours:3, routeKm:0, routeMin:0, kmBeyond:0 };
 
-    // today, in the browser's own timezone — toISOString() would shift the date
-    const todayLocal = () => {
+    /* ---------- address autocomplete (coordinates ride along) ---------- */
+    const acPickup = DM.autocomplete($('bk-pickup'), {
+      onPick: p => { state.pickup = p; markField($('f-pickup'), false); setNote($('note-pickup'), ''); measure(); }
+    });
+    const acDrop = DM.autocomplete($('bk-drop'), {
+      onPick: p => { state.dropoff = p; markField($('f-drop'), false); setNote($('note-drop'), ''); measure(); }
+    });
+
+    /* Distance beyond the metro drives the surcharge, so it needs the route —
+       but only when both ends are known and it's a point-to-point booking. */
+    async function measure(){
+      if (state.mode !== 'point_to_point' || !state.pickup || !state.dropoff){
+        state.routeKm = state.routeMin = state.kmBeyond = 0;
+        quote();
+        return;
+      }
+      const r = await DM.geo.route(state.pickup, state.dropoff);
+      state.routeKm = r.km;
+      state.routeMin = r.minutes;
+      state.kmBeyond = DM.geo.kmBeyondMetro(state.dropoff, r.km);
+      quote();
+    }
+
+    /* ---------- mode ---------- */
+    DM.segmented($('bk-mode'), value => {
+      state.mode = value;
+      const p2p = value === 'point_to_point';
+      $('f-drop').hidden = !p2p;
+      $('f-dur').hidden = p2p;
+      if (!p2p){ state.dropoff = null; if (acDrop) acDrop.clear(); }
+      measure();
+    });
+
+    /* ---------- duration ---------- */
+    function renderHours(){
+      $('bk-dur-out').innerHTML =
+        (Number.isInteger(state.hours) ? state.hours : state.hours.toFixed(1).replace('.', ',')) +
+        ' hours<small>' + (state.hours <= MIN_HOURS ? '3-hour minimum' : 'billed in half hours') + '</small>';
+      $('bk-dur-minus').disabled = state.hours <= MIN_HOURS;
+    }
+    $('bk-dur-minus').addEventListener('click', () => { state.hours = Math.max(MIN_HOURS, state.hours - .5); renderHours(); quote(); });
+    $('bk-dur-plus').addEventListener('click',  () => { state.hours = Math.min(12, state.hours + .5); renderHours(); quote(); });
+
+    /* ---------- date + time ---------- */
+    const todayISO = (() => {
       const d = new Date();
-      return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
-    };
-    if (date && !date.value) date.value = todayLocal();
-    if (date) date.min = todayLocal();
+      return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    })();
+    const dp = DM.datePicker($('bk-date'), { value: todayISO });
+    const tp = DM.timePicker($('bk-time'), { value: '22:30' });
+    $('bk-date').addEventListener('change', () => {
+      markField($('bk-date').closest('.dm-field'), false);
+      setNote($('note-date'), '');
+    });
 
+    /* ---------- quote (mirrors api/bookings.js) ---------- */
+    const euro = n => '€' + (Number.isInteger(n) ? n : n.toFixed(2).replace('.', ','));
+    function quote(){
+      const km = state.kmBeyond * PER_KM;
+      let billed, sum;
+      if (state.mode === 'hourly'){
+        billed = Math.max(MIN_HOURS, Math.ceil(state.hours * 2) / 2);
+        sum = billed * RATE + km;
+      } else {
+        billed = P2P_HOURS;
+        sum = P2P_HOURS * RATE + km;
+      }
+      $('bk-amt').textContent = euro(sum);
+      const bits = [];
+      if (state.mode === 'hourly'){
+        bits.push('<b>' + (Number.isInteger(billed) ? billed : String(billed).replace('.', ',')) + ' h</b> × €35');
+      } else {
+        bits.push('<b>Fixed fare</b> · quoted now');
+      }
+      if (state.kmBeyond) bits.push(state.kmBeyond + ' km beyond the metro × €0,50');
+      if (state.routeMin) bits.push('~' + state.routeMin + ' min drive');
+      bits.push('VAT included · no surge, ever');
+      $('bk-brk').innerHTML = bits.join(' · ');
+    }
+
+    /* ---------- validation ---------- */
+    const nameEl = $('bk-name'), phoneEl = $('bk-phone'), emailEl = $('bk-email');
+    DM.select($('bk-pay'));
+    const submit = $('hb-submit'), label = submit.querySelector('.hb-label');
+
+    let touched = false;
     function validate(){
       let firstBad = null;
 
-      const pickupBad = !pickup.value.trim();
-      markField(wrapOf(pickup), pickupBad);
-      setNote(noteOf('note-pickup'), pickupBad ? 'We need to know where the car is.' : '');
-      if (pickupBad && !firstBad) firstBad = pickup;
+      const pickupBad = !$('bk-pickup').value.trim();
+      markField($('f-pickup'), pickupBad);
+      setNote($('note-pickup'), pickupBad ? 'We need to know where the car is.' : '');
+      if (pickupBad) firstBad = firstBad || $('bk-pickup');
 
-      const emailBad = !isEmail(email.value);
-      markField(wrapOf(email), emailBad);
-      setNote(noteOf('note-email'),
-        emailBad ? (email.value.trim() ? 'That address looks incomplete.' : 'We send your confirmation here.') : '');
-      if (emailBad && !firstBad) firstBad = email;
+      if (state.mode === 'point_to_point'){
+        const dropBad = !$('bk-drop').value.trim();
+        markField($('f-drop'), dropBad);
+        setNote($('note-drop'), dropBad ? 'Where does the car need to end up?' : '');
+        if (dropBad) firstBad = firstBad || $('bk-drop');
+      }
 
-      const dateBad = !date.value || !time.value;
-      markField(wrapOf(date), dateBad);
-      setNote(noteOf('note-date'), dateBad ? 'Pick a date and time.' : '');
-      if (dateBad && !firstBad) firstBad = date;
+      const dateBad = !dp.get() || !tp.get();
+      markField($('bk-date').closest('.dm-field'), dateBad);
+      setNote($('note-date'), dateBad ? 'Pick a date and time.' : '');
+      if (dateBad) firstBad = firstBad || $('bk-date');
+
+      const nameBad = !nameEl.value.trim();
+      markField(nameEl.closest('.dm-field'), nameBad);
+      setNote($('note-name'), nameBad ? 'Tell us who to look out for.' : '');
+      if (nameBad) firstBad = firstBad || nameEl;
+
+      const phoneBad = (phoneEl.value.match(/\d/g) || []).length < 6;
+      markField(phoneEl.closest('.dm-field'), phoneBad);
+      setNote($('note-phone'), phoneBad ? 'We need a number for the night itself.' : '');
+      if (phoneBad) firstBad = firstBad || phoneEl;
+
+      const emailBad = !isEmail(emailEl.value);
+      markField(emailEl.closest('.dm-field'), emailBad);
+      setNote($('note-email'), emailBad
+        ? (emailEl.value.trim() ? 'That address looks incomplete.' : 'Your confirmation goes here.') : '');
+      if (emailBad) firstBad = firstBad || emailEl;
 
       return firstBad;
     }
+    [$('bk-pickup'), $('bk-drop'), nameEl, phoneEl, emailEl].forEach(el =>
+      el.addEventListener('input', () => { if (touched) validate(); }));
 
-    // Re-validate as the visitor fixes things, but only once they've had a first go —
-    // nagging on an untouched field is the opposite of calm.
-    let submitted = false;
-    [pickup, email, date, time].forEach(el =>
-      el.addEventListener('input', () => { if (submitted) validate(); }));
-
+    /* ---------- submit ---------- */
     form.addEventListener('submit', async e => {
       e.preventDefault();
-      submitted = true;
-
-      const firstBad = validate();
-      if (firstBad){ firstBad.focus(); return; }
+      touched = true;
+      const bad = validate();
+      if (bad){ bad.focus(); return; }
 
       submit.classList.add('busy');
       submit.disabled = true;
       label.textContent = 'Sending';
 
-      const destination = drop.value.trim();
+      const p2p = state.mode === 'point_to_point';
       const { ok, data } = await postJSON('/api/bookings', {
-        mode: destination ? 'point_to_point' : 'hourly',
-        pickup_location: pickup.value.trim(),
-        destination: destination || null,
-        // no destination means an open-ended evening: the plan's 1-hour minimum
-        duration_hours: destination ? null : 1,
-        customer_email: email.value.trim(),
+        mode: state.mode,
+        pickup_location: $('bk-pickup').value.trim(),
+        destination: p2p ? $('bk-drop').value.trim() : null,
+        duration_hours: p2p ? null : state.hours,
+        km_beyond_metro: state.kmBeyond || null,
+        customer_name: nameEl.value.trim(),
+        customer_phone: phoneEl.value.trim(),
+        customer_email: emailEl.value.trim(),
+        payment_method: $('bk-pay').value,
         vehicle_details: null,
-        scheduled_for: date.value + 'T' + time.value
+        scheduled_for: dp.get() + 'T' + tp.get(),
+        // present when the address came from the autocomplete, so the tracking
+        // page can draw the ride without re-geocoding the text
+        pickup_lat: state.pickup ? state.pickup.lat : null,
+        pickup_lng: state.pickup ? state.pickup.lng : null,
+        dest_lat: p2p && state.dropoff ? state.dropoff.lat : null,
+        dest_lng: p2p && state.dropoff ? state.dropoff.lng : null,
+        route_km: state.routeKm || null,
+        route_minutes: state.routeMin || null
       });
 
-      if (ok){
-        refEl.textContent = data.reference || (data.bookingId || '').slice(0,8).toUpperCase();
-        form.hidden = true;
-        done.hidden = false;
-        return;
-      }
-
-      // failed: restore the button and explain, without shouting
       submit.classList.remove('busy');
       submit.disabled = false;
       label.textContent = 'Request a driver';
 
-      const field = data.field;
-      const map = { pickup_location:['note-pickup', pickup], customer_email:['note-email', email] };
-      if (map[field]){
-        const [noteId, el] = map[field];
-        markField(wrapOf(el), true);
-        setNote(noteOf(noteId), data.error);
+      if (ok){
+        $('hb-ref').textContent = data.reference || (data.bookingId || '').slice(0, 8).toUpperCase();
+        const track = $('hb-track');
+        if (data.trackingUrl){ track.href = data.trackingUrl; track.hidden = false; }
+        form.hidden = true;
+        document.querySelector('.hb-head').hidden = true;
+        $('hb-done').hidden = false;
+        DM.toast('Booking confirmed — reference ' + $('hb-ref').textContent, 'good');
+        return;
+      }
+
+      // server rejected it: point at the field it named, if any
+      const fields = {
+        customer_name:['note-name', nameEl],
+        customer_phone:['note-phone', phoneEl],
+        customer_email:['note-email', emailEl],
+        pickup_location:['note-pickup', $('bk-pickup')],
+        destination:['note-drop', $('bk-drop')],
+      };
+      if (fields[data.field]){
+        const [noteId, el] = fields[data.field];
+        markField(el.closest('.dm-field'), true);
+        setNote($(noteId), data.error);
         el.focus();
       } else {
-        markField(wrapOf(email), false);
-        setNote(noteOf('note-email'), data.error || 'Something went wrong. Please try again.');
+        DM.toast(data.error || 'Something went wrong. Please try again.', 'bad', 5000);
       }
     });
+
+    $('hb-again').addEventListener('click', () => {
+      form.hidden = false;
+      $('hb-done').hidden = true;
+      document.querySelector('.hb-head').hidden = false;
+      [nameEl, phoneEl, emailEl].forEach(el => { el.value = ''; markField(el.closest('.dm-field'), false); });
+      touched = false;
+    });
+
+    renderHours();
+    quote();
   }
 
   /* ======================= waitlist tiles ======================= */
