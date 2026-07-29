@@ -677,12 +677,16 @@
     // A ride can't run ahead of its driver - the DB enforces this too, but the
     // buttons shouldn't offer something that will bounce.
     const assigned = Boolean(b.driver_id);
+    $('dw-copy-track').disabled = !assigned;
+    $('dw-copy-track').title = assigned ? 'Copy customer tracking link' : 'Assign a driver to unlock tracking';
+    $('dw-copy-driver').disabled = !assigned;
+    $('dw-copy-driver').title = assigned ? 'Copy chauffeur GPS link' : 'Assign a driver before sharing this link';
     document.querySelectorAll('#dw-status-btns button[data-s]').forEach(btn => {
       btn.disabled = !assigned && btn.dataset.s !== 'cancelled';
     });
     $('dw-status-hint').textContent = assigned
-      ? 'The customer sees each change on their tracking link straight away.'
-      : 'Assign a driver first - a ride cannot go en route with nobody driving it.';
+      ? 'Tracking is unlocked. Send the customer link and chauffeur GPS link when ready.'
+      : 'Assign a driver first - tracking and GPS links unlock after assignment.';
 
     $('dw-company').value = b.company_name || '';
     $('dw-bill-email').value = '';

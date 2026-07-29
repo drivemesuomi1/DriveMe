@@ -451,10 +451,14 @@
       if (res.ok && data.success){
         done = render(data.ride);
         delay = data.ride.location && ['driver_en_route', 'ride_started'].includes(data.ride.status) ? 5000 : 12000;
-      } else if (res.status === 404){
+      } else if (res.status === 403 || res.status === 404){
         $('loading').hidden = true;
         $('shell').hidden = true;
         $('err').hidden = false;
+        if (res.status === 403){
+          $('err-title').textContent = 'Tracking is not available yet';
+          $('err-body').textContent = 'Your live link starts once a chauffeur has been assigned to this booking.';
+        }
         return;                                   // dead link - stop polling
       } else {
         delay = Math.min(delay * 1.6, 60000);     // back off on server trouble

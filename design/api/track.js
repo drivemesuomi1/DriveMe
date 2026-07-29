@@ -27,6 +27,7 @@ export default async function handler(req, res) {
   }
 
   if (!data) return fail(res, 404, 'We could not find that ride. Check the link you were sent.');
+  if (!data.driver_name) return fail(res, 403, 'Live tracking starts once your chauffeur has been assigned.');
 
   return send(res, 200, { success: true, ride: data });
 }

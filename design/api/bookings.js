@@ -163,6 +163,5 @@ export default async function handler(req, res) {
     success: true,
     bookingId: id,
     reference: id.slice(0, 8).toUpperCase(),
-    trackingUrl: '/track?t=' + trackingToken,
   });
 }

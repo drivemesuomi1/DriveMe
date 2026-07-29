@@ -157,7 +157,8 @@ The client-side estimate is indicative; `api/bookings.js` recomputes and stores 
 }
 ```
 
-`201 → { success, bookingId, reference, trackingUrl }` — price is computed server-side.
+`201 → { success, bookingId, reference }` — price is computed server-side. The tracking
+link is released only after dispatch assigns a chauffeur.
 
 ### `GET /api/track?t=<32-hex token>`
 
