@@ -1887,14 +1887,123 @@
     'Begin':'Aloita', 'Your car deserves a better way home.':'Autosi ansaitsee paremman tavan päästä kotiin.',
     'Book Your Driver':'Varaa kuljettajasi', 'Talk to us':'Ota yhteyttä'
   };
-  const FINNISH_ATTRIBUTES = {
+  Object.assign(FINNISH, {
+    'The request':'Pyyntö', 'Tell us where the car is.':'Kerro, missä autosi on.', 'We\'ll do the rest.':'Me hoidamme loput.',
+    'The journey':'Matka', 'Your vehicle':'Ajoneuvosi', 'When':'Ajankohta', 'Confirm':'Vahvista',
+    'Where is the car, and where is it going?':'Missä auto on ja minne se on menossa?',
+    'Book by the hour when the evening is open-ended, or point to point when you know exactly where the car needs to be.':'Varaa tuntiveloituksella, kun illan aikataulu on avoin, tai pisteestä pisteeseen, kun määränpää on tiedossa.',
+    'Driver stays with you':'Kuljettaja pysyy kanssasi', 'One journey, one destination':'Yksi matka, yksi määränpää',
+    'Three-hour minimum - billed in half hours thereafter.':'Vähintään kolme tuntia - sen jälkeen laskutus puolen tunnin välein.',
+    'Charged at €0.50 per kilometre beyond the Helsinki Metro Area.':'Helsingin seudun ulkopuolella veloitetaan 0,50 € kilometriä kohden.',
+    'Continue':'Jatka', 'Estimate':'Arvio', 'Indicative':'Suuntaa-antava',
+    'Professional driver':'Ammattikuljettaja', 'Total':'Yhteensä',
+    'VAT included. No surge pricing, ever - the same rate at two in the afternoon and two in the morning.':'ALV sisältyy. Ei koskaan hintapiikkejä - sama hinta iltapäivällä ja aamuyöllä.',
+    'Subscription -':'Tilaus -', 'for five hours of driver time':'viidestä tunnista kuljettajan aikaa',
+    'Applies past Helsinki, Espoo, Vantaa and Kauniainen.':'Koskee Helsingin, Espoon, Vantaan ja Kauniaisten ulkopuolella.',
+    'Private events and multi-stop evenings, quoted in advance.':'Yksityistilaisuudet ja monipysähdysillat hinnoitellaan etukäteen.',
+    'Five hours of driver time every month.':'Viisi tuntia kuljettajan aikaa joka kuukausi.',
+    'Corporate invoicing':'Yrityslaskutus', 'The approach':'Saapuminen',
+    'You\'ll know exactly':'Tiedät aina tarkalleen', 'where they are.':'missä kuljettajasi on.',
+    'The moment a request is confirmed, this becomes live - your driver\'s approach, their ETA, and their name. No wondering, no calling to ask.':'Kun pyyntö on vahvistettu, näet kuljettajan lähestymisen, arvioidun saapumisajan ja nimen reaaliajassa. Ei arvailua eikä tarvetta soittaa.',
+    'Demonstration · Helsinki capital region':'Esittely · Helsingin pääkaupunkiseutu', 'Sample journey - positions refresh every 3 seconds.':'Esimerkkimatka - sijainnit päivittyvät 3 sekunnin välein.',
+    'Status':'Tila', 'Approaching pickup':'Lähestyy noutopaikkaa', 'Arriving in':'Saapuu','Driver':'Kuljettaja',
+    'Your car':'Autosi', 'Driver assigned':'Kuljettaja varattu', 'Driver arrived':'Kuljettaja saapui', 'At your pickup':'Noutopaikallasi', 'Now':'Nyt',
+    'A licensed professional drives you home in your own car. On demand, day or night.':'Lisensoitu ammattilainen ajaa sinut kotiin omalla autollasi. Tilauksesta päivin ja öin.',
+    'Book now →':'Varaa nyt →', 'Executive sedans with dedicated chauffeurs for corporate accounts and events.':'Edustusautot omilla kuljettajilla yrityksille ja tapahtumiin.',
+    'Join waitlist →':'Liity jonotuslistalle →', 'Curated vehicles, delivered to your door with a full tank and a handshake.':'Huolella valitut autot toimitetaan ovelle täydellä tankilla ja henkilökohtaisella palvelulla.',
+    'DriveMe owns no vehicles at launch, and that is the design - a professional drives the car you already have, which is precisely what lets Phase 1 begin without fleet financing. A small premium fleet comes later: two to three vehicles, acquired only once Phase 1 is generating consistent revenue, opening the chauffeur and rental tiers.':'DriveMe ei omista käynnistysvaiheessa ajoneuvoja, ja se on tarkoituksellista - ammattilainen ajaa autoa, joka sinulla jo on. Näin ensimmäinen vaihe voidaan aloittaa ilman kalustorahoitusta. Pieni premium-kalusto tulee myöhemmin, kun ensimmäinen vaihe tuottaa tasaista liikevaihtoa.',
+    'The standard we intend to buy into when the chauffeur tier opens - a reference point, not an inventory list. No vehicle shown here has been acquired, financed, or insured, and none will be until Phase 1 has proven the demand behind it.':'Taso, johon tähtäämme kuljettajapalvelun avautuessa - vertailukohta, ei kalustoluettelo. Yhtään esitettyä ajoneuvoa ei ole hankittu, rahoitettu tai vakuutettu ennen kuin ensimmäinen vaihe on osoittanut kysynnän.',
+    '2–3 vehicles planned':'Suunnitteilla 2–3 ajoneuvoa', 'Follows Phase 1':'Seuraa vaihetta 1', 'Chauffeur-driven':'Kuljettajapalvelu',
+    'The standard we\'re building toward.':'Taso, jota kohti rakennamme.',
+    'Climate set before you step in. Phone paired. Conversation optional. That is the brief for the chauffeur tier when it opens - because the best luxury is the kind you don\'t have to ask for.':'Ilmastointi on asetettu ennen kuin astut sisään. Puhelin on yhdistetty. Keskustelu on valinnaista. Tähän tähtäämme kuljettajapalvelussa - paras ylellisyys on sellaista, jota ei tarvitse pyytää.',
+    'Licensed chauffeurs with verified professional driving records - never gig amateurs.':'Lisensoituja kuljettajia, joiden ammattitausta on varmennettu - ei keikkaharrastajia.',
+    'Four checks before activation: licence verification, driving record, criminal background, and an in-person interview.':'Neljä tarkistusta ennen aktivointia: ajokortin varmennus, ajohistoria, rikostausta ja henkilöhaastattelu.',
+    'Every journey tracked end-to-end, shareable in one tap with family or colleagues.':'Jokaista matkaa seurataan alusta loppuun, ja seurantalinkki on jaettavissa yhdellä painalluksella perheelle tai kollegoille.',
+    'The price you see is the price you pay. No surge games, no hidden fees.':'Näkemäsi hinta on maksamasi hinta. Ei hintapiikkejä eikä piilokuluja.',
+    'Consolidated billing and duty-of-care reporting for executive teams.':'Koontilaskutus ja huolenpitovelvollisuuden raportointi johtoryhmille.',
+    'Suited drivers, quiet rides, your preferences remembered - the standard every booking is held to.':'Pukeutuneet kuljettajat, rauhalliset matkat ja muistettavat mieltymykset - taso, johon jokainen varaus sitoutuu.',
+    'The app':'Sovellus', 'in your hand.':'käsissäsi.', 'Interface preview - screens shown are in development, with sample journey data.':'Käyttöliittymän esikatselu - näkymät ovat kehitteillä ja sisältävät esimerkkimatkan tietoja.',
+    'Addressable market':'Osoitettava markkina', 'Capital-region population':'Pääkaupunkiseudun väestö', 'Service phases':'Palveluvaiheet', 'Vetting checks per driver':'Tarkistuksia kuljettajaa kohden',
+    'Market size and population are external estimates for Finland and the Helsinki capital region, not DriveMe figures. Every driver must clear four checks before a first booking - Finnish licence verification, a driving-record check, a criminal background check, and an in-person interview - and none is activated on a partial file.':'Markkinakoko ja väestö ovat ulkoisia arvioita Suomesta ja Helsingin pääkaupunkiseudusta, eivät DriveMen lukuja. Jokaisen kuljettajan on läpäistävä neljä tarkistusta ennen ensimmäistä varausta - suomalaisen ajokortin varmennus, ajohistorian tarkistus, rikostaustan tarkistus ja henkilöhaastattelu.',
+    'outward.':'ulospäin.', 'Stage 1 · Months 0–6':'Vaihe 1 · Kuukaudet 0–6', 'Stage 2 · Months 6–18':'Vaihe 2 · Kuukaudet 6–18', 'Stage 3 · Months 18–36':'Vaihe 3 · Kuukaudet 18–36', 'Long-term':'Pitkällä aikavälillä',
+    'Finland':'Suomi', 'Nordics':'Pohjoismaat', 'Global':'Kansainvälinen', 'Franchise & licensing model':'Franchising- ja lisensointimalli',
+    'I kept running into the same evening in Helsinki. Dinner runs long, the weather turns, a glass of wine is poured - and a car you rely on becomes something to recover tomorrow morning. Every app in this city solves the passenger\'s journey. None of them solve the car\'s.':'Törmäsin Helsingissä jatkuvasti samaan iltaan. Illallinen venyy, sää muuttuu, viiniä kaadetaan - ja autosta, johon luotat, tulee seuraavan aamun noutoprojekti. Jokainen kaupungin sovellus ratkaisee matkustajan matkan. Yksikään ei ratkaise auton matkaa.',
+    'So DriveMe starts deliberately narrow: one service, one city, licensed professional drivers who come to you and drive your own vehicle home. The chauffeur and rental tiers will open only once that first promise is being kept consistently. I would rather earn the second product than announce it.':'DriveMe aloittaa tarkoituksella rajatusti: yksi palvelu, yksi kaupunki, lisensoidut ammattilaiset, jotka tulevat luoksesi ja ajavat oman ajoneuvosi kotiin. Kuljettaja- ja vuokraustasot avautuvat vasta, kun ensimmäinen lupaus toteutuu johdonmukaisesti. Ansaitsen mieluummin toisen tuotteen kuin vain ilmoitan siitä.',
+    'If you are an early customer, a driver who takes the work seriously, or a venue that sends people home at midnight - I want to hear from you before we launch.':'Jos olet varhainen asiakas, työhönsä vakavasti suhtautuva kuljettaja tai paikka, joka lähettää ihmisiä kotiin keskiyöllä - haluan kuulla sinusta ennen käynnistystä.',
+    'Pricing':'Hinnoittelu', 'Safety':'Turvallisuus', 'Book a driver':'Varaa kuljettaja', 'Contact':'Yhteystiedot'
+  });
+    Object.assign(FINNISH, {
+      'Charged after the ride': 'Veloitetaan matkan jälkeen',
+      'Billed to your company': 'Laskutetaan yritykseltäsi',
+      'A vetted, licensed chauffeur drives your own car. No account needed - we\'ll confirm by email and send you a live tracking link.': 'Tarkistettu ja lisensoitu kuljettaja ajaa omaa autoasi. Tiliä ei tarvita - vahvistamme varauksen sähköpostilla ja lähetämme reaaliaikaisen seurantalinkin.',
+      'Your reference is -. A vetted chauffeur is being assigned by hand; we\'ll email your live tracking link once they are assigned.': 'Varausviitteesi on -. Tarkistettu kuljettaja nimetään käsin, ja lähetämme reaaliaikaisen seurantalinkin sähköpostilla heti nimityksen jälkeen.',
+      'Set your pickup and destination. Your driver is matched in minutes.': 'Aseta noutopaikka ja määränpää. Kuljettaja löytyy minuuteissa.',
+      'A vetted, licensed professional confirms - profile, rating, and ETA up front.': 'Tarkistettu, lisensoitu ammattilainen vahvistaa varauksen - profiili, arvostelu ja arvioitu saapumisaika näkyvät heti.',
+      'Follow the journey in real time. Share your route with anyone you trust.': 'Seuraa matkaa reaaliajassa. Jaa reitti kenelle tahansa, johon luotat.',
+      'You step out at your door. Your car is parked where it belongs.': 'Nouset kyydistä omalla ovellasi. Autosi on pysäköity sinne, minne se kuuluu.',
+      'TYPE OF BOOKING': 'VARAUKSEN TYYPPI',
+      'Three-hour minimum, billed in half-hour blocks thereafter.': 'Vähimmäiskesto on kolme tuntia, jonka jälkeen laskutus jatkuu puolen tunnin jaksoissa.',
+      '3 hr': '3 h',
+      'Professional driver': 'Ammattikuljettaja',
+      'Subscription - €100 / month for five hours of driver time': 'Tilaus - €100 / kk viidestä tunnista kuljettajan aikaa',
+      'One platform. Three ways to arrive.': 'Yksi palvelu. Kolme tapaa saapua.',
+      'Today, your car. In time, ours.': 'Tänään sinun autosi. Aikanaan omamme.',
+      'Engineered around trust.': 'Rakennettu luottamuksen varaan.',
+      'Every journey, in your hands.': 'Jokainen matka käsissäsi.',
+      'A market waiting for a premium answer.': 'Markkina odottaa ensiluokkaista vastausta.',
+      'From Helsinki, outward.': 'Helsingistä ulospäin.',
+      'Why I\'m building DriveMe.': 'Miksi rakennan DriveMeä.',
+      'Email address for the chauffeur waitlist': 'Sähköpostiosoite kuljettajapalvelun jonotuslistalle',
+      'Email address for the rental waitlist': 'Sähköpostiosoite vuokrauksen jonotuslistalle'
+    });
+    Object.assign(FINNISH, {
+      'A vetted, licensed chauffeur drives your own car.': 'Tarkistettu ja lisensoitu kuljettaja ajaa omaa autoasi.',
+      'No account needed': 'Tiliä ei tarvita',
+      'we\'ll confirm by email and send you a live tracking link.': 'vahvistamme varauksen sähköpostilla ja lähetämme reaaliaikaisen seurantalinkin.',
+      'Your reference is -.': 'Varausviitteesi on -.',
+      'A vetted chauffeur is being assigned by hand;': 'Tarkistettu kuljettaja nimetään käsin,',
+      'we\'ll email your live tracking link once they are assigned.': 'ja lähetämme reaaliaikaisen seurantalinkin sähköpostilla heti nimityksen jälkeen.',
+      'One platform.': 'Yksi palvelu.',
+      'Three ways to arrive.': 'Kolme tapaa saapua.',
+      'Today, your car.': 'Tänään sinun autosi.',
+      'In time, ours.': 'Aikanaan omamme.',
+      'Engineered': 'Rakennettu',
+      'around trust.': 'luottamuksen varaan.',
+      'Every journey,': 'Jokainen matka,',
+      'A market waiting for a premium answer.': 'Markkina odottaa ensiluokkaista vastausta.',
+      'From Helsinki,': 'Helsingistä',
+      'outward.': 'ulospäin.',
+      'Why I\'m building DriveMe.': 'Miksi rakennan DriveMeä.',
+      'TYPE OF BOOKING': 'VARAUKSEN TYYPPI',
+      'month': 'kk',
+      'Three-hour minimum,': 'Vähimmäiskesto on kolme tuntia,',
+      'thereafter.': 'sen jälkeen.',
+      'Autosi deserves a better way home.': 'Autosi ansaitsee paremman tavan päästä kotiin.'
+      ,'Four moments.': 'Neljä vaihetta.'
+      ,'Zero friction.': 'Ei kitkaa.'
+      ,'Engineered ': 'Rakennettu '
+      ,'around ': 'luottamuksen '
+      ,'trust.': 'varaan.'
+      ,'A market waiting for ': 'Markkina odottaa '
+      ,'a premium answer.': 'ensiluokkaista vastausta.'
+      ,'Why I\'m building ': 'Miksi rakennan '
+      ,'DriveMe.': 'DriveMeä.'
+      ,'Autosi deserves a ': 'Autosi ansaitsee paremman tavan '
+      ,'deserves a ': 'ansaitsee paremman tavan '
+      ,'better way home.': 'päästä kotiin.'
+    });
+
+    const FINNISH_ATTRIBUTES = {
     'Language':'Kieli', 'Call DriveMe at +358 45 187 8083':'Soita DriveMelle numeroon +358 45 187 8083',
     'Booking type':'Varaustyyppi', 'Where your car is now':'Missä autosi on nyt',
     'Where it needs to go':'Minne auton tulee mennä', 'Pick a date':'Valitse päivä', 'Pick a time':'Valitse aika',
     'Half an hour less':'Puoli tuntia vähemmän', 'Half an hour more':'Puoli tuntia enemmän'
   };
   const originalText = new WeakMap(), originalAttrs = new WeakMap();
-  function applyLanguage(language){
+    let activeLanguage = 'en';
+
+    function applyLanguage(language){
+      activeLanguage = language;
     const finnish = language === 'fi';
     document.documentElement.lang = finnish ? 'fi' : 'en';
     document.title = finnish ? 'DriveMe - Kuljettajasi. Autosi. Sinun tapasi.' : 'DriveMe - Your Driver. Your Car. Your Way.';
@@ -1928,9 +2037,10 @@
   let initialLanguage = 'fi';
   try { initialLanguage = localStorage.getItem('driveme-language') || 'fi'; } catch {}
   applyLanguage(initialLanguage);
+  document.addEventListener('DOMContentLoaded', () => applyLanguage(activeLanguage), { once:true });
   let translationScheduled = false;
   new MutationObserver(() => {
-    if (window.DriveMeLanguage !== 'fi' || translationScheduled) return;
+    if (activeLanguage !== 'fi' || translationScheduled) return;
     translationScheduled = true;
     requestAnimationFrame(() => { translationScheduled = false; applyLanguage('fi'); });
   }).observe(document.body, { childList:true, subtree:true });
