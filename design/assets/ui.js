@@ -243,9 +243,11 @@ window.DM = (function () {
      Date picker - readonly text input + calendar popover
      Value is kept ISO (yyyy-mm-dd) on input.dataset.value
      ==================================================================== */
-  const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
+  function locale(){ return document.documentElement.lang === 'fi' ? 'fi-FI' : undefined; }
+  function weekdays(){
+    return Array.from({ length:7 }, (_, i) =>
+      new Date(2024, 0, 1 + i).toLocaleDateString(locale(), { weekday:'short' }).replace('.', ''));
+  }
 
   const isoOf = (d) => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
   const startOfDay = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
@@ -270,7 +272,7 @@ window.DM = (function () {
     let value = input.dataset.value ? new Date(input.dataset.value + 'T00:00:00') : null;
 
     function label(d) {
-      return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+      return d.toLocaleDateString(locale(), { weekday: 'short', day: 'numeric', month: 'short' });
     }
 
     function commit(d) {
@@ -288,9 +290,9 @@ window.DM = (function () {
       const prev = h('button', 'dm-cal-nav', ICONS.left);
       const next = h('button', 'dm-cal-nav', ICONS.right);
       prev.type = next.type = 'button';
-      prev.setAttribute('aria-label', 'Previous month');
-      next.setAttribute('aria-label', 'Next month');
-      const title = h('span', 'dm-cal-title', MONTHS[view.getMonth()] + ' ' + view.getFullYear());
+      prev.setAttribute('aria-label', document.documentElement.lang === 'fi' ? 'Edellinen kuukausi' : 'Previous month');
+      next.setAttribute('aria-label', document.documentElement.lang === 'fi' ? 'Seuraava kuukausi' : 'Next month');
+      const title = h('span', 'dm-cal-title', view.toLocaleDateString(locale(), { month:'long', year:'numeric' }));
       if (view <= new Date(min.getFullYear(), min.getMonth(), 1)) prev.disabled = true;
       prev.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); render(); });
       next.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); render(); });
@@ -298,7 +300,7 @@ window.DM = (function () {
       cal.appendChild(head);
 
       const grid = h('div', 'dm-cal-grid');
-      DOW.forEach((d) => grid.appendChild(h('div', 'dm-cal-dow', d)));
+      weekdays().forEach((d) => grid.appendChild(h('div', 'dm-cal-dow', d)));
 
       const first = new Date(view.getFullYear(), view.getMonth(), 1);
       const lead = (first.getDay() + 6) % 7;                    // Monday-first

@@ -149,6 +149,10 @@
   }
   .nav-cta:hover{border-color:var(--gold);background:var(--gold);color:#fff!important;
     transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,99,189,.28)}
+  .nav-actions{justify-self:end;display:flex;align-items:center;gap:14px}
+  .lang-switch{display:flex;align-items:center;border:1px solid rgba(174,207,243,.68);border-radius:999px;padding:3px;background:rgba(255,255,255,.20)}
+  .lang-switch button{border:0;background:transparent;color:inherit;font:600 10px/1 var(--font);letter-spacing:.09em;padding:7px 8px;border-radius:999px;cursor:pointer}
+  .lang-switch button[aria-pressed="true"]{background:rgba(255,255,255,.88);color:var(--accent-deep);box-shadow:0 1px 4px rgba(15,35,52,.13)}
   .bar-links{
     border-top:1px solid var(--line);
     display:flex;justify-content:center;
@@ -177,6 +181,7 @@
     .bar-top{padding:20px 20px 16px;gap:10px}
     .logo{font-size:15px;letter-spacing:.22em}
     .nav-cta{font-size:10px;letter-spacing:.08em;padding:10px 16px}
+    .lang-switch{display:none}
   }
 
   /* ---------- hero ---------- */
@@ -193,14 +198,14 @@
   #hero-video{
     position:absolute;top:50%;left:50%;width:100%;height:100%;object-fit:cover;
     transform:translate(-50%,-50%) scale(1.04);
-    filter:brightness(1.07) contrast(.96) saturate(1.08);
+    filter:grayscale(.42) sepia(.22) hue-rotate(154deg) saturate(1.24) brightness(1.10) contrast(.92);
     opacity:0;transition:opacity 1400ms cubic-bezier(.2,0,0,1);
     animation:kenburns 34s ease-in-out infinite alternate;
   }
   #hero-video.ready{opacity:1}
   @keyframes kenburns{from{transform:translate(-50%,-50%) scale(1.04)}to{transform:translate(-50%,-50%) scale(1.14)}}
   .hero-fade{position:absolute;inset:0;background:
-    linear-gradient(180deg,rgba(235,243,248,.20) 0%,rgba(235,243,248,.06) 36%,rgba(217,231,240,.12) 72%,rgba(217,231,240,.26) 100%)}
+    linear-gradient(180deg,rgba(211,232,247,.26) 0%,rgba(211,232,247,.08) 36%,rgba(182,215,239,.15) 72%,rgba(182,215,239,.30) 100%)}
   header h1,header .hero-sub,header .hero-meta,header nav{ text-shadow:0 2px 18px rgba(42,73,94,.42) }
   .hero-inner{position:relative;z-index:2;padding:168px 0 140px;text-align:center;display:flex;flex-direction:column;align-items:center}
   @media(max-width:980px){ .hero-inner{padding:132px 0 120px} }
@@ -1095,7 +1100,13 @@
       <span>+358&nbsp;45&nbsp;187&nbsp;8083</span>
     </a>
     <a class="logo" href="#top">DRIVE<span class="dot">·</span>ME</a>
-    <a class="nav-cta" href="#request" data-hover>Book a Driver</a>
+    <div class="nav-actions">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-lang="fi" aria-pressed="true">FI</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="nav-cta" href="#request" data-hover>Book a Driver</a>
+    </div>
   </div>
   <div class="bar-links">
     <ul class="nav-links">
@@ -1833,6 +1844,102 @@
     if (heroVideo.readyState >= 2) reveal();
     if (reduced) heroVideo.style.animation = 'none';
   }
+
+  /* ---- Finnish is the default customer language; English remains one tap away. ---- */
+  const FINNISH = {
+    'Book a Driver':'Varaa kuljettaja', 'How it works':'Näin se toimii', 'Book':'Varaa',
+    'Services':'Palvelut', 'Fleet':'Kalusto', 'Why DriveMe':'Miksi DriveMe', 'Roadmap':'Suunnitelma',
+    'Premium mobility · Helsinki':'Premium-liikkuminen · Helsinki',
+    'Your Driver.':'Kuljettajasi.', 'Your Car.':'Autosi.', 'Your Way.':'Sinun tapasi.',
+    'A professionally licensed chauffeur arrives, takes the wheel of your own vehicle, and delivers you - and your car - home. No parking. No retrieval. No compromise.':'Ammattitaitoinen, lisensoitu kuljettaja saapuu paikalle, ottaa autosi ratin ja vie sinut sekä autosi kotiin. Ei pysäköintiä. Ei noutoa seuraavana päivänä. Ei kompromisseja.',
+    'By the hour':'Tuntiveloitus', 'Point to point':'Pisteestä pisteeseen',
+    'Pickup location':'Noutopaikka', 'Drop-off':'Määränpää', 'Duration':'Kesto', 'Date':'Päivä',
+    'Time':'Aika', 'Name':'Nimi', 'Phone':'Puhelin', 'Email':'Sähköposti', 'Payment':'Maksu',
+    '3 hours':'3 tuntia', '3-hour minimum':'Vähintään 3 tuntia', 'hours':'tuntia',
+    'billed in half hours':'laskutus puolen tunnin välein', 'Sending':'Lähetetään',
+    'VAT included':'ALV sisältyy', 'no surge, ever':'ei hintapiikkejä koskaan',
+    'Fixed fare':'Kiinteä hinta', 'quoted now':'hinta vahvistetaan',
+    'beyond the metro':'metropolialueen ulkopuolella', 'min drive':'min ajomatka',
+    'Card':'Kortti', 'Corporate invoice':'Yrityslasku', 'Request a driver':'Tilaa kuljettaja',
+    'Request received - matching your driver':'Pyyntö vastaanotettu - etsimme kuljettajaa',
+    'Book another':'Tee uusi varaus', 'Watch the film':'Katso video', 'Scroll':'Vieritä',
+    'Helsinki · Launching 2026':'Helsinki · Käynnistyy 2026', 'Licensed · Insured · Vetted from day one':'Lisensoitu · Vakuutettu · Tarkistettu alusta asti',
+    'The problem':'Ongelma', 'Every ride-share makes you':'Jokainen kyytipalvelu pakottaa sinut',
+    'abandon your own car.':'jättämään autosi taakse.',
+    'A dinner, an event, one glass of wine - and your vehicle spends the night across the city. DriveMe is built to remove the trade-off entirely.':'Illallinen, tapahtuma, lasillinen viiniä - ja autosi jää yöksi toiselle puolelle kaupunkia. DriveMe poistaa tämän valinnan kokonaan.',
+    'The old way':'Vanha tapa', 'Traditional apps':'Perinteiset sovellukset', 'The DriveMe way':'DriveMe-tapa',
+    'Travel in your own vehicle - seats, settings, privacy':'Matkusta omassa autossasi - istuimet, asetukset ja yksityisyys',
+    'A professional, licensed driver takes the wheel':'Ammattitaitoinen, lisensoitu kuljettaja ottaa ratin',
+    'You and your car arrive home together, safely':'Sinä ja autosi pääsette kotiin yhdessä ja turvallisesti',
+    'Four moments. Zero friction.':'Neljä vaihetta. Ei kitkaa.', 'Driver accepts':'Kuljettaja hyväksyy',
+    'Live tracking':'Reaaliaikainen seuranta', 'Safe arrival':'Turvallinen saapuminen',
+    'One platform. Three ways to arrive.':'Yksi palvelu. Kolme tapaa saapua.', 'Live now':'Saatavilla nyt',
+    'Coming soon':'Tulossa pian', 'Premium Driver':'Premium-kuljettaja', 'Luxury Chauffeur':'Ylellinen autonkuljettaja',
+    'Premium Rental':'Premium-vuokraus', 'The fleet · Phase 2':'Kalusto · Vaihe 2',
+    'Today, your car. In time, ours.':'Tänään sinun autosi. Aikanaan omamme.',
+    'Engineered around trust.':'Suunniteltu luottamuksen ympärille.', 'Professional drivers':'Ammattikuljettajat',
+    'Background checked':'Taustat tarkistettu', 'GPS tracking':'GPS-seuranta', 'Transparent pricing':'Selkeä hinnoittelu',
+    'Corporate accounts':'Yritystilit', 'Luxury experience':'Ylellinen kokemus',
+    'Every journey, in your hand.':'Jokainen matka käsissäsi.',
+    'The opportunity':'Mahdollisuus', 'A market waiting for a premium answer.':'Markkina odottaa premium-ratkaisua.',
+    'Expansion':'Laajentuminen', 'From Helsinki, outward.':'Helsingistä eteenpäin.',
+    'Founder\'s note':'Perustajan viesti', 'Why I\'m building DriveMe.':'Miksi rakennan DriveMeä.',
+    'Begin':'Aloita', 'Your car deserves a better way home.':'Autosi ansaitsee paremman tavan päästä kotiin.',
+    'Book Your Driver':'Varaa kuljettajasi', 'Talk to us':'Ota yhteyttä'
+  };
+  const FINNISH_ATTRIBUTES = {
+    'Language':'Kieli', 'Call DriveMe at +358 45 187 8083':'Soita DriveMelle numeroon +358 45 187 8083',
+    'Booking type':'Varaustyyppi', 'Where your car is now':'Missä autosi on nyt',
+    'Where it needs to go':'Minne auton tulee mennä', 'Pick a date':'Valitse päivä', 'Pick a time':'Valitse aika',
+    'Half an hour less':'Puoli tuntia vähemmän', 'Half an hour more':'Puoli tuntia enemmän'
+  };
+  const originalText = new WeakMap(), originalAttrs = new WeakMap();
+  function applyLanguage(language){
+    const finnish = language === 'fi';
+    document.documentElement.lang = finnish ? 'fi' : 'en';
+    document.title = finnish ? 'DriveMe - Kuljettajasi. Autosi. Sinun tapasi.' : 'DriveMe - Your Driver. Your Car. Your Way.';
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())){
+      if (node.parentElement && ['SCRIPT','STYLE','SVG'].includes(node.parentElement.tagName)) continue;
+      const source = originalText.get(node) ?? node.nodeValue;
+      originalText.set(node, source);
+      let translated = source;
+      if (finnish){
+        Object.keys(FINNISH).sort((a, b) => b.length - a.length).forEach(key => {
+          translated = translated.replaceAll(key, FINNISH[key]);
+        });
+      }
+      if (node.nodeValue !== translated) node.nodeValue = translated;
+    }
+    document.querySelectorAll('[placeholder],[aria-label]').forEach(el => {
+      ['placeholder','aria-label'].forEach(attr => {
+        if (!el.hasAttribute(attr)) return;
+        let record = originalAttrs.get(el);
+        if (!record){ record = {}; originalAttrs.set(el, record); }
+        const source = record[attr] ?? el.getAttribute(attr);
+        record[attr] = source;
+        if (FINNISH_ATTRIBUTES[source]) el.setAttribute(attr, finnish ? FINNISH_ATTRIBUTES[source] : source);
+      });
+    });
+    document.querySelectorAll('[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === language)));
+    window.DriveMeLanguage = language;
+  }
+  let initialLanguage = 'fi';
+  try { initialLanguage = localStorage.getItem('driveme-language') || 'fi'; } catch {}
+  applyLanguage(initialLanguage);
+  let translationScheduled = false;
+  new MutationObserver(() => {
+    if (window.DriveMeLanguage !== 'fi' || translationScheduled) return;
+    translationScheduled = true;
+    requestAnimationFrame(() => { translationScheduled = false; applyLanguage('fi'); });
+  }).observe(document.body, { childList:true, subtree:true });
+  document.querySelectorAll('[data-lang]').forEach(button => button.addEventListener('click', () => {
+    const language = button.dataset.lang;
+    if (language === window.DriveMeLanguage) return;
+    try { localStorage.setItem('driveme-language', language); } catch {}
+    location.reload();
+  }));
 
   /* ---- the request: live estimate ---- */
   /* Phase 1 pricing (§3.2): €35/hr with a three-hour minimum billed in half-hour
