@@ -103,13 +103,46 @@ Use the **anon/publishable** key, never the secret key — RLS is the security b
 
 ## 3 · Deploying
 
-Because `vercel.json` and `package.json` live in `design/`, set
-**Project → Settings → General → Root Directory = `design`**.
+The config files live in `design/`, so whichever host you use, point it at that
+folder rather than the repository root.
+
+### Netlify (current)
+
+Set **Site configuration → Build & deploy → Build settings → Base directory** to
+`design`. Netlify then reads `design/netlify.toml`, which needs no build command —
+the site is hand-written HTML. Add `SUPABASE_URL` and `SUPABASE_ANON_KEY` under
+**Site configuration → Environment variables**.
+
+The routes in `api/` are Vercel-style `(req, res)` handlers, which Netlify does not
+run natively. Rather than fork the logic, each route has a four-line wrapper in
+`netlify/functions/` that adapts the Web `Request`/`Response` pair Netlify provides
+to the handler signature — see `api/_lib/netlify-adapter.js`. `netlify.toml` then
+rewrites `/api/*` onto those functions, so the URLs are identical on both hosts and
+`api/` stays the single source of truth.
+
+> **Deploy from git, not the CLI.** `publish = "."` makes every file in `design/`
+> a candidate static asset. `netlify.toml` already 404s the obvious ones
+> (`/api/_lib/*`, `/supabase/*`, `/netlify/*`, `package.json`), but `.env.local`
+> sits in that same folder and is only kept out of a deploy because `.gitignore`
+> excludes it. A `netlify deploy` from your machine would upload it and serve your
+> keys publicly.
+
+### Vercel
+
+`vercel.json` is still present and current. Set
+**Project → Settings → General → Root Directory = `design`**, then:
 
 ```bash
 npm install
 vercel dev      # http://localhost:3000, functions included
 vercel deploy
+```
+
+### Locally, on either
+
+```bash
+npm install
+npm run dev     # http://localhost:3000 — dev-server.mjs, no host CLI or login needed
 ```
 
 ## 4 · Phase 1 pricing (authoritative, recomputed server-side)
