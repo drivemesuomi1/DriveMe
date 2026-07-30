@@ -17,6 +17,9 @@
 
 [functions]
   node_bundler = "esbuild"
+  # @supabase/supabase-js ships CommonJS; inlining it into an ESM function
+  # crashes at runtime. Ship it from node_modules instead of bundling it.
+  external_node_modules = ["@supabase/supabase-js"]
   # the wrappers import from ../../api, which sits outside the functions folder
   included_files = ["api/**"]
 
