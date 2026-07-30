@@ -53,41 +53,80 @@
 # Don't serve the source that happens to sit in the publish directory.
 # `publish = "."` means everything here is a candidate static file, including
 # the SQL migrations, the shared API helpers and any local .env file.
+#
+# force = true is required on every one of these: without it Netlify serves the
+# real file and ignores the rule, because redirects only apply to paths that
+# would otherwise 404.
 # ---------------------------------------------------------------------------
 [[redirects]]
   from = "/api/*"
   to = "/404.html"
   status = 404
+  force = true
 
 [[redirects]]
   from = "/supabase/*"
   to = "/404.html"
   status = 404
+  force = true
 
 [[redirects]]
   from = "/netlify/*"
   to = "/404.html"
   status = 404
+  force = true
 
 [[redirects]]
   from = "/dev-server.mjs"
   to = "/404.html"
   status = 404
+  force = true
 
 [[redirects]]
   from = "/package.json"
   to = "/404.html"
   status = 404
+  force = true
 
 [[redirects]]
   from = "/package-lock.json"
   to = "/404.html"
   status = 404
+  force = true
 
 [[redirects]]
   from = "/README.md"
   to = "/404.html"
   status = 404
+  force = true
+
+# vercel.json is meaningless here and only advertises the other host's config
+[[redirects]]
+  from = "/vercel.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# Belt and braces for local env files. Netlify does not appear to serve dotfiles
+# today, but that is undocumented behaviour and .env.local sits in the publish
+# directory — this makes it explicit rather than incidental.
+[[redirects]]
+  from = "/.env"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.env.local"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.env.example"
+  to = "/404.html"
+  status = 404
+  force = true
 
 # ---------------------------------------------------------------------------
 # Theme shortcuts — mirrors what vercel.json did.
