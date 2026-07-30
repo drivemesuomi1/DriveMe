@@ -1112,9 +1112,9 @@
 <main id="main">
 <header id="top">
   <div class="hero-media">
-    <video id="hero-video" muted playsinline webkit-playsinline
+    <video id="hero-video" muted loop playsinline webkit-playsinline
            preload="metadata" poster="assets/hero-poster.jpg" aria-hidden="true">
-      <source src="assets/hero-loop-01.mp4" type="video/mp4">
+      <source src="assets/hero-reel.mp4" type="video/mp4">
     </video>
   </div>
   <div class="hero-fade" aria-hidden="true"></div>
@@ -1794,13 +1794,6 @@
   /* hero video - cinematic background, fades in once playable */
   const heroVideo = document.getElementById('hero-video');
   if (heroVideo){
-    const heroClips = [
-      'assets/hero-loop-01.mp4', 'assets/hero-loop-02.mp4',
-      'assets/hero-loop-03.mp4', 'assets/hero-loop-04.mp4',
-      'assets/hero-loop-05.mp4', 'assets/hero-loop-06.mp4',
-      'assets/hero-loop-07.mp4', 'assets/hero-loop-08.mp4'
-    ];
-    let clipIndex = 0;
     const reveal = () => heroVideo.classList.add('ready');
     /* Safari honours the muted PROPERTY, not just the attribute - without this it
        treats the play() call as unmuted and rejects it. */
@@ -1822,13 +1815,6 @@
       const p = heroVideo.play();
       if (p && p.catch) p.catch(()=>{});
     };
-    heroVideo.addEventListener('ended', () => {
-      clipIndex = (clipIndex + 1) % heroClips.length;
-      heroVideo.classList.remove('ready');
-      heroVideo.src = heroClips[clipIndex];
-      heroVideo.load();
-      tryPlay();
-    });
     if (saveData){
       heroVideo.removeAttribute('autoplay');
       heroVideo.preload = 'none';
