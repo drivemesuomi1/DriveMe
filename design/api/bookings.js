@@ -1,6 +1,8 @@
 import { randomUUID, randomBytes } from 'node:crypto';
 import { getClient, isConfigured } from './_lib/supabase.js';
 import { send, fail, readJson, isEmail, optionalString, optionalNumber } from './_lib/http.js';
+import { sendMail, mailConfig } from './_lib/mailer.js';
+import { bookingAlert } from './_lib/emails.js';
 
 const MODES = new Set(['hourly', 'point_to_point']);
 // Phase 1 payment methods (§3.5): cash is deliberately absent.
@@ -157,6 +159,22 @@ export default async function handler(req, res) {
     console.error('bookings insert failed:', error.code, error.message);
     return fail(res, 502, 'We could not save that booking. Please try again in a moment.');
   }
+
+  // Tell ops there's a booking waiting for a driver. Awaited rather than
+  // fire-and-forget because a serverless invocation is frozen the moment it
+  // responds, which would kill an in-flight request — but deliberately never
+  // allowed to fail the booking: the row is already committed, and the admin
+  // panel is the source of truth regardless of whether this email lands.
+  const cfg = mailConfig();
+  const alert = bookingAlert(row, cfg.base);
+  const mail = await sendMail({
+    to: cfg.ops,
+    subject: alert.subject,
+    html: alert.html,
+    text: alert.text,
+    replyTo: alert.replyTo,
+  });
+  if (!mail.sent) console.error('bookings: ops alert not delivered for', id, '-', mail.error);
 
   // Short, human-quotable reference - the uuid stays the real key.
   return send(res, 201, {

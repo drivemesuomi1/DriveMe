@@ -94,12 +94,36 @@ Copy `.env.example` → `.env.local` for local work, and set the same two in
 **Vercel → Project → Settings → Environment Variables** for Production, Preview and
 Development:
 
-| Variable | Where to find it |
-| --- | --- |
-| `SUPABASE_URL` | Supabase → Project Settings → API → Project URL |
-| `SUPABASE_ANON_KEY` | Supabase → Project Settings → API → `anon` / publishable key |
+| Variable | Required | Where to find it |
+| --- | --- | --- |
+| `SUPABASE_URL` | yes | Supabase → Project Settings → API → Project URL |
+| `SUPABASE_ANON_KEY` | yes | Supabase → Project Settings → API → `anon` / publishable key |
+| `RESEND_API_KEY` | no | Resend → API Keys. A **sending-access** key is enough |
+| `MAIL_FROM` | no | e.g. `DriveMe <bookings@driveme.fi>` — domain must be verified in Resend |
+| `OPS_EMAIL` | no | where booking alerts land, e.g. `info@driveme.fi` |
+| `PUBLIC_BASE_URL` | no | origin for links in emails; Netlify sets `URL` automatically |
 
 Use the **anon/publishable** key, never the secret key — RLS is the security boundary.
+
+### Booking alerts
+
+Every accepted booking emails the ops inbox with the customer's details, the
+route, the quoted price and a link into `/admin`. `Reply-To` is the customer, so
+replying from the inbox reaches them directly.
+
+The send is awaited (a serverless invocation is frozen once it responds, which
+would kill an in-flight request) but never allowed to fail the booking — the row
+is already committed, and `/admin` remains the source of truth either way. With
+`RESEND_API_KEY` unset the alert is skipped and logged, and the API still
+returns `201`.
+
+Two DNS facts are easy to conflate:
+
+- **Sending as `@driveme.fi`** needs Resend's DKIM/SPF/DMARC records, and the
+  domain showing *Verified* in Resend.
+- **Receiving at `info@driveme.fi`** is separate, and needs an `MX` record on the
+  root domain pointing at a mailbox or forwarder. Resend's `MX` record is on the
+  `send` subdomain and only handles bounces — it does not create an inbox.
 
 ## 3 · Deploying
 
