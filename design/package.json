@@ -5,7 +5,7 @@
   "type": "module",
   "description": "DriveMe — premium mobility landing site and lead-capture API (Mansio Group Oy)",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "dev": "node dev-server.mjs"

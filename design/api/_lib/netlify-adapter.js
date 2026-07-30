@@ -62,16 +62,7 @@ export async function runVercelHandler(handler, request) {
     await handler(req, res);
   } catch (e) {
     console.error('handler threw:', e);
-    // TEMPORARY: surface the reason so a failing deploy can be diagnosed without
-    // access to the function logs. Remove once the Supabase 500s are resolved —
-    // internal error text should not be public on a live site.
-    return json(500, {
-      success: false,
-      error: 'Something went wrong on our side.',
-      detail: (e && e.name) + ': ' + (e && e.message),
-      hasUrl: Boolean(process.env.SUPABASE_URL),
-      hasKey: Boolean(process.env.SUPABASE_ANON_KEY),
-    });
+    return json(500, { success: false, error: "Something went wrong on our side." });
   }
 
   // A handler that returned without writing anything would otherwise hang the
