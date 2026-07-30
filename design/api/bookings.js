@@ -25,6 +25,38 @@ function quote(mode, durationHours, kmBeyond) {
   return { billedHours: P2P_BASE_HOURS, total: P2P_BASE_HOURS * RATE_PER_HOUR + km * PER_KM_BEYOND_METRO };
 }
 
+// DriveMe operates only in the Helsinki capital region, so a pickup time is
+// always Helsinki local time — including for a customer booking from abroad.
+const SERVICE_TZ = 'Europe/Helsinki';
+
+/** How far SERVICE_TZ is from UTC at a given instant, in milliseconds. */
+function zoneOffset(instant) {
+  const inZone = new Date(instant.toLocaleString('en-US', { timeZone: SERVICE_TZ }));
+  const inUtc = new Date(instant.toLocaleString('en-US', { timeZone: 'UTC' }));
+  return inZone.getTime() - inUtc.getTime();
+}
+
+/**
+ * The form sends a naive local datetime ("2026-08-08T22:30") with no timezone.
+ * `new Date()` would read that in the server's zone — UTC on Netlify — storing
+ * every booking 2-3 hours late. Interpret it as SERVICE_TZ instead. A string
+ * that already carries an offset or Z is trusted as-is.
+ */
+function parseServiceTime(raw) {
+  if (/[zZ]$|[+-]\d{2}:?\d{2}$/.test(raw)) {
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  const asUtc = new Date(raw + 'Z');
+  if (Number.isNaN(asUtc.getTime())) return null;
+
+  // Offset is sampled at the wrong instant on the first pass, so refine once —
+  // this is what keeps the hour around a DST switch correct.
+  let result = new Date(asUtc.getTime() - zoneOffset(asUtc));
+  result = new Date(asUtc.getTime() - zoneOffset(result));
+  return Number.isNaN(result.getTime()) ? null : result;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -80,8 +112,8 @@ export default async function handler(req, res) {
   let scheduledFor = null;
   const rawSchedule = optionalString(body.scheduled_for, 40);
   if (rawSchedule) {
-    const when = new Date(rawSchedule);
-    if (Number.isNaN(when.getTime())) {
+    const when = parseServiceTime(rawSchedule);
+    if (!when) {
       return fail(res, 400, 'Pick a date and time.', 'scheduled_for');
     }
     scheduledFor = when.toISOString();
