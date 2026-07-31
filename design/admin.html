@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
 <link rel="icon" href="assets/logo-crown-d.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/ui.css">
 <style>
@@ -29,6 +31,19 @@
   .row-top{margin-top:18px}
   .select-offset{margin-top:12px}
   .heading-note{text-transform:none;letter-spacing:0;font-weight:400}
+  .live-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+  #live-map{height:590px;border-radius:var(--r-card)}
+  .live-list{display:grid;gap:8px;max-height:590px;overflow:auto}
+  .live-row{border:1px solid var(--ink-100);border-radius:6px;padding:13px;background:var(--surface);
+    cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%}
+  .live-row:hover{border-color:var(--accent)}
+  .live-row .topline{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .live-row .driver{font-weight:650;color:var(--ink-900)}
+  .live-row .route-line{display:block;font-size:12px;color:var(--ink-500);margin-top:5px;overflow-wrap:anywhere}
+  .freshness{font-size:10px;font-weight:700;color:var(--positive);white-space:nowrap}
+  .freshness.stale{color:var(--critical)}
+  .live-empty{padding:40px 18px;text-align:center;color:var(--ink-500)}
+  .live-map-card{padding:0}
 
   /* ---------------- shell ---------------- */
   .shell{display:flex;align-items:stretch;min-height:100vh}
@@ -172,6 +187,7 @@
     .card{padding:18px}
     .scroll{margin:0 -18px;padding:0 18px}
   }
+  @media(max-width:980px){.live-layout{grid-template-columns:1fr}#live-map{height:390px}.live-list{max-height:none}}
 </style>
 </head>
 <body class="dm">
@@ -208,6 +224,7 @@
   </div>
   <nav id="nav" aria-label="Admin sections">
     <button type="button" data-v="metrics" class="on">Metrics</button>
+    <button type="button" data-v="tracking">Live map<span class="n" id="n-live">0</span></button>
     <button type="button" data-v="bookings">Bookings<span class="n" id="n-bookings">0</span></button>
     <button type="button" data-v="drivers">Drivers<span class="n" id="n-drivers">0</span></button>
     <button type="button" data-v="waitlist">Waitlist<span class="n" id="n-waitlist">0</span></button>
@@ -232,6 +249,23 @@
     <div class="cols">
       <div class="card"><h3>By booking type</h3><div class="bars" id="m-types"></div></div>
       <div class="card"><h3>By pickup area</h3><div class="bars" id="m-areas"></div></div>
+    </div>
+  </section>
+
+  <!-- ==================== live tracking ==================== -->
+  <section id="v-tracking" hidden>
+    <div class="head-row below-lg">
+      <div>
+        <h2>Live operations</h2>
+        <p class="muted flush">Assigned chauffeurs, current position, ETA, and GPS freshness.</p>
+      </div>
+      <button type="button" class="dm-btn ghost sm" id="live-refresh">Refresh</button>
+    </div>
+    <div class="live-layout">
+      <div class="card live-map-card"><div id="live-map"></div></div>
+      <div class="live-list" id="live-list">
+        <div class="live-empty">No active chauffeur locations yet.</div>
+      </div>
     </div>
   </section>
 
@@ -424,6 +458,7 @@
       <p class="muted below-sm" id="dw-status-hint"></p>
       <div class="row" id="dw-status-btns">
         <button type="button" class="dm-btn sm" data-s="driver_en_route">Driver en route</button>
+        <button type="button" class="dm-btn sm" data-s="driver_arrived">Driver arrived</button>
         <button type="button" class="dm-btn sm" data-s="ride_started">Ride started</button>
         <button type="button" class="dm-btn sm" data-s="completed">Completed</button>
         <button type="button" class="dm-btn danger sm" data-s="cancelled">Cancel booking</button>
@@ -448,6 +483,8 @@
   </div>
 </aside>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="assets/ui.js"></script>
 <script>
@@ -456,6 +493,7 @@
   const $ = id => document.getElementById(id);
   const esc = DM.escapeHtml;
   let sb = null, bookings = [], drivers = [], invoices = [], waitlist = [], current = null;
+  let liveMap = null, liveMarkers = new Map(), latestLocations = [];
 
   const euro = n => n == null ? '-' : '€' + Number(n).toFixed(2);
   const when = iso => iso ? new Date(iso).toLocaleString([], { dateStyle:'medium', timeStyle:'short' }) : '-';
@@ -464,6 +502,7 @@
     requested:      { label:'Matching driver', cls:'warn' },
     driver_assigned:{ label:'Driver assigned', cls:'accent' },
     driver_en_route:{ label:'En route',        cls:'accent' },
+    driver_arrived: { label:'Driver arrived',  cls:'good' },
     ride_started:   { label:'Ride started',    cls:'good' },
     completed:      { label:'Completed',       cls:'' },
     cancelled:      { label:'Cancelled',       cls:'bad' },
@@ -563,11 +602,93 @@
   $('nav').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     document.querySelectorAll('#nav button').forEach(x => x.classList.toggle('on', x === b));
-    ['metrics','bookings','drivers','waitlist','invoices']
+    ['metrics','tracking','bookings','drivers','waitlist','invoices']
       .forEach(v => $('v-' + v).hidden = v !== b.dataset.v);
+    if (b.dataset.v === 'tracking'){
+      loadLiveLocations();
+      setTimeout(() => { if (liveMap) liveMap.invalidateSize(); }, 0);
+    }
   });
 
-  function loadAll(){ loadBookings(); loadDrivers(); loadWaitlist(); loadInvoices(); }
+  function loadAll(){ loadBookings(); loadDrivers(); loadWaitlist(); loadInvoices(); loadLiveLocations(); }
+
+  /* ================= live operations ================= */
+  function liveAge(iso){
+    if (!iso) return { text:'Waiting for GPS', stale:true };
+    const sec = Math.max(0,Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+    if (sec < 10) return { text:'Live now', stale:false };
+    if (sec < 60) return { text:sec + ' sec ago', stale:false };
+    return { text:Math.floor(sec / 60) + ' min ago', stale:sec >= 90 };
+  }
+
+  function ensureLiveMap(){
+    if (!liveMap && typeof L !== 'undefined'){
+      liveMap = DM.map($('live-map'),{zoom:11,scrollWheelZoom:true});
+    }
+    return liveMap;
+  }
+
+  function focusLive(bookingId){
+    const marker = liveMarkers.get(bookingId);
+    if (marker && liveMap){ liveMap.setView(marker.getLatLng(),15); marker.openPopup(); }
+  }
+
+  function renderLiveLocations(){
+    const map = ensureLiveMap();
+    liveMarkers.forEach(marker => marker.remove());
+    liveMarkers.clear();
+    const rows = latestLocations.map(loc => {
+      const b = bookings.find(x => x.id === loc.booking_id);
+      const d = b && drivers.find(x => x.id === b.driver_id);
+      return b ? { loc,b,d,age:liveAge(loc.recorded_at) } : null;
+    }).filter(Boolean);
+    $('n-live').textContent = rows.filter(x => !x.age.stale).length;
+    $('live-list').innerHTML = rows.length ? rows.map(x =>
+      '<button type="button" class="live-row" data-live-id="' + x.b.id + '">' +
+        '<span class="topline"><span class="driver">' + esc(x.d ? x.d.full_name : 'Assigned driver') + '</span>' +
+        '<span class="freshness' + (x.age.stale ? ' stale' : '') + '">' + esc(x.age.text) + '</span></span>' +
+        '<span class="route-line">' + esc(x.b.pickup_location || '-') +
+          (x.loc.eta_minutes == null ? '' : ' · ETA ' + x.loc.eta_minutes + ' min') +
+          (x.loc.accuracy_m == null ? '' : ' · GPS ' + Math.round(x.loc.accuracy_m) + ' m') +
+        '</span></button>'
+    ).join('') : '<div class="live-empty">No active chauffeur locations yet.</div>';
+    if (!map) return;
+    const points = [];
+    rows.forEach(x => {
+      const marker = L.marker([x.loc.lat,x.loc.lng],{icon:DM.pinIcon('car'),zIndexOffset:1000})
+        .addTo(map).bindPopup('<b>' + esc(x.d ? x.d.full_name : 'Driver') + '</b><br>' +
+          esc(x.b.pickup_location || '') + '<br>' + esc(x.age.text));
+      liveMarkers.set(x.b.id,marker);
+      points.push(marker.getLatLng());
+    });
+    if (points.length === 1) map.setView(points[0],14);
+    else if (points.length > 1) map.fitBounds(L.latLngBounds(points).pad(.18),{maxZoom:14});
+  }
+
+  async function loadLiveLocations(){
+    if (!sb || !bookings.length) return;
+    const active = bookings.filter(b =>
+      ['driver_assigned','driver_en_route','driver_arrived','ride_started'].includes(b.status)
+    );
+    if (!active.length){ latestLocations = []; renderLiveLocations(); return; }
+    const { data,error } = await sb.from('driver_locations').select('*')
+      .in('booking_id',active.map(b => b.id)).order('recorded_at',{ascending:false}).limit(1000);
+    if (error) return DM.toast(error.message,'bad');
+    const seen = new Set();
+    latestLocations = (data || []).filter(loc => {
+      if (seen.has(loc.booking_id)) return false;
+      seen.add(loc.booking_id); return true;
+    });
+    renderLiveLocations();
+  }
+  $('live-refresh').addEventListener('click',loadLiveLocations);
+  $('live-list').addEventListener('click',e => {
+    const row = e.target.closest('[data-live-id]');
+    if (row) focusLive(row.dataset.liveId);
+  });
+  setInterval(() => {
+    if (!$('v-tracking').hidden) loadLiveLocations();
+  },10000);
 
   /* ================= bookings ================= */
   let bkFilter = 'upcoming';
@@ -582,12 +703,13 @@
     bookings = data || [];
     $('n-bookings').textContent = bookings.filter(b => bucket(b) === 'upcoming' || bucket(b) === 'active').length;
     renderBookings(); renderMetrics(); renderInvoices();
+    if (!$('v-tracking').hidden) loadLiveLocations();
   }
 
   function bucket(b){
     if (b.status === 'cancelled') return 'cancelled';
     if (b.status === 'completed') return 'completed';
-    if (b.status === 'driver_en_route' || b.status === 'ride_started') return 'active';
+    if (['driver_en_route','driver_arrived','ride_started'].includes(b.status)) return 'active';
     return 'upcoming';
   }
 
@@ -652,7 +774,7 @@
     const load = {};
     bookings.forEach(x => {
       if (!x.driver_id || x.id === b.id) return;
-      if (['driver_assigned','driver_en_route','ride_started'].includes(x.status)){
+      if (['driver_assigned','driver_en_route','driver_arrived','ride_started'].includes(x.status)){
         load[x.driver_id] = load[x.driver_id] || { active:0, sameDay:0 };
         load[x.driver_id].active++;
         if (day && dayOf(x.scheduled_for) === day) load[x.driver_id].sameDay++;
@@ -743,7 +865,7 @@
     if (!btn || btn.disabled || !current) return;
     const s = btn.dataset.s;
     if (s === 'cancelled' && !confirm('Cancel booking ' + refOf(current) + '? The customer keeps the link but it will show as cancelled.')) return;
-    const stamp = { driver_en_route:'en_route_at', ride_started:'started_at', completed:'completed_at', cancelled:'cancelled_at' }[s];
+    const stamp = { driver_en_route:'en_route_at', driver_arrived:'arrived_at', ride_started:'started_at', completed:'completed_at', cancelled:'cancelled_at' }[s];
     const patch = { status:s };
     if (stamp) patch[stamp] = new Date().toISOString();
     const { error } = await sb.from('bookings').update(patch).eq('id', current.id);
@@ -988,7 +1110,7 @@
   }
 
   function renderMetrics(){
-    const live = bookings.filter(b => ['driver_assigned','driver_en_route','ride_started'].includes(b.status)).length;
+    const live = bookings.filter(b => ['driver_assigned','driver_en_route','driver_arrived','ride_started'].includes(b.status)).length;
     const revenue = bookings.filter(b => b.status === 'completed')
       .reduce((s, b) => s + Number(b.estimated_price || 0), 0);
     $('m-stats').innerHTML = [

@@ -20,13 +20,17 @@ design/                     ← the Vercel project root (see Deploying)
 │   ├── bookings.js         POST — booking requests (server-side Phase 1 pricing)
 │   ├── notify.js           POST — waitlist signups
 │   ├── track.js            GET  — live ride state by tracking token
-│   ├── driver-location.js  POST — driver GPS ping by driver token
+│   ├── driver-location.js  POST — rich driver GPS ping by driver token
+│   ├── driver-trip.js      GET  — assigned trip details for the chauffeur
+│   ├── driver-status.js    POST — arrived / started / completed transitions
 │   ├── config.js           GET  — Supabase URL + public key for the admin page
 │   └── _lib/               shared helpers (underscore ⇒ not routed)
 ├── supabase/migrations/
 │   ├── 0001_init.sql       bookings, waitlist, admins, RLS, grants
 │   ├── 0002_phase1.sql     customers, drivers, status pipeline, tracking, invoices
-│   └── 0003_coordinates.sql map geometry + a status-order guard
+│   ├── 0003_coordinates.sql map geometry + a status-order guard
+│   ├── 0004_tracking_after_assignment.sql assignment-gated customer tracking
+│   └── 0005_realtime_tracking.sql telemetry, ETA trail, arrival + token rotation
 ├── dev-server.mjs          local stand-in for `vercel dev` (npm run dev)
 ├── package.json
 └── .env.example
@@ -39,7 +43,7 @@ loaded straight from the browser — no API keys, no accounts, nothing to config
 
 | Service | Used for |
 | --- | --- |
-| **Leaflet** + **CARTO Positron** tiles | the map itself (muted basemap that matches the brand) |
+| **Leaflet** + **CARTO Positron / Esri satellite** tiles | live maps with a muted street view and real satellite toggle |
 | **Photon** (photon.komoot.io) | address autocomplete, and reverse geocoding a dropped pin |
 | **OSRM** (router.project-osrm.org) | the real driving route and its distance/duration |
 
@@ -50,15 +54,15 @@ routing already falls back to a straight line if OSRM is unreachable.
 
 ## 1 · Database
 
-Create a Supabase project, then apply **all three** migrations in order — either
+Create a Supabase project, then apply **all five** migrations in order — either
 
 ```bash
 supabase link --project-ref <your-ref>
 supabase db push
 ```
 
-or paste `0001_init.sql`, `0002_phase1.sql`, then `0003_coordinates.sql` into the
-dashboard SQL editor and run each.
+or paste `0001_init.sql` through `0005_realtime_tracking.sql` into the dashboard
+SQL editor and run each in filename order.
 
 > `0003` is what lets the tracking page draw the ride from stored coordinates. Until
 > it's applied, `api/bookings.js` detects the missing columns and saves the booking
@@ -75,6 +79,8 @@ What `0002_phase1.sql` adds (mapping to the requirements doc):
 | §3.4 Status pipeline + live tracking | `status`: requested → driver_assigned → driver_en_route → ride_started → completed (or cancelled), with timestamps. `driver_locations` holds GPS pings; `get_tracking(token)` / `post_driver_location(token,…)` are SECURITY DEFINER RPCs keyed by unguessable 128-bit tokens — the shareable link needs no login. |
 | §3.5 Payments | `payment_method` (card / mobilepay / invoice — **no cash**), `is_corporate`, `company_name`, and an `invoices` table with sequential `DM-…` numbers. |
 | Map geometry (0003) | `pickup_lat/lng`, `dest_lat/lng`, `route_km`, `route_minutes`, returned by `get_tracking` so the customer sees the actual route. A trigger also blocks any status past *requested* while `driver_id` is null — a ride can't be "en route" with nobody driving it. |
+| Assignment gate (0004) | The public tracking RPC returns no ride payload until an approved chauffeur has actually been assigned. |
+| Real-time operations (0005) | Five-second GPS updates with accuracy, speed, heading, route ETA/distance and a 40-point trail; explicit *Driver arrived* state; driver-controlled safe transitions; driver-token rotation on reassignment; customer, chauffeur and admin live maps. |
 | §3.6 Waitlists | unchanged `waitlist` table (email + tier + timestamp), exportable per tier. |
 
 Grant yourself admin access after signing up through Supabase Auth
@@ -187,9 +193,12 @@ The client-side estimate is indicative; `api/bookings.js` recomputes and stores 
 2. Admin signs in at `/admin` → Bookings → opens the booking → assigns an **approved**
    driver (availability shown at a glance) → copies the `/driver?t=…` link and sends it
    to the driver (SMS/WhatsApp).
-3. Driver opens the link and taps **Start sharing** — first GPS ping flips the ride to
-   *Driver en route*; customer's tracking page shows the live map + ETA.
-4. Admin advances *Ride started* / *Completed* (Phase 1 keeps this manual).
+3. Driver opens the link and taps **Start live location** — the screen routes to pickup,
+   calculates driving ETA automatically, and posts GPS quality/speed/heading every five
+   seconds. The first accepted ping flips the ride to *Driver en route*.
+4. Driver marks **Arrived**, **Start ride**, and **Complete ride** from the same screen.
+   The customer map switches its ETA target from pickup to destination automatically.
+   Admin can monitor every active chauffeur and stale device from **Live map**.
 5. Corporate rides: in the booking drawer, flag as corporate → **Generate invoice** →
    print/send from the Invoices tab (mark sent / paid).
 6. Waitlist tab: view + CSV export per tier. Metrics tab: bookings per week / type / area.
@@ -228,7 +237,22 @@ driver_name, location: { lat, lng, eta_minutes, recorded_at }, …timestamps } }
 { "token": "<32-hex driver token>", "lat": 60.17, "lng": 24.94, "eta_minutes": 12 }
 ```
 
-`200 → { success, status }` — first ping moves the booking to `driver_en_route`.
+`200 → { success, status, throttled, serverTime }` — first ping moves the booking
+to `driver_en_route`; the database drops bursts closer than three seconds.
+
+### `GET /api/driver-trip?t=<32-hex driver token>`
+
+Returns the assigned route and status needed by the chauffeur screen. It exposes no
+billing or customer-contact data, and returns nothing before assignment.
+
+### `POST /api/driver-status`
+
+```jsonc
+{ "token": "<32-hex driver token>", "status": "driver_arrived | ride_started | completed" }
+```
+
+Only forward, valid transitions are accepted. Reassigning a booking rotates the driver
+token immediately, revoking the previous chauffeur link.
 
 ### `POST /api/notify`
 

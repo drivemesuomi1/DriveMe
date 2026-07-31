@@ -26,15 +26,18 @@
   .brand span{color:var(--accent)}
   .brand small{display:block;font:500 11px/1.4 var(--font);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-500);margin-top:3px}
 
-  .shell{max-width:1180px;margin:0 auto;padding:22px 16px 56px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+  .shell{width:100%;max-width:none;margin:0;padding:16px 22px 40px;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
   .card{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);padding:22px;box-shadow:var(--sh-1)}
   .card + .card{margin-top:14px}
   .top-actions{display:flex;gap:8px;align-items:center}
   .map-card{padding:0;position:relative;overflow:hidden}
   .min-0{min-width:0}
   .driver-line{margin-top:14px}
+  .live-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--ink-100)}
+  .live-meta span{font-size:11.5px;color:var(--ink-500)}
+  .live-meta b{color:var(--ink-700);font-weight:600}
   .skeleton-card{padding:0}
-  .skeleton-map{height:460px;border-radius:16px}
+  .skeleton-map{height:calc(100vh - 138px);min-height:720px;border-radius:16px}
   .skel-w-62{width:62%;height:22px}
   .skel-w-40{width:40%}
   .skel-w-80{width:80%}
@@ -67,13 +70,23 @@
   .eta-badge .l{font:500 10.5px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-top:3px}
 
   /* ---------- map ---------- */
-  #map{height:460px}
+  #map{height:calc(100vh - 138px);min-height:720px}
   .map-hud{
     position:absolute;top:14px;left:14px;z-index:550;display:flex;align-items:center;gap:8px;
     max-width:calc(100% - 84px);pointer-events:none;
   }
   .map-hud .dm-pill{box-shadow:0 2px 10px rgba(11,21,36,.12)}
   .map-hud .dm-pill.stale{background:var(--critical-soft);color:var(--critical)}
+  .map-layer-toggle{
+    position:absolute;top:14px;right:58px;z-index:550;display:flex;gap:4px;
+    padding:4px;border-radius:var(--r-input);background:rgba(255,255,255,.94);
+    backdrop-filter:blur(8px);box-shadow:var(--sh-1);
+  }
+  .map-layer-toggle button{
+    border:0;background:transparent;cursor:pointer;border-radius:7px;padding:8px 12px;
+    min-height:36px;font:700 12px/1 var(--font);color:var(--ink-500);
+  }
+  .map-layer-toggle button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-deep)}
   .map-center{
     position:absolute;right:14px;bottom:28px;z-index:550;width:38px;height:38px;padding:0;
     display:grid;place-items:center;border:1px solid var(--ink-200);border-radius:50%;background:var(--surface);
@@ -128,8 +141,9 @@
 
   .skel-line{height:13px;margin-bottom:9px}
   @media(max-width:940px){
-    .shell{grid-template-columns:1fr;padding-top:16px}
-    #map{height:320px}
+    .shell{grid-template-columns:1fr;padding:14px 14px 34px}
+    #map{height:64vh;min-height:560px}
+    .skeleton-map{height:64vh;min-height:560px}
     .side{order:2}
   }
   @media(max-width:560px){
@@ -138,6 +152,9 @@
     .meta{grid-template-columns:1fr}
     .eta-badge{margin-left:0}
     .hero-status{flex-wrap:wrap}
+    #map{height:58vh;min-height:500px}
+    .skeleton-map{height:58vh;min-height:500px}
+    .map-layer-toggle{top:12px;right:12px}
   }
 </style>
 </head>
@@ -160,13 +177,17 @@
         <div class="map-hud" id="map-hud" hidden>
           <span class="dm-pill live" id="map-live"><span class="dot"></span><span id="map-live-text">Chauffeur live</span></span>
         </div>
+        <div class="map-layer-toggle" id="map-layer-toggle" role="group" aria-label="Map layer">
+          <button type="button" data-layer="map" aria-pressed="true">Map</button>
+          <button type="button" data-layer="satellite" aria-pressed="false">Satellite</button>
+        </div>
         <button type="button" class="map-center" id="map-center" title="Center on your chauffeur" aria-label="Center on your chauffeur" hidden>
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>
         </button>
         <div class="map-empty" id="map-empty" hidden>
           <div>
-            <span class="dm-pill accent"><span class="dot"></span>Waiting for the driver</span>
-            <p>Your route is ready. The chauffeur's live location appears here as soon as they start sharing.</p>
+            <span class="dm-pill accent"><span class="dot"></span><span id="map-empty-title">Waiting for the driver</span></span>
+            <p id="map-empty-body">Your route is ready. The chauffeur's live location appears here as soon as they start sharing.</p>
           </div>
         </div>
       </div>
@@ -189,6 +210,11 @@
           </div>
         </div>
         <p class="sub driver-line" id="driver-line"></p>
+        <div class="live-meta" id="live-meta" hidden>
+          <span>Updated <b id="live-updated">-</b></span>
+          <span>Distance <b id="live-distance">-</b></span>
+          <span>GPS <b id="live-accuracy">-</b></span>
+        </div>
       </div>
 
       <div class="card">
@@ -197,6 +223,7 @@
           <li data-s="requested">Requested<span class="t" data-t="requested"></span></li>
           <li data-s="driver_assigned">Driver assigned<span class="t" data-t="assigned_at"></span></li>
           <li data-s="driver_en_route">Driver en route<span class="t" data-t="en_route_at"></span></li>
+          <li data-s="driver_arrived">Driver arrived<span class="t" data-t="arrived_at"></span></li>
           <li data-s="ride_started">Ride started<span class="t" data-t="started_at"></span></li>
           <li data-s="completed">Completed<span class="t" data-t="completed_at"></span></li>
         </ul>
@@ -263,24 +290,27 @@
     requested:       { title:'Matching your driver',      note:'A vetted driver is being assigned to your booking by hand.', live:true },
     driver_assigned: { title:'Driver assigned',            note:'Your driver has the booking and will set off shortly.',     live:true },
     driver_en_route: { title:'Your driver is on the way',  note:'Follow their approach on the map.',                          live:true },
+    driver_arrived:  { title:'Your driver has arrived',    note:'Your chauffeur is waiting at the pickup point.',             live:true },
     ride_started:    { title:'Ride in progress',           note:'You and your car are on the way home.',                      live:true },
     completed:       { title:'Ride completed',             note:'Thank you for riding with DriveMe.',                         live:false, cls:'done' },
     cancelled:       { title:'This booking was cancelled', note:'Nothing further is scheduled for this ride.',                live:false, cls:'off' },
   };
-  const ORDER = ['requested','driver_assigned','driver_en_route','ride_started','completed'];
+  const ORDER = ['requested','driver_assigned','driver_en_route','driver_arrived','ride_started','completed'];
   const ICON = {
     live:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
     done:'<svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg>',
     off:'<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>',
   };
 
-  let map = null, carMarker = null, pickPin = null, destPin = null, routeLine = null;
+  let map = null, carMarker = null, pickPin = null, destPin = null;
+  let tripRouteLine = null, activeRouteLine = null, trailLine = null, accuracyCircle = null;
   let framedOnce = false, lastStatus = null, routeDrawn = false, followChauffeur = true;
-  let lastLocationAt = null, carAnimation = null;
+  let lastLocationAt = null, carAnimation = null, activeRouteAt = 0, activeRouteOrigin = null;
+  let resolvedPickup = null, resolvedDestination = null, derivedEta = null;
 
   function ensureMap(){
     if (map || typeof L === 'undefined') return map;
-    map = DM.map($('map'), { zoom: 12, scrollWheelZoom: false });
+    map = DM.map($('map'), { zoom: 12, scrollWheelZoom: false, layerControl: false });
     map.on('focus', () => map.scrollWheelZoom.enable());
     map.on('blur',  () => map.scrollWheelZoom.disable());
     map.on('dragstart', () => { followChauffeur = false; });
@@ -304,9 +334,10 @@
     if (!lastLocationAt){ hud.hidden = true; return; }
     const seconds = Math.max(0, (Date.now() - new Date(lastLocationAt).getTime()) / 1000);
     hud.hidden = false;
-    pill.classList.toggle('live', seconds < 45);
-    pill.classList.toggle('stale', seconds >= 45);
+    pill.classList.toggle('live', seconds < 60);
+    pill.classList.toggle('stale', seconds >= 60);
     $('map-live-text').textContent = ageText(lastLocationAt);
+    $('live-updated').textContent = ageText(lastLocationAt).replace('Updated ','');
   }
 
   /** Bookings taken before the map picker (or over the phone) have no stored
@@ -320,6 +351,8 @@
     if (!d && ride.destination){
       try { const r = await DM.geo.search(ride.destination); if (r[0]) d = { lat:r[0].lat, lng:r[0].lng }; } catch {}
     }
+    resolvedPickup = p || null;
+    resolvedDestination = d || null;
     return { p, d };
   }
 
@@ -334,9 +367,8 @@
       destPin = L.marker([d.lat, d.lng], { icon: DM.pinIcon('dropoff') }).addTo(map)
         .bindTooltip('Drop-off', { direction:'top', offset:[0,-34] });
       const r = await DM.geo.route(p, d);
-      routeLine = L.polyline(r.line, { color:'#0F63BD', weight:4, opacity:.8, lineJoin:'round' }).addTo(map);
+      tripRouteLine = L.polyline(r.line, { color:'#9dbfe3', weight:4, opacity:.72, lineJoin:'round' }).addTo(map);
     }
-    $('map-empty').hidden = true;
     fitAll();
   }
 
@@ -367,6 +399,73 @@
     carAnimation = requestAnimationFrame(step);
   }
 
+  async function paintActiveRoute(ride, loc){
+    if (!loc || !ensureMap()) return;
+    const target = ride.status === 'ride_started'
+      ? (ride.dest_point || resolvedDestination)
+      : (ride.pickup_point || resolvedPickup);
+    if (!target || !['driver_en_route','ride_started'].includes(ride.status)) {
+      if (activeRouteLine){ activeRouteLine.remove(); activeRouteLine = null; }
+      return;
+    }
+    const origin = { lat:Number(loc.lat), lng:Number(loc.lng) };
+    const moved = !activeRouteOrigin || DM.geo.haversine(activeRouteOrigin, origin) >= .2;
+    if (activeRouteLine && Date.now() - activeRouteAt < 30000 && !moved) return;
+    activeRouteAt = Date.now(); activeRouteOrigin = origin;
+    try {
+      const r = await DM.geo.route(origin, target);
+      derivedEta = {
+        minutes: Math.round(r.minutes),
+        km: Math.round(Number(r.km) * 100) / 100,
+        real: Boolean(r.real),
+      };
+      if (activeRouteLine) activeRouteLine.remove();
+      activeRouteLine = L.polyline(r.line, {
+        color:'#0F63BD', weight:5, opacity:.9, lineJoin:'round'
+      }).addTo(map);
+    } catch {}
+  }
+
+  function etaFromLocation(ride, loc){
+    if (!loc) return null;
+    const serverEta = Number(loc.eta_minutes);
+    const serverKm = Number(loc.distance_remaining_km);
+    const derived = derivedEta && Number.isFinite(derivedEta.minutes) ? derivedEta : null;
+    const crowTarget = ride.status === 'ride_started'
+      ? (ride.dest_point || resolvedDestination)
+      : (ride.pickup_point || resolvedPickup);
+    const crowKm = crowTarget ? DM.geo.haversine({ lat:Number(loc.lat), lng:Number(loc.lng) }, crowTarget) : null;
+
+    // If the driver is visibly far away, never trust a tiny stale/device ETA.
+    if (crowKm != null && crowKm > 100 && serverEta && serverEta < 120) {
+      return derived || {
+        minutes: Math.round((crowKm / 60) * 60),
+        km: Math.round(crowKm),
+        approximate: true,
+      };
+    }
+    if (derived && (!serverEta || Math.abs(derived.minutes - serverEta) > 20 || derived.km > 100)) return derived;
+    if (serverEta || Number.isFinite(serverKm)) return {
+      minutes: Number.isFinite(serverEta) ? serverEta : null,
+      km: Number.isFinite(serverKm) ? serverKm : null,
+      approximate: false,
+    };
+    return derived;
+  }
+
+  function paintTrail(trail){
+    if (!ensureMap()) return;
+    const points = (trail || []).filter(p =>
+      Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng))
+    ).map(p => [Number(p.lat),Number(p.lng)]);
+    if (trailLine){ trailLine.remove(); trailLine = null; }
+    if (points.length > 1){
+      trailLine = L.polyline(points,{
+        color:'#0F63BD',weight:3,opacity:.45,dashArray:'3 7',lineCap:'round'
+      }).addTo(map);
+    }
+  }
+
   function paintCar(loc){
     if (!ensureMap() || !loc) return;
     const ll = [loc.lat, loc.lng];
@@ -376,23 +475,34 @@
       carMarker = L.marker(ll, { icon: DM.pinIcon('car'), zIndexOffset: 1000 }).addTo(map)
         .bindTooltip('Your driver', { direction:'top', offset:[0,-20] });
     }
+    if (loc.heading_deg != null && carMarker.getElement()){
+      carMarker.getElement().style.transformOrigin = 'center';
+    }
+    if (loc.accuracy_m != null){
+      if (!accuracyCircle) accuracyCircle = L.circle(ll,{
+        radius:loc.accuracy_m,color:'#0F63BD',weight:1,fillOpacity:.05
+      }).addTo(map);
+      else accuracyCircle.setLatLng(ll).setRadius(loc.accuracy_m);
+    }
     lastLocationAt = loc.recorded_at || new Date().toISOString();
     refreshLiveState();
     $('map-center').hidden = false;
     if (!framedOnce || followChauffeur){ fitAll(); framedOnce = true; }
   }
 
-  function render(ride){
+  async function render(ride){
     $('loading').hidden = true;
     $('shell').hidden = false;
+    await paintRoute(ride);
 
     const c = COPY[ride.status] || COPY.requested;
     const finished = ride.status === 'completed' || ride.status === 'cancelled';
 
     $('title').textContent = c.title;
     $('ref').innerHTML = 'Booking reference <b>' + DM.escapeHtml(ride.reference) + '</b>';
+    const loc = ride.location;
     $('driver-line').textContent = ride.driver_name
-      ? ride.driver_name + ' is driving you tonight.'
+      ? ride.driver_name + (loc ? ' is live on the map.' : ' is assigned. Live location starts when they open the driver app.')
       : c.note;
 
     const hs = $('hero-status');
@@ -402,14 +512,30 @@
     $('share').hidden = false;
 
     // ETA - only meaningful while a driver is actually approaching
-    const loc = ride.location;
-    const showEta = loc && loc.eta_minutes != null && ride.status === 'driver_en_route';
+    const liveEta = etaFromLocation(ride, loc);
+    const showEta = loc && (
+      (liveEta && liveEta.minutes != null && ['driver_en_route','ride_started'].includes(ride.status)) ||
+      ride.status === 'driver_arrived'
+    );
     $('eta').hidden = !showEta;
-    if (showEta){ $('eta-n').textContent = loc.eta_minutes; $('eta-l').textContent = 'min away'; }
+    if (showEta){
+      $('eta-n').textContent = ride.status === 'driver_arrived' ? 'Now' :
+        liveEta.minutes > 999 ? Math.round(liveEta.minutes / 60) + 'h' : liveEta.minutes;
+      $('eta-l').textContent = ride.status === 'ride_started' ? 'min to destination' :
+        ride.status === 'driver_arrived' ? 'at pickup' :
+        liveEta.minutes > 999 ? 'away' : 'min away';
+    }
+    $('live-meta').hidden = !loc;
+    if (loc){
+      const km = liveEta && liveEta.km != null ? Number(liveEta.km) : null;
+      $('live-distance').textContent = km == null ? '-' :
+        (km < 10 ? km.toFixed(1) : Math.round(km)) + ' km';
+      $('live-accuracy').textContent = loc.accuracy_m == null ? '-' : Math.round(loc.accuracy_m) + ' m';
+    }
 
     // timeline
     const idx = ride.status === 'cancelled' ? -1 : ORDER.indexOf(ride.status);
-    const times = { assigned_at:ride.assigned_at, en_route_at:ride.en_route_at,
+    const times = { assigned_at:ride.assigned_at, en_route_at:ride.en_route_at, arrived_at:ride.arrived_at,
                     started_at:ride.started_at, completed_at:ride.completed_at };
     document.querySelectorAll('#stages li').forEach((li, i) => {
       li.classList.toggle('done', idx > i);
@@ -429,10 +555,23 @@
     $('r-mode').textContent = (ride.mode === 'hourly' ? 'By the hour' : 'Point to point') +
       (ride.route_minutes ? ' · ~' + ride.route_minutes + ' min' : '');
 
-    // map - the overlay only stands while we genuinely have nothing to draw
-    paintRoute(ride);
-    if (loc){ paintCar(loc); $('map-empty').hidden = true; }
-    else { refreshLiveState(); }
+    // map - keep a clear waiting state until the chauffeur's first GPS ping arrives
+    if (loc){
+      paintCar(loc); paintTrail(ride.trail); paintActiveRoute(ride,loc);
+      $('map-empty').hidden = true;
+    }
+    else {
+      refreshLiveState();
+      if (['driver_assigned','driver_en_route','driver_arrived','ride_started'].includes(ride.status)){
+        $('map-empty').hidden = false;
+        $('map-empty-title').textContent = ride.status === 'driver_assigned'
+          ? 'Driver assigned - waiting for GPS'
+          : 'Waiting for live GPS';
+        $('map-empty-body').textContent = ride.driver_name
+          ? ride.driver_name + ' needs to open the chauffeur link and allow location sharing. The map will update automatically after the first GPS ping.'
+          : 'The chauffeur needs to start sharing location before their marker appears here.';
+      }
+    }
 
     // a status change is worth announcing while the page sits open
     if (lastStatus && lastStatus !== ride.status && COPY[ride.status]){
@@ -442,15 +581,18 @@
     return finished;
   }
 
-  let delay = 8000;
+  let delay = 8000, pollTimer = null, polling = false;
   async function poll(){
+    if (polling) return;
+    if (document.hidden){ pollTimer = setTimeout(poll,delay); return; }
+    polling = true;
     let done = false;
     try {
       const res = await fetch('/api/track?t=' + token, { cache:'no-store' });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.success){
-        done = render(data.ride);
-        delay = data.ride.location && ['driver_en_route', 'ride_started'].includes(data.ride.status) ? 5000 : 12000;
+        done = await render(data.ride);
+        delay = data.ride.location && ['driver_en_route','driver_arrived','ride_started'].includes(data.ride.status) ? 4000 : 12000;
       } else if (res.status === 403 || res.status === 404){
         $('loading').hidden = true;
         $('shell').hidden = true;
@@ -459,25 +601,39 @@
           $('err-title').textContent = 'Tracking is not available yet';
           $('err-body').textContent = 'Your live link starts once a chauffeur has been assigned to this booking.';
         }
-        return;                                   // dead link - stop polling
+        if (res.status === 404) return;            // dead link - stop polling
+        delay = 12000;
       } else {
         delay = Math.min(delay * 1.6, 60000);     // back off on server trouble
       }
     } catch {
       delay = Math.min(delay * 1.6, 60000);       // offline - back off, keep trying
     }
-    if (!done) setTimeout(poll, delay);
+    polling = false;
+    if (!done) pollTimer = setTimeout(poll, delay);
   }
   poll();
 
   // pause polling when the tab is hidden; resume immediately on return
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && !$('shell').hidden) poll();
+    if (!document.hidden){
+      clearTimeout(pollTimer); pollTimer = null; poll();
+    }
   });
 
   $('map-center').addEventListener('click', () => {
     followChauffeur = true;
     fitAll();
+  });
+  document.querySelectorAll('#map-layer-toggle [data-layer]').forEach(button => {
+    button.addEventListener('click', () => {
+      ensureMap();
+      const layer = button.dataset.layer;
+      if (map && map.dmSetBaseLayer) map.dmSetBaseLayer(layer);
+      document.querySelectorAll('#map-layer-toggle [data-layer]').forEach(b => {
+        b.setAttribute('aria-pressed', String(b === button));
+      });
+    });
   });
   setInterval(refreshLiveState, 10000);
 

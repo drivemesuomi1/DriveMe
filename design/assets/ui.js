@@ -678,6 +678,11 @@ window.DM = (function () {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
     subdomains: 'abcd', maxZoom: 20,
   };
+  const SATELLITE_TILES = {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; Esri',
+    maxZoom: 19,
+  };
 
   function pinIcon(kind) {
     // kind: 'pickup' | 'dropoff' | 'car'
@@ -707,7 +712,22 @@ window.DM = (function () {
       scrollWheelZoom: opts.scrollWheelZoom !== false,
       attributionControl: true,
     }).setView([HELSINKI.lat, HELSINKI.lng], opts.zoom || 12);
-    L.tileLayer(TILES.url, TILES).addTo(m);
+    const street = L.tileLayer(TILES.url, TILES).addTo(m);
+    const satellite = L.tileLayer(SATELLITE_TILES.url, SATELLITE_TILES);
+    m.dmBaseLayers = { map: street, satellite };
+    m.dmSetBaseLayer = (kind) => {
+      const next = kind === 'satellite' ? satellite : street;
+      const prev = next === satellite ? street : satellite;
+      if (m.hasLayer(prev)) m.removeLayer(prev);
+      if (!m.hasLayer(next)) next.addTo(m);
+    };
+    if (opts.initialLayer === 'satellite') m.dmSetBaseLayer('satellite');
+    if (opts.layerControl !== false) {
+      L.control.layers({ Map: street, Satellite: satellite }, null, {
+        position: opts.layerControlPosition || 'topright',
+        collapsed: true,
+      }).addTo(m);
+    }
     if (opts.zoomControl !== false) m.zoomControl.setPosition('topright');
     return m;
   }

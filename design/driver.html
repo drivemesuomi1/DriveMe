@@ -1,171 +1,458 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0C4481">
-<title>DriveMe - Driver</title>
+<title>DriveMe - Kuljettaja</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="assets/logo-crown-d.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
 <link rel="stylesheet" href="assets/ui.css">
 <style>
-  body{
-    margin:0;font:400 16px/1.6 var(--font);background:var(--paper);color:var(--ink-900);
-    min-height:100dvh;display:flex;flex-direction:column;align-items:center;
-    padding:24px 16px calc(24px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;
+  *{box-sizing:border-box}
+  body{margin:0;font:400 15px/1.55 var(--font);background:var(--paper);color:var(--ink-900);
+    min-height:100dvh;-webkit-font-smoothing:antialiased}
+  .top{position:sticky;top:0;z-index:800;background:var(--surface);border-bottom:1px solid var(--ink-100);
+    padding:13px max(16px,env(safe-area-inset-right)) 13px max(16px,env(safe-area-inset-left));
+    display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{font-weight:700;color:var(--accent-deep);letter-spacing:.02em}.brand span{color:var(--accent)}
+  .brand small{display:block;font-size:10px;line-height:1.4;font-weight:500;color:var(--ink-500);
+    letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+  .lang{display:flex;border:1px solid var(--ink-200);border-radius:6px;overflow:hidden}
+  .lang button{border:0;background:transparent;color:var(--ink-500);font:600 11px/1 var(--font);
+    padding:8px 9px;cursor:pointer}.lang button.on{background:var(--accent-soft);color:var(--accent-deep)}
+  .shell{width:min(100%,980px);margin:0 auto;padding:16px 16px calc(34px + env(safe-area-inset-bottom));
+    display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:14px;align-items:start}
+  .card{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);
+    box-shadow:var(--sh-1);overflow:hidden}
+  .pad{padding:20px}
+  h1{font:600 23px/1.25 var(--font);margin:0;letter-spacing:0}
+  h2{font:600 11px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-500);margin:0 0 14px}
+  p{margin:0}.muted{color:var(--ink-500);font-size:13px}
+  .trip-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+  .ref{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--accent);margin-bottom:5px}
+  .state{display:inline-flex;align-items:center;gap:7px;background:var(--accent-soft);color:var(--accent-deep);
+    border-radius:5px;padding:7px 9px;font-size:11px;font-weight:700;white-space:nowrap}
+  .state i{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .state.live i{box-shadow:0 0 0 5px rgba(15,99,189,.12)}
+  #map{height:390px;background:#eaf0f6}
+  .map-wrap{position:relative}
+  .map-note{position:absolute;left:12px;bottom:24px;z-index:550;background:rgba(255,255,255,.94);
+    border:1px solid var(--ink-100);border-radius:6px;padding:9px 11px;box-shadow:var(--sh-1);
+    display:flex;gap:16px;max-width:calc(100% - 24px)}
+  .map-note .k{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-500)}
+  .map-note .v{font-weight:700;color:var(--accent-deep);font-feature-settings:"tnum";margin-top:1px}
+  .route{display:grid;grid-template-columns:18px 1fr;gap:0 11px;margin-top:18px}
+  .route .marks{display:flex;flex-direction:column;align-items:center;padding-top:5px}
+  .route .marks i{width:10px;height:10px;border:2px solid var(--accent);border-radius:50%}
+  .route .marks span{width:2px;background:var(--ink-100);min-height:34px;flex:1;margin:4px 0}
+  .route .marks i.end{border-radius:2px;background:var(--ink-900);border-color:var(--ink-900)}
+  .route .place{padding-bottom:15px;min-width:0}.route .place:last-child{padding:0}
+  .route .k{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-500)}
+  .route .v{font-size:14px;margin-top:2px;overflow-wrap:anywhere}
+  .share-btn{width:100%;min-height:58px;font-size:16px;margin-top:18px}
+  .share-btn.on{background:var(--critical)}.share-btn.on:hover{background:#7d2a26}
+  .telemetry{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--ink-100);
+    margin-top:18px}
+  .metric{padding:14px 0}.metric:nth-child(even){padding-left:15px;border-left:1px solid var(--ink-100)}
+  .metric:nth-child(n+3){border-top:1px solid var(--ink-100)}
+  .metric .k{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-500)}
+  .metric .v{font-size:15px;font-weight:600;margin-top:2px;font-feature-settings:"tnum"}
+  .connection{margin-top:12px;border-radius:5px;padding:10px 11px;background:var(--accent-soft);
+    color:var(--accent-deep);font-size:12px;font-weight:600}
+  .connection.bad{background:var(--critical-soft);color:var(--critical)}
+  .actions{display:grid;gap:9px}
+  .actions button{min-height:48px}
+  .actions button[hidden]{display:none}
+  .nav-link{display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:9px}
+  .privacy{margin-top:14px;color:var(--ink-500);font-size:11.5px}
+  .err{color:var(--critical);font-weight:600;font-size:13px;margin-top:12px;display:none}.err.on{display:block}
+  .loading{max-width:430px;margin:80px auto;padding:0 16px;text-align:center}
+  .loading h1{margin-bottom:7px}
+  @media(max-width:760px){
+    .shell{grid-template-columns:1fr;padding:10px 10px calc(28px + env(safe-area-inset-bottom))}
+    #map{height:310px}.side{order:-1}.pad{padding:17px}
   }
-  .brand{font:700 17px/1 var(--font);color:var(--accent-deep);margin-bottom:20px}
-  .brand span{color:var(--accent)}
-  .card{
-    background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);
-    padding:26px;max-width:430px;width:100%;box-shadow:var(--sh-1);
-  }
-  h1{font:500 21px/1.3 var(--font);letter-spacing:-.01em;margin:0 0 6px}
-  p.lead{color:var(--ink-500);font-size:14px;margin:0}
-
-  /* the sharing switch is the whole point of the screen - make it unmissable */
-  .big{
-    width:100%;margin-top:22px;min-height:64px;font-size:16.5px;border-radius:14px;
-  }
-  .big.on{background:var(--critical)}
-  .big.on:hover{background:#7d2a26}
-
-  .status{
-    margin-top:18px;padding:16px;border-radius:var(--r-input);
-    background:var(--accent-soft);display:none;
-  }
-  .status.on{display:block;animation:fade 400ms cubic-bezier(.16,1,.3,1)}
-  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .status .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .status .row + .row{margin-top:10px;padding-top:10px;border-top:1px solid rgba(15,99,189,.16)}
-  .status .k{font:500 11px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-  .status .v{font:600 15px/1 var(--font);color:var(--accent-deep);font-feature-settings:"tnum"}
-
-  .err{margin-top:14px;color:var(--critical);font-weight:600;font-size:14px;display:none}
-  .err.on{display:block}
-  .hint{margin-top:16px;color:var(--ink-500);font-size:12.5px;line-height:1.55}
-  .eta-field{margin-top:20px}
 </style>
 </head>
 <body class="dm">
+<header class="top">
+  <div class="brand">DRIVE<span>·</span>ME<small data-t="driverApp">Kuljettajasovellus</small></div>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="fi" class="on">FI</button>
+    <button type="button" data-lang="en">EN</button>
+  </div>
+</header>
 
-<div class="brand">DRIVE<span>·</span>ME - Driver</div>
+<main class="loading" id="loading" aria-label="Assignment loading">
+  <h1 data-t="loading">Ladataan tehtavaa</h1>
+  <p class="muted" data-t="checking">Tarkistetaan turvallinen kuljettajalinkki.</p>
+</main>
 
-<div class="card">
-  <h1>Share your position</h1>
-  <p class="lead">Keep this page open for the assignment. Your location goes to the
-     customer's tracking page every 15 seconds, and stops the moment you do.</p>
-
-  <div class="dm-field eta-field">
-    <label for="eta">ETA to pickup - optional</label>
-    <select id="eta">
-      <option value="">Don't send an ETA</option>
-      <option value="5">5 minutes</option>
-      <option value="10" selected>10 minutes</option>
-      <option value="15">15 minutes</option>
-      <option value="20">20 minutes</option>
-      <option value="30">30 minutes</option>
-    </select>
+<main class="shell" id="app" aria-label="Driver assignment" hidden>
+  <div class="card">
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="map-note" id="map-note" hidden>
+        <div><div class="k" data-t="eta">Arvio</div><div class="v" id="map-eta">-</div></div>
+        <div><div class="k" data-t="remaining">Jaljella</div><div class="v" id="map-distance">-</div></div>
+      </div>
+    </div>
+    <div class="pad">
+      <h2 data-t="route">Tehtavan reitti</h2>
+      <div class="route">
+        <div class="marks"><i></i><span></span></div>
+        <div class="place"><div class="k" data-t="pickup">Nouto</div><div class="v" id="pickup">-</div></div>
+        <div class="marks"><i class="end"></i></div>
+        <div class="place"><div class="k" data-t="dropoff">Maaranpaa</div><div class="v" id="destination">-</div></div>
+      </div>
+      <a class="dm-btn ghost nav-link" id="navigate" href="https://www.google.com/maps"
+         target="_blank" rel="noopener noreferrer" hidden data-t="navigate">
+        Avaa navigointi
+      </a>
+    </div>
   </div>
 
-  <button type="button" class="dm-btn big" id="go">Start sharing</button>
+  <div class="side">
+    <div class="card pad">
+      <div class="trip-head">
+        <div>
+          <div class="ref" id="reference">-</div>
+          <h1 id="headline" data-t="assignment">Kuljettajan tehtava</h1>
+          <p class="muted" id="scheduled"></p>
+        </div>
+        <span class="state" id="state"><i></i><span id="state-text">Valmis</span></span>
+      </div>
 
-  <div class="status" id="status">
-    <div class="row"><span class="k">Last sent</span><span class="v" id="last">-</span></div>
-    <div class="row"><span class="k">Pings this trip</span><span class="v" id="count">0</span></div>
-    <div class="row"><span class="k">Accuracy</span><span class="v" id="acc">-</span></div>
+      <button type="button" class="dm-btn share-btn" id="go" data-t="startSharing">Aloita paikannus</button>
+      <div class="connection" id="connection" data-t="notSharing">Paikannus ei ole kaynnissa</div>
+      <p class="err" id="err" role="alert"></p>
+
+      <div class="telemetry">
+        <div class="metric"><div class="k" data-t="lastSent">Viimeksi lahetetty</div><div class="v" id="last">-</div></div>
+        <div class="metric"><div class="k" data-t="gpsAccuracy">GPS-tarkkuus</div><div class="v" id="accuracy">-</div></div>
+        <div class="metric"><div class="k" data-t="updates">Paivitykset</div><div class="v" id="count">0</div></div>
+        <div class="metric"><div class="k" data-t="speed">Nopeus</div><div class="v" id="speed">-</div></div>
+      </div>
+      <p class="privacy" data-t="privacy">Sijainti jaetaan vain tahan tehtavaan ja lakkaa automaattisesti matkan paattyessa.</p>
+    </div>
+
+    <div class="card pad">
+      <h2 data-t="tripActions">Matkan toiminnot</h2>
+      <div class="actions">
+        <button type="button" class="dm-btn" id="arrived" data-status="driver_arrived" hidden data-t="markArrived">Olen saapunut</button>
+        <button type="button" class="dm-btn" id="start-ride" data-status="ride_started" hidden data-t="startRide">Aloita matka</button>
+        <button type="button" class="dm-btn" id="complete" data-status="completed" hidden data-t="completeRide">Paata matka</button>
+      </div>
+      <p class="muted" id="action-hint" data-t="actionHint">Toiminnot avautuvat matkan edetessa.</p>
+    </div>
   </div>
+</main>
 
-  <p class="err" id="err"></p>
-  <p class="hint">Location is only ever attached to this one booking. Closing the page
-     or tapping stop ends sharing immediately.</p>
-</div>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin></script>
 <script src="assets/ui.js"></script>
 <script>
 (function(){
   'use strict';
   const $ = id => document.getElementById(id);
   const token = (new URLSearchParams(location.search).get('t') || '').trim();
-  const go = $('go'), status = $('status'), err = $('err');
+  const I18N = {
+    fi:{
+      driverApp:'Kuljettajasovellus',loading:'Ladataan tehtavaa',checking:'Tarkistetaan turvallinen kuljettajalinkki.',
+      eta:'Arvio',remaining:'Jaljella',route:'Tehtavan reitti',pickup:'Nouto',dropoff:'Maaranpaa',
+      navigate:'Avaa navigointi',assignment:'Kuljettajan tehtava',startSharing:'Aloita paikannus',
+      stopSharing:'Lopeta paikannus',notSharing:'Paikannus ei ole kaynnissa',lastSent:'Viimeksi lahetetty',
+      gpsAccuracy:'GPS-tarkkuus',updates:'Paivitykset',speed:'Nopeus',privacy:'Sijainti jaetaan vain tahan tehtavaan ja lakkaa automaattisesti matkan paattyessa.',
+      tripActions:'Matkan toiminnot',markArrived:'Olen saapunut',startRide:'Aloita matka',
+      completeRide:'Paata matka',actionHint:'Toiminnot avautuvat matkan edetessa.',
+      online:'Sijainti jaetaan reaaliajassa',offline:'Ei verkkoyhteytta - viimeisin sijainti odottaa',
+      gpsWait:'Odotetaan tarkkaa GPS-sijaintia',invalid:'Kuljettajalinkki ei ole voimassa.',
+      allow:'Salli sijainti selaimessa.',gpsError:'GPS-sijaintia ei saatu. Tarkista paikannus.',
+      loadError:'Tehtavaa ei voitu ladata.',arrived:'Saapunut',enRoute:'Matkalla noutoon',
+      ride:'Matka kaynnissa',done:'Valmis',assigned:'Tehtava vastaanotettu',confirmComplete:'Merkitse matka valmiiksi?'
+    },
+    en:{
+      driverApp:'Driver app',loading:'Loading assignment',checking:'Checking the secure driver link.',
+      eta:'ETA',remaining:'Remaining',route:'Assignment route',pickup:'Pickup',dropoff:'Drop-off',
+      navigate:'Open navigation',assignment:'Driver assignment',startSharing:'Start live location',
+      stopSharing:'Stop live location',notSharing:'Location sharing is off',lastSent:'Last sent',
+      gpsAccuracy:'GPS accuracy',updates:'Updates',speed:'Speed',privacy:'Location is shared only with this assignment and stops automatically when the ride ends.',
+      tripActions:'Trip actions',markArrived:'I have arrived',startRide:'Start ride',
+      completeRide:'Complete ride',actionHint:'Actions unlock as the trip progresses.',
+      online:'Sharing live location',offline:'Offline - latest location is waiting',
+      gpsWait:'Waiting for an accurate GPS position',invalid:'This driver link is not valid.',
+      allow:'Allow location access in your browser.',gpsError:'Could not read GPS. Check location services.',
+      loadError:'The assignment could not be loaded.',arrived:'Arrived',enRoute:'Driving to pickup',
+      ride:'Ride in progress',done:'Complete',assigned:'Assignment received',confirmComplete:'Mark this ride complete?'
+    }
+  };
+  let lang = localStorage.getItem('dm-driver-lang') || 'fi';
+  let trip = null, map = null, carMarker = null, targetMarker = null, routeLine = null, accuracyCircle = null;
+  let watchId = null, wakeLock = null, sharing = false, pings = 0, sending = false;
+  let lastSentAt = 0, lastGoodAt = 0, pendingPosition = null, lastRouteAt = 0, lastRouteOrigin = null;
+  let routeInfo = null;
 
-  DM.select($('eta'));
+  function t(key){ return I18N[lang][key] || key; }
+  function applyLanguage(){
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+    document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+    if (sharing) $('go').textContent = t('stopSharing');
+    renderStatus();
+  }
+  document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+    lang = b.dataset.lang; localStorage.setItem('dm-driver-lang', lang); applyLanguage();
+  }));
 
-  function showErr(msg){ err.textContent = msg; err.classList.add('on'); }
+  function failPage(message){
+    $('loading').innerHTML = '<h1>' + DM.escapeHtml(message) + '</h1><p class="muted">' +
+      DM.escapeHtml(t('loadError')) + '</p>';
+  }
+  function showError(message){ $('err').textContent = message; $('err').classList.add('on'); }
+  function clearError(){ $('err').classList.remove('on'); }
+  function point(value){ return value && Number.isFinite(Number(value.lat)) && Number.isFinite(Number(value.lng))
+    ? { lat:Number(value.lat), lng:Number(value.lng) } : null; }
 
-  if (!/^[0-9a-f]{32}$/.test(token)){
-    go.disabled = true;
-    showErr('This driver link is not valid. Ask dispatch to resend it.');
-    return;
+  function ensureMap(){
+    if (map) return map;
+    map = DM.map($('map'), { zoom:13, scrollWheelZoom:false });
+    return map;
   }
 
-  let watchId = null, lastSent = 0, sharing = false, pings = 0, wakeLock = null;
-
-  async function send(pos){
-    const now = Date.now();
-    if (now - lastSent < 15000) return;           // throttle watchPosition's bursts
-    lastSent = now;
-    const raw = $('eta').value;
-    const eta = raw === '' ? null : Number(raw);
-    try {
-      const res = await fetch('/api/driver-location', {
-        method:'POST', headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          token, lat: pos.coords.latitude, lng: pos.coords.longitude, eta_minutes: eta
-        })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.success){
-        showErr(data.error || 'Could not send your position.');
-        if (res.status === 404) stop();           // booking finished or link revoked
-        return;
-      }
-      err.classList.remove('on');
-      pings++;
-      $('count').textContent = pings;
-      $('last').textContent = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-      $('acc').textContent = pos.coords.accuracy ? '±' + Math.round(pos.coords.accuracy) + ' m' : '-';
-    } catch {
-      /* offline blip - the next ping will get through */
+  async function resolveTripPoints(){
+    trip.pickup_point = point(trip.pickup_point);
+    trip.dest_point = point(trip.dest_point);
+    if (!trip.pickup_point && trip.pickup){
+      try { const r = await DM.geo.search(trip.pickup); if (r[0]) trip.pickup_point = point(r[0]); } catch {}
+    }
+    if (!trip.dest_point && trip.destination){
+      try { const r = await DM.geo.search(trip.destination); if (r[0]) trip.dest_point = point(r[0]); } catch {}
     }
   }
 
+  function targetForStatus(){
+    return trip && trip.status === 'ride_started' ? trip.dest_point : trip && trip.pickup_point;
+  }
+
+  function updateNavigation(){
+    const target = targetForStatus();
+    $('navigate').hidden = !target;
+    if (target) $('navigate').href = 'https://www.google.com/maps/dir/?api=1&destination=' +
+      encodeURIComponent(target.lat + ',' + target.lng) + '&travelmode=driving';
+  }
+
+  function drawTarget(){
+    const target = targetForStatus();
+    if (!target || !ensureMap()) return;
+    if (targetMarker) targetMarker.remove();
+    targetMarker = L.marker([target.lat,target.lng], {
+      icon:DM.pinIcon(trip.status === 'ride_started' ? 'dropoff' : 'pickup')
+    }).addTo(map);
+    if (!carMarker) map.setView([target.lat,target.lng],14);
+    updateNavigation();
+  }
+
+  async function updateRoute(pos, force){
+    const target = targetForStatus();
+    if (!target) return;
+    const origin = { lat:pos.coords.latitude, lng:pos.coords.longitude };
+    const moved = !lastRouteOrigin || DM.geo.haversine(lastRouteOrigin, origin) >= .2;
+    if (!force && Date.now() - lastRouteAt < 30000 && !moved) return;
+    lastRouteAt = Date.now(); lastRouteOrigin = origin;
+    try {
+      routeInfo = await DM.geo.route(origin, target);
+      const straightKm = DM.geo.haversine(origin, target);
+      if (straightKm > 100 && routeInfo.minutes < 120) {
+        routeInfo = {
+          km: Math.round(straightKm),
+          minutes: Math.round((straightKm / 60) * 60),
+          line:[[origin.lat,origin.lng],[target.lat,target.lng]],
+          real:false,
+        };
+      }
+      if (routeLine) routeLine.remove();
+      routeLine = L.polyline(routeInfo.line, {
+        color:'#0F63BD', weight:5, opacity:.82, lineJoin:'round'
+      }).addTo(ensureMap());
+      $('map-note').hidden = false;
+      $('map-eta').textContent = routeInfo.minutes > 999
+        ? Math.round(routeInfo.minutes / 60) + ' h'
+        : Math.max(1, routeInfo.minutes) + ' min';
+      $('map-distance').textContent = routeInfo.km < 10
+        ? routeInfo.km.toFixed(1) + ' km' : Math.round(routeInfo.km) + ' km';
+      const pts = routeLine.getBounds();
+      if (pts.isValid()) map.fitBounds(pts.pad(.16), { maxZoom:15 });
+    } catch {}
+  }
+
+  function paintPosition(pos){
+    const ll = [pos.coords.latitude,pos.coords.longitude];
+    if (!carMarker) carMarker = L.marker(ll,{icon:DM.pinIcon('car'),zIndexOffset:1000}).addTo(ensureMap());
+    else carMarker.setLatLng(ll);
+    if (!accuracyCircle) accuracyCircle = L.circle(ll,{
+      radius:pos.coords.accuracy || 0,color:'#0F63BD',weight:1,fillOpacity:.06
+    }).addTo(map);
+    else accuracyCircle.setLatLng(ll).setRadius(pos.coords.accuracy || 0);
+  }
+
+  async function transmit(pos){
+    if (sending){ pendingPosition = pos; return; }
+    const now = Date.now();
+    if (now - lastSentAt < 5000) { pendingPosition = pos; return; }
+    if (!navigator.onLine){ pendingPosition = pos; setConnection('offline'); return; }
+    sending = true; lastSentAt = now;
+    await updateRoute(pos, false);
+    const payload = {
+      token,
+      lat:pos.coords.latitude,
+      lng:pos.coords.longitude,
+      eta_minutes:routeInfo ? Math.max(0,Math.round(routeInfo.minutes)) : null,
+      distance_remaining_km:routeInfo ? Math.round(routeInfo.km * 100) / 100 : null,
+      accuracy_m:Number.isFinite(pos.coords.accuracy) ? pos.coords.accuracy : null,
+      speed_mps:Number.isFinite(pos.coords.speed) && pos.coords.speed >= 0 ? pos.coords.speed : null,
+      heading_deg:Number.isFinite(pos.coords.heading) && pos.coords.heading >= 0 ? pos.coords.heading : null
+    };
+    try {
+      const res = await fetch('/api/driver-location',{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success){
+        if (res.status === 404 || res.status === 409) stop();
+        throw new Error(data.error || t('gpsError'));
+      }
+      pendingPosition = null; clearError(); pings++;
+      $('count').textContent = pings;
+      $('last').textContent = new Date().toLocaleTimeString([],{
+        hour:'2-digit',minute:'2-digit',second:'2-digit'
+      });
+      setConnection('online');
+      if (data.status && trip.status !== data.status){ trip.status = data.status; renderStatus(); }
+    } catch (error) {
+      pendingPosition = pos;
+      showError(error.message || t('gpsError'));
+      setConnection(navigator.onLine ? 'error' : 'offline');
+    } finally {
+      sending = false;
+    }
+  }
+
+  async function onPosition(pos){
+    paintPosition(pos);
+    $('accuracy').textContent = Math.round(pos.coords.accuracy || 0) + ' m';
+    $('speed').textContent = Number.isFinite(pos.coords.speed) && pos.coords.speed >= 0
+      ? Math.round(pos.coords.speed * 3.6) + ' km/h' : '-';
+    const accurate = !pos.coords.accuracy || pos.coords.accuracy <= 200;
+    if (accurate) lastGoodAt = Date.now();
+    if (!accurate && Date.now() - lastGoodAt < 30000) return;
+    await transmit(pos);
+  }
+
+  function setConnection(kind){
+    const el = $('connection');
+    el.classList.toggle('bad',kind === 'offline' || kind === 'error');
+    el.textContent = kind === 'online' ? t('online') :
+      kind === 'offline' ? t('offline') : kind === 'waiting' ? t('gpsWait') : t('notSharing');
+    $('state').classList.toggle('live',kind === 'online');
+  }
+
   async function start(){
-    if (!('geolocation' in navigator)) return showErr('This browser has no location support.');
-    watchId = navigator.geolocation.watchPosition(send,
-      e => showErr(e.code === 1
-        ? 'Allow location access to share your position.'
-        : 'Could not read your position - check GPS is on.'),
-      { enableHighAccuracy:true, maximumAge:5000, timeout:20000 });
-    sharing = true;
-    go.textContent = 'Stop sharing';
-    go.classList.add('on');
-    status.classList.add('on');
-    $('last').textContent = 'waiting for GPS…';
-    DM.toast('Sharing your location', 'good');
-    // keep the screen awake so the browser doesn't suspend the GPS watch
+    if (!navigator.geolocation) return showError(t('gpsError'));
+    clearError(); sharing = true;
+    $('go').textContent = t('stopSharing'); $('go').classList.add('on');
+    setConnection('waiting');
+    watchId = navigator.geolocation.watchPosition(onPosition, error => {
+      showError(error.code === 1 ? t('allow') : t('gpsError')); setConnection('error');
+    },{enableHighAccuracy:true,maximumAge:3000,timeout:20000});
     try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch {}
   }
 
   function stop(){
     if (watchId !== null) navigator.geolocation.clearWatch(watchId);
     watchId = null; sharing = false;
-    go.textContent = 'Start sharing';
-    go.classList.remove('on');
-    status.classList.remove('on');
+    $('go').textContent = t('startSharing'); $('go').classList.remove('on');
+    setConnection('off');
     if (wakeLock){ wakeLock.release().catch(() => {}); wakeLock = null; }
   }
 
-  go.addEventListener('click', () => (sharing ? stop() : start()));
-  // re-acquire the wake lock when the driver switches back to the tab
-  document.addEventListener('visibilitychange', async () => {
+  function statusLabel(){
+    return {
+      driver_assigned:t('assigned'),driver_en_route:t('enRoute'),
+      driver_arrived:t('arrived'),ride_started:t('ride'),completed:t('done')
+    }[trip && trip.status] || t('assignment');
+  }
+
+  function renderStatus(){
+    if (!trip) return;
+    $('state-text').textContent = statusLabel();
+    $('arrived').hidden = trip.status !== 'driver_en_route';
+    $('start-ride').hidden = !['driver_en_route','driver_arrived'].includes(trip.status);
+    $('complete').hidden = trip.status !== 'ride_started';
+    $('action-hint').hidden = ['driver_en_route','driver_arrived','ride_started'].includes(trip.status);
+    if (['completed','cancelled'].includes(trip.status)){
+      stop(); $('go').disabled = true;
+    }
+    drawTarget();
+  }
+
+  async function setStatus(next){
+    if (next === 'completed' && !confirm(t('confirmComplete'))) return;
+    const button = document.querySelector('[data-status="' + next + '"]');
+    button.disabled = true;
+    try {
+      const res = await fetch('/api/driver-status',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,status:next})
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.error || t('loadError'));
+      trip.status = data.status; routeInfo = null; lastRouteAt = 0;
+      renderStatus();
+      if (carMarker) updateRoute({coords:{
+        latitude:carMarker.getLatLng().lat,longitude:carMarker.getLatLng().lng
+      }},true);
+    } catch(error){ showError(error.message); }
+    finally{ button.disabled = false; }
+  }
+
+  async function boot(){
+    applyLanguage();
+    if (!/^[0-9a-f]{32}$/.test(token)) return failPage(t('invalid'));
+    try {
+      const res = await fetch('/api/driver-trip?t=' + token,{cache:'no-store'});
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.error || t('loadError'));
+      trip = data.trip;
+      await resolveTripPoints();
+      $('reference').textContent = 'DM-' + trip.reference;
+      $('pickup').textContent = trip.pickup || '-';
+      $('destination').textContent = trip.destination || (lang === 'fi' ? 'Avoin tuntivaraus' : 'Open hourly booking');
+      $('scheduled').textContent = trip.scheduled_for
+        ? new Date(trip.scheduled_for).toLocaleString(lang === 'fi' ? 'fi-FI' : 'en-GB',{
+            dateStyle:'medium',timeStyle:'short'
+          }) : '';
+      $('loading').hidden = true; $('app').hidden = false;
+      ensureMap(); drawTarget(); renderStatus();
+      setTimeout(() => map.invalidateSize(),0);
+    } catch(error){ failPage(error.message || t('loadError')); }
+  }
+
+  $('go').addEventListener('click',() => sharing ? stop() : start());
+  document.querySelectorAll('[data-status]').forEach(b => b.addEventListener('click',() => setStatus(b.dataset.status)));
+  window.addEventListener('online',() => { if (sharing && pendingPosition) transmit(pendingPosition); });
+  window.addEventListener('offline',() => { if (sharing) setConnection('offline'); });
+  document.addEventListener('visibilitychange',async() => {
     if (!document.hidden && sharing && 'wakeLock' in navigator && !wakeLock){
       try { wakeLock = await navigator.wakeLock.request('screen'); } catch {}
     }
   });
+  boot();
 })();
 </script>
 </body>
