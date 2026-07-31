@@ -36,19 +36,79 @@ window.DM = (function () {
     openPops.forEach((p) => { if (p !== except) p.close(); });
   }
   document.addEventListener('pointerdown', (e) => {
-    openPops.forEach((p) => { if (!p.root.contains(e.target)) p.close(); });
+    openPops.forEach((p) => {
+      if (p.root.contains(e.target)) return;
+      // the panel lives on <body> once opened, so it is not inside root
+      if (p.panel && p.panel.contains(e.target)) return;
+      p.close();
+    });
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeAll(null);
   });
 
-  /** Flip the panel above the anchor when there isn't room below. */
+  /**
+   * Position the panel against its anchor.
+   *
+   * The panel is moved to <body> and positioned `fixed`. An absolutely
+   * positioned panel is clipped by any ancestor that scrolls, and the admin
+   * tables (`overflow-x:auto`, which forces overflow-y to `auto` as well) and
+   * the booking drawer both do exactly that — a dropdown near the last row was
+   * being sliced off. Escaping to <body> is the only fix that holds wherever
+   * the component is used.
+   */
   function placePanel(root, panel) {
-    panel.classList.remove('up');
+    if (panel.parentNode !== document.body) {
+      document.body.appendChild(panel);
+      panel.classList.add('portal');
+    }
     const r = root.getBoundingClientRect();
-    const need = panel.offsetHeight + 14;
-    if (r.bottom + need > window.innerHeight && r.top > need) panel.classList.add('up');
+    const gap = 6, edge = 8;
+
+    // min-width, not width: a select should match its trigger, but the calendar
+    // is a fixed 290px grid and pinning it to a narrower field clips the last
+    // column of days.
+    panel.style.minWidth = r.width + 'px';
+
+    // keep it on screen if the content is wider than the trigger
+    const pw = panel.offsetWidth;
+    let left = r.left;
+    if (left + pw > window.innerWidth - edge) left = window.innerWidth - pw - edge;
+    panel.style.left = Math.round(Math.max(edge, left)) + 'px';
+
+    panel.classList.remove('up');
+    const h = panel.offsetHeight;
+    const roomBelow = window.innerHeight - r.bottom;
+    if (roomBelow < h + gap + edge && r.top > h + gap + edge) {
+      panel.classList.add('up');
+      panel.style.top = Math.round(r.top - h - gap) + 'px';
+    } else {
+      panel.style.top = Math.round(r.bottom + gap) + 'px';
+    }
   }
+
+  // A fixed panel does not travel with its anchor, so follow it while open.
+  // Coalesced to one pass per frame: repositioning sets the panel's width,
+  // which can nudge its own scrollTop and fire another scroll — without this
+  // guard that feeds straight back into a loop that locks the page up.
+  let repoQueued = false;
+  function repositionOpen() {
+    if (repoQueued) return;
+    repoQueued = true;
+    requestAnimationFrame(() => {
+      repoQueued = false;
+      openPops.forEach((p) => {
+        if (p.root && p.panel && p.panel.classList.contains('on')) placePanel(p.root, p.panel);
+      });
+    });
+  }
+  addEventListener('scroll', (e) => {
+    // scrolling the list inside a panel must not move the panel
+    const t = e.target;
+    if (t && t.closest && t.closest('.dm-pop')) return;
+    repositionOpen();
+  }, true);                                          // capture: catches nested scrollers
+  addEventListener('resize', repositionOpen);
 
   /* ====================================================================
      Toast
@@ -191,6 +251,7 @@ window.DM = (function () {
 
     const api = {
       root,
+      panel,
       close() {
         if (!open) return;
         open = false;
@@ -334,6 +395,7 @@ window.DM = (function () {
 
     const api = {
       root,
+      panel,
       close() {
         panel.classList.remove('on');
         input.setAttribute('aria-expanded', 'false');
@@ -441,6 +503,7 @@ window.DM = (function () {
 
     const api = {
       root,
+      panel,
       close() { panel.classList.remove('on'); openPops.delete(api); },
       open() {
         closeAll(api);
@@ -666,7 +729,7 @@ window.DM = (function () {
     }
 
     const api = {
-      root: wrap, close, open,
+      root: wrap, panel, close, open,
       /** Fill the box from a map pin without re-triggering a search. */
       setFromPlace(place) {
         chosen = place;

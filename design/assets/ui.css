@@ -209,6 +209,14 @@
 }
 .dm-pop.up{top:auto;bottom:calc(100% + 6px);transform-origin:bottom}
 .dm-pop.on{opacity:1;transform:none;pointer-events:auto}
+
+/* Moved to <body> and positioned by script (see placePanel in ui.js). An
+   absolutely positioned panel is clipped by any scrolling ancestor — the admin
+   tables and the booking drawer both scroll — so it escapes to the top layer.
+   left/top/width are set inline; these rules just stop the anchored offsets
+   above from fighting them. */
+.dm-pop.portal{position:fixed;margin:0;min-width:0;z-index:9500}
+.dm-pop.portal.up{bottom:auto}
 .dm-opt{
   display:flex;align-items:center;gap:10px;width:100%;
   padding:11px 12px;min-height:44px;
