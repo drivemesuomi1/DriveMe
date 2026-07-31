@@ -507,11 +507,12 @@ window.DM = (function () {
       return { lat, lng, city: p.city || p.county, ...l };
     },
     /** Real driving route; falls back to a straight line if OSRM is unreachable. */
-    async route(a, b) {
+    async route(a, b, opts) {
+      opts = opts || {};
       try {
         const url = 'https://router.project-osrm.org/route/v1/driving/' +
           a.lng + ',' + a.lat + ';' + b.lng + ',' + b.lat +
-          '?overview=full&geometries=geojson';
+          '?overview=full&geometries=geojson' + (opts.steps ? '&steps=true' : '');
         const res = await fetch(url);
         const data = await res.json();
         if (data.code === 'Ok' && data.routes && data.routes[0]) {
@@ -520,12 +521,19 @@ window.DM = (function () {
             km: r.distance / 1000,
             minutes: Math.round(r.duration / 60),
             line: r.geometry.coordinates.map((c) => [c[1], c[0]]),
+            steps: opts.steps ? simplifySteps(r.legs && r.legs[0] && r.legs[0].steps) : [],
             real: true,
           };
         }
       } catch { /* fall through to the straight line */ }
       const km = geo.haversine(a, b);
-      return { km, minutes: Math.round((km / 45) * 60), line: [[a.lat, a.lng], [b.lat, b.lng]], real: false };
+      return {
+        km,
+        minutes: Math.round((km / 45) * 60),
+        line: [[a.lat, a.lng], [b.lat, b.lng]],
+        steps: opts.steps ? [{ instruction: 'Head toward the pickup point', distance_m: km * 1000 }] : [],
+        real: false,
+      };
     },
     haversine(a, b) {
       const R = 6371, rad = (d) => (d * Math.PI) / 180;
@@ -547,6 +555,21 @@ window.DM = (function () {
       return Math.max(0, Math.round((routeKm || asCrow) - 25));
     },
   };
+
+  function simplifySteps(steps) {
+    return (steps || [])
+      .filter((s) => s && s.maneuver && s.distance > 20)
+      .slice(0, 8)
+      .map((s) => {
+        const m = s.maneuver || {};
+        const road = s.name ? ' on ' + s.name : '';
+        const turn = [m.modifier, m.type].filter(Boolean).join(' ');
+        return {
+          instruction: (turn || 'continue').replace(/_/g, ' ') + road,
+          distance_m: s.distance || 0,
+        };
+      });
+  }
 
   /* ====================================================================
      Address autocomplete - Photon-backed suggestions under a text input
@@ -683,6 +706,12 @@ window.DM = (function () {
     attribution: 'Tiles &copy; Esri',
     maxZoom: 19,
   };
+  const TERRAIN_TILES = {
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenTopoMap contributors',
+    subdomains: 'abc',
+    maxZoom: 17,
+  };
 
   function pinIcon(kind) {
     // kind: 'pickup' | 'dropoff' | 'car'
@@ -714,16 +743,19 @@ window.DM = (function () {
     }).setView([HELSINKI.lat, HELSINKI.lng], opts.zoom || 12);
     const street = L.tileLayer(TILES.url, TILES).addTo(m);
     const satellite = L.tileLayer(SATELLITE_TILES.url, SATELLITE_TILES);
-    m.dmBaseLayers = { map: street, satellite };
+    const terrain = L.tileLayer(TERRAIN_TILES.url, TERRAIN_TILES);
+    m.dmBaseLayers = { map: street, satellite, terrain };
     m.dmSetBaseLayer = (kind) => {
-      const next = kind === 'satellite' ? satellite : street;
-      const prev = next === satellite ? street : satellite;
-      if (m.hasLayer(prev)) m.removeLayer(prev);
+      const next = m.dmBaseLayers[kind] || street;
+      Object.values(m.dmBaseLayers).forEach((layer) => {
+        if (layer !== next && m.hasLayer(layer)) m.removeLayer(layer);
+      });
       if (!m.hasLayer(next)) next.addTo(m);
     };
     if (opts.initialLayer === 'satellite') m.dmSetBaseLayer('satellite');
+    if (opts.initialLayer === 'terrain') m.dmSetBaseLayer('terrain');
     if (opts.layerControl !== false) {
-      L.control.layers({ Map: street, Satellite: satellite }, null, {
+      L.control.layers({ Map: street, Satellite: satellite, Terrain: terrain }, null, {
         position: opts.layerControlPosition || 'topright',
         collapsed: true,
       }).addTo(m);

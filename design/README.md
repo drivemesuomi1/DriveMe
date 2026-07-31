@@ -43,7 +43,7 @@ loaded straight from the browser — no API keys, no accounts, nothing to config
 
 | Service | Used for |
 | --- | --- |
-| **Leaflet** + **CARTO Positron / Esri satellite** tiles | live maps with a muted street view and real satellite toggle |
+| **Leaflet** + **CARTO Positron / Esri satellite / OpenTopoMap terrain** tiles | live maps with street, satellite, and terrain modes |
 | **Photon** (photon.komoot.io) | address autocomplete, and reverse geocoding a dropped pin |
 | **OSRM** (router.project-osrm.org) | the real driving route and its distance/duration |
 

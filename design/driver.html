@@ -25,8 +25,8 @@
   .lang{display:flex;border:1px solid var(--ink-200);border-radius:6px;overflow:hidden}
   .lang button{border:0;background:transparent;color:var(--ink-500);font:600 11px/1 var(--font);
     padding:8px 9px;cursor:pointer}.lang button.on{background:var(--accent-soft);color:var(--accent-deep)}
-  .shell{width:min(100%,980px);margin:0 auto;padding:16px 16px calc(34px + env(safe-area-inset-bottom));
-    display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:14px;align-items:start}
+  .shell{width:100%;max-width:none;margin:0;padding:14px 18px calc(30px + env(safe-area-inset-bottom));
+    display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:14px;align-items:start}
   .card{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);
     box-shadow:var(--sh-1);overflow:hidden}
   .pad{padding:20px}
@@ -40,13 +40,23 @@
     border-radius:5px;padding:7px 9px;font-size:11px;font-weight:700;white-space:nowrap}
   .state i{width:7px;height:7px;border-radius:50%;background:var(--accent)}
   .state.live i{box-shadow:0 0 0 5px rgba(15,99,189,.12)}
-  #map{height:390px;background:#eaf0f6}
+  #map{height:calc(100dvh - 92px);min-height:680px;background:#eaf0f6}
   .map-wrap{position:relative}
   .map-note{position:absolute;left:12px;bottom:24px;z-index:550;background:rgba(255,255,255,.94);
     border:1px solid var(--ink-100);border-radius:6px;padding:9px 11px;box-shadow:var(--sh-1);
     display:flex;gap:16px;max-width:calc(100% - 24px)}
   .map-note .k{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-500)}
   .map-note .v{font-weight:700;color:var(--accent-deep);font-feature-settings:"tnum";margin-top:1px}
+  .map-layer-toggle{
+    position:absolute;top:12px;right:12px;z-index:550;display:flex;gap:4px;
+    padding:4px;border-radius:var(--r-input);background:rgba(255,255,255,.94);
+    backdrop-filter:blur(8px);box-shadow:var(--sh-1)
+  }
+  .map-layer-toggle button{
+    border:0;background:transparent;cursor:pointer;border-radius:7px;padding:8px 11px;
+    min-height:36px;font:700 11.5px/1 var(--font);color:var(--ink-500)
+  }
+  .map-layer-toggle button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-deep)}
   .route{display:grid;grid-template-columns:18px 1fr;gap:0 11px;margin-top:18px}
   .route .marks{display:flex;flex-direction:column;align-items:center;padding-top:5px}
   .route .marks i{width:10px;height:10px;border:2px solid var(--accent);border-radius:50%}
@@ -70,13 +80,26 @@
   .actions button{min-height:48px}
   .actions button[hidden]{display:none}
   .nav-link{display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:9px}
+  .directions{margin-top:18px}
+  .directions ol{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+  .directions li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:9px;align-items:start;
+    padding:10px 0;border-top:1px solid var(--ink-100);font-size:13px}
+  .directions li:first-child{border-top:0}
+  .directions .n{width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent-deep);
+    display:grid;place-items:center;font-size:11px;font-weight:700}
+  .directions .d{font-size:12px;color:var(--ink-500);white-space:nowrap}
   .privacy{margin-top:14px;color:var(--ink-500);font-size:11.5px}
   .err{color:var(--critical);font-weight:600;font-size:13px;margin-top:12px;display:none}.err.on{display:block}
   .loading{max-width:430px;margin:80px auto;padding:0 16px;text-align:center}
   .loading h1{margin-bottom:7px}
-  @media(max-width:760px){
+  @media(max-width:900px){
     .shell{grid-template-columns:1fr;padding:10px 10px calc(28px + env(safe-area-inset-bottom))}
-    #map{height:310px}.side{order:-1}.pad{padding:17px}
+    #map{height:62dvh;min-height:520px}.side{order:2}.pad{padding:17px}
+  }
+  @media(max-width:520px){
+    #map{height:58dvh;min-height:470px}
+    .map-layer-toggle{left:10px;right:10px;justify-content:stretch}
+    .map-layer-toggle button{flex:1;padding-inline:7px}
   }
 </style>
 </head>
@@ -98,6 +121,11 @@
   <div class="card">
     <div class="map-wrap">
       <div id="map"></div>
+      <div class="map-layer-toggle" id="map-layer-toggle" role="group" aria-label="Map layer">
+        <button type="button" data-layer="map" aria-pressed="true" data-t="layersMap">Kartta</button>
+        <button type="button" data-layer="satellite" aria-pressed="false" data-t="layersSatellite">Satelliitti</button>
+        <button type="button" data-layer="terrain" aria-pressed="false" data-t="layersTerrain">Maasto</button>
+      </div>
       <div class="map-note" id="map-note" hidden>
         <div><div class="k" data-t="eta">Arvio</div><div class="v" id="map-eta">-</div></div>
         <div><div class="k" data-t="remaining">Jaljella</div><div class="v" id="map-distance">-</div></div>
@@ -115,6 +143,10 @@
          target="_blank" rel="noopener noreferrer" hidden data-t="navigate">
         Avaa navigointi
       </a>
+      <div class="directions" id="directions" hidden>
+        <h2 data-t="directions">Ajo-ohjeet</h2>
+        <ol id="directions-list"></ol>
+      </div>
     </div>
   </div>
 
@@ -167,6 +199,7 @@
       driverApp:'Kuljettajasovellus',loading:'Ladataan tehtavaa',checking:'Tarkistetaan turvallinen kuljettajalinkki.',
       eta:'Arvio',remaining:'Jaljella',route:'Tehtavan reitti',pickup:'Nouto',dropoff:'Maaranpaa',
       navigate:'Avaa navigointi',assignment:'Kuljettajan tehtava',startSharing:'Aloita paikannus',
+      layersMap:'Kartta',layersSatellite:'Satelliitti',layersTerrain:'Maasto',directions:'Ajo-ohjeet',
       stopSharing:'Lopeta paikannus',notSharing:'Paikannus ei ole kaynnissa',lastSent:'Viimeksi lahetetty',
       gpsAccuracy:'GPS-tarkkuus',updates:'Paivitykset',speed:'Nopeus',privacy:'Sijainti jaetaan vain tahan tehtavaan ja lakkaa automaattisesti matkan paattyessa.',
       tripActions:'Matkan toiminnot',markArrived:'Olen saapunut',startRide:'Aloita matka',
@@ -181,6 +214,7 @@
       driverApp:'Driver app',loading:'Loading assignment',checking:'Checking the secure driver link.',
       eta:'ETA',remaining:'Remaining',route:'Assignment route',pickup:'Pickup',dropoff:'Drop-off',
       navigate:'Open navigation',assignment:'Driver assignment',startSharing:'Start live location',
+      layersMap:'Map',layersSatellite:'Satellite',layersTerrain:'Terrain',directions:'Directions',
       stopSharing:'Stop live location',notSharing:'Location sharing is off',lastSent:'Last sent',
       gpsAccuracy:'GPS accuracy',updates:'Updates',speed:'Speed',privacy:'Location is shared only with this assignment and stops automatically when the ride ends.',
       tripActions:'Trip actions',markArrived:'I have arrived',startRide:'Start ride',
@@ -205,6 +239,7 @@
     document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
     if (sharing) $('go').textContent = t('stopSharing');
     renderStatus();
+    renderDirections();
   }
   document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
     lang = b.dataset.lang; localStorage.setItem('dm-driver-lang', lang); applyLanguage();
@@ -221,7 +256,7 @@
 
   function ensureMap(){
     if (map) return map;
-    map = DM.map($('map'), { zoom:13, scrollWheelZoom:false });
+    map = DM.map($('map'), { zoom:13, scrollWheelZoom:false, layerControl:false });
     return map;
   }
 
@@ -258,6 +293,27 @@
     updateNavigation();
   }
 
+  function distanceText(meters){
+    const n = Number(meters) || 0;
+    return n >= 1000 ? (n / 1000).toFixed(n < 10000 ? 1 : 0) + ' km' : Math.round(n) + ' m';
+  }
+
+  function directionText(step){
+    const raw = String(step.instruction || '').trim();
+    if (!raw) return lang === 'fi' ? 'Jatka reitilla' : 'Continue on route';
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  }
+
+  function renderDirections(){
+    const steps = routeInfo && Array.isArray(routeInfo.steps) ? routeInfo.steps : [];
+    $('directions').hidden = !steps.length;
+    $('directions-list').innerHTML = steps.map((step, i) =>
+      '<li><span class="n">' + (i + 1) + '</span><span>' +
+      DM.escapeHtml(directionText(step)) + '</span><span class="d">' +
+      DM.escapeHtml(distanceText(step.distance_m)) + '</span></li>'
+    ).join('');
+  }
+
   async function updateRoute(pos, force){
     const target = targetForStatus();
     if (!target) return;
@@ -266,13 +322,14 @@
     if (!force && Date.now() - lastRouteAt < 30000 && !moved) return;
     lastRouteAt = Date.now(); lastRouteOrigin = origin;
     try {
-      routeInfo = await DM.geo.route(origin, target);
+      routeInfo = await DM.geo.route(origin, target, { steps:true });
       const straightKm = DM.geo.haversine(origin, target);
       if (straightKm > 100 && routeInfo.minutes < 120) {
         routeInfo = {
           km: Math.round(straightKm),
           minutes: Math.round((straightKm / 60) * 60),
           line:[[origin.lat,origin.lng],[target.lat,target.lng]],
+          steps:[{ instruction: lang === 'fi' ? 'Avaa Google Maps pitkalle reitille' : 'Open Google Maps for this long route', distance_m: straightKm * 1000 }],
           real:false,
         };
       }
@@ -286,6 +343,7 @@
         : Math.max(1, routeInfo.minutes) + ' min';
       $('map-distance').textContent = routeInfo.km < 10
         ? routeInfo.km.toFixed(1) + ' km' : Math.round(routeInfo.km) + ' km';
+      renderDirections();
       const pts = routeLine.getBounds();
       if (pts.isValid()) map.fitBounds(pts.pad(.16), { maxZoom:15 });
     } catch {}
@@ -413,6 +471,7 @@
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) throw new Error(data.error || t('loadError'));
       trip.status = data.status; routeInfo = null; lastRouteAt = 0;
+      renderDirections();
       renderStatus();
       if (carMarker) updateRoute({coords:{
         latitude:carMarker.getLatLng().lat,longitude:carMarker.getLatLng().lng
@@ -444,6 +503,16 @@
   }
 
   $('go').addEventListener('click',() => sharing ? stop() : start());
+  document.querySelectorAll('#map-layer-toggle [data-layer]').forEach(button => {
+    button.addEventListener('click',() => {
+      ensureMap();
+      const layer = button.dataset.layer;
+      if (map && map.dmSetBaseLayer) map.dmSetBaseLayer(layer);
+      document.querySelectorAll('#map-layer-toggle [data-layer]').forEach(b => {
+        b.setAttribute('aria-pressed',String(b === button));
+      });
+    });
+  });
   document.querySelectorAll('[data-status]').forEach(b => b.addEventListener('click',() => setStatus(b.dataset.status)));
   window.addEventListener('online',() => { if (sharing && pendingPosition) transmit(pendingPosition); });
   window.addEventListener('offline',() => { if (sharing) setConnection('offline'); });
