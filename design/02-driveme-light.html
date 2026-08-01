@@ -19,7 +19,7 @@
 <link rel="icon" href="assets/logo-crown-d.svg" type="image/svg+xml">
 <link rel="preload" href="assets/hero-poster.jpg" as="image">
 <!-- shared UI kit for the booking card (no map here - see track.html for that) -->
-<link rel="stylesheet" href="assets/ui.css?v=2">
+<link rel="stylesheet" href="assets/ui.css?v=3">
 <style>
   :root{
     /* Blacklane-derived palette: brand blue #0F63BD, ink #0F1319,
@@ -1103,6 +1103,7 @@
     <div class="nav-actions">
       <div class="lang-switch" role="group" aria-label="Language">
         <button type="button" data-lang="fi" aria-pressed="true">FI</button>
+        <button type="button" data-lang="sv" aria-pressed="false">SV</button>
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
       <a class="nav-cta" href="#request" data-hover>Book a Driver</a>
@@ -1999,14 +2000,160 @@
     'Where it needs to go':'Minne auton tulee mennä', 'Pick a date':'Valitse päivä', 'Pick a time':'Valitse aika',
     'Half an hour less':'Puoli tuntia vähemmän', 'Half an hour more':'Puoli tuntia enemmän'
   };
+  /* ---------------------------------------------------------------------
+     Swedish. Same mechanism as Finnish: keys are the English source text in
+     the markup, applied longest-key-first. Finland-Swedish place names are
+     used deliberately — Helsingfors, Esbo, Vanda, Grankulla — because that is
+     what a Swedish-speaking Finn expects to read.
+     --------------------------------------------------------------------- */
+  const SWEDISH = {
+    'Book a Driver':'Boka förare', 'How it works':'Så fungerar det', 'Book':'Boka',
+    'Services':'Tjänster', 'Fleet':'Bilpark', 'Why DriveMe':'Varför DriveMe', 'Roadmap':'Färdplan',
+    'Premium mobility · Helsinki':'Premiummobilitet · Helsingfors',
+    'Your Driver.':'Din förare.', 'Your Car.':'Din bil.', 'Your Way.':'Ditt sätt.',
+    'A professionally licensed chauffeur arrives, takes the wheel of your own vehicle, and delivers you - and your car - home. No parking. No retrieval. No compromise.':'En professionell, licensierad chaufför kommer till dig, sätter sig bakom ratten i din egen bil och kör både dig och bilen hem. Ingen parkering. Ingen hämtning dagen efter. Inga kompromisser.',
+    'By the hour':'Per timme', 'Point to point':'Punkt till punkt',
+    'Pickup location':'Upphämtningsplats', 'Drop-off':'Destination', 'Duration':'Längd', 'Date':'Datum',
+    'Time':'Tid', 'Name':'Namn', 'Phone':'Telefon', 'Email':'E-post', 'Payment':'Betalning',
+    '3 hours':'3 timmar', '3-hour minimum':'Minst 3 timmar', 'hours':'timmar',
+    'billed in half hours':'debiteras per halvtimme', 'Sending':'Skickar',
+    'VAT included':'Moms ingår', 'no surge, ever':'aldrig höjda priser',
+    'Fixed fare':'Fast pris', 'quoted now':'priset bekräftas nu',
+    'beyond the metro':'utanför huvudstadsregionen', 'min drive':'min körning',
+    'Card':'Kort', 'Corporate invoice':'Företagsfaktura', 'Request a driver':'Beställ förare',
+    'Request received - matching your driver':'Begäran mottagen - vi söker din förare',
+    'Book another':'Gör en ny bokning', 'Watch the film':'Se filmen', 'Scroll':'Skrolla',
+    'Helsinki · Launching 2026':'Helsingfors · Lanseras 2026', 'Licensed · Insured · Vetted from day one':'Licensierad · Försäkrad · Kontrollerad från dag ett',
+    'The problem':'Problemet', 'Every ride-share makes you':'Varje samåkningstjänst tvingar dig att',
+    'abandon your own car.':'lämna kvar din egen bil.',
+    'A dinner, an event, one glass of wine - and your vehicle spends the night across the city. DriveMe is built to remove the trade-off entirely.':'En middag, ett evenemang, ett glas vin - och din bil står kvar natten över på andra sidan staden. DriveMe är byggt för att ta bort det valet helt.',
+    'The old way':'Det gamla sättet', 'Traditional apps':'Traditionella appar', 'The DriveMe way':'DriveMe-sättet',
+    'Travel in your own vehicle - seats, settings, privacy':'Res i din egen bil - säten, inställningar och integritet',
+    'A professional, licensed driver takes the wheel':'En professionell, licensierad förare tar ratten',
+    'You and your car arrive home together, safely':'Du och din bil kommer hem tillsammans, tryggt',
+    'Four moments. Zero friction.':'Fyra steg. Noll friktion.',
+    'Driver accepts':'Föraren accepterar', 'Live tracking':'Spårning i realtid', 'Safe arrival':'Trygg ankomst',
+    'One platform. Three ways to arrive.':'En plattform. Tre sätt att komma fram.', 'Live now':'Tillgänglig nu',
+    'Coming soon':'Kommer snart', 'Premium Driver':'Premiumförare', 'Luxury Chauffeur':'Lyxchaufför',
+    'Premium Rental':'Premiumuthyrning', 'The fleet · Phase 2':'Bilparken · Fas 2',
+    'Today, your car. In time, ours.':'I dag din bil. Med tiden vår.',
+    'Engineered around trust.':'Byggt kring förtroende.', 'Professional drivers':'Professionella förare',
+    'Background checked':'Bakgrundskontrollerade', 'GPS tracking':'GPS-spårning', 'Transparent pricing':'Transparent prissättning',
+    'Corporate accounts':'Företagskonton', 'Luxury experience':'Lyxupplevelse',
+    'Every journey, in your hand.':'Varje resa, i din hand.',
+    'The opportunity':'Möjligheten', 'A market waiting for a premium answer.':'En marknad som väntar på ett premiumsvar.',
+    'Expansion':'Expansion', 'From Helsinki, outward.':'Från Helsingfors och utåt.',
+    'Founder\'s note':'Grundarens ord', 'Why I\'m building DriveMe.':'Varför jag bygger DriveMe.',
+    'Begin':'Börja', 'Your car deserves a better way home.':'Din bil förtjänar ett bättre sätt att komma hem.',
+    'Book Your Driver':'Boka din förare', 'Talk to us':'Kontakta oss',
+
+    'The request':'Begäran', 'Tell us where the car is.':'Berätta var bilen står.', 'We\'ll do the rest.':'Vi sköter resten.',
+    'The journey':'Resan', 'Your vehicle':'Ditt fordon', 'When':'När', 'Confirm':'Bekräfta',
+    'Where is the car, and where is it going?':'Var står bilen och vart ska den?',
+    'Book by the hour when the evening is open-ended, or point to point when you know exactly where the car needs to be.':'Boka per timme när kvällen är öppen, eller punkt till punkt när du vet exakt vart bilen ska.',
+    'Driver stays with you':'Föraren stannar hos dig', 'One journey, one destination':'En resa, en destination',
+    'Three-hour minimum - billed in half hours thereafter.':'Minst tre timmar - därefter debitering per halvtimme.',
+    'Charged at €0.50 per kilometre beyond the Helsinki Metro Area.':'0,50 € per kilometer utanför Helsingforsregionen.',
+    'Continue':'Fortsätt', 'Estimate':'Uppskattning', 'Indicative':'Riktgivande',
+    'Professional driver':'Professionell förare', 'Total':'Totalt',
+    'VAT included. No surge pricing, ever - the same rate at two in the afternoon and two in the morning.':'Moms ingår. Aldrig höjda priser - samma pris klockan två på eftermiddagen som klockan två på natten.',
+    'Subscription -':'Abonnemang -', 'for five hours of driver time':'för fem timmar förartid',
+    'Applies past Helsinki, Espoo, Vantaa and Kauniainen.':'Gäller utanför Helsingfors, Esbo, Vanda och Grankulla.',
+    'Private events and multi-stop evenings, quoted in advance.':'Privata evenemang och kvällar med flera stopp prissätts i förväg.',
+    'Five hours of driver time every month.':'Fem timmar förartid varje månad.',
+    'Corporate invoicing':'Företagsfakturering', 'The approach':'Ankomsten',
+    'You\'ll know exactly':'Du vet alltid exakt', 'where they are.':'var föraren är.',
+    'The moment a request is confirmed, this becomes live - your driver\'s approach, their ETA, and their name. No wondering, no calling to ask.':'När din begäran bekräftats blir detta live - förarens position, beräknad ankomsttid och namn. Ingen ovisshet, inga samtal för att fråga.',
+    'Demonstration · Helsinki capital region':'Demonstration · Helsingforsregionen', 'Sample journey - positions refresh every 3 seconds.':'Exempelresa - positionerna uppdateras var tredje sekund.',
+    'Status':'Status', 'Approaching pickup':'Närmar sig upphämtningen', 'Arriving in':'Framme om','Driver':'Förare',
+    'Your car':'Din bil', 'Driver assigned':'Förare tilldelad', 'Driver arrived':'Föraren har anlänt', 'At your pickup':'På din upphämtningsplats', 'Now':'Nu',
+    'A licensed professional drives you home in your own car. On demand, day or night.':'En licensierad yrkesförare kör hem dig i din egen bil. På begäran, dag som natt.',
+    'Book now →':'Boka nu →', 'Executive sedans with dedicated chauffeurs for corporate accounts and events.':'Representationsbilar med egna chaufförer för företagskonton och evenemang.',
+    'Join waitlist →':'Gå med i väntelistan →', 'Curated vehicles, delivered to your door with a full tank and a handshake.':'Utvalda bilar, levererade till din dörr med full tank och ett handslag.',
+    'DriveMe owns no vehicles at launch, and that is the design - a professional drives the car you already have, which is precisely what lets Phase 1 begin without fleet financing. A small premium fleet comes later: two to three vehicles, acquired only once Phase 1 is generating consistent revenue, opening the chauffeur and rental tiers.':'DriveMe äger inga fordon vid lanseringen, och det är avsiktligt - en yrkesförare kör bilen du redan har, vilket är just det som gör att fas 1 kan starta utan fordonsfinansiering. En liten premiumbilpark kommer senare, när fas 1 ger stabila intäkter.',
+    'The standard we intend to buy into when the chauffeur tier opens - a reference point, not an inventory list. No vehicle shown here has been acquired, financed, or insured, and none will be until Phase 1 has proven the demand behind it.':'Den standard vi siktar på när chaufförstjänsten öppnar - en referenspunkt, inte en fordonslista. Inget fordon som visas här har köpts, finansierats eller försäkrats, och inget kommer att göra det förrän fas 1 bevisat efterfrågan.',
+    '2–3 vehicles planned':'2–3 fordon planerade', 'Follows Phase 1':'Följer fas 1', 'Chauffeur-driven':'Med chaufför',
+    'The standard we\'re building toward.':'Den standard vi bygger mot.',
+    'Climate set before you step in. Phone paired. Conversation optional. That is the brief for the chauffeur tier when it opens - because the best luxury is the kind you don\'t have to ask for.':'Klimatet inställt innan du stiger in. Telefonen ansluten. Samtal frivilligt. Det är målet för chaufförstjänsten när den öppnar - den bästa lyxen är den man inte behöver be om.',
+    'Licensed chauffeurs with verified professional driving records - never gig amateurs.':'Licensierade chaufförer med verifierad yrkeserfarenhet - aldrig amatörer.',
+    'Four checks before activation: licence verification, driving record, criminal background, and an in-person interview.':'Fyra kontroller före aktivering: körkortsverifiering, körhistorik, brottsregisterutdrag och en personlig intervju.',
+    'Every journey tracked end-to-end, shareable in one tap with family or colleagues.':'Varje resa spåras hela vägen och kan delas med familj eller kollegor med ett tryck.',
+    'The price you see is the price you pay. No surge games, no hidden fees.':'Priset du ser är priset du betalar. Inga prishöjningar, inga dolda avgifter.',
+    'Consolidated billing and duty-of-care reporting for executive teams.':'Samlad fakturering och rapportering av omsorgsplikt för ledningsgrupper.',
+    'Suited drivers, quiet rides, your preferences remembered - the standard every booking is held to.':'Kostymklädda förare, lugna resor och dina önskemål ihågkomna - standarden för varje bokning.',
+    'The app':'Appen', 'in your hand.':'i din hand.', 'Interface preview - screens shown are in development, with sample journey data.':'Förhandsvisning av gränssnittet - vyerna är under utveckling och innehåller exempeldata.',
+    'Addressable market':'Adresserbar marknad', 'Capital-region population':'Befolkning i huvudstadsregionen', 'Service phases':'Tjänstefaser', 'Vetting checks per driver':'Kontroller per förare',
+    'Market size and population are external estimates for Finland and the Helsinki capital region, not DriveMe figures. Every driver must clear four checks before a first booking - Finnish licence verification, a driving-record check, a criminal background check, and an in-person interview - and none is activated on a partial file.':'Marknadsstorlek och befolkning är externa uppskattningar för Finland och Helsingforsregionen, inte DriveMes siffror. Varje förare måste klara fyra kontroller före sin första bokning - verifiering av finskt körkort, körhistorik, brottsregisterutdrag och en personlig intervju.',
+    'outward.':'utåt.', 'Stage 1 · Months 0–6':'Steg 1 · Månad 0–6', 'Stage 2 · Months 6–18':'Steg 2 · Månad 6–18', 'Stage 3 · Months 18–36':'Steg 3 · Månad 18–36', 'Long-term':'På lång sikt',
+    'Finland':'Finland', 'Nordics':'Norden', 'Global':'Globalt', 'Franchise & licensing model':'Franchise- och licensmodell',
+    'I kept running into the same evening in Helsinki. Dinner runs long, the weather turns, a glass of wine is poured - and a car you rely on becomes something to recover tomorrow morning. Every app in this city solves the passenger\'s journey. None of them solve the car\'s.':'Jag stötte på samma kväll om och om igen i Helsingfors. Middagen drar ut, vädret slår om, ett glas vin hälls upp - och bilen du litar på blir något att hämta i morgon bitti. Varje app i den här staden löser passagerarens resa. Ingen löser bilens.',
+    'So DriveMe starts deliberately narrow: one service, one city, licensed professional drivers who come to you and drive your own vehicle home. The chauffeur and rental tiers will open only once that first promise is being kept consistently. I would rather earn the second product than announce it.':'Därför börjar DriveMe medvetet smalt: en tjänst, en stad, licensierade yrkesförare som kommer till dig och kör hem din egen bil. Chaufförs- och uthyrningstjänsterna öppnar först när det första löftet hålls konsekvent. Jag förtjänar hellre den andra produkten än annonserar den.',
+    'If you are an early customer, a driver who takes the work seriously, or a venue that sends people home at midnight - I want to hear from you before we launch.':'Om du är en tidig kund, en förare som tar arbetet på allvar, eller ett ställe som skickar hem folk vid midnatt - vill jag höra från dig innan vi lanserar.',
+    'Pricing':'Prissättning', 'Safety':'Säkerhet', 'Book a driver':'Boka förare', 'Contact':'Kontakt',
+
+    'Charged after the ride':'Debiteras efter resan',
+    'Billed to your company':'Faktureras ditt företag',
+    'A vetted, licensed chauffeur drives your own car. No account needed - we\'ll confirm by email and send you a live tracking link.':'En kontrollerad, licensierad chaufför kör din egen bil. Inget konto behövs - vi bekräftar via e-post och skickar en spårningslänk i realtid.',
+    'Set your pickup and destination. Your driver is matched in minutes.':'Ange upphämtning och destination. Din förare matchas på några minuter.',
+    'A vetted, licensed professional confirms - profile, rating, and ETA up front.':'En kontrollerad, licensierad yrkesförare bekräftar - profil, betyg och ankomsttid direkt.',
+    'Follow the journey in real time. Share your route with anyone you trust.':'Följ resan i realtid. Dela rutten med vem du än litar på.',
+    'You step out at your door. Your car is parked where it belongs.':'Du stiger ur vid din egen dörr. Bilen står parkerad där den hör hemma.',
+    'TYPE OF BOOKING':'TYP AV BOKNING',
+    'Three-hour minimum, billed in half-hour blocks thereafter.':'Minst tre timmar, därefter debitering i halvtimmesblock.',
+    '3 hr':'3 h',
+    'Subscription - €100 / month for five hours of driver time':'Abonnemang - 100 € / mån för fem timmar förartid',
+    'Every journey, in your hands.':'Varje resa, i dina händer.',
+    'Email address for the chauffeur waitlist':'E-postadress för chaufförsväntelistan',
+    'Email address for the rental waitlist':'E-postadress för uthyrningsväntelistan',
+
+    /* fragments — the cascade rewrites text node by node, so headings split
+       across elements need their pieces listed too (mirrors the Finnish set) */
+    'A vetted, licensed chauffeur drives your own car.':'En kontrollerad, licensierad chaufför kör din egen bil.',
+    'No account needed':'Inget konto behövs',
+    'we\'ll confirm by email and send you a live tracking link.':'vi bekräftar via e-post och skickar en spårningslänk i realtid.',
+    'Your reference is -.':'Din referens är -.',
+    'A vetted chauffeur is being assigned by hand;':'En kontrollerad chaufför tilldelas manuellt,',
+    'we\'ll email your live tracking link once they are assigned.':'och vi skickar spårningslänken via e-post så snart tilldelningen är klar.',
+    'One platform.':'En plattform.', 'Three ways to arrive.':'Tre sätt att komma fram.',
+    'Today, your car.':'I dag din bil.', 'In time, ours.':'Med tiden vår.',
+    'Engineered':'Byggt', 'around trust.':'kring förtroende.',
+    'Every journey,':'Varje resa,',
+    'From Helsinki,':'Från Helsingfors', 'month':'mån',
+    'Three-hour minimum,':'Minst tre timmar,', 'thereafter.':'därefter.',
+    'Four moments.':'Fyra steg.', 'Zero friction.':'Noll friktion.',
+    'Engineered ':'Byggt ', 'around ':'kring ', 'trust.':'förtroende.',
+    'A market waiting for ':'En marknad som väntar på ', 'a premium answer.':'ett premiumsvar.',
+    'Why I\'m building ':'Varför jag bygger ', 'DriveMe.':'DriveMe.',
+    'deserves a ':'förtjänar ett bättre sätt ', 'better way home.':'att komma hem.'
+  };
+
+  const SWEDISH_ATTRIBUTES = {
+    'Language':'Språk', 'Call DriveMe at +358 45 187 8083':'Ring DriveMe på +358 45 187 8083',
+    'Booking type':'Bokningstyp', 'Where your car is now':'Var din bil står nu',
+    'Where it needs to go':'Vart bilen ska', 'Pick a date':'Välj datum', 'Pick a time':'Välj tid',
+    'Half an hour less':'En halvtimme mindre', 'Half an hour more':'En halvtimme mer'
+  };
+
+  /* One place that knows every language. Absent = English, the source text. */
+  const TRANSLATIONS = { fi: FINNISH, sv: SWEDISH };
+  const ATTRIBUTE_TRANSLATIONS = { fi: FINNISH_ATTRIBUTES, sv: SWEDISH_ATTRIBUTES };
+  const TITLES = {
+    fi: 'DriveMe - Kuljettajasi. Autosi. Sinun tapasi.',
+    sv: 'DriveMe - Din förare. Din bil. Ditt sätt.',
+    en: 'DriveMe - Your Driver. Your Car. Your Way.'
+  };
+  const SUPPORTED_LANGUAGES = ['fi', 'sv', 'en'];
   const originalText = new WeakMap(), originalAttrs = new WeakMap();
     let activeLanguage = 'en';
 
     function applyLanguage(language){
+      if (!SUPPORTED_LANGUAGES.includes(language)) language = 'fi';
       activeLanguage = language;
-    const finnish = language === 'fi';
-    document.documentElement.lang = finnish ? 'fi' : 'en';
-    document.title = finnish ? 'DriveMe - Kuljettajasi. Autosi. Sinun tapasi.' : 'DriveMe - Your Driver. Your Car. Your Way.';
+    // Absent from TRANSLATIONS means English — the source text already in the markup.
+    const dict = TRANSLATIONS[language];
+    const attrDict = ATTRIBUTE_TRANSLATIONS[language];
+    document.documentElement.lang = language;
+    document.title = TITLES[language] || TITLES.en;
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())){
@@ -2014,9 +2161,9 @@
       const source = originalText.get(node) ?? node.nodeValue;
       originalText.set(node, source);
       let translated = source;
-      if (finnish){
-        Object.keys(FINNISH).sort((a, b) => b.length - a.length).forEach(key => {
-          translated = translated.replaceAll(key, FINNISH[key]);
+      if (dict){
+        Object.keys(dict).sort((a, b) => b.length - a.length).forEach(key => {
+          translated = translated.replaceAll(key, dict[key]);
         });
       }
       if (node.nodeValue !== translated) node.nodeValue = translated;
@@ -2028,7 +2175,9 @@
         if (!record){ record = {}; originalAttrs.set(el, record); }
         const source = record[attr] ?? el.getAttribute(attr);
         record[attr] = source;
-        if (FINNISH_ATTRIBUTES[source]) el.setAttribute(attr, finnish ? FINNISH_ATTRIBUTES[source] : source);
+        // restore the English source when the active language has no entry
+        const translatedAttr = attrDict && attrDict[source];
+        if (FINNISH_ATTRIBUTES[source]) el.setAttribute(attr, translatedAttr || source);
       });
     });
     document.querySelectorAll('[data-lang]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.lang === language)));
@@ -2040,9 +2189,10 @@
   document.addEventListener('DOMContentLoaded', () => applyLanguage(activeLanguage), { once:true });
   let translationScheduled = false;
   new MutationObserver(() => {
-    if (activeLanguage !== 'fi' || translationScheduled) return;
+    // English needs no re-application; any translated language does
+    if (activeLanguage === 'en' || translationScheduled) return;
     translationScheduled = true;
-    requestAnimationFrame(() => { translationScheduled = false; applyLanguage('fi'); });
+    requestAnimationFrame(() => { translationScheduled = false; applyLanguage(activeLanguage); });
   }).observe(document.body, { childList:true, subtree:true });
   document.querySelectorAll('[data-lang]').forEach(button => button.addEventListener('click', () => {
     const language = button.dataset.lang;
@@ -2229,7 +2379,7 @@
 })();
 </script>
 
-<script src="assets/ui.js?v=2"></script>
+<script src="assets/ui.js?v=3"></script>
 
 <!-- ===================== lead capture ===================== -->
 <script>
@@ -2429,7 +2579,7 @@
         customer_phone: phoneEl.value.trim(),
         customer_email: emailEl.value.trim(),
         // so the confirmation email goes out in the language they were reading
-        language: document.documentElement.lang === 'en' ? 'en' : 'fi',
+        language: ['fi','sv','en'].includes(document.documentElement.lang) ? document.documentElement.lang : 'fi',
         payment_method: $('bk-pay').value,
         vehicle_details: null,
         scheduled_for: dp.get() + 'T' + tp.get(),

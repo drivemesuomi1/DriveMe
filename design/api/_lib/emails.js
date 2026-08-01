@@ -44,6 +44,21 @@ const COPY = {
     help: 'Jos jokin tieto on väärin, vastaa tähän viestiin.',
     foot: 'DriveMe · Mansio Group Oy · Helsinki',
   },
+  sv: {
+    subject: (ref) => `Tack för din förfrågan — bokningsreferens ${ref}`,
+    eyebrow: 'Förfrågan mottagen',
+    title: 'Tack för din förfrågan',
+    lede: 'Vi har tagit emot din bokningsförfrågan och återkommer inom kort — vanligtvis inom en timme.',
+    next: 'Vi bekräftar din förare via e-post. En kontrollerad, licensierad chaufför kör din egen bil ända fram till dörren.',
+    detailsHead: 'Din förfrågan',
+    rows: { ref:'Referens', when:'Tidpunkt', pickup:'Upphämtning', dest:'Destination', type:'Bokningstyp', price:'Prisuppskattning', pay:'Betalning' },
+    open: 'Öppen — föraren stannar hos dig',
+    hourly: (h) => `Per timme${h ? ` · ${h} h` : ''}`,
+    p2p: 'Punkt till punkt',
+    notChosen: 'Inte valt',
+    help: 'Om någon uppgift är fel, svara bara på det här meddelandet.',
+    foot: 'DriveMe · Mansio Group Oy · Helsingfors',
+  },
   en: {
     subject: (ref) => `Thank you for contacting DriveMe — reference ${ref}`,
     eyebrow: 'Request received',
@@ -63,6 +78,7 @@ const COPY = {
 
 const PAY_LABEL = {
   fi: { card:'Kortti', mobilepay:'MobilePay', invoice:'Yrityslasku' },
+  sv: { card:'Kort', mobilepay:'MobilePay', invoice:'Företagsfaktura' },
   en: { card:'Card', mobilepay:'MobilePay', invoice:'Corporate invoice' },
 };
 

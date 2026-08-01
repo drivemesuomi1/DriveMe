@@ -304,7 +304,10 @@ window.DM = (function () {
      Date picker - readonly text input + calendar popover
      Value is kept ISO (yyyy-mm-dd) on input.dataset.value
      ==================================================================== */
-  function locale(){ return document.documentElement.lang === 'fi' ? 'fi-FI' : undefined; }
+  // Dates and times follow the language the visitor chose, not their browser's.
+  // sv-FI rather than sv-SE: Finland-Swedish conventions, and 24-hour clock.
+  const LOCALES = { fi: 'fi-FI', sv: 'sv-FI' };
+  function locale(){ return LOCALES[document.documentElement.lang] || undefined; }
   function weekdays(){
     return Array.from({ length:7 }, (_, i) =>
       new Date(2024, 0, 1 + i).toLocaleDateString(locale(), { weekday:'short' }).replace('.', ''));
@@ -453,7 +456,7 @@ window.DM = (function () {
     root.appendChild(panel);
 
     const fmt = (hh, mm) =>
-      new Date(2000, 0, 1, hh, mm).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      new Date(2000, 0, 1, hh, mm).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
 
     function commit(hh, mm, silent) {
       input.dataset.value = pad2(hh) + ':' + pad2(mm);

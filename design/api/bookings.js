@@ -211,7 +211,7 @@ export default async function handler(req, res) {
   // Acknowledge to the customer — the booking form promises "we'll confirm by
   // email", so this is what keeps that promise. Sent after the ops alert, and
   // held to the same rule: a mail failure must never cost a booking.
-  const lang = body.language === 'en' ? 'en' : 'fi';   // site default is Finnish
+  const lang = ['fi', 'sv', 'en'].includes(body.language) ? body.language : 'fi';   // site default is Finnish
   const ack = customerConfirmation(row, cfg.base, lang);
   const ackMail = await sendMail({
     to: email,
