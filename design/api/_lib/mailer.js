@@ -16,7 +16,10 @@
 export function mailConfig() {
   return {
     enabled: Boolean(process.env.RESEND_API_KEY),
-    from: process.env.MAIL_FROM || 'DriveMe <bookings@driveme.fi>',
+    // Customers see this address, so it must be one they can reply to.
+    // info@driveme.fi forwards to the ops inbox, which is why no separate
+    // Reply-To is needed on customer mail.
+    from: process.env.MAIL_FROM || 'DriveMe <info@driveme.fi>',
     ops: process.env.OPS_EMAIL || 'info@driveme.fi',
     base: (
       process.env.PUBLIC_BASE_URL ||

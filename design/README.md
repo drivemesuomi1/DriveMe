@@ -105,7 +105,7 @@ Development:
 | `SUPABASE_URL` | yes | Supabase → Project Settings → API → Project URL |
 | `SUPABASE_ANON_KEY` | yes | Supabase → Project Settings → API → `anon` / publishable key |
 | `RESEND_API_KEY` | no | Resend → API Keys. A **sending-access** key is enough |
-| `MAIL_FROM` | no | e.g. `DriveMe <bookings@driveme.fi>` — domain must be verified in Resend |
+| `MAIL_FROM` | no | e.g. `DriveMe <info@driveme.fi>` — domain must be verified in Resend |
 | `OPS_EMAIL` | no | where booking alerts land, e.g. `info@driveme.fi` |
 | `PUBLIC_BASE_URL` | no | origin for links in emails; Netlify sets `URL` automatically |
 

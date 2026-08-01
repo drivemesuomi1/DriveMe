@@ -218,8 +218,9 @@ export default async function handler(req, res) {
     subject: ack.subject,
     html: ack.html,
     text: ack.text,
-    // replies land in the inbox the team actually reads, not the send-only address
-    replyTo: cfg.ops,
+    // No Reply-To on purpose. MAIL_FROM is info@driveme.fi, which forwards to
+    // the ops inbox, so a plain reply already reaches the team. Setting it to
+    // OPS_EMAIL instead exposed a private gmail.com address to customers.
   });
   if (!ackMail.sent) console.error('bookings: customer ack not delivered for', id, '-', ackMail.error);
 
