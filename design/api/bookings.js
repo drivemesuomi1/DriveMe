@@ -2,7 +2,7 @@ import { randomUUID, randomBytes } from 'node:crypto';
 import { getClient, isConfigured } from './_lib/supabase.js';
 import { send, fail, readJson, isEmail, optionalString, optionalNumber } from './_lib/http.js';
 import { sendMail, mailConfig } from './_lib/mailer.js';
-import { bookingAlert } from './_lib/emails.js';
+import { bookingAlert, customerConfirmation } from './_lib/emails.js';
 
 const MODES = new Set(['hourly', 'point_to_point']);
 // Phase 1 payment methods (§3.5): cash is deliberately absent.
@@ -207,6 +207,21 @@ export default async function handler(req, res) {
     replyTo: alert.replyTo,
   });
   if (!mail.sent) console.error('bookings: ops alert not delivered for', id, '-', mail.error);
+
+  // Acknowledge to the customer — the booking form promises "we'll confirm by
+  // email", so this is what keeps that promise. Sent after the ops alert, and
+  // held to the same rule: a mail failure must never cost a booking.
+  const lang = body.language === 'en' ? 'en' : 'fi';   // site default is Finnish
+  const ack = customerConfirmation(row, cfg.base, lang);
+  const ackMail = await sendMail({
+    to: email,
+    subject: ack.subject,
+    html: ack.html,
+    text: ack.text,
+    // replies land in the inbox the team actually reads, not the send-only address
+    replyTo: cfg.ops,
+  });
+  if (!ackMail.sent) console.error('bookings: customer ack not delivered for', id, '-', ackMail.error);
 
   // Short, human-quotable reference - the uuid stays the real key.
   return send(res, 201, {

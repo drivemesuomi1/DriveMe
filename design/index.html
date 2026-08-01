@@ -2428,6 +2428,8 @@
         customer_name: nameEl.value.trim(),
         customer_phone: phoneEl.value.trim(),
         customer_email: emailEl.value.trim(),
+        // so the confirmation email goes out in the language they were reading
+        language: document.documentElement.lang === 'en' ? 'en' : 'fi',
         payment_method: $('bk-pay').value,
         vehicle_details: null,
         scheduled_for: dp.get() + 'T' + tp.get(),
