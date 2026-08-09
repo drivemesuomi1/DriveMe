@@ -496,7 +496,7 @@
   let liveMap = null, liveMarkers = new Map(), latestLocations = [];
 
   const euro = n => n == null ? '-' : '€' + Number(n).toFixed(2);
-  const when = iso => iso ? new Date(iso).toLocaleString([], { dateStyle:'medium', timeStyle:'short' }) : '-';
+  const when = iso => iso ? DM.time.format(iso, { dateStyle:'medium', timeStyle:'short' }, 'en') : '-';
   const refOf = b => b.id.slice(0, 8).toUpperCase();
   const STATUS = {
     requested:      { label:'Matching driver', cls:'warn' },
@@ -511,33 +511,19 @@
   const pill = (label, cls) => '<span class="dm-pill ' + cls + '">' + esc(label) + '</span>';
   const PERIOD_LABELS = { all:'All time', week:'This week', month:'This month', year:'This year' };
 
-  function periodRange(period){
-    const d = new Date();
-    if (period === 'week'){
-      const start = new Date(d);
-      start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(start); end.setDate(end.getDate() + 7);
-      return { start, end };
-    }
-    if (period === 'month'){
-      const start = new Date(d.getFullYear(), d.getMonth(), 1);
-      return { start, end:new Date(d.getFullYear(), d.getMonth() + 1, 1) };
-    }
-    if (period === 'year'){
-      const start = new Date(d.getFullYear(), 0, 1);
-      return { start, end:new Date(d.getFullYear() + 1, 0, 1) };
-    }
-    return null;
-  }
+  const DAY_MS = 86400000;
+  const calendarDay = parts => Date.UTC(parts.year, parts.month - 1, parts.day);
+  const weekStartDay = day => day - ((new Date(day).getUTCDay() + 6) % 7) * DAY_MS;
 
   function inPeriod(iso, period){
     if (period === 'all') return true;
     if (!iso) return false;
-    const t = new Date(iso);
-    if (Number.isNaN(t.getTime())) return false;
-    const range = periodRange(period);
-    return t >= range.start && t < range.end;
+    const value = DM.time.parts(iso);
+    const current = DM.time.parts();
+    if (!value || !current) return false;
+    if (period === 'year') return value.year === current.year;
+    if (period === 'month') return value.year === current.year && value.month === current.month;
+    return weekStartDay(calendarDay(value)) === weekStartDay(calendarDay(current));
   }
 
   function bindFilterGroup(id, attr, onChange){
@@ -769,7 +755,7 @@
     ].map(([k, v]) => '<span class="k">' + k + '</span><span class="v">' + v + '</span>').join('');
 
     // driver availability at a glance
-    const dayOf = iso => iso ? iso.slice(0, 10) : null;
+    const dayOf = iso => iso ? DM.time.dateISO(iso) : null;
     const day = dayOf(b.scheduled_for);
     const load = {};
     bookings.forEach(x => {
@@ -969,7 +955,7 @@
 
   $('drv-rows').addEventListener('click', async e => {
     const btn = e.target.closest('button[data-check]'); if (!btn) return;
-    const today = new Date().toISOString().slice(0, 10);
+    const today = DM.time.dateISO();
     const { error } = await sb.from('drivers').update({ [btn.dataset.check]: today }).eq('id', btn.dataset.id);
     if (error) return DM.toast(error.message, 'bad');
     DM.toast('Check recorded', 'good');
@@ -1015,7 +1001,7 @@
       '"' + w.email.replace(/"/g, '""') + '",' + w.tier + ',' + w.created_at).join('\n');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
-    a.download = 'driveme-waitlist-' + wlTier + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.download = 'driveme-waitlist-' + wlTier + '-' + DM.time.dateISO() + '.csv';
     a.click();
     URL.revokeObjectURL(a.href);
     DM.toast(rows.length + ' signups exported', 'good');
@@ -1120,18 +1106,23 @@
       ['Completed value', euro(revenue)],
     ].map(([k, v]) => '<div class="stat"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>').join('');
 
-    const weekStart = d => {
-      const x = new Date(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
-      x.setHours(0, 0, 0, 0); return x;
-    };
+    const currentWeek = weekStartDay(calendarDay(DM.time.parts()));
     const weeks = [];
     for (let i = 7; i >= 0; i--){
-      const s = weekStart(new Date()); s.setDate(s.getDate() - i * 7); weeks.push(s);
+      weeks.push(currentWeek - i * 7 * DAY_MS);
     }
     bars($('m-weeks'), weeks.map(s => {
-      const e = new Date(s); e.setDate(e.getDate() + 7);
-      const n = bookings.filter(b => { const t = new Date(b.created_at); return t >= s && t < e; }).length;
-      return [s.toLocaleDateString([], { day:'numeric', month:'short' }), n];
+      const e = s + 7 * DAY_MS;
+      const n = bookings.filter(b => {
+        const parts = DM.time.parts(b.created_at);
+        if (!parts) return false;
+        const day = calendarDay(parts);
+        return day >= s && day < e;
+      }).length;
+      const label = new Intl.DateTimeFormat('en-GB', {
+        day:'numeric', month:'short', timeZone:'UTC',
+      }).format(new Date(s));
+      return [label, n];
     }));
 
     bars($('m-types'), [

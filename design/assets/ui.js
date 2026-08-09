@@ -306,8 +306,38 @@ window.DM = (function () {
      ==================================================================== */
   // Dates and times follow the language the visitor chose, not their browser's.
   // sv-FI rather than sv-SE: Finland-Swedish conventions, and 24-hour clock.
-  const LOCALES = { fi: 'fi-FI', sv: 'sv-FI' };
-  function locale(){ return LOCALES[document.documentElement.lang] || undefined; }
+  const SERVICE_TIME_ZONE = 'Europe/Helsinki';
+  const LOCALES = { fi: 'fi-FI', sv: 'sv-FI', en: 'en-GB' };
+  const serviceDatePartsFormatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: SERVICE_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit',
+  });
+
+  function locale(language){
+    return LOCALES[language || document.documentElement.lang] || LOCALES.en;
+  }
+  function serviceDateParts(value) {
+    const date = value == null ? new Date() : new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    const parts = Object.fromEntries(serviceDatePartsFormatter.formatToParts(date)
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, Number(part.value)]));
+    return { year: parts.year, month: parts.month, day: parts.day };
+  }
+  function serviceDateISO(value) {
+    const parts = serviceDateParts(value);
+    return parts ? parts.year + '-' + pad2(parts.month) + '-' + pad2(parts.day) : '';
+  }
+  function serviceToday() {
+    const parts = serviceDateParts();
+    return new Date(parts.year, parts.month - 1, parts.day);
+  }
+  function formatServiceTime(value, options, language) {
+    const date = value == null ? new Date() : new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat(locale(language), {
+      ...(options || {}), timeZone: SERVICE_TIME_ZONE,
+    }).format(date);
+  }
   function weekdays(){
     return Array.from({ length:7 }, (_, i) =>
       new Date(2024, 0, 1 + i).toLocaleDateString(locale(), { weekday:'short' }).replace('.', ''));
@@ -315,6 +345,10 @@ window.DM = (function () {
 
   const isoOf = (d) => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
   const startOfDay = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
+  const dateFromISO = (iso) => {
+    const [year, month, day] = String(iso).split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
 
   function datePicker(input, opts) {
     opts = opts || {};
@@ -331,9 +365,9 @@ window.DM = (function () {
     panel.appendChild(cal);
     root.appendChild(panel);
 
-    const min = opts.min ? startOfDay(new Date(opts.min)) : startOfDay(new Date());
+    const min = opts.min ? startOfDay(dateFromISO(opts.min)) : serviceToday();
     let view = new Date(min.getFullYear(), min.getMonth(), 1);
-    let value = input.dataset.value ? new Date(input.dataset.value + 'T00:00:00') : null;
+    let value = input.dataset.value ? dateFromISO(input.dataset.value) : null;
 
     function label(d) {
       return d.toLocaleDateString(locale(), { weekday: 'short', day: 'numeric', month: 'short' });
@@ -369,7 +403,7 @@ window.DM = (function () {
       const first = new Date(view.getFullYear(), view.getMonth(), 1);
       const lead = (first.getDay() + 6) % 7;                    // Monday-first
       const days = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
-      const today = startOfDay(new Date());
+      const today = serviceToday();
 
       for (let i = 0; i < lead; i++) grid.appendChild(h('div', ''));
       for (let d = 1; d <= days; d++) {
@@ -415,7 +449,7 @@ window.DM = (function () {
       },
       set(iso) {
         if (!iso) return;
-        commitSilent(new Date(iso + 'T00:00:00'));
+        commitSilent(dateFromISO(iso));
       },
       get() { return input.dataset.value || ''; },
     };
@@ -833,5 +867,11 @@ window.DM = (function () {
   return {
     ICONS, h, escapeHtml, toast, select, segmented, datePicker, timePicker,
     autocomplete, geo, map, pinIcon, closeAll,
+    time: {
+      zone: SERVICE_TIME_ZONE,
+      parts: serviceDateParts,
+      dateISO: serviceDateISO,
+      format: formatServiceTime,
+    },
   };
 })();

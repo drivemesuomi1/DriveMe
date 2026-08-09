@@ -2474,10 +2474,7 @@
     $('bk-dur-plus').addEventListener('click',  () => { state.hours = Math.min(12, state.hours + .5); renderHours(); quote(); });
 
     /* ---------- date + time ---------- */
-    const todayISO = (() => {
-      const d = new Date();
-      return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-    })();
+    const todayISO = DM.time.dateISO();
     const dp = DM.datePicker($('bk-date'), { value: todayISO });
     const tp = DM.timePicker($('bk-time'), { value: '22:30' });
     $('bk-date').addEventListener('change', () => {

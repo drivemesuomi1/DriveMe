@@ -319,7 +319,7 @@
   }
 
   function fmtTime(iso){
-    return iso ? new Date(iso).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '';
+    return iso ? DM.time.format(iso, { hour:'2-digit', minute:'2-digit' }, 'en') : '';
   }
 
   function ageText(iso){
@@ -551,7 +551,7 @@
     $('r-pickup').textContent = ride.pickup || '-';
     $('r-dest').textContent = ride.destination || 'Open-ended - driver stays with you';
     $('r-when').textContent = ride.scheduled_for
-      ? new Date(ride.scheduled_for).toLocaleString([], { dateStyle:'medium', timeStyle:'short' })
+      ? DM.time.format(ride.scheduled_for, { dateStyle:'medium', timeStyle:'short' }, 'en')
       : '-';
     $('r-mode').textContent = (ride.mode === 'hourly' ? 'By the hour' : 'Point to point') +
       (ride.route_minutes ? ' · ~' + ride.route_minutes + ' min' : '');

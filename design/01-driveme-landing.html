@@ -1747,10 +1747,13 @@
     const wrapOf = el => el.closest('.hb-field');
     const noteOf = id => document.getElementById(id);
 
-    // today, in the browser's own timezone - toISOString() would shift the date
+    // Booking dates follow the Helsinki service day, wherever the visitor is.
     const todayLocal = () => {
-      const d = new Date();
-      return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone:'Europe/Helsinki', year:'numeric', month:'2-digit', day:'2-digit'
+      }).formatToParts(new Date());
+      const values = Object.fromEntries(parts.filter(p => p.type !== 'literal').map(p => [p.type,p.value]));
+      return values.year + '-' + values.month + '-' + values.day;
     };
     if (date && !date.value) date.value = todayLocal();
     if (date) date.min = todayLocal();

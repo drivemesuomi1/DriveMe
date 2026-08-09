@@ -387,9 +387,9 @@
       }
       pendingPosition = null; clearError(); pings++;
       $('count').textContent = pings;
-      $('last').textContent = new Date().toLocaleTimeString([],{
+      $('last').textContent = DM.time.format(null, {
         hour:'2-digit',minute:'2-digit',second:'2-digit'
-      });
+      }, lang);
       setConnection('online');
       if (data.status && trip.status !== data.status){ trip.status = data.status; renderStatus(); }
     } catch (error) {
@@ -493,9 +493,8 @@
       $('pickup').textContent = trip.pickup || '-';
       $('destination').textContent = trip.destination || (lang === 'fi' ? 'Avoin tuntivaraus' : 'Open hourly booking');
       $('scheduled').textContent = trip.scheduled_for
-        ? new Date(trip.scheduled_for).toLocaleString(lang === 'fi' ? 'fi-FI' : 'en-GB',{
-            dateStyle:'medium',timeStyle:'short'
-          }) : '';
+        ? DM.time.format(trip.scheduled_for, { dateStyle:'medium',timeStyle:'short' }, lang)
+        : '';
       $('loading').hidden = true; $('app').hidden = false;
       ensureMap(); drawTarget(); renderStatus();
       setTimeout(() => map.invalidateSize(),0);
