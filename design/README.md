@@ -30,7 +30,8 @@ design/                     ← the Vercel project root (see Deploying)
 │   ├── 0002_phase1.sql     customers, drivers, status pipeline, tracking, invoices
 │   ├── 0003_coordinates.sql map geometry + a status-order guard
 │   ├── 0004_tracking_after_assignment.sql assignment-gated customer tracking
-│   └── 0005_realtime_tracking.sql telemetry, ETA trail, arrival + token rotation
+│   ├── 0005_realtime_tracking.sql telemetry, ETA trail, arrival + token rotation
+│   └── 0006_driver_status_automation.sql driver-owned en-route transition
 ├── dev-server.mjs          local stand-in for `vercel dev` (npm run dev)
 ├── package.json
 └── .env.example
@@ -54,14 +55,14 @@ routing already falls back to a straight line if OSRM is unreachable.
 
 ## 1 · Database
 
-Create a Supabase project, then apply **all five** migrations in order — either
+Create a Supabase project, then apply **all six** migrations in order — either
 
 ```bash
 supabase link --project-ref <your-ref>
 supabase db push
 ```
 
-or paste `0001_init.sql` through `0005_realtime_tracking.sql` into the dashboard
+or paste `0001_init.sql` through `0006_driver_status_automation.sql` into the dashboard
 SQL editor and run each in filename order.
 
 > `0003` is what lets the tracking page draw the ride from stored coordinates. Until
@@ -193,9 +194,10 @@ The client-side estimate is indicative; `api/bookings.js` recomputes and stores 
 2. Admin signs in at `/admin` → Bookings → opens the booking → assigns an **approved**
    driver (availability shown at a glance) → copies the `/driver?t=…` link and sends it
    to the driver (SMS/WhatsApp).
-3. Driver opens the link and taps **Start live location** — the screen routes to pickup,
-   calculates driving ETA automatically, and posts GPS quality/speed/heading every five
-   seconds. The first accepted ping flips the ride to *Driver en route*.
+3. Driver opens the link and taps **Start live location**. That action immediately marks
+   the ride as *Driver en route*, then the screen routes to pickup, calculates driving ETA,
+   and posts GPS quality/speed/heading every five seconds. The first accepted ping remains
+   a fallback for the same transition.
 4. Driver marks **Arrived**, **Start ride**, and **Complete ride** from the same screen.
    The customer map switches its ETA target from pickup to destination automatically.
    Admin can monitor every active chauffeur and stale device from **Live map**.
@@ -248,7 +250,7 @@ billing or customer-contact data, and returns nothing before assignment.
 ### `POST /api/driver-status`
 
 ```jsonc
-{ "token": "<32-hex driver token>", "status": "driver_arrived | ride_started | completed" }
+{ "token": "<32-hex driver token>", "status": "driver_en_route | driver_arrived | ride_started | completed" }
 ```
 
 Only forward, valid transitions are accepted. Reassigning a booking rotates the driver

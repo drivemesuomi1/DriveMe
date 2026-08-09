@@ -3,7 +3,7 @@ import { getClient, isConfigured } from './_lib/supabase.js';
 import { send, fail, readJson } from './_lib/http.js';
 
 const TOKEN_RE = /^[0-9a-f]{32}$/;
-const ALLOWED = new Set(['driver_arrived', 'ride_started', 'completed']);
+const ALLOWED = new Set(['driver_en_route', 'driver_arrived', 'ride_started', 'completed']);
 
 export function parseStatusPayload(body) {
   if (!body || typeof body !== 'object') return { error: 'We could not read that request.' };

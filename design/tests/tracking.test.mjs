@@ -40,12 +40,21 @@ test('rejects unsafe GPS and telemetry ranges', () => {
 });
 
 test('driver endpoint exposes only forward trip actions', () => {
-  for (const status of ['driver_arrived','ride_started','completed']) {
+  for (const status of ['driver_en_route','driver_arrived','ride_started','completed']) {
     assert.equal(parseStatusPayload({ token:TOKEN,status }).value.status,status);
   }
-  for (const status of ['requested','driver_assigned','driver_en_route','cancelled','admin']) {
+  for (const status of ['requested','driver_assigned','cancelled','admin']) {
     assert.equal(parseStatusPayload({ token:TOKEN,status }).field,'status');
   }
+});
+
+test('chauffeur can start the status flow without waiting for GPS', async () => {
+  const sql = await readFile(new URL('../supabase/migrations/0006_driver_status_automation.sql',import.meta.url),'utf8');
+  const driverPage = await readFile(new URL('../driver.html',import.meta.url),'utf8');
+  assert.match(sql,/p_status = 'driver_en_route' and b\.status = 'driver_assigned'/);
+  assert.match(sql,/if b\.status = p_status then/);
+  assert.match(sql,/en_route_at = case when p_status = 'driver_en_route'/);
+  assert.match(driverPage,/await setStatus\('driver_en_route'\)/);
 });
 
 test('migration gates tracking and rotates the driver credential', async () => {

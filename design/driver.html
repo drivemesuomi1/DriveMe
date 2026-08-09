@@ -422,7 +422,13 @@
 
   async function start(){
     if (!navigator.geolocation) return showError(t('gpsError'));
-    clearError(); sharing = true;
+    clearError();
+    if (trip && trip.status === 'driver_assigned'){
+      const advanced = await setStatus('driver_en_route');
+      if (advanced) DM.toast(t('enRoute'), 'good');
+      else clearError(); // the first GPS ping remains a deployment-safe fallback
+    }
+    sharing = true;
     $('go').textContent = t('stopSharing'); $('go').classList.add('on');
     setConnection('waiting');
     watchId = navigator.geolocation.watchPosition(onPosition, error => {
@@ -460,9 +466,9 @@
   }
 
   async function setStatus(next){
-    if (next === 'completed' && !confirm(t('confirmComplete'))) return;
+    if (next === 'completed' && !confirm(t('confirmComplete'))) return false;
     const button = document.querySelector('[data-status="' + next + '"]');
-    button.disabled = true;
+    if (button) button.disabled = true;
     try {
       const res = await fetch('/api/driver-status',{
         method:'POST',headers:{'Content-Type':'application/json'},
@@ -476,8 +482,9 @@
       if (carMarker) updateRoute({coords:{
         latitude:carMarker.getLatLng().lat,longitude:carMarker.getLatLng().lng
       }},true);
-    } catch(error){ showError(error.message); }
-    finally{ button.disabled = false; }
+      return true;
+    } catch(error){ showError(error.message); return false; }
+    finally{ if (button) button.disabled = false; }
   }
 
   async function boot(){
