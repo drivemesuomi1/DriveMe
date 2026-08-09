@@ -29,6 +29,24 @@ window.DM = (function () {
     return n;
   };
   const pad2 = (n) => String(n).padStart(2, '0');
+  const UI_COPY = {
+    en: {
+      empty:'Nothing to choose from', previousMonth:'Previous month', nextMonth:'Next month',
+      tonight:'Tonight', tomorrow:'Tomorrow', noMatches:'No matches - try a street or venue name',
+      map:'Map', satellite:'Satellite', terrain:'Terrain',
+    },
+    fi: {
+      empty:'Ei vaihtoehtoja', previousMonth:'Edellinen kuukausi', nextMonth:'Seuraava kuukausi',
+      tonight:'Tänä iltana', tomorrow:'Huomenna', noMatches:'Ei tuloksia - kokeile kadun tai paikan nimeä',
+      map:'Kartta', satellite:'Satelliitti', terrain:'Maasto',
+    },
+    sv: {
+      empty:'Inga alternativ', previousMonth:'Föregående månad', nextMonth:'Nästa månad',
+      tonight:'I kväll', tomorrow:'I morgon', noMatches:'Inga träffar - prova en gata eller plats',
+      map:'Karta', satellite:'Satellit', terrain:'Terräng',
+    },
+  };
+  const uiText = (key) => (UI_COPY[document.documentElement.lang] || UI_COPY.en)[key];
 
   /* ---------------- open-popover registry: one at a time ---------------- */
   const openPops = new Set();
@@ -214,7 +232,7 @@ window.DM = (function () {
         panel.appendChild(b);
         return b;
       });
-      if (!items.length) panel.appendChild(h('div', 'dm-opt-empty', opts.empty || 'Nothing to choose from'));
+      if (!items.length) panel.appendChild(h('div', 'dm-opt-empty', opts.empty || uiText('empty')));
       sync();
     }
 
@@ -388,8 +406,8 @@ window.DM = (function () {
       const prev = h('button', 'dm-cal-nav', ICONS.left);
       const next = h('button', 'dm-cal-nav', ICONS.right);
       prev.type = next.type = 'button';
-      prev.setAttribute('aria-label', document.documentElement.lang === 'fi' ? 'Edellinen kuukausi' : 'Previous month');
-      next.setAttribute('aria-label', document.documentElement.lang === 'fi' ? 'Seuraava kuukausi' : 'Next month');
+      prev.setAttribute('aria-label', uiText('previousMonth'));
+      next.setAttribute('aria-label', uiText('nextMonth'));
       const title = h('span', 'dm-cal-title', view.toLocaleDateString(locale(), { month:'long', year:'numeric' }));
       if (view <= new Date(min.getFullYear(), min.getMonth(), 1)) prev.disabled = true;
       prev.addEventListener('click', () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); render(); });
@@ -419,8 +437,8 @@ window.DM = (function () {
       cal.appendChild(grid);
 
       const foot = h('div', 'dm-cal-foot');
-      const t = h('button', 'dm-btn quiet sm', 'Tonight');
-      const tm = h('button', 'dm-btn quiet sm', 'Tomorrow');
+      const t = h('button', 'dm-btn quiet sm', uiText('tonight'));
+      const tm = h('button', 'dm-btn quiet sm', uiText('tomorrow'));
       t.type = tm.type = 'button';
       t.addEventListener('click', () => commit(today));
       tm.addEventListener('click', () => {
@@ -712,7 +730,7 @@ window.DM = (function () {
     function draw() {
       panel.innerHTML = '';
       if (!results.length) {
-        panel.appendChild(h('div', 'dm-opt-empty', 'No matches - try a street or venue name'));
+        panel.appendChild(h('div', 'dm-opt-empty', uiText('noMatches')));
         return;
       }
       results.forEach((r, i) => {
@@ -855,7 +873,11 @@ window.DM = (function () {
     if (opts.initialLayer === 'satellite') m.dmSetBaseLayer('satellite');
     if (opts.initialLayer === 'terrain') m.dmSetBaseLayer('terrain');
     if (opts.layerControl !== false) {
-      L.control.layers({ Map: street, Satellite: satellite, Terrain: terrain }, null, {
+      L.control.layers({
+        [uiText('map')]: street,
+        [uiText('satellite')]: satellite,
+        [uiText('terrain')]: terrain,
+      }, null, {
         position: opts.layerControlPosition || 'topright',
         collapsed: true,
       }).addTo(m);
