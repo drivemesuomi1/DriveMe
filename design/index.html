@@ -141,9 +141,11 @@
     -webkit-text-fill-color:transparent;color:transparent;
   }
   .nav-cta{
-    justify-self:end;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+    justify-self:end;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
+    min-width:162px;min-height:46px;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
     color:var(--gold)!important;
     border:1px solid rgba(201,169,97,.45);padding:12px 26px;border-radius:100px;
+    background-clip:border-box;-webkit-background-clip:border-box;-webkit-text-fill-color:currentColor;
     transition:border-color var(--standard),background var(--standard),transform var(--standard),
                color var(--standard),box-shadow var(--standard);
   }
@@ -1106,13 +1108,13 @@
         <button type="button" data-lang="sv" aria-pressed="false">SV</button>
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
-      <a class="nav-cta" href="#request" data-hover>Book a Driver</a>
+      <a class="nav-cta" href="#bk" data-hover>Book a Driver</a>
     </div>
   </div>
   <div class="bar-links">
     <ul class="nav-links">
       <li><a href="#how" data-hover>How it works</a></li>
-      <li><a href="#request" data-hover>Book</a></li>
+      <li><a href="#bk" data-hover>Book</a></li>
       <li><a href="#services" data-hover>Services</a></li>
       <li><a href="#fleet" data-hover>Fleet</a></li>
       <li><a href="#why" data-hover>Why DriveMe</a></li>
@@ -1383,7 +1385,7 @@
         </div>
 
         <div class="req-foot">
-          <a class="btn btn-primary" href="#approach" data-hover>Continue</a>
+          <button type="button" class="btn btn-primary" id="request-continue">Continue</button>
           <span class="step-of">Step 1 of 4</span>
         </div>
       </div>
@@ -1498,7 +1500,7 @@
         <div class="svc-body">
           <h3>Premium Driver</h3>
           <p>A licensed professional drives you home in your own car. On demand, day or night.</p>
-          <a class="go" href="#request" data-hover>Book now →</a>
+          <a class="go" href="#bk" data-hover>Book now →</a>
         </div>
       </article>
       <article class="svc soon reveal" data-hover>
@@ -1730,7 +1732,7 @@
     <p class="kicker reveal">Begin</p>
     <h2 class="reveal">Your car deserves a <em>better way home.</em></h2>
     <div class="hero-ctas reveal">
-      <a class="btn btn-primary" href="#request" data-hover>Book Your Driver</a>
+      <a class="btn btn-primary" href="#bk" data-hover>Book Your Driver</a>
       <a class="btn btn-ghost" href="mailto:info@driveme.fi" data-hover>Talk to us</a>
     </div>
   </div>
@@ -1749,7 +1751,7 @@
         <li><a href="#pricing" data-hover>Pricing</a></li>
         <li><a href="#why" data-hover>Safety</a></li>
         <li><a href="#roadmap" data-hover>Roadmap</a></li>
-        <li><a href="#request" data-hover>Book a driver</a></li>
+        <li><a href="#bk" data-hover>Book a driver</a></li>
         <li><a href="mailto:info@driveme.fi" data-hover>Contact</a></li>
       </ul>
       <div class="foot-contact">
@@ -2715,6 +2717,55 @@
       [nameEl, phoneEl, emailEl].forEach(el => { el.value = ''; markField(el.closest('.dm-field'), false); });
       touched = false;
     });
+
+    /* The lower request card is a quick journey preview. Continue hands its
+       choices to this complete, submit-ready booking form. */
+    const requestContinue = $('request-continue');
+    if (requestContinue){
+      const request = { mode:'hourly', hours:3 };
+      const requestMode = value => {
+        request.mode = value;
+        const pointToPoint = value === 'point_to_point';
+        $('mode-hour').setAttribute('aria-pressed', String(!pointToPoint));
+        $('mode-p2p').setAttribute('aria-pressed', String(pointToPoint));
+        $('field-dest').hidden = !pointToPoint;
+        $('field-hours').hidden = pointToPoint;
+        const billed = pointToPoint ? P2P_HOURS : request.hours;
+        const total = billed * RATE;
+        $('est-total').textContent = euro(total);
+        $('est-total-2').textContent = euro(total);
+        $('est-mode').textContent = pointToPoint ? 'Fixed point-to-point fare' : request.hours + ' hr · By the hour';
+        $('est-driver').textContent = pointToPoint ? 'Fixed fare' : request.hours + ' hr × €35';
+      };
+      const renderRequestHours = () => {
+        $('hrs-out').innerHTML = (Number.isInteger(request.hours) ? request.hours : request.hours.toFixed(1)) + '<small>hours</small>';
+        $('hrs-minus').disabled = request.hours <= MIN_HOURS;
+        if (request.mode === 'hourly') requestMode('hourly');
+      };
+
+      $('mode-hour').addEventListener('click', () => requestMode('hourly'));
+      $('mode-p2p').addEventListener('click', () => requestMode('point_to_point'));
+      $('hrs-minus').addEventListener('click', () => { request.hours = Math.max(MIN_HOURS, request.hours - .5); renderRequestHours(); });
+      $('hrs-plus').addEventListener('click', () => { request.hours = Math.min(12, request.hours + .5); renderRequestHours(); });
+      renderRequestHours();
+
+      requestContinue.addEventListener('click', () => {
+        const pointToPoint = request.mode === 'point_to_point';
+        const pickup = $('pickup').value.trim();
+        const destination = $('dest').value.trim();
+        const modeButton = document.querySelector('#bk-mode [data-value="' + request.mode + '"]');
+        if (modeButton) modeButton.click();
+        state.hours = request.hours;
+        $('bk-pickup').value = pickup;
+        if (pointToPoint) $('bk-drop').value = destination;
+        renderHours();
+        quote();
+        $('bk').scrollIntoView({ behavior:'smooth', block:'center' });
+        setTimeout(() => {
+          (pointToPoint ? $('bk-drop') : $('bk-date')).focus({ preventScroll:true });
+        }, 450);
+      });
+    }
 
     renderHours();
     quote();
