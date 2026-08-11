@@ -1735,32 +1735,32 @@
     <div class="stick">
       <div class="story-grid">
         <div class="story-copy">
-          <p class="kicker">The desktop app</p>
-          <h2>Every booking, <em>on your desktop.</em></h2>
+          <p class="kicker">Guest checkout</p>
+          <h2>Book once. <em>No portal required.</em></h2>
           <div class="story-steps">
-            <div class="story-step" data-i="0"><b>Booking</b>Desktop booking. Pickup, destination, done.</div>
-            <div class="story-step" data-i="1"><b>Live tracking</b>Watch your driver arrive, minute by minute.</div>
-            <div class="story-step" data-i="2"><b>Payments</b>Cashless, itemised, corporate-ready.</div>
-            <div class="story-step" data-i="3"><b>Arrival</b>Rate the journey. Your car sleeps at home.</div>
+            <div class="story-step" data-i="0"><b>Guest booking</b>Pickup, destination, contact details, done.</div>
+            <div class="story-step" data-i="1"><b>Tracking link</b>Open your private journey link, no account needed.</div>
+            <div class="story-step" data-i="2"><b>Payment</b>Pay securely and receive an itemised receipt.</div>
+            <div class="story-step" data-i="3"><b>Arrival</b>Confirm the handover. Your car sleeps at home.</div>
           </div>
-          <p class="story-note">Desktop interface preview - screens shown are in development, with sample journey data.</p>
+          <p class="story-note">Guest checkout preview - screens shown are in development, with sample journey data.</p>
         </div>
         <div class="desktop-app" data-hover>
           <div class="screen">
             <div class="desktop-bar">
               <span class="desktop-dots"><i></i><i></i><i></i></span>
-              <b>DriveMe Control</b>
+              <b>DriveMe Checkout</b>
               <span>Helsinki</span>
             </div>
             <aside class="desktop-sidebar" aria-hidden="true">
-              <b>Workspace</b>
-              <span class="on" data-i="0">Booking</span>
-              <span data-i="1">Live tracking</span>
-              <span data-i="2">Payments</span>
+              <b>Journey</b>
+              <span class="on" data-i="0">Guest booking</span>
+              <span data-i="1">Tracking link</span>
+              <span data-i="2">Payment</span>
               <span data-i="3">Arrival</span>
             </aside>
             <div class="app-screen on" data-s="0">
-              <div><div class="app-title">Booking</div><div class="app-sub">Thursday 23:40 · Helsinki</div></div>
+              <div><div class="app-title">Guest booking</div><div class="app-sub">Thursday 23:40 · Helsinki</div></div>
               <div class="app-block"><div class="app-row"><span>Pickup</span><b>Ravintola Savoy</b></div></div>
               <div class="app-block"><div class="app-row"><span>Destination</span><b>Home · Westend</b></div></div>
               <div class="app-block"><div class="app-row"><span>Your vehicle</span><b>Mercedes EQS</b></div></div>
@@ -1769,7 +1769,7 @@
               <div class="app-btn">Request Driver</div>
             </div>
             <div class="app-screen" data-s="1">
-              <div><div class="app-title">Live tracking</div><div class="app-sub">Mikael is on the way · 6 min</div></div>
+              <div><div class="app-title">Tracking link</div><div class="app-sub">Mikael is on the way · 6 min</div></div>
               <div class="app-map"><span class="route"></span><span class="car-dot"></span></div>
               <div class="app-driver">
                 <span class="app-avatar">MK</span>
@@ -1778,7 +1778,7 @@
               <div class="app-chips"><span>Share trip</span><span>Message</span></div>
             </div>
             <div class="app-screen" data-s="2">
-              <div><div class="app-title">Payments</div><div class="app-sub">Receipt · Trip #48219</div></div>
+              <div><div class="app-title">Payment</div><div class="app-sub">Receipt · Trip #48219</div></div>
               <div class="app-block"><div class="app-row"><span>Journey · 14.2 km</span><b>21.00 €</b></div></div>
               <div class="app-block"><div class="app-row"><span>Night hours</span><b>3.00 €</b></div></div>
               <div class="app-block"><div class="app-row"><span>Business account</span><b>Nordica Oy</b></div></div>
@@ -2345,37 +2345,35 @@
   };
 
   Object.assign(FINNISH, {
-    'The desktop app':'Ty\u00f6p\u00f6yt\u00e4sovellus',
-    'Every booking,':'Jokainen varaus,',
-    'on your desktop.':'ty\u00f6p\u00f6yd\u00e4ll\u00e4si.',
-    'Booking':'Varaus',
-    'Payments':'Maksu',
-    'Desktop booking. Pickup, destination, done.':'Ty\u00f6p\u00f6yt\u00e4varaus. Nouto, m\u00e4\u00e4r\u00e4np\u00e4\u00e4, valmis.',
-    'Rate the journey. Your car sleeps at home.':'Arvioi matka. Autosi lep\u00e4\u00e4 kotona.',
-    'Desktop interface preview - screens shown are in development, with sample journey data.':'Ty\u00f6p\u00f6yt\u00e4k\u00e4ytt\u00f6liittym\u00e4n esikatselu - n\u00e4kym\u00e4t ovat kehitteill\u00e4 ja sis\u00e4lt\u00e4v\u00e4t esimerkkimatkan tietoja.',
-    'DriveMe Control':'DriveMe Control',
-    'Workspace':'Ty\u00f6alue',
-    'Bookings':'Varaukset',
-    'Drivers':'Kuljettajat',
-    'Vehicles':'Ajoneuvot',
-    'Reports':'Raportit'
+    'Guest checkout':'Vierasvaraus',
+    'Book once.':'Varaa kerran.',
+    'No portal required.':'Ei asiakasportaalia.',
+    'Guest booking':'Vierasvaraus',
+    'Tracking link':'Seurantalinkki',
+    'Payment':'Maksu',
+    'Pickup, destination, contact details, done.':'Nouto, m\u00e4\u00e4r\u00e4np\u00e4\u00e4, yhteystiedot, valmis.',
+    'Open your private journey link, no account needed.':'Avaa yksityinen seurantalinkki, tili\u00e4 ei tarvita.',
+    'Pay securely and receive an itemised receipt.':'Maksa turvallisesti ja saat eritellyn kuitin.',
+    'Confirm the handover. Your car sleeps at home.':'Vahvista luovutus. Autosi lep\u00e4\u00e4 kotona.',
+    'Guest checkout preview - screens shown are in development, with sample journey data.':'Vierasvarauksen esikatselu - n\u00e4kym\u00e4t ovat kehitteill\u00e4 ja sis\u00e4lt\u00e4v\u00e4t esimerkkimatkan tietoja.',
+    'DriveMe Checkout':'DriveMe Checkout',
+    'Journey':'Matka'
   });
 
   Object.assign(SWEDISH, {
-    'The desktop app':'Skrivbordsappen',
-    'Every booking,':'Varje bokning,',
-    'on your desktop.':'p\u00e5 ditt skrivbord.',
-    'Booking':'Bokning',
-    'Payments':'Betalning',
-    'Desktop booking. Pickup, destination, done.':'Skrivbordsbokning. Upph\u00e4mtning, destination, klart.',
-    'Rate the journey. Your car sleeps at home.':'Betygs\u00e4tt resan. Din bil vilar hemma.',
-    'Desktop interface preview - screens shown are in development, with sample journey data.':'F\u00f6rhandsvisning av skrivbordsgr\u00e4nssnittet - vyerna \u00e4r under utveckling och inneh\u00e5ller exempeldata.',
-    'DriveMe Control':'DriveMe Control',
-    'Workspace':'Arbetsyta',
-    'Bookings':'Bokningar',
-    'Drivers':'F\u00f6rare',
-    'Vehicles':'Fordon',
-    'Reports':'Rapporter'
+    'Guest checkout':'G\u00e4stbokning',
+    'Book once.':'Boka direkt.',
+    'No portal required.':'Ingen kundportal kr\u00e4vs.',
+    'Guest booking':'G\u00e4stbokning',
+    'Tracking link':'Sp\u00e5rningsl\u00e4nk',
+    'Payment':'Betalning',
+    'Pickup, destination, contact details, done.':'Upph\u00e4mtning, destination, kontaktuppgifter, klart.',
+    'Open your private journey link, no account needed.':'\u00d6ppna din privata resel\u00e4nk, inget konto beh\u00f6vs.',
+    'Pay securely and receive an itemised receipt.':'Betala s\u00e4kert och f\u00e5 ett specificerat kvitto.',
+    'Confirm the handover. Your car sleeps at home.':'Bekr\u00e4fta \u00f6verl\u00e4mningen. Din bil vilar hemma.',
+    'Guest checkout preview - screens shown are in development, with sample journey data.':'F\u00f6rhandsvisning av g\u00e4stbokning - vyerna \u00e4r under utveckling och inneh\u00e5ller exempeldata.',
+    'DriveMe Checkout':'DriveMe Checkout',
+    'Journey':'Resa'
   });
 
   /* One place that knows every language. Absent = English, the source text. */
