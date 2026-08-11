@@ -66,6 +66,9 @@
   /* `clip` (not `hidden`) - hidden makes the root its own scroll container, which
      stops scroll events reaching window and silently kills every scroll-driven effect */
   html{scroll-behavior:smooth;overflow-x:clip}
+  section,[id]{scroll-margin-top:150px}
+  #top,#bk{scroll-margin-top:0}
+  #pricing{scroll-margin-top:170px}
   body{
     background:var(--bg);color:var(--white);
     font-family:var(--font);font-weight:400;line-height:1.6;
@@ -1865,7 +1868,7 @@
     <h2 class="reveal">Your car deserves a <em>better way home.</em></h2>
     <div class="hero-ctas reveal">
       <a class="btn btn-primary" href="#bk" data-hover>Book Your Driver</a>
-      <a class="btn btn-ghost" href="mailto:info@driveme.fi" data-hover>Talk to us</a>
+      <a class="btn btn-ghost" href="#pricing" data-hover>View pricing</a>
     </div>
   </div>
 </section>
@@ -2998,8 +3001,8 @@
       touched = false;
     });
 
-    /* The lower request card is a quick journey preview. Continue hands its
-       choices to this complete, submit-ready booking form. */
+    /* The lower request card is a quick journey preview. Continue moves into
+       pricing so the section does not feel like a dead end. */
     const requestContinue = $('request-continue');
     if (requestContinue){
       const request = { mode:'hourly', hours:3 };
@@ -3030,20 +3033,8 @@
       renderRequestHours();
 
       requestContinue.addEventListener('click', () => {
-        const pointToPoint = request.mode === 'point_to_point';
-        const pickup = $('pickup').value.trim();
-        const destination = $('dest').value.trim();
-        const modeButton = document.querySelector('#bk-mode [data-value="' + request.mode + '"]');
-        if (modeButton) modeButton.click();
-        state.hours = request.hours;
-        $('bk-pickup').value = pickup;
-        if (pointToPoint) $('bk-drop').value = destination;
-        renderHours();
-        quote();
-        $('bk').scrollIntoView({ behavior:'smooth', block:'center' });
-        setTimeout(() => {
-          (pointToPoint ? $('bk-drop') : $('bk-date')).focus({ preventScroll:true });
-        }, 450);
+        const target = document.getElementById('pricing');
+        if (target) target.scrollIntoView({ behavior:'smooth', block:'start' });
       });
     }
 
