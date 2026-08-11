@@ -13,20 +13,22 @@
 <title>DriveMe - Your Driver. Your Car. Your Way.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Geist is the typeface Blacklane itself uses -->
+<!-- Manrope supplies the display hierarchy for the section-led experience. -->
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="assets/logo-crown-d.svg" type="image/svg+xml">
 <link rel="preload" href="assets/hero-poster.jpg" as="image">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <!-- shared UI kit for the booking card (no map here - see track.html for that) -->
 <link rel="stylesheet" href="assets/ui.css?v=3">
 <style>
   :root{
-    /* Blacklane-derived palette: brand blue #0F63BD, ink #0F1319,
-       cream #FBF8F2 and mist #EEF1F3 as alternating section grounds */
+    /* Crisp white, blue-grey and ink create a cool Nordic surface palette. */
     --bg:#FFFFFF;
-    --bg-raised:#FBF8F2;
-    --mist:#EEF1F3;
+    --bg-raised:#F4F8FC;
+    --mist:#EDF3F8;
     --silver:#55585E;
     --silver-dim:#6A6D73;
     --gold:#0F63BD;
@@ -39,9 +41,9 @@
     --gold-grad:linear-gradient(120deg,#0C4481 0%,#0F63BD 45%,#2E7FD4 100%);
     --white:#0F1319;
     --line:#E3E7EB;
-    --line-soft:#EEF1F3;
+    --line-soft:#EDF3F8;
     --glass:#FFFFFF;
-    --glass-strong:#FBF8F2;
+    --glass-strong:#F4F8FC;
     --blue-100:#E7F0FF;
     --blue-200:#D0E1F3;
     --blue-300:#AECFF3;
@@ -50,6 +52,7 @@
     --entrance:700ms cubic-bezier(.16,1,.3,1);
     --font:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
     --font-display:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-heading:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   }
   /* gold leaf - shared by every display-scale figure and accent */
   .gilt{
@@ -153,8 +156,26 @@
     transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,99,189,.28)}
   .nav-actions{justify-self:end;display:flex;align-items:center;gap:14px}
   .lang-switch{display:flex;align-items:center;border:1px solid rgba(174,207,243,.68);border-radius:999px;padding:3px;background:rgba(255,255,255,.20)}
-  .lang-switch button{border:0;background:transparent;color:inherit;font:600 10px/1 var(--font);letter-spacing:.09em;padding:7px 8px;border-radius:999px;cursor:pointer}
-  .lang-switch button[aria-pressed="true"]{background:rgba(255,255,255,.88);color:var(--accent-deep);box-shadow:0 1px 4px rgba(15,35,52,.13)}
+  .lang-switch button{
+    border:0;background:transparent;color:inherit;font:600 10px/1 var(--font);letter-spacing:.08em;
+    padding:6px 8px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+  }
+  .lang-switch .flag{
+    width:16px;height:11px;border-radius:2px;display:inline-block;flex:none;position:relative;
+    box-shadow:inset 0 0 0 1px rgba(15,35,52,.18);overflow:hidden;background:#fff;
+  }
+  .lang-switch .flag-fi{background:
+    linear-gradient(90deg,transparent 0 31%,#1D5DA8 31% 47%,transparent 47%),
+    linear-gradient(180deg,transparent 0 36%,#1D5DA8 36% 58%,transparent 58%),#fff}
+  .lang-switch .flag-sv{background:
+    linear-gradient(90deg,transparent 0 28%,#F6C94C 28% 43%,transparent 43%),
+    linear-gradient(180deg,transparent 0 36%,#F6C94C 36% 58%,transparent 58%),#1F64B7}
+  .lang-switch .flag-en{background:
+    linear-gradient(90deg,transparent 0 42%,#C8102E 42% 58%,transparent 58%),
+    linear-gradient(180deg,transparent 0 38%,#C8102E 38% 62%,transparent 62%),
+    linear-gradient(33deg,transparent 0 44%,#fff 44% 50%,#C8102E 50% 56%,#fff 56% 62%,transparent 62%),
+    linear-gradient(-33deg,transparent 0 44%,#fff 44% 50%,#C8102E 50% 56%,#fff 56% 62%,transparent 62%),#234B9B}
+  .lang-switch button[aria-pressed="true"]{background:rgba(255,255,255,.88);color:var(--gold-deep);box-shadow:0 1px 4px rgba(15,35,52,.13)}
   .bar-links{
     border-top:1px solid var(--line);
     display:flex;justify-content:center;
@@ -359,22 +380,23 @@
   .how-figure figcaption{position:relative;z-index:2;padding:34px 32px}
   .how-figure strong{display:block;font-family:var(--font-display);font-size:24px;font-weight:500;margin-bottom:6px}
   .how-figure span{font-size:14px;font-weight:300;color:var(--silver);line-height:1.6;display:block;max-width:300px}
-  .steps{position:relative}
+  .steps{position:relative;--step-mask:var(--bg-raised)}
   .steps .rail{position:absolute;left:23px;top:12px;bottom:12px;width:1px;background:var(--line)}
   .steps .rail i{position:absolute;left:0;top:0;width:100%;height:0;
     background:linear-gradient(180deg,var(--gold-deep),var(--gold) 40%,var(--gold-light));display:block;
     box-shadow:0 0 12px rgba(201,169,97,.45)}
   .step{display:flex;gap:36px;padding:34px 0;position:relative}
   .step .n{
-    flex:none;width:47px;height:47px;border-radius:50%;
-    border:1px solid var(--line);background:var(--bg);
+    position:relative;z-index:2;flex:none;width:47px;height:47px;border-radius:50%;
+    border:1px solid var(--line);background:var(--step-mask);
     display:flex;align-items:center;justify-content:center;
     font-family:var(--font-display);font-size:15px;color:var(--silver-dim);letter-spacing:.03em;
     transition:border-color 500ms,color 500ms,box-shadow 500ms,background 500ms;
+    box-shadow:0 0 0 15px var(--step-mask);
   }
   .step.lit .n{border-color:var(--gold);color:var(--gold-light);
-    background:radial-gradient(circle,rgba(201,169,97,.14),transparent 70%);
-    box-shadow:0 0 26px rgba(201,169,97,.30)}
+    background:radial-gradient(circle,rgba(15,99,189,.12) 0 56%,transparent 57%),var(--step-mask);
+    box-shadow:0 0 0 15px var(--step-mask),0 0 26px rgba(15,99,189,.24)}
   .step h3{font-family:var(--font-display);font-size:24px;font-weight:500;margin-bottom:6px;letter-spacing:-.005em}
   .step p{font-size:15px;font-weight:300;color:var(--silver);max-width:400px}
 
@@ -597,14 +619,52 @@
   .appr-grid{display:grid;grid-template-columns:1.4fr .6fr;gap:28px;margin-top:64px;align-items:stretch}
   @media(max-width:900px){.appr-grid{grid-template-columns:1fr}}
   .appr-map{
-    position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;min-height:460px;
-    background:radial-gradient(ellipse 70% 60% at 60% 20%,rgba(184,188,194,.07),transparent 60%),
-               linear-gradient(160deg,#101013,#0B0B0D);
+    position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;min-height:520px;
+    background:#DEE9F3;
+    box-shadow:0 18px 45px rgba(15,19,25,.08),inset 0 1px 0 rgba(255,255,255,.9);
   }
-  .appr-map svg{position:absolute;inset:0;width:100%;height:100%}
-  .grid-line{stroke:rgba(184,188,194,.07);stroke-width:1}
-  .route-path{fill:none;stroke:rgba(201,169,97,.22);stroke-width:2;stroke-linecap:round}
-  .route-done{fill:none;stroke:url(#goldline);stroke-width:2.5;stroke-linecap:round}
+  .appr-map::before{
+    content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);
+  }
+  .live-map{position:absolute;inset:0;z-index:1;background:#DEE9F3}
+  .live-map .leaflet-tile{filter:saturate(1.04) contrast(1.02)}
+  .live-map .leaflet-control-attribution{
+    background:rgba(255,255,255,.78);font:500 9px/1.4 var(--font);color:#526071;
+    border-radius:8px 0 0 0;padding:3px 7px;
+  }
+  .live-map .leaflet-control-attribution a{color:#0F63BD}
+  .map-offline{
+    position:absolute;inset:0;z-index:1;display:grid;place-items:center;background:#E9F0F7;
+    font-size:12px;color:var(--silver-dim);letter-spacing:.08em;text-transform:uppercase;
+  }
+  .appr-map.is-live .map-offline{display:none}
+  .leaflet-pane,.leaflet-control{z-index:auto}
+  .approach-route-base{stroke:#152433;stroke-width:12;stroke-opacity:.22;stroke-linecap:round;stroke-linejoin:round}
+  .approach-route{stroke:#0B64C0;stroke-width:7;stroke-opacity:.96;stroke-linecap:round;stroke-linejoin:round}
+  .approach-route-live{stroke:#35A8FF;stroke-width:4.5;stroke-opacity:1;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 4px rgba(15,99,189,.32))}
+  .map-pin-marker,.map-car-marker{background:transparent;border:0}
+  .map-pin{
+    min-width:96px;height:32px;border-radius:999px;background:#fff;border:1px solid #C9D9E8;
+    display:inline-flex;align-items:center;gap:8px;padding:5px 11px 5px 7px;
+    box-shadow:0 8px 22px rgba(15,19,25,.14);font:700 11px/1 var(--font);color:#162230;
+    white-space:nowrap;
+  }
+  .map-pin i{width:18px;height:18px;border-radius:50%;display:block;background:#0F63BD;box-shadow:inset 0 0 0 5px #fff;border:2px solid #0F63BD}
+  .map-pin.driver i{background:#35A8FF;border-color:#0F63BD}
+  .map-car{
+    --car-angle:0deg;display:block;width:64px;height:32px;overflow:visible;
+    transform:rotate(var(--car-angle));transform-origin:50% 50%;
+    filter:drop-shadow(0 7px 10px rgba(15,19,25,.25));
+  }
+  .map-car .car-shadow{fill:rgba(15,19,25,.26)}
+  .map-car .car-wheel{fill:#111A24;stroke:#4D5D6E;stroke-width:1.2}
+  .map-car .car-body{fill:url(#mapCarBody);stroke:#071018;stroke-width:1.4}
+  .map-car .car-roof{fill:url(#mapCarGlass);stroke:rgba(255,255,255,.72);stroke-width:1}
+  .map-car .car-hood{fill:none;stroke:#A9B8C6;stroke-width:1.2;stroke-linecap:round}
+  .map-car .car-grille{fill:#DDEAF5}
+  .map-car .car-light{fill:#F8FCFF}
+  .map-car .car-tail{fill:#D34B4B}
   .appr-badge{
     position:absolute;left:22px;top:20px;z-index:2;display:flex;align-items:center;gap:9px;
     font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--silver);
@@ -624,8 +684,31 @@
     -webkit-text-fill-color:transparent;color:transparent}
   .appr-eta small{font-size:14px;color:var(--silver);margin-left:6px;font-family:var(--font)}
   .appr-driver{display:flex;align-items:center;gap:13px}
-  .appr-driver .app-avatar{width:42px;height:42px}
+  .appr-driver .app-avatar{width:58px;height:58px}
   .appr-driver-name{font-size:16px}
+  .driver-card{position:relative;overflow:hidden}
+  .driver-card::before{
+    content:"";position:absolute;right:-26px;top:-34px;width:110px;height:110px;border-radius:50%;
+    background:radial-gradient(circle,rgba(15,99,189,.12),transparent 68%);
+  }
+  .driver-photo{
+    position:relative;overflow:hidden;background:linear-gradient(150deg,#E7F0FF 0%,#BFD8F4 100%)!important;
+    border:1px solid #B5D0EA!important;box-shadow:inset 0 0 0 4px rgba(255,255,255,.42);
+  }
+  .driver-photo::before{
+    content:"";position:absolute;left:18px;top:11px;width:21px;height:21px;border-radius:50%;
+    background:linear-gradient(145deg,#B97956,#E2B08B);
+    box-shadow:0 -7px 0 -2px #1B2028;
+  }
+  .driver-photo::after{
+    content:"";position:absolute;left:10px;bottom:-2px;width:38px;height:28px;border-radius:18px 18px 7px 7px;
+    background:linear-gradient(180deg,#171D25 0 46%,#F6FAFF 47% 58%,#111820 59% 100%);
+  }
+  .driver-photo i{
+    position:absolute;right:3px;bottom:3px;width:16px;height:16px;border-radius:50%;background:#1B945A;
+    border:2px solid #fff;box-shadow:0 4px 10px rgba(15,19,25,.18);
+  }
+  .appr-driver-meta{display:block;margin-top:2px;font-size:12px;color:var(--silver-dim)}
 
   /* ---------- fleet ---------- */
   /* Phase 2 target, not an inventory grid - no vehicle has been acquired, so this
@@ -704,7 +787,7 @@
   #app-story{padding:0}
   .story{height:340vh;position:relative}
   .story .stick{
-    position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden;
+    position:sticky;top:128px;height:calc(100vh - 128px);display:flex;align-items:center;overflow:hidden;
   }
   .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;width:100%;
     max-width:1200px;margin:0 auto;padding:0 32px}
@@ -713,28 +796,46 @@
     .story .stick{position:static;height:auto;padding:120px 0}
     .story-grid{grid-template-columns:1fr;gap:64px}
   }
-  .phone{
-    width:300px;height:610px;margin:0 auto;border-radius:44px;position:relative;
-    border:1px solid rgba(184,188,194,.25);
-    background:linear-gradient(160deg,#141416,#0C0C0E);
-    box-shadow:0 40px 120px rgba(15,19,25,.10),inset 0 1px 0 rgba(255,255,255,.08);
-    padding:14px;
+  .desktop-app{
+    width:min(680px,100%);height:520px;margin:0 auto;border-radius:22px;position:relative;
+    border:1px solid #DDE7F1;background:#fff;
+    box-shadow:0 34px 90px rgba(15,19,25,.12),inset 0 1px 0 rgba(255,255,255,.95);
+    overflow:hidden;
   }
-  .phone::before{content:"";position:absolute;top:14px;left:50%;transform:translateX(-50%);
-    width:90px;height:24px;background:#000;border-radius:100px;z-index:3}
-  .screen{position:absolute;inset:14px;border-radius:32px;overflow:hidden;background:#0D0D0F}
+  .screen{position:absolute;inset:0;border-radius:22px;overflow:hidden;background:#fff}
+  .desktop-bar{
+    position:absolute;left:0;right:0;top:0;height:52px;z-index:5;display:grid;
+    grid-template-columns:132px 1fr auto;align-items:center;gap:16px;padding:0 20px;
+    border-bottom:1px solid #E5ECF3;background:#F9FBFE;color:var(--white);
+  }
+  .desktop-dots{display:flex;gap:7px}
+  .desktop-dots i{width:10px;height:10px;border-radius:50%;background:#D4DEE8}
+  .desktop-dots i:first-child{background:#FF6B6B}
+  .desktop-dots i:nth-child(2){background:#F6C85F}
+  .desktop-dots i:nth-child(3){background:#52C47E}
+  .desktop-bar b{font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:.04em}
+  .desktop-bar span:last-child{font-size:11px;color:var(--silver-dim);letter-spacing:.12em;text-transform:uppercase}
+  .desktop-sidebar{
+    position:absolute;left:0;top:52px;bottom:0;width:154px;z-index:4;padding:20px 14px;
+    border-right:1px solid #E5ECF3;background:#F5F8FC;
+  }
+  .desktop-sidebar b{display:block;margin:0 0 16px 8px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--silver-dim)}
+  .desktop-sidebar span{display:block;border-radius:8px;padding:10px 11px;margin-bottom:6px;font-size:12px;color:var(--silver)}
+  .desktop-sidebar span.on{background:#E7F0FF;color:var(--gold-deep);font-weight:600}
   .app-screen{
-    position:absolute;inset:0;padding:56px 24px 24px;display:flex;flex-direction:column;gap:14px;
+    position:absolute;inset:0;padding:76px 28px 28px 184px;display:grid;grid-template-columns:1fr 1fr;gap:13px;
+    align-content:start;
     opacity:0;transform:translateX(34px) scale(.985);pointer-events:none;
     transition:opacity 520ms cubic-bezier(.16,1,.3,1),transform 620ms cubic-bezier(.16,1,.3,1);
   }
   .app-screen.on{opacity:1;transform:none;pointer-events:auto}
   /* the screen being replaced leaves to the left, so the set reads as one moving strip */
   .app-screen.prev{opacity:0;transform:translateX(-34px) scale(.985)}
-  .app-title{font-size:19px;font-weight:500;letter-spacing:-.01em}
+  .app-screen > div:first-child{grid-column:1/-1}
+  .app-title{font-family:var(--font-heading);font-size:22px;font-weight:650;letter-spacing:-.02em}
   .app-sub{font-size:12px;color:var(--silver-dim)}
-  .app-block{border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(255,255,255,.03)}
-  .app-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--silver)}
+  .app-block{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff}
+  .app-row{display:flex;flex-direction:column;align-items:flex-start;gap:4px;font-size:12px;color:var(--silver)}
   .app-row b{color:var(--white);font-weight:500}
   .app-map{flex:1;border-radius:14px;position:relative;overflow:hidden;
     background:
@@ -747,18 +848,23 @@
     background:linear-gradient(90deg,var(--gold),#5B9BE0);transform:rotate(-22deg);transform-origin:left}
   .car-dot{position:absolute;left:18%;top:64%;width:9px;height:9px;border-radius:50%;background:var(--gold);
     box-shadow:0 0 14px rgba(15,99,189,.7)}
-  .app-btn{background:var(--gold-grad);color:#fff;text-align:center;border-radius:100px;
-    padding:14px;font-size:13px;font-weight:600;letter-spacing:.04em;margin-top:2px}
-  .app-map.mini{flex:1;min-height:96px}
-  .app-fare,.app-total{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:14px 16px;border-radius:14px;border:1px solid rgba(201,169,97,.28);
-    background:rgba(201,169,97,.07);font-size:13px;color:var(--silver);
+  .app-btn{
+    background:var(--gold-grad);color:#fff;text-align:center;border-radius:10px;
+    min-height:54px;padding:0 18px;font-size:13px;font-weight:600;letter-spacing:.02em;line-height:1;
+    display:inline-flex;align-items:center;justify-content:center;align-self:stretch;white-space:nowrap;
+    box-shadow:0 10px 22px rgba(15,99,189,.20);
   }
-  .app-fare b,.app-total b{color:var(--gold-light);font-weight:600;font-size:15px}
+  .app-map,.app-map.mini{grid-column:1/-1;min-height:112px}
+  .app-fare,.app-total{
+    display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;min-height:54px;
+    padding:12px 14px;border-radius:8px;border:1px solid rgba(201,169,97,.28);
+    background:rgba(201,169,97,.07);font-size:12px;color:var(--silver);
+  }
+  .app-fare span,.app-total span{line-height:1.2;white-space:nowrap}
+  .app-fare b,.app-total b{color:var(--gold-light);font-weight:600;font-size:15px;white-space:nowrap}
   .app-driver,.app-rate{
     display:flex;align-items:center;gap:12px;
-    border:1px solid var(--line);border-radius:14px;padding:13px 15px;background:rgba(255,255,255,.03);
+    grid-column:1/-1;border:1px solid var(--line);border-radius:8px;padding:13px 15px;background:#fff;
   }
   .app-avatar{
     width:38px;height:38px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
@@ -773,6 +879,16 @@
     border:1px solid var(--line);border-radius:100px;padding:9px 6px;
   }
   .stars{color:var(--gold);letter-spacing:.12em;font-size:13px!important}
+  @media(max-width:900px){
+    .desktop-app{height:520px}
+    .app-screen{padding:76px 22px 24px 176px}
+  }
+  @media(max-width:640px){
+    .desktop-bar{grid-template-columns:64px 1fr;gap:10px}
+    .desktop-bar span:last-child{display:none}
+    .desktop-sidebar{display:none}
+    .app-screen{padding:76px 18px 22px;grid-template-columns:1fr}
+  }
   .story-copy .stage{transition:opacity 500ms cubic-bezier(.2,0,0,1)}
   .story-steps{margin-top:44px;display:flex;flex-direction:column;gap:0}
   .story-step{
@@ -908,24 +1024,25 @@
   .how-figure strong{color:#fff}
   .how-figure span{color:rgba(255,255,255,.88)}
 
-  /* The phone mock keeps a dark UI on purpose, so its interface type is inverted */
-  .app-title{color:#fff}
-  .app-sub{color:#98A0AC}
-  .app-row{color:#B4BBC6}
-  .app-row b{color:#fff}
-  .app-block{border-color:rgba(255,255,255,.11);background:rgba(255,255,255,.05)}
+  /* Desktop product mock keeps the same light interface language as the site. */
+  .app-title{color:var(--white)}
+  .app-sub{color:var(--silver-dim)}
+  .app-row{color:var(--silver)}
+  .app-row b{color:var(--white)}
+  .app-block{border-color:#E2E9F1;background:#fff;box-shadow:0 1px 2px rgba(15,19,25,.04)}
   .app-map{background:
-    radial-gradient(circle at 70% 20%,rgba(143,192,242,.12),transparent 42%),
-    linear-gradient(#141821,#0E1116)}
-  .app-map::before,.app-map::after{background:rgba(184,196,214,.13)}
-  .app-fare,.app-total{border-color:rgba(91,155,224,.42);background:rgba(15,99,189,.20);color:#B4BBC6}
-  .app-fare b,.app-total b{color:#8FC0F2}
-  .app-driver,.app-rate{border-color:rgba(255,255,255,.11);background:rgba(255,255,255,.05)}
-  .app-driver b,.app-rate b{color:#fff}
-  .app-driver span:last-child,.app-rate span:last-child{color:#98A0AC}
-  .app-chips span{border-color:rgba(255,255,255,.15);color:#B4BBC6}
-  .screen .app-avatar{background:rgba(15,99,189,.28);border-color:rgba(143,192,242,.45);color:#8FC0F2}
-  .stars{color:#8FC0F2}
+    linear-gradient(90deg,rgba(15,99,189,.05) 1px,transparent 1px) 0 0/34px 34px,
+    linear-gradient(rgba(15,99,189,.045) 1px,transparent 1px) 0 0/34px 34px,
+    linear-gradient(160deg,#F7FAFD,#EAF2FB)}
+  .app-map::before,.app-map::after{background:rgba(15,99,189,.22)}
+  .app-fare,.app-total{border-color:#CADDEF;background:#EAF3FF;color:var(--silver)}
+  .app-fare b,.app-total b{color:var(--gold)}
+  .app-driver,.app-rate{border-color:#E2E9F1;background:#fff}
+  .app-driver b,.app-rate b{color:var(--white)}
+  .app-driver span:last-child,.app-rate span:last-child{color:var(--silver-dim)}
+  .app-chips span{border-color:#D8E4EF;color:var(--silver);background:#fff}
+  .screen .app-avatar{background:var(--blue-100);border-color:var(--blue-200);color:var(--gold)}
+  .stars{color:var(--gold)}
 
   /* scoped to the nav - the footer logo sits on white and must stay blue */
   nav .logo{background:linear-gradient(#fff,#fff);-webkit-background-clip:text;background-clip:text}
@@ -1032,7 +1149,7 @@
   .svc.soon .status .pulse{background:var(--gold);opacity:1}
   .avatar,.app-avatar{color:var(--gold-deep);font-weight:600}
 
-  /* section rhythm - alternating white / cream / mist grounds */
+  /* section rhythm - alternating white and cool blue-grey grounds */
   #how,#fleet,#roadmap{background:var(--bg-raised)}
   #approach,#app-story{background:var(--mist)}
   .final{background:var(--blue-100)}
@@ -1045,8 +1162,7 @@
     box-shadow:0 1px 3px rgba(15,19,25,.05);
   }
   .card:hover,.svc:hover,.target:hover{box-shadow:0 14px 34px rgba(15,19,25,.10)}
-  /* the founder note is a single editorial block, not one of a card grid -
-     cream keeps it distinct from the white cards above it */
+  /* the founder note is a single editorial block, not one of a card grid */
   .founder{box-shadow:0 1px 3px rgba(15,19,25,.05)}
   .founder:hover{box-shadow:0 14px 34px rgba(15,19,25,.10)}
   .card.good{background:var(--blue-100);border-color:var(--blue-200)}
@@ -1060,22 +1176,40 @@
   .svc.soon .svc-body::after{background:none}
 
   /* live-tracking map reads as a light plan view */
-  .appr-map{background:linear-gradient(160deg,#F4F7FA,#E9EEF3);border-color:var(--line)}
-  .grid-line{stroke:rgba(15,99,189,.10)}
-  .route-path{stroke:rgba(15,99,189,.20)}
+  .appr-map{border-color:var(--line)}
   .appr-badge{background:rgba(255,255,255,.92);color:var(--silver);border-color:var(--line)}
   .appr-foot{color:var(--silver-dim)}
 
-  /* avatars + phone chrome */
+  /* avatars + desktop chrome */
   .avatar,.app-avatar{background:var(--blue-100);border-color:var(--blue-200);color:var(--gold)}
-  .phone{background:linear-gradient(160deg,#20242B,#12151A);border-color:#2A2F37;
-    box-shadow:0 30px 70px rgba(15,19,25,.22),inset 0 1px 0 rgba(255,255,255,.06)}
   .legal{color:var(--silver-dim)}
   .est-card::before{background:none}
   .est-card{background:var(--blue-100);border-color:var(--blue-200)}
   .stat{background:transparent}
   .stats{background:var(--line)}
   .stat{background:#fff}
+
+  /* ---------- post-hero interface refinement ---------- */
+  main > section h2{
+    font-family:var(--font-heading);font-weight:500;letter-spacing:-.035em;
+  }
+  main > section h2 em{font-style:normal;font-weight:600}
+  main > section:not(.final){
+    isolation:isolate;
+  }
+  main > section:not(.final)::after{
+    content:"";position:absolute;right:clamp(20px,4vw,72px);top:42px;width:1px;height:52px;
+    background:linear-gradient(180deg,rgba(15,99,189,.62),rgba(15,99,189,0));
+    pointer-events:none;
+  }
+  .card,.svc,.target,.req-card,.est-card,.appr-stat,.founder{
+    border-radius:14px;
+  }
+  .card.good{background:linear-gradient(145deg,#EAF3FF 0%,#DCEBFB 100%)}
+  .card.bad{background:#F3F7FA}
+  .founder{background:#F0F6FC}
+  .map-band{background:#F8FBFE}
+  .final{background:#EAF3FF}
 
   @media (prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -1106,9 +1240,9 @@
     <a class="logo" href="#top">DRIVE<span class="dot">·</span>ME</a>
     <div class="nav-actions">
       <div class="lang-switch" role="group" aria-label="Language">
-        <button type="button" data-lang="fi" aria-pressed="true">FI</button>
-        <button type="button" data-lang="sv" aria-pressed="false">SV</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-lang="fi" aria-pressed="true"><span class="flag flag-fi"></span><span>FI</span></button>
+        <button type="button" data-lang="sv" aria-pressed="false"><span class="flag flag-sv"></span><span>SV</span></button>
+        <button type="button" data-lang="en" aria-pressed="false"><span class="flag flag-en"></span><span>EN</span></button>
       </div>
       <a class="nav-cta" href="#bk" data-hover>Book a Driver</a>
     </div>
@@ -1449,37 +1583,21 @@
     <div class="appr-grid">
       <div class="appr-map reveal">
         <span class="appr-badge"><i></i>Demonstration · Helsinki capital region</span>
-        <svg viewBox="0 0 800 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <defs>
-            <linearGradient id="goldline" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#0C4481"/><stop offset="60%" stop-color="#0F63BD"/><stop offset="100%" stop-color="#5B9BE0"/>
-            </linearGradient>
-          </defs>
-          <g>
-            <line class="grid-line" x1="0" y1="130" x2="800" y2="96"/>
-            <line class="grid-line" x1="0" y1="300" x2="800" y2="352"/>
-            <line class="grid-line" x1="0" y1="440" x2="800" y2="410"/>
-            <line class="grid-line" x1="180" y1="0" x2="240" y2="520"/>
-            <line class="grid-line" x1="470" y1="0" x2="410" y2="520"/>
-            <line class="grid-line" x1="650" y1="0" x2="700" y2="520"/>
-          </g>
-          <path id="route" class="route-path" d="M 96 430 C 210 400, 250 300, 360 268 S 560 210, 690 120"/>
-          <path id="route-done" class="route-done" d="M 96 430 C 210 400, 250 300, 360 268 S 560 210, 690 120"/>
-          <circle cx="690" cy="120" r="7" fill="none" stroke="#0F63BD" stroke-width="2"/>
-          <circle cx="690" cy="120" r="2.5" fill="#0F63BD"/>
-          <circle id="car" cx="96" cy="430" r="7" fill="#0F63BD"/>
-          <circle id="car-halo" cx="96" cy="430" r="15" fill="rgba(15,99,189,.16)"/>
-        </svg>
-        <p class="appr-foot">Sample journey - positions refresh every 3 seconds.</p>
+        <div id="approach-map" class="live-map" role="img" aria-label="Live map showing a realistic road route through Helsinki"></div>
+        <div class="map-offline">Loading street map</div>
+        <p class="appr-foot">Sample journey - route follows road data.</p>
       </div>
       <div class="appr-side">
         <div class="appr-stat reveal"><span>Status</span><b id="appr-status">Driver assigned</b></div>
         <div class="appr-stat appr-eta reveal"><span id="appr-eta-label">Arriving in</span><b id="appr-eta">7</b><small id="appr-min">min</small></div>
-        <div class="appr-stat reveal">
+        <div class="appr-stat driver-card reveal">
           <span>Driver</span>
-        <div class="appr-driver">
-            <span class="app-avatar">MK</span>
-            <div><b class="appr-driver-name">Mikael Korpi</b></div>
+          <div class="appr-driver">
+            <span class="app-avatar driver-photo" aria-hidden="true"><i></i></span>
+            <div>
+              <b class="appr-driver-name">Mikael Korpi</b>
+              <small class="appr-driver-meta">4.98 / 5</small>
+            </div>
           </div>
         </div>
         <div class="appr-stat reveal"><span>Your vehicle</span><b>Mercedes EQS</b></div>
@@ -1617,20 +1735,32 @@
     <div class="stick">
       <div class="story-grid">
         <div class="story-copy">
-          <p class="kicker">The app</p>
-          <h2>Every journey, <em>in your hand.</em></h2>
+          <p class="kicker">The desktop app</p>
+          <h2>Every booking, <em>on your desktop.</em></h2>
           <div class="story-steps">
-            <div class="story-step" data-i="0"><b>Booking</b>One screen. Pickup, destination, done.</div>
+            <div class="story-step" data-i="0"><b>Booking</b>Desktop booking. Pickup, destination, done.</div>
             <div class="story-step" data-i="1"><b>Live tracking</b>Watch your driver arrive, minute by minute.</div>
             <div class="story-step" data-i="2"><b>Payments</b>Cashless, itemised, corporate-ready.</div>
             <div class="story-step" data-i="3"><b>Arrival</b>Rate the journey. Your car sleeps at home.</div>
           </div>
-          <p class="story-note">Interface preview - screens shown are in development, with sample journey data.</p>
+          <p class="story-note">Desktop interface preview - screens shown are in development, with sample journey data.</p>
         </div>
-        <div class="phone" data-hover>
+        <div class="desktop-app" data-hover>
           <div class="screen">
+            <div class="desktop-bar">
+              <span class="desktop-dots"><i></i><i></i><i></i></span>
+              <b>DriveMe Control</b>
+              <span>Helsinki</span>
+            </div>
+            <aside class="desktop-sidebar" aria-hidden="true">
+              <b>Workspace</b>
+              <span class="on" data-i="0">Booking</span>
+              <span data-i="1">Live tracking</span>
+              <span data-i="2">Payments</span>
+              <span data-i="3">Arrival</span>
+            </aside>
             <div class="app-screen on" data-s="0">
-              <div><div class="app-title">Where to?</div><div class="app-sub">Thursday 23:40 · Helsinki</div></div>
+              <div><div class="app-title">Booking</div><div class="app-sub">Thursday 23:40 · Helsinki</div></div>
               <div class="app-block"><div class="app-row"><span>Pickup</span><b>Ravintola Savoy</b></div></div>
               <div class="app-block"><div class="app-row"><span>Destination</span><b>Home · Westend</b></div></div>
               <div class="app-block"><div class="app-row"><span>Your vehicle</span><b>Mercedes EQS</b></div></div>
@@ -1639,7 +1769,7 @@
               <div class="app-btn">Request Driver</div>
             </div>
             <div class="app-screen" data-s="1">
-              <div><div class="app-title">Mikael is on the way</div><div class="app-sub">Arriving in 6 min · ★ 4.98</div></div>
+              <div><div class="app-title">Live tracking</div><div class="app-sub">Mikael is on the way · 6 min</div></div>
               <div class="app-map"><span class="route"></span><span class="car-dot"></span></div>
               <div class="app-driver">
                 <span class="app-avatar">MK</span>
@@ -1648,7 +1778,7 @@
               <div class="app-chips"><span>Share trip</span><span>Message</span></div>
             </div>
             <div class="app-screen" data-s="2">
-              <div><div class="app-title">Payment</div><div class="app-sub">Receipt · Trip #48219</div></div>
+              <div><div class="app-title">Payments</div><div class="app-sub">Receipt · Trip #48219</div></div>
               <div class="app-block"><div class="app-row"><span>Journey · 14.2 km</span><b>21.00 €</b></div></div>
               <div class="app-block"><div class="app-row"><span>Night hours</span><b>3.00 €</b></div></div>
               <div class="app-block"><div class="app-row"><span>Business account</span><b>Nordica Oy</b></div></div>
@@ -1657,7 +1787,7 @@
               <div class="app-btn">Paid · Apple Pay</div>
             </div>
             <div class="app-screen" data-s="3">
-              <div><div class="app-title">Welcome home</div><div class="app-sub">00:14 · Westend, Espoo</div></div>
+              <div><div class="app-title">Arrival</div><div class="app-sub">Welcome home · Westend, Espoo</div></div>
               <div class="app-block"><div class="app-row"><span>Your car</span><b>Parked · Garage</b></div></div>
               <div class="app-block"><div class="app-row"><span>Journey time</span><b>28 min</b></div></div>
               <div class="app-block"><div class="app-row"><span>Keys</span><b>Returned in hand</b></div></div>
@@ -1910,7 +2040,7 @@
     'Corporate invoicing':'Yrityslaskutus', 'The approach':'Saapuminen',
     'You\'ll know exactly':'Tiedät aina tarkalleen', 'where they are.':'missä kuljettajasi on.',
     'The moment a request is confirmed, this becomes live - your driver\'s approach, their ETA, and their name. No wondering, no calling to ask.':'Kun pyyntö on vahvistettu, näet kuljettajan lähestymisen, arvioidun saapumisajan ja nimen reaaliajassa. Ei arvailua eikä tarvetta soittaa.',
-    'Demonstration · Helsinki capital region':'Esittely · Helsingin pääkaupunkiseutu', 'Sample journey - positions refresh every 3 seconds.':'Esimerkkimatka - sijainnit päivittyvät 3 sekunnin välein.',
+    'Demonstration · Helsinki capital region':'Esittely · Helsingin pääkaupunkiseutu', 'Sample journey - route follows road data.':'Esimerkkimatka - reitti seuraa tieaineistoa.',
     'Status':'Tila', 'Approaching pickup':'Lähestyy noutopaikkaa', 'Arriving in':'Saapuu','Driver':'Kuljettaja',
     'Your car':'Autosi', 'Driver assigned':'Kuljettaja varattu', 'Driver arrived':'Kuljettaja saapui', 'At your pickup':'Noutopaikallasi', 'Now':'Nyt',
     'A licensed professional drives you home in your own car. On demand, day or night.':'Lisensoitu ammattilainen ajaa sinut kotiin omalla autollasi. Tilauksesta päivin ja öin.',
@@ -2106,7 +2236,7 @@
     'Corporate invoicing':'Företagsfakturering', 'The approach':'Ankomsten',
     'You\'ll know exactly':'Du vet alltid exakt', 'where they are.':'var föraren är.',
     'The moment a request is confirmed, this becomes live - your driver\'s approach, their ETA, and their name. No wondering, no calling to ask.':'När din begäran bekräftats blir detta live - förarens position, beräknad ankomsttid och namn. Ingen ovisshet, inga samtal för att fråga.',
-    'Demonstration · Helsinki capital region':'Demonstration · Helsingforsregionen', 'Sample journey - positions refresh every 3 seconds.':'Exempelresa - positionerna uppdateras var tredje sekund.',
+    'Demonstration · Helsinki capital region':'Demonstration · Helsingforsregionen', 'Sample journey - route follows road data.':'Exempelresa - rutten följer vägdata.',
     'Status':'Status', 'Approaching pickup':'Närmar sig upphämtningen', 'Arriving in':'Framme om','Driver':'Förare',
     'Your car':'Din bil', 'Driver assigned':'Förare tilldelad', 'Driver arrived':'Föraren har anlänt', 'At your pickup':'På din upphämtningsplats', 'Now':'Nu',
     'A licensed professional drives you home in your own car. On demand, day or night.':'En licensierad yrkesförare kör hem dig i din egen bil. På begäran, dag som natt.',
@@ -2213,6 +2343,40 @@
     'Where it needs to go':'Vart bilen ska', 'Pick a date':'Välj datum', 'Pick a time':'Välj tid',
     'Half an hour less':'En halvtimme mindre', 'Half an hour more':'En halvtimme mer'
   };
+
+  Object.assign(FINNISH, {
+    'The desktop app':'Ty\u00f6p\u00f6yt\u00e4sovellus',
+    'Every booking,':'Jokainen varaus,',
+    'on your desktop.':'ty\u00f6p\u00f6yd\u00e4ll\u00e4si.',
+    'Booking':'Varaus',
+    'Payments':'Maksu',
+    'Desktop booking. Pickup, destination, done.':'Ty\u00f6p\u00f6yt\u00e4varaus. Nouto, m\u00e4\u00e4r\u00e4np\u00e4\u00e4, valmis.',
+    'Rate the journey. Your car sleeps at home.':'Arvioi matka. Autosi lep\u00e4\u00e4 kotona.',
+    'Desktop interface preview - screens shown are in development, with sample journey data.':'Ty\u00f6p\u00f6yt\u00e4k\u00e4ytt\u00f6liittym\u00e4n esikatselu - n\u00e4kym\u00e4t ovat kehitteill\u00e4 ja sis\u00e4lt\u00e4v\u00e4t esimerkkimatkan tietoja.',
+    'DriveMe Control':'DriveMe Control',
+    'Workspace':'Ty\u00f6alue',
+    'Bookings':'Varaukset',
+    'Drivers':'Kuljettajat',
+    'Vehicles':'Ajoneuvot',
+    'Reports':'Raportit'
+  });
+
+  Object.assign(SWEDISH, {
+    'The desktop app':'Skrivbordsappen',
+    'Every booking,':'Varje bokning,',
+    'on your desktop.':'p\u00e5 ditt skrivbord.',
+    'Booking':'Bokning',
+    'Payments':'Betalning',
+    'Desktop booking. Pickup, destination, done.':'Skrivbordsbokning. Upph\u00e4mtning, destination, klart.',
+    'Rate the journey. Your car sleeps at home.':'Betygs\u00e4tt resan. Din bil vilar hemma.',
+    'Desktop interface preview - screens shown are in development, with sample journey data.':'F\u00f6rhandsvisning av skrivbordsgr\u00e4nssnittet - vyerna \u00e4r under utveckling och inneh\u00e5ller exempeldata.',
+    'DriveMe Control':'DriveMe Control',
+    'Workspace':'Arbetsyta',
+    'Bookings':'Bokningar',
+    'Drivers':'F\u00f6rare',
+    'Vehicles':'Fordon',
+    'Reports':'Rapporter'
+  });
 
   /* One place that knows every language. Absent = English, the source text. */
   const TRANSLATIONS = { fi: FINNISH, sv: SWEDISH };
@@ -2347,35 +2511,149 @@
     render();
   }
 
-  /* ---- the approach: driver moving along the route ---- */
-  const route = document.getElementById('route');
-  if (route && !reduced){
-    const car = document.getElementById('car'), halo = document.getElementById('car-halo');
-    const done = document.getElementById('route-done'), etaEl = document.getElementById('appr-eta');
+  /* ---- the approach: real map tiles + driver moving along routed roads ---- */
+  const mapEl = document.getElementById('approach-map');
+  if (mapEl && window.L){
+    const mapPanel = mapEl.closest('.appr-map');
+    let routePoints = [
+      [60.16883, 24.93075], // driver near Kamppi
+      [60.16920, 24.93440],
+      [60.16902, 24.93845],
+      [60.16870, 24.94235],
+      [60.16812, 24.94620],
+      [60.16752, 24.94925],
+      [60.16703, 24.95202]  // pickup near Ravintola Savoy
+    ];
+    const pickup = routePoints[routePoints.length - 1];
+    const driverStart = routePoints[0];
+    const approachMap = L.map(mapEl, {
+      zoomControl:false,
+      scrollWheelZoom:false,
+      doubleClickZoom:false,
+      boxZoom:false,
+      keyboard:false,
+      dragging:false,
+      tap:false,
+      attributionControl:true
+    });
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom:19,
+      attribution:'Tiles &copy; Esri, OpenStreetMap contributors'
+    }).addTo(approachMap);
+    const bounds = L.latLngBounds(routePoints).pad(.48);
+    approachMap.fitBounds(bounds);
+    setTimeout(() => approachMap.invalidateSize(), 200);
+    mapPanel.classList.add('is-live');
+
+    const pinIcon = label => L.divIcon({
+      className:'map-pin-marker',
+      html:`<span class="map-pin"><i></i>${label}</span>`,
+      iconSize:[96,32],
+      iconAnchor:[17,17]
+    });
+    const driverIcon = L.divIcon({
+      className:'map-pin-marker',
+      html:'<span class="map-pin driver"><i></i>Driver</span>',
+      iconSize:[96,32],
+      iconAnchor:[17,17]
+    });
+    const carIcon = L.divIcon({
+      className:'map-car-marker',
+      html:'<svg class="map-car" viewBox="0 0 96 48" aria-hidden="true"><defs><linearGradient id="mapCarBody" x1="8" y1="8" x2="88" y2="40" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#05090F"/><stop offset=".5" stop-color="#263747"/><stop offset="1" stop-color="#070B11"/></linearGradient><linearGradient id="mapCarGlass" x1="36" y1="10" x2="74" y2="38" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#F8FCFF"/><stop offset=".48" stop-color="#9EB7CE"/><stop offset="1" stop-color="#142538"/></linearGradient></defs><ellipse class="car-shadow" cx="48" cy="26" rx="40" ry="17"/><rect class="car-wheel" x="17" y="4" width="15" height="6" rx="3"/><rect class="car-wheel" x="17" y="38" width="15" height="6" rx="3"/><rect class="car-wheel" x="64" y="4" width="15" height="6" rx="3"/><rect class="car-wheel" x="64" y="38" width="15" height="6" rx="3"/><path class="car-body" d="M10 24C10 13 22 8 39 7h18c18 0 31 7 36 17-5 10-18 17-36 17H39C22 40 10 35 10 24Z"/><path class="car-roof" d="M40 12h17c11 1 19 6 23 12-4 6-12 11-23 12H40c5-7 5-17 0-24Z"/><path class="car-hood" d="M23 16c8-3 16-4 25-4M23 32c8 3 16 4 25 4"/><rect class="car-grille" x="88" y="19" width="4" height="10" rx="2"/><circle class="car-light" cx="84" cy="17" r="2.2"/><circle class="car-light" cx="84" cy="31" r="2.2"/><rect class="car-tail" x="11" y="18" width="4" height="12" rx="2"/></svg>',
+      iconSize:[64,32],
+      iconAnchor:[32,16]
+    });
+    L.marker(driverStart, { icon:driverIcon, interactive:false }).addTo(approachMap);
+    L.marker(pickup, { icon:pinIcon('Pickup'), interactive:false }).addTo(approachMap);
+    const routeBase = L.polyline(routePoints, { className:'approach-route-base', interactive:false }).addTo(approachMap);
+    const routeLine = L.polyline(routePoints, { className:'approach-route', interactive:false }).addTo(approachMap);
+    const liveRoute = L.polyline([driverStart], { className:'approach-route-live', interactive:false }).addTo(approachMap);
+    const carMarker = L.marker(driverStart, { icon:carIcon, interactive:false, zIndexOffset:500 }).addTo(approachMap);
+
+    let segmentLengths = [];
+    let totalLength = 0;
+    function recalculateRoute(){
+      segmentLengths = routePoints.slice(1).map((point, index) => approachMap.distance(routePoints[index], point));
+      totalLength = segmentLengths.reduce((sum, length) => sum + length, 0);
+    }
+    recalculateRoute();
+    function routeAt(progress){
+      const target = progress * totalLength;
+      let walked = 0;
+      for (let i = 0; i < segmentLengths.length; i++){
+        const nextWalked = walked + segmentLengths[i];
+        if (target <= nextWalked || i === segmentLengths.length - 1){
+          const local = segmentLengths[i] ? (target - walked) / segmentLengths[i] : 0;
+          const a = routePoints[i], b = routePoints[i + 1];
+          return [
+            a[0] + (b[0] - a[0]) * local,
+            a[1] + (b[1] - a[1]) * local
+          ];
+        }
+        walked = nextWalked;
+      }
+      return pickup;
+    }
+    function routeSlice(progress){
+      const target = progress * totalLength;
+      let walked = 0;
+      const slice = [routePoints[0]];
+      for (let i = 0; i < segmentLengths.length; i++){
+        const nextWalked = walked + segmentLengths[i];
+        if (target >= nextWalked) slice.push(routePoints[i + 1]);
+        else {
+          slice.push(routeAt(progress));
+          break;
+        }
+        walked = nextWalked;
+      }
+      return slice;
+    }
+    const etaEl = document.getElementById('appr-eta');
     const statusEl = document.getElementById('appr-status');
     const minEl = document.getElementById('appr-min'), etaLabel = document.getElementById('appr-eta-label');
-    const len = route.getTotalLength();
-    done.style.strokeDasharray = len; done.style.strokeDashoffset = len;
-    let t = 0;
     const sec = document.getElementById('approach');
-    setInterval(() => {
-      // idle while off-screen - a rect check rather than IntersectionObserver, which
-      // never fires in headless/non-compositing contexts
-      const r = sec.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > innerHeight) return;
-      t = (t + 0.012) % 1.18;              // brief pause past arrival before looping
-      const p = Math.min(t, 1);
-      const pt = route.getPointAtLength(p * len);
-      car.setAttribute('cx', pt.x); car.setAttribute('cy', pt.y);
-      halo.setAttribute('cx', pt.x); halo.setAttribute('cy', pt.y);
-      done.style.strokeDashoffset = len * (1 - p);
-      const arrived = p >= 1;
-      // never count to zero while still moving, and don't say "arriving in 0 min"
-      etaEl.textContent = arrived ? 'Now' : Math.max(1, Math.ceil(7 * (1 - p)));
+    let t = 0;
+    const paintRoute = progress => {
+      const point = routeAt(progress);
+      const ahead = routeAt(Math.min(progress + .01, 1));
+      const p1 = approachMap.latLngToLayerPoint(point);
+      const p2 = approachMap.latLngToLayerPoint(ahead);
+      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+      carMarker.setLatLng(point);
+      liveRoute.setLatLngs(routeSlice(progress));
+      const carNode = carMarker.getElement()?.querySelector('.map-car');
+      if (carNode) carNode.style.setProperty('--car-angle', angle + 'deg');
+      const arrived = progress >= 1;
+      etaEl.textContent = arrived ? 'Now' : Math.max(1, Math.ceil(7 * (1 - progress)));
       minEl.hidden = arrived;
       etaLabel.textContent = arrived ? 'At your pickup' : 'Arriving in';
-      statusEl.textContent = arrived ? 'Driver arrived' : (p > .55 ? 'Approaching pickup' : 'Driver assigned');
-    }, 60);
+      statusEl.textContent = arrived ? 'Driver arrived' : (progress > .52 ? 'Approaching pickup' : 'Driver assigned');
+    };
+    paintRoute(0);
+    const routeUrl = 'https://router.project-osrm.org/route/v1/driving/' +
+      driverStart[1] + ',' + driverStart[0] + ';' + pickup[1] + ',' + pickup[0] +
+      '?overview=full&geometries=geojson';
+    fetch(routeUrl)
+      .then(response => response.ok ? response.json() : null)
+      .then(data => {
+        const coords = data?.routes?.[0]?.geometry?.coordinates;
+        if (!Array.isArray(coords) || coords.length < 4) return;
+        routePoints = coords.map(([lng, lat]) => [lat, lng]);
+        routeBase.setLatLngs(routePoints);
+        routeLine.setLatLngs(routePoints);
+        recalculateRoute();
+        approachMap.fitBounds(L.latLngBounds(routePoints).pad(.48));
+        setTimeout(() => approachMap.invalidateSize(), 120);
+        paintRoute(Math.min(t, 1));
+      })
+      .catch(() => {});
+    if (!reduced) setInterval(() => {
+      const r = sec.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      t = (t + 0.0018) % 1.08;
+      paintRoute(Math.min(t, 1));
+    }, 90);
   }
 
   /* scroll reveals */
@@ -2433,10 +2711,11 @@
   }), {threshold:.4});
   if (document.getElementById('stages')) pio.observe(document.getElementById('stages'));
 
-  /* app scroll story */
+  /* desktop app scroll story */
   const story = document.getElementById('story');
   const screens = document.querySelectorAll('.app-screen');
   const storySteps = document.querySelectorAll('.story-step');
+  const desktopNavItems = document.querySelectorAll('.desktop-sidebar [data-i]');
   function setStage(i){
     screens.forEach(s => {
       const n = +s.dataset.s;
@@ -2444,6 +2723,7 @@
       s.classList.toggle('prev', n < i);   // already-seen screens exit to the left
     });
     storySteps.forEach(s => s.classList.toggle('on', +s.dataset.i === i));
+    desktopNavItems.forEach(s => s.classList.toggle('on', +s.dataset.i === i));
   }
   setStage(0);
   let lastStage = 0;
@@ -2456,7 +2736,7 @@
     const stage = Math.floor(p * 4);
     if (stage !== lastStage){ lastStage = stage; setStage(stage); }
   });
-  /* mobile: the phone isn't sticky, so rotate screens on a timer instead */
+  /* small screens are not sticky, so rotate previews on a timer instead */
   if (matchMedia('(max-width:900px)').matches && !reduced)
     setInterval(() => setStage(Math.floor(Date.now()/2400)%4), 2400);
 
