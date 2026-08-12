@@ -154,6 +154,22 @@
   .stat{background:var(--surface);border:1px solid var(--ink-100);border-radius:var(--r-card);padding:18px 20px}
   .stat .k{font:500 10.5px/1.4 var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-500)}
   .stat .v{font:600 27px/1.1 var(--font);letter-spacing:-.02em;margin-top:6px;font-feature-settings:"tnum"}
+  .updates-card{margin-bottom:14px}
+  .updates-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+  .updates-title{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .updates-title h2{margin:0}
+  .updates-list{display:grid;gap:8px}
+  .update-row{
+    display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:12px;align-items:start;
+    padding:12px 0;border-top:1px solid var(--ink-100)
+  }
+  .update-row:first-child{border-top:0}
+  .update-dot{width:8px;height:8px;border-radius:50%;background:var(--ink-300);margin-top:8px}
+  .update-row.is-new .update-dot{background:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}
+  .update-main b{font-weight:650;color:var(--ink-900)}
+  .update-main span{display:block;color:var(--ink-500);font-size:12.5px;margin-top:2px;overflow-wrap:anywhere}
+  .update-time{font-size:12px;color:var(--ink-500);white-space:nowrap}
+  .updates-empty{color:var(--ink-500);padding:16px 0 4px}
   .bars{display:grid;gap:9px}
   .bar{display:grid;grid-template-columns:104px minmax(0,1fr) 34px;gap:12px;align-items:center;font-size:12.5px}
   .bar .track{height:9px;border-radius:5px;background:var(--ink-100);overflow:hidden}
@@ -241,6 +257,21 @@
 
   <!-- ==================== metrics ==================== -->
   <section id="v-metrics">
+    <div class="card updates-card" id="updates-panel">
+      <div class="updates-head">
+        <div>
+          <div class="updates-title">
+            <h2>Notifications</h2>
+            <span class="dm-pill accent" id="updates-new" hidden>0 new</span>
+          </div>
+          <p class="muted flush">Latest booking, driver, waitlist, and invoice activity.</p>
+        </div>
+        <button type="button" class="dm-btn ghost sm" id="updates-seen">Mark seen</button>
+      </div>
+      <div class="updates-list" id="updates-list">
+        <div class="updates-empty">Loading latest updates...</div>
+      </div>
+    </div>
     <div class="stat-row" id="m-stats"></div>
     <div class="card">
       <h3>Bookings per week <span class="muted heading-note">· last 8 weeks</span></h3>
@@ -275,7 +306,7 @@
       <div class="head-row">
         <div>
           <h2>Bookings</h2>
-          <p class="muted flush">Assign a vetted driver, move the ride along, and bill it.</p>
+          <p class="muted flush">Assign a vetted driver, move the ride along, and bill it. Latest updates appear first.</p>
         </div>
         <div class="head-actions">
           <div class="filters" id="bk-filters" role="group" aria-label="Booking status">
@@ -510,6 +541,7 @@
   const PAY = { card:'Card', mobilepay:'MobilePay', invoice:'Corporate invoice' };
   const pill = (label, cls) => '<span class="dm-pill ' + cls + '">' + esc(label) + '</span>';
   const PERIOD_LABELS = { all:'All time', week:'This week', month:'This month', year:'This year' };
+  const ACTIVE_STATUSES = ['driver_assigned','driver_en_route','driver_arrived','ride_started'];
 
   const DAY_MS = 86400000;
   const calendarDay = parts => Date.UTC(parts.year, parts.month - 1, parts.day);
@@ -534,6 +566,72 @@
     });
   }
 
+  function ts(iso){ return iso ? new Date(iso).getTime() || 0 : 0; }
+  function latestBookingDate(b){
+    return ts(b.scheduled_for) || ts(b.created_at);
+  }
+  function latestBookingActivityIso(b){
+    const dates = [
+      b.cancelled_at, b.completed_at, b.started_at, b.arrived_at,
+      b.en_route_at, b.assigned_at, b.created_at,
+    ].filter(Boolean).sort((a,b) => ts(b) - ts(a));
+    return dates[0] || null;
+  }
+  function adminSeenKey(){ return 'dm-admin-updates-seen:' + ($('who').textContent || 'default'); }
+  function seenAt(){ return Number(localStorage.getItem(adminSeenKey()) || 0); }
+  function updateText(type, title, detail, iso, hrefId){
+    return { type,title,detail,iso,time:ts(iso),hrefId };
+  }
+  function buildUpdates(){
+    const items = [];
+    bookings.forEach(b => {
+      const s = STATUS[b.status] || STATUS.requested;
+      const d = drivers.find(x => x.id === b.driver_id);
+      items.push(updateText(
+        'booking',
+        'Booking ' + refOf(b) + ' - ' + s.label,
+        (b.customer_name || 'Customer') + ' · ' + (b.pickup_location || 'No pickup') +
+          (d ? ' · Driver ' + d.full_name : ' · Unassigned'),
+        latestBookingActivityIso(b),
+        b.id
+      ));
+    });
+    waitlist.forEach(w => items.push(updateText(
+      'waitlist',
+      'New waitlist signup',
+      (w.tier === 'rental' ? 'Premium Rental' : 'Luxury Chauffeur') + ' · ' + w.email,
+      w.created_at
+    )));
+    invoices.forEach(v => items.push(updateText(
+      'invoice',
+      'Invoice ' + v.invoice_number + ' - ' + v.status,
+      v.company_name + ' · ' + euro(v.amount),
+      v.updated_at || v.issued_at || v.created_at
+    )));
+    drivers.forEach(d => items.push(updateText(
+      'driver',
+      'Driver ' + d.full_name + ' - ' + d.status,
+      d.email || d.phone || 'Driver record updated',
+      d.updated_at || d.created_at
+    )));
+    return items.filter(x => x.time).sort((a,b) => b.time - a.time).slice(0,12);
+  }
+  function renderNotifications(){
+    const items = buildUpdates();
+    const lastSeen = seenAt();
+    const newCount = items.filter(x => x.time > lastSeen).length;
+    $('updates-new').hidden = newCount === 0;
+    $('updates-new').textContent = newCount + ' new';
+    $('updates-list').innerHTML = items.length ? items.map(x =>
+      '<div class="update-row' + (x.time > lastSeen ? ' is-new' : '') + '"' +
+        (x.hrefId ? ' data-update-booking="' + x.hrefId + '"' : '') + '>' +
+        '<span class="update-dot"></span>' +
+        '<span class="update-main"><b>' + esc(x.title) + '</b><span>' + esc(x.detail) + '</span></span>' +
+        '<span class="update-time">' + esc(when(x.iso)) + '</span>' +
+      '</div>'
+    ).join('') : '<div class="updates-empty">No updates yet.</div>';
+  }
+
   /* ================= boot ================= */
   async function boot(){
     let cfg;
@@ -547,7 +645,7 @@
     }
     sb = window.supabase.createClient(cfg.url, cfg.anonKey);
     const { data:{ session } } = await sb.auth.getSession();
-    if (session) await sb.auth.signOut();
+    if (session) enter(session);
   }
 
   $('login').addEventListener('submit', async e => {
@@ -596,7 +694,21 @@
     }
   });
 
-  function loadAll(){ loadBookings(); loadDrivers(); loadWaitlist(); loadInvoices(); loadLiveLocations(); }
+  async function loadAll(){
+    await Promise.all([loadBookings(), loadDrivers(), loadWaitlist(), loadInvoices()]);
+    renderNotifications();
+    loadLiveLocations();
+  }
+
+  $('updates-seen').addEventListener('click', () => {
+    localStorage.setItem(adminSeenKey(), String(Date.now()));
+    renderNotifications();
+    DM.toast('Notifications marked seen', 'good');
+  });
+  $('updates-list').addEventListener('click', e => {
+    const row = e.target.closest('[data-update-booking]');
+    if (row) openDrawer(bookings.find(b => b.id === row.dataset.updateBooking));
+  });
 
   /* ================= live operations ================= */
   function liveAge(iso){
@@ -653,9 +765,7 @@
 
   async function loadLiveLocations(){
     if (!sb || !bookings.length) return;
-    const active = bookings.filter(b =>
-      ['driver_assigned','driver_en_route','driver_arrived','ride_started'].includes(b.status)
-    );
+    const active = bookings.filter(b => ACTIVE_STATUSES.includes(b.status));
     if (!active.length){ latestLocations = []; renderLiveLocations(); return; }
     const { data,error } = await sb.from('driver_locations').select('*')
       .in('booking_id',active.map(b => b.id)).order('recorded_at',{ascending:false}).limit(1000);
@@ -684,11 +794,11 @@
 
   async function loadBookings(){
     const { data, error } = await sb.from('bookings').select('*')
-      .order('scheduled_for', { ascending:true, nullsFirst:false }).limit(2000);
+      .order('created_at', { ascending:false }).limit(2000);
     if (error) return DM.toast(error.message, 'bad');
-    bookings = data || [];
+    bookings = (data || []).sort((a,b) => latestBookingDate(b) - latestBookingDate(a));
     $('n-bookings').textContent = bookings.filter(b => bucket(b) === 'upcoming' || bucket(b) === 'active').length;
-    renderBookings(); renderMetrics(); renderInvoices();
+    renderBookings(); renderMetrics(); renderInvoices(); renderNotifications();
     if (!$('v-tracking').hidden) loadLiveLocations();
   }
 
@@ -703,7 +813,7 @@
     const rows = bookings.filter(b =>
       (bkFilter === 'all' || bucket(b) === bkFilter) &&
       inPeriod(b.scheduled_for || b.created_at, bkPeriod)
-    );
+    ).sort((a,b) => latestBookingDate(b) - latestBookingDate(a));
     $('bk-empty').hidden = rows.length > 0;
     $('bk-rows').innerHTML = rows.map(b => {
       const d = drivers.find(x => x.id === b.driver_id);
@@ -760,7 +870,7 @@
     const load = {};
     bookings.forEach(x => {
       if (!x.driver_id || x.id === b.id) return;
-      if (['driver_assigned','driver_en_route','driver_arrived','ride_started'].includes(x.status)){
+      if (ACTIVE_STATUSES.includes(x.status)){
         load[x.driver_id] = load[x.driver_id] || { active:0, sameDay:0 };
         load[x.driver_id].active++;
         if (day && dayOf(x.scheduled_for) === day) load[x.driver_id].sameDay++;
@@ -908,7 +1018,7 @@
     if (error) return DM.toast(error.message, 'bad');
     drivers = data || [];
     $('n-drivers').textContent = drivers.filter(d => d.status === 'approved').length;
-    renderDrivers(); renderBookings();
+    renderDrivers(); renderBookings(); renderNotifications();
   }
 
   function renderDrivers(){
@@ -981,7 +1091,7 @@
     if (error) return DM.toast(error.message, 'bad');
     waitlist = data || [];
     $('n-waitlist').textContent = waitlist.length;
-    renderWaitlist();
+    renderWaitlist(); renderNotifications();
   }
 
   function renderWaitlist(){
@@ -1016,7 +1126,7 @@
     if (error) return DM.toast(error.message, 'bad');
     invoices = data || [];
     $('n-invoices').textContent = invoices.filter(v => v.status !== 'paid').length;
-    renderInvoices();
+    renderInvoices(); renderNotifications();
   }
 
   function renderInvoices(){
@@ -1096,7 +1206,7 @@
   }
 
   function renderMetrics(){
-    const live = bookings.filter(b => ['driver_assigned','driver_en_route','driver_arrived','ride_started'].includes(b.status)).length;
+    const live = bookings.filter(b => ACTIVE_STATUSES.includes(b.status)).length;
     const revenue = bookings.filter(b => b.status === 'completed')
       .reduce((s, b) => s + Number(b.estimated_price || 0), 0);
     $('m-stats').innerHTML = [
