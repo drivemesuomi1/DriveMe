@@ -841,17 +841,66 @@
   .app-block{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff}
   .app-row{display:flex;flex-direction:column;align-items:flex-start;gap:4px;font-size:12px;color:var(--silver)}
   .app-row b{color:var(--white);font-weight:500}
-  .app-map{flex:1;border-radius:14px;position:relative;overflow:hidden;
+  .app-map{
+    flex:1;border-radius:14px;position:relative;overflow:hidden;isolation:isolate;
+    --app-map-bg-a:#141821;--app-map-bg-b:#0E1116;
+    --app-map-grid:rgba(184,196,214,.08);--app-map-road:rgba(184,196,214,.16);
+    --app-map-major:rgba(143,192,242,.34);--app-map-park:rgba(93,158,126,.16);
+    --app-map-water:rgba(72,147,209,.16);--app-map-route:#5B9BE0;
+    --app-map-pin:#8FC0F2;--app-map-label:rgba(255,255,255,.78);
+    --app-map-label-bg:rgba(8,14,22,.66);
     background:
-      radial-gradient(circle at 70% 20%,rgba(184,188,194,.08),transparent 40%),
-      linear-gradient(#101013,#0C0C0F)}
-  .app-map::before,.app-map::after{content:"";position:absolute;background:rgba(184,188,194,.1)}
-  .app-map::before{left:0;right:0;top:38%;height:1px;transform:rotate(-14deg)}
-  .app-map::after{top:0;bottom:0;left:55%;width:1px;transform:rotate(18deg)}
-  .route{position:absolute;left:18%;top:64%;width:56%;height:1px;
-    background:linear-gradient(90deg,var(--gold),#5B9BE0);transform:rotate(-22deg);transform-origin:left}
-  .car-dot{position:absolute;left:18%;top:64%;width:9px;height:9px;border-radius:50%;background:var(--gold);
-    box-shadow:0 0 14px rgba(15,99,189,.7)}
+      radial-gradient(ellipse at 18% 88%,var(--app-map-water),transparent 36%),
+      radial-gradient(ellipse at 82% 22%,var(--app-map-park),transparent 34%),
+      linear-gradient(160deg,var(--app-map-bg-a),var(--app-map-bg-b));
+  }
+  .app-map::before,.app-map::after{content:"";position:absolute;inset:0;pointer-events:none}
+  .app-map::before{
+    z-index:0;opacity:.95;
+    background:
+      linear-gradient(90deg,var(--app-map-grid) 1px,transparent 1px) 0 0/34px 34px,
+      linear-gradient(var(--app-map-grid) 1px,transparent 1px) 0 0/34px 34px;
+  }
+  .app-map::after{
+    z-index:1;
+    background:
+      linear-gradient(104deg,transparent 0 28%,var(--app-map-road) 28.3% 29%,transparent 29.3% 100%),
+      linear-gradient(75deg,transparent 0 52%,var(--app-map-major) 52.4% 53.6%,transparent 54% 100%),
+      linear-gradient(164deg,transparent 0 62%,var(--app-map-road) 62.3% 63%,transparent 63.3% 100%),
+      linear-gradient(7deg,transparent 0 38%,var(--app-map-road) 38.2% 38.9%,transparent 39.2% 100%);
+  }
+  .app-route-svg{position:absolute;inset:0;z-index:3;width:100%;height:100%;pointer-events:none}
+  .app-route-base,.app-route-line{fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .app-route-base{stroke:rgba(7,31,61,.20);stroke-width:9}
+  .app-route-line{stroke:var(--app-map-route);stroke-width:4.5;filter:drop-shadow(0 3px 5px rgba(15,99,189,.28))}
+  .app-pin{
+    position:absolute;z-index:5;width:12px;height:12px;border-radius:50%;
+    background:#fff;border:3px solid var(--app-map-pin);box-shadow:0 5px 14px rgba(15,99,189,.24);
+  }
+  .app-pin::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:var(--app-map-pin);transform:translate(-50%,-50%)}
+  .app-pin.pickup{left:13%;top:68%}
+  .app-pin.destination{right:11%;top:17%}
+  .app-map-label{
+    position:absolute;z-index:4;border-radius:999px;padding:4px 7px;
+    font-size:10px;font-weight:650;line-height:1;color:var(--app-map-label);
+    background:var(--app-map-label-bg);box-shadow:0 4px 12px rgba(15,23,42,.08);
+  }
+  .app-map-label.pickup{left:8%;top:48%}
+  .app-map-label.destination{right:6%;top:36%}
+  .app-map-label.area{
+    right:10px;bottom:8px;letter-spacing:.12em;text-transform:uppercase;
+    color:rgba(89,104,124,.72);background:rgba(255,255,255,.55);
+  }
+  .car-dot{
+    position:absolute;z-index:6;left:48%;top:46%;width:22px;height:22px;border-radius:50%;
+    background:#fff;border:2px solid var(--app-map-route);transform:translate(-50%,-50%);
+    box-shadow:0 7px 18px rgba(15,99,189,.28),0 0 0 6px rgba(15,99,189,.10);
+  }
+  .car-dot::before{
+    content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;
+    background:var(--app-map-route);clip-path:polygon(50% 0,100% 100%,50% 74%,0 100%);
+    transform:translate(-50%,-50%) rotate(58deg);
+  }
   .app-btn{
     background:var(--gold-grad);color:#fff;text-align:center;border-radius:10px;
     min-height:54px;padding:0 18px;font-size:13px;font-weight:600;letter-spacing:.02em;line-height:1;
@@ -1034,11 +1083,13 @@
   .app-row{color:var(--silver)}
   .app-row b{color:var(--white)}
   .app-block{border-color:#E2E9F1;background:#fff;box-shadow:0 1px 2px rgba(15,19,25,.04)}
-  .app-map{background:
-    linear-gradient(90deg,rgba(15,99,189,.05) 1px,transparent 1px) 0 0/34px 34px,
-    linear-gradient(rgba(15,99,189,.045) 1px,transparent 1px) 0 0/34px 34px,
-    linear-gradient(160deg,#F7FAFD,#EAF2FB)}
-  .app-map::before,.app-map::after{background:rgba(15,99,189,.22)}
+  .app-map{
+    --app-map-bg-a:#F9FCFF;--app-map-bg-b:#EAF3FF;
+    --app-map-grid:rgba(15,99,189,.055);--app-map-road:rgba(74,120,170,.18);
+    --app-map-major:rgba(15,99,189,.22);--app-map-park:rgba(77,164,118,.14);
+    --app-map-water:rgba(55,155,220,.15);--app-map-route:#0F63BD;
+    --app-map-pin:#0F63BD;--app-map-label:#143A61;--app-map-label-bg:rgba(255,255,255,.76);
+  }
   .app-fare,.app-total{border-color:#CADDEF;background:#EAF3FF;color:var(--silver)}
   .app-fare b,.app-total b{color:var(--gold)}
   .app-driver,.app-rate{border-color:#E2E9F1;background:#fff}
@@ -1765,13 +1816,35 @@
               <div class="app-block"><div class="app-row"><span>Pickup</span><b>Ravintola Savoy</b></div></div>
               <div class="app-block"><div class="app-row"><span>Destination</span><b>Home · Westend</b></div></div>
               <div class="app-block"><div class="app-row"><span>Your vehicle</span><b>Mercedes EQS</b></div></div>
-              <div class="app-map mini"><span class="route"></span><span class="car-dot"></span></div>
+              <div class="app-map mini" aria-label="Map preview from Ravintola Savoy to Westend">
+                <span class="app-map-label pickup">Savoy</span>
+                <span class="app-map-label destination">Westend</span>
+                <span class="app-map-label area">Helsinki</span>
+                <svg class="app-route-svg" viewBox="0 0 320 120" preserveAspectRatio="none" aria-hidden="true">
+                  <path class="app-route-base" d="M38 86 C80 64 118 82 154 58 S232 34 282 24"/>
+                  <path class="app-route-line" d="M38 86 C80 64 118 82 154 58 S232 34 282 24"/>
+                </svg>
+                <span class="app-pin pickup"></span>
+                <span class="app-pin destination"></span>
+                <span class="car-dot"></span>
+              </div>
               <div class="app-fare"><span>Fixed fare · 14.2 km</span><b>24.00 €</b></div>
               <div class="app-btn">Request Driver</div>
             </div>
             <div class="app-screen" data-s="1">
               <div><div class="app-title">Tracking link</div><div class="app-sub">Mikael is on the way · 6 min</div></div>
-              <div class="app-map"><span class="route"></span><span class="car-dot"></span></div>
+              <div class="app-map" aria-label="Live route map showing the driver approaching pickup">
+                <span class="app-map-label pickup">Driver</span>
+                <span class="app-map-label destination">Pickup</span>
+                <span class="app-map-label area">Helsinki</span>
+                <svg class="app-route-svg" viewBox="0 0 320 120" preserveAspectRatio="none" aria-hidden="true">
+                  <path class="app-route-base" d="M38 86 C80 64 118 82 154 58 S232 34 282 24"/>
+                  <path class="app-route-line" d="M38 86 C80 64 118 82 154 58 S232 34 282 24"/>
+                </svg>
+                <span class="app-pin pickup"></span>
+                <span class="app-pin destination"></span>
+                <span class="car-dot"></span>
+              </div>
               <div class="app-driver">
                 <span class="app-avatar">MK</span>
                 <div><b>Mikael Korpi</b><span>Licensed chauffeur · ID verified</span></div>
@@ -1783,7 +1856,18 @@
               <div class="app-block"><div class="app-row"><span>Journey · 14.2 km</span><b>21.00 €</b></div></div>
               <div class="app-block"><div class="app-row"><span>Night hours</span><b>3.00 €</b></div></div>
               <div class="app-block"><div class="app-row"><span>Business account</span><b>Nordica Oy</b></div></div>
-              <div class="app-map mini"><span class="route"></span><span class="car-dot"></span></div>
+              <div class="app-map mini" aria-label="Receipt map for the completed route">
+                <span class="app-map-label pickup">Savoy</span>
+                <span class="app-map-label destination">Westend</span>
+                <span class="app-map-label area">Helsinki</span>
+                <svg class="app-route-svg" viewBox="0 0 320 120" preserveAspectRatio="none" aria-hidden="true">
+                  <path class="app-route-base" d="M38 86 C80 64 118 82 154 58 S232 34 282 24"/>
+                  <path class="app-route-line" d="M38 86 C80 64 118 82 154 58 S232 34 282 24"/>
+                </svg>
+                <span class="app-pin pickup"></span>
+                <span class="app-pin destination"></span>
+                <span class="car-dot"></span>
+              </div>
               <div class="app-total"><span>Total</span><b>24.00 €</b></div>
               <div class="app-btn">Paid · Apple Pay</div>
             </div>
@@ -1792,7 +1876,18 @@
               <div class="app-block"><div class="app-row"><span>Your car</span><b>Parked · Garage</b></div></div>
               <div class="app-block"><div class="app-row"><span>Journey time</span><b>28 min</b></div></div>
               <div class="app-block"><div class="app-row"><span>Keys</span><b>Returned in hand</b></div></div>
-              <div class="app-map mini"><span class="route"></span><span class="car-dot"></span></div>
+              <div class="app-map mini" aria-label="Arrival map showing the car delivered home">
+                <span class="app-map-label pickup">Savoy</span>
+                <span class="app-map-label destination">Home</span>
+                <span class="app-map-label area">Espoo</span>
+                <svg class="app-route-svg" viewBox="0 0 320 120" preserveAspectRatio="none" aria-hidden="true">
+                  <path class="app-route-base" d="M38 86 C80 64 118 82 154 58 S232 34 282 24"/>
+                  <path class="app-route-line" d="M38 86 C80 64 118 82 154 58 S232 34 282 24"/>
+                </svg>
+                <span class="app-pin pickup"></span>
+                <span class="app-pin destination"></span>
+                <span class="car-dot"></span>
+              </div>
               <div class="app-rate">
                 <span class="app-avatar">MK</span>
                 <div><b>Rate your journey</b><span class="stars">★★★★★</span></div>
