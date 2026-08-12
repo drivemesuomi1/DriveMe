@@ -1343,7 +1343,7 @@
         </div>
       </div>
 
-      <form id="hero-book" novalidate>
+      <form id="hero-book-form" novalidate>
         <div class="hb-grid">
           <div class="dm-field span2" id="f-pickup">
             <label for="bk-pickup">Pickup location</label>
@@ -2888,7 +2888,7 @@
      places (and carry coordinates through to the tracking map), but there is
      no map in the hero - the form is the whole interaction.
      Pricing mirrors api/bookings.js; the server still recomputes it. */
-  const form = document.getElementById('hero-book');
+  const form = document.getElementById('hero-book-form');
   if (form && window.DM){
     const $ = id => document.getElementById(id);
     const RATE = 35, MIN_HOURS = 3, PER_KM = 0.5, P2P_HOURS = 0.75;
@@ -2976,6 +2976,13 @@
     const nameEl = $('bk-name'), phoneEl = $('bk-phone'), emailEl = $('bk-email');
     DM.select($('bk-pay'));
     const submit = $('hb-submit'), label = submit.querySelector('.hb-label');
+
+    form.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const el = e.target;
+      if (!el || !el.matches('input[type="text"], input[type="tel"], input[type="email"]')) return;
+      e.preventDefault();
+    });
 
     let touched = false;
     function validate(){
