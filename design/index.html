@@ -2999,11 +2999,21 @@
       touched = false;
     });
 
-    /* The lower request card is a quick journey preview. Continue moves into
-       pricing so the section does not feel like a dead end. */
+    /* The lower request card is a quick journey preview. Continue hands its
+       choices to this complete, submit-ready booking form. */
     const requestContinue = $('request-continue');
     if (requestContinue){
-      const request = { mode:'hourly', hours:3 };
+      const request = { mode:'hourly', hours:3, pickup:null, dropoff:null };
+      DM.autocomplete($('pickup'), {
+        delay: 80,
+        label: 'Pickup suggestions',
+        onPick: p => { request.pickup = p; }
+      });
+      DM.autocomplete($('dest'), {
+        delay: 80,
+        label: 'Destination suggestions',
+        onPick: p => { request.dropoff = p; }
+      });
       const requestMode = value => {
         request.mode = value;
         const pointToPoint = value === 'point_to_point';
@@ -3031,8 +3041,22 @@
       renderRequestHours();
 
       requestContinue.addEventListener('click', () => {
-        const target = document.getElementById('pricing');
-        if (target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+        const pointToPoint = request.mode === 'point_to_point';
+        const pickup = $('pickup').value.trim();
+        const destination = $('dest').value.trim();
+        const modeButton = document.querySelector('#bk-mode [data-value="' + request.mode + '"]');
+        if (modeButton) modeButton.click();
+        state.hours = request.hours;
+        state.pickup = request.pickup;
+        state.dropoff = pointToPoint ? request.dropoff : null;
+        $('bk-pickup').value = pickup;
+        if (pointToPoint) $('bk-drop').value = destination;
+        renderHours();
+        measure();
+        $('bk').scrollIntoView({ behavior:'smooth', block:'center' });
+        setTimeout(() => {
+          (pointToPoint ? $('bk-drop') : $('bk-date')).focus({ preventScroll:true });
+        }, 450);
       });
     }
 

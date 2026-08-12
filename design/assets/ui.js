@@ -586,6 +586,33 @@ window.DM = (function () {
      ==================================================================== */
   const HELSINKI = { lat: 60.1699, lng: 24.9384 };
   const METRO = ['helsinki', 'espoo', 'vantaa', 'kauniainen'];
+  const searchCache = new Map();
+
+  function searchKey(q) {
+    return String(q || '').trim().replace(/\s+/g, ' ').toLowerCase();
+  }
+
+  function rememberSearch(key, results) {
+    searchCache.set(key, results);
+    if (searchCache.size > 80) searchCache.delete(searchCache.keys().next().value);
+  }
+
+  function cachedSearch(q) {
+    const key = searchKey(q);
+    if (!key) return [];
+    if (searchCache.has(key)) return searchCache.get(key);
+
+    let bestKey = '';
+    searchCache.forEach((_, cachedKey) => {
+      if (key.startsWith(cachedKey) && cachedKey.length > bestKey.length) bestKey = cachedKey;
+    });
+    if (!bestKey) return [];
+
+    return searchCache.get(bestKey).filter((r) => {
+      const text = (r.primary + ' ' + (r.secondary || '')).toLowerCase();
+      return key.split(' ').every((part) => text.includes(part));
+    });
+  }
 
   function labelOf(p) {
     const line1 = [p.name, p.housenumber && p.street ? p.street + ' ' + p.housenumber : p.street]
@@ -601,18 +628,25 @@ window.DM = (function () {
     },
     /** Autocomplete, biased to the capital region. */
     async search(q, signal) {
-      if (!q || q.trim().length < 2) return [];
-      const url = 'https://photon.komoot.io/api/?q=' + encodeURIComponent(q) +
+      const key = searchKey(q);
+      if (key.length < 2) return [];
+      const cached = searchCache.get(key);
+      if (cached) return cached;
+
+      const url = 'https://photon.komoot.io/api/?q=' + encodeURIComponent(key) +
         '&lat=' + HELSINKI.lat + '&lon=' + HELSINKI.lng + '&limit=6&lang=en';
       const res = await fetch(url, { signal });
       if (!res.ok) throw new Error('search failed');
       const data = await res.json();
-      return (data.features || []).map((f) => {
+      const results = (data.features || []).map((f) => {
         const p = f.properties, c = f.geometry.coordinates;
         const l = labelOf(p);
         return { lat: c[1], lng: c[0], city: p.city || p.county, ...l };
       });
+      rememberSearch(key, results);
+      return results;
     },
+    cachedSearch,
     /** Address for a dropped pin. */
     async reverse(lat, lng) {
       const url = 'https://photon.komoot.io/reverse?lat=' + lat + '&lon=' + lng + '&lang=en';
@@ -711,7 +745,8 @@ window.DM = (function () {
     input.setAttribute('aria-controls', panel.id);
     wrap.appendChild(panel);
 
-    let results = [], active = -1, timer = null, ctrl = null, chosen = null;
+    let results = [], active = -1, timer = null, ctrl = null, chosen = null, loading = false;
+    const delay = typeof opts.delay === 'number' ? opts.delay : 120;
 
     function close() {
       panel.classList.remove('on');
@@ -730,7 +765,7 @@ window.DM = (function () {
     function draw() {
       panel.innerHTML = '';
       if (!results.length) {
-        panel.appendChild(h('div', 'dm-opt-empty', uiText('noMatches')));
+        panel.appendChild(h('div', 'dm-opt-empty', loading ? 'Searching...' : uiText('noMatches')));
         return;
       }
       results.forEach((r, i) => {
@@ -770,16 +805,20 @@ window.DM = (function () {
       if (q.length < 2) { close(); return; }
       if (ctrl) ctrl.abort();
       ctrl = new AbortController();
+      const requestCtrl = ctrl;
       wrap.classList.add('busy');
       try {
-        results = await geo.search(q, ctrl.signal);
+        const fresh = await geo.search(q, requestCtrl.signal);
+        if (requestCtrl.signal.aborted) return;
+        results = fresh;
         active = -1;
+        loading = false;
         draw();
         open();
       } catch (e) {
-        if (e.name !== 'AbortError') { results = []; draw(); open(); }
+        if (e.name !== 'AbortError') { loading = false; results = []; draw(); open(); }
       } finally {
-        wrap.classList.remove('busy');
+        if (ctrl === requestCtrl) wrap.classList.remove('busy');
       }
     }
 
@@ -797,8 +836,23 @@ window.DM = (function () {
 
     input.addEventListener('input', () => {
       chosen = null;
+      if (ctrl) ctrl.abort();
       clearTimeout(timer);
-      timer = setTimeout(run, 260);                    // debounce; Photon is rate-limited
+      const q = input.value.trim();
+      if (q.length < 2) { loading = false; results = []; close(); return; }
+
+      const cached = geo.cachedSearch(q);
+      if (cached.length) {
+        loading = false;
+        results = cached;
+      } else {
+        loading = true;
+        results = [];
+      }
+      active = -1;
+      draw();
+      open();
+      timer = setTimeout(run, delay);                  // light debounce; Photon is rate-limited
     });
     input.addEventListener('focus', () => { if (results.length && input.value.trim().length >= 2) open(); });
     input.addEventListener('keydown', (e) => {
