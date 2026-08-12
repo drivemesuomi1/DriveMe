@@ -1225,9 +1225,16 @@
     const b = bookings.find(x => x.id === v.booking_id) || {};
     const gross = Number(v.amount);
     const vat = gross - gross / (1 + Number(v.vat_rate) / 100);
-    const w = window.open('', '_blank');
-    if (!w) return DM.toast('Allow pop-ups to print the invoice.', 'bad');
-    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + esc(v.invoice_number) + '</title>' +
+    const existing = document.getElementById('invoice-print-frame');
+    if (existing) existing.remove();
+    const frame = document.createElement('iframe');
+    frame.id = 'invoice-print-frame';
+    frame.title = 'Invoice print preview';
+    frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+    document.body.appendChild(frame);
+    const doc = frame.contentDocument || frame.contentWindow.document;
+    doc.open();
+    doc.write('<!doctype html><html><head><meta charset="utf-8"><title>' + esc(v.invoice_number) + '</title>' +
       '<style>body{font:400 14px/1.65 Inter,Segoe UI,sans-serif;color:#0B1524;max-width:660px;margin:48px auto;padding:0 24px}' +
       'h1{font-size:23px;font-weight:600;letter-spacing:-.01em;margin:0 0 4px}' +
       'table{width:100%;border-collapse:collapse;margin:26px 0}' +
@@ -1248,9 +1255,13 @@
       '<tr><td class="muted">of which VAT (' + v.vat_rate + '%)</td>' +
         '<td class="muted" style="text-align:right">' + euro(vat) + '</td></tr>' +
       '<tr class="tot"><td>Total due</td><td style="text-align:right">' + euro(gross) + '</td></tr></table>' +
-      '<p class="muted">Payment within 14 days of the issue date. Thank you for riding with DriveMe.</p>' +
-      '<' + 'script>window.print()<\/script></body></html>');
-    w.document.close();
+      '<p class="muted">Payment within 14 days of the issue date. Thank you for riding with DriveMe.</p></body></html>');
+    doc.close();
+    setTimeout(() => {
+      frame.contentWindow.focus();
+      frame.contentWindow.print();
+      setTimeout(() => frame.remove(), 1000);
+    }, 50);
   }
 
   /* ================= metrics ================= */

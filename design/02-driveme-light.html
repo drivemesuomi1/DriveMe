@@ -2700,20 +2700,6 @@
     DM.select($('bk-pay'));
     const submit = $('hb-submit'), label = submit.querySelector('.hb-label');
 
-    let formDirty = false;
-    const markDirty = () => { formDirty = true; };
-    [$('bk-pickup'), $('bk-drop'), $('bk-date'), $('bk-time'), nameEl, phoneEl, emailEl, $('bk-pay')]
-      .filter(Boolean)
-      .forEach(el => {
-        el.addEventListener('input', markDirty);
-        el.addEventListener('change', markDirty);
-      });
-    window.addEventListener('beforeunload', e => {
-      if (!formDirty || form.hidden || !$('hb-done').hidden) return;
-      e.preventDefault();
-      e.returnValue = '';
-    });
-
     form.addEventListener('keydown', e => {
       if (e.key !== 'Enter') return;
       const el = e.target;
@@ -2804,7 +2790,6 @@
       label.textContent = 'Request a driver';
 
       if (ok){
-        formDirty = false;
         $('hb-ref').textContent = data.reference || (data.bookingId || '').slice(0, 8).toUpperCase();
         form.hidden = true;
         document.querySelector('.hb-head').hidden = true;
@@ -2836,7 +2821,6 @@
       $('hb-done').hidden = true;
       document.querySelector('.hb-head').hidden = false;
       [nameEl, phoneEl, emailEl].forEach(el => { el.value = ''; markField(el.closest('.dm-field'), false); });
-      formDirty = false;
       touched = false;
     });
 
