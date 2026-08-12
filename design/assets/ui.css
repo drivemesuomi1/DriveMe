@@ -131,6 +131,9 @@
   animation:dm-spin .7s linear infinite;display:none;
 }
 .dm-input-wrap.busy .dm-spin{display:block}
+
+/* MapLibre supplies the English-only satellite labels above Leaflet imagery. */
+.leaflet-gl-layer{z-index:250!important;pointer-events:none}
 @keyframes dm-spin{to{transform:rotate(360deg)}}
 
 /* ==========================================================================

@@ -812,24 +812,78 @@ window.DM = (function () {
   }
 
   /* ====================================================================
-     Leaflet helpers - muted CARTO basemap + drawn pins
+     Leaflet helpers - detailed street, hybrid satellite, and terrain maps
      ==================================================================== */
   const TILES = {
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd', maxZoom: 20,
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 20,
   };
   const SATELLITE_TILES = {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Tiles &copy; Esri',
+    attribution: 'Imagery &copy; Esri and contributors',
     maxZoom: 19,
   };
-  const TERRAIN_TILES = {
-    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-    attribution: '&copy; OpenTopoMap contributors',
-    subdomains: 'abc',
-    maxZoom: 17,
+  const TERRAIN_BASE = {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 20,
   };
+  const TERRAIN_SHADE = {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Hillshade &copy; Esri',
+    opacity: .28,
+    pane: 'dmTerrainShade',
+    maxZoom: 19,
+  };
+  const TERRAIN_LABELS = {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    pane: 'dmTerrainLabels',
+    maxZoom: 19,
+  };
+
+  let englishLabelsStylePromise = null;
+  function englishLabelsStyle() {
+    if (!englishLabelsStylePromise) {
+      englishLabelsStylePromise = fetch('https://tiles.openfreemap.org/styles/liberty')
+        .then((response) => {
+          if (!response.ok) throw new Error('English map labels are unavailable');
+          return response.json();
+        })
+        .then((style) => {
+          const englishName = ['coalesce',
+            ['get', 'name:en'], ['get', 'name_en'],
+            ['get', 'name:latin'], ['get', 'name_latin'],
+            ['get', 'ref'], '',
+          ];
+          style.layers = style.layers.filter((layer) =>
+            layer.type === 'symbol' && layer.layout && layer.layout['text-field']
+          ).map((layer) => ({
+            ...layer,
+            layout: {
+              ...layer.layout,
+              'text-field': englishName,
+              'icon-image': '',
+            },
+            paint: {
+              ...layer.paint,
+              'text-color': '#ffffff',
+              'text-halo-color': 'rgba(11,21,36,.94)',
+              'text-halo-width': 1.7,
+              'text-halo-blur': .35,
+            },
+          }));
+          style.sources = { openmaptiles: style.sources.openmaptiles };
+          delete style.sprite;
+          return style;
+        });
+    }
+    return englishLabelsStylePromise;
+  }
 
   function pinIcon(kind) {
     // kind: 'pickup' | 'dropoff' | 'car'
@@ -859,9 +913,25 @@ window.DM = (function () {
       scrollWheelZoom: opts.scrollWheelZoom !== false,
       attributionControl: true,
     }).setView([HELSINKI.lat, HELSINKI.lng], opts.zoom || 12);
+    const terrainShadePane = m.createPane('dmTerrainShade');
+    terrainShadePane.style.zIndex = '230';
+    terrainShadePane.style.mixBlendMode = 'multiply';
+    terrainShadePane.style.pointerEvents = 'none';
+    const terrainLabelsPane = m.createPane('dmTerrainLabels');
+    terrainLabelsPane.style.zIndex = '240';
+    terrainLabelsPane.style.pointerEvents = 'none';
     const street = L.tileLayer(TILES.url, TILES).addTo(m);
-    const satellite = L.tileLayer(SATELLITE_TILES.url, SATELLITE_TILES);
-    const terrain = L.tileLayer(TERRAIN_TILES.url, TERRAIN_TILES);
+    const satellite = L.layerGroup([L.tileLayer(SATELLITE_TILES.url, SATELLITE_TILES)]);
+    if (typeof L.maplibreGL === 'function') {
+      englishLabelsStyle().then((style) => {
+        satellite.addLayer(L.maplibreGL({ style, interactive:false }));
+      }).catch(() => {});
+    }
+    const terrain = L.layerGroup([
+      L.tileLayer(TERRAIN_BASE.url, TERRAIN_BASE),
+      L.tileLayer(TERRAIN_SHADE.url, TERRAIN_SHADE),
+      L.tileLayer(TERRAIN_LABELS.url, TERRAIN_LABELS),
+    ]);
     m.dmBaseLayers = { map: street, satellite, terrain };
     m.dmSetBaseLayer = (kind) => {
       const next = m.dmBaseLayers[kind] || street;
