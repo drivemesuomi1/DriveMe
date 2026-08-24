@@ -33,6 +33,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Cormorant Garamond italic for the parent-company signature in the footer:
+     a calligraphic serif italic stays legible at footer size, where a full
+     script face (Great Vibes, Pinyon) turns to mush below ~20px. -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="/assets/favicon-48.png" type="image/png" sizes="48x48">
@@ -1116,7 +1120,15 @@
   .foot-parent{display:inline-flex;align-items:center;gap:10px;font-size:11px;
     letter-spacing:.2em;text-transform:uppercase;color:var(--silver-dim);white-space:nowrap}
   .foot-parent::before{content:"";flex:none;width:24px;height:1px;background:var(--gold);opacity:.75}
-  .foot-parent b{font-weight:600;letter-spacing:.14em;color:var(--silver)}
+  /* "Part of" stays a small tracked-out label; the company name is the signature.
+     text-transform:none is required - the parent sets uppercase, which would
+     flatten the italic's ascenders and defeat the point of a calligraphic face. */
+  .foot-parent b{
+    font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+    font-style:italic;font-weight:600;font-size:23px;line-height:1;
+    letter-spacing:.01em;text-transform:none;color:var(--white);
+    position:relative;top:1px;
+  }
   .foot ul{list-style:none;display:flex;gap:36px;flex-wrap:wrap}
   .foot a{font-size:13px;color:var(--silver-dim);letter-spacing:.06em;transition:color var(--standard)}
   .foot a:hover{color:var(--gold)}
@@ -2392,6 +2404,12 @@
       'Beyond the metro':'Metropolialueen ulkopuolella', 'Event packages':'Tapahtumapaketit',
       'Subscription':'Tilaus', 'Payment methods':'Maksutavat', '/ hour':'/ tunti',
       'Part of':'Osa', 'Invoice':'Lasku', 'Instalments':'Erämaksu',
+      // '/ hour' was translated but '/ month' was not, so the rate cards read
+      // "/ tunti" next to an untranslated "/ month". '/ km' needs no entry - km
+      // is km in all three languages.
+      '/ month':'/ kk', 'Night hours':'Yötunnit',
+      'Distance beyond the metro area':'Matka metropolialueen ulkopuolella',
+      'Three-hour minimum, billed in half hours thereafter.':'Kolmen tunnin minimi, sen jälkeen puolen tunnin erissä.',
       'Planned · Phase 2':'Suunnitteilla · Vaihe 2', 'Intended vehicle class':'Suunniteltu ajoneuvoluokka',
       'One screen. Pickup, destination, done.':'Yksi näkymä. Nouto, määränpää, valmis.',
       'Watch your driver arrive, minute by minute.':'Seuraa kuljettajan saapumista minuutti minuutilta.',
@@ -2564,6 +2582,9 @@
     'Beyond the metro':'Utanför huvudstadsregionen', 'Event packages':'Evenemangspaket',
     'Subscription':'Abonnemang', 'Payment methods':'Betalningsmetoder', '/ hour':'/ timme',
     'Part of':'En del av', 'Invoice':'Faktura', 'Instalments':'Delbetalning',
+    '/ month':'/ månad', 'Night hours':'Nattimmar',
+    'Distance beyond the metro area':'Sträcka utanför huvudstadsregionen',
+    'Three-hour minimum, billed in half hours thereafter.':'Tre timmars minimum, därefter i halvtimmar.',
     'Planned · Phase 2':'Planerad · Fas 2', 'Intended vehicle class':'Avsedd fordonsklass',
     'One screen. Pickup, destination, done.':'En vy. Upphämtning, destination, klart.',
     'Watch your driver arrive, minute by minute.':'Följ förarens ankomst minut för minut.',
