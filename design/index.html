@@ -669,14 +669,30 @@
     letter-spacing:-.01em;color:var(--gold)}
   .price b small{font-size:.46em;font-weight:400;letter-spacing:.02em;color:var(--silver-dim);margin-left:5px}
   .price p{font-size:13px;font-weight:300;line-height:1.65;color:var(--silver)}
-  .pay{margin-top:26px;display:flex;align-items:center;gap:26px;flex-wrap:wrap;
-    border:1px solid var(--line);border-radius:100px;padding:16px 30px}
-  @media(max-width:680px){.pay{border-radius:20px;padding:20px 22px;gap:16px}}
-  .pay-k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--silver-dim)}
-  .pay ul{list-style:none;display:flex;gap:26px;flex-wrap:wrap}
-  .pay li{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--silver);letter-spacing:.03em}
-  .pay svg{width:17px;height:17px;fill:none;stroke:var(--gold);stroke-width:1.5;
+  /* Payment methods. Klarna is the processor that carries the card and Finnish
+     bank rails, so its methods sit inside a labelled set - fieldset/legend gives
+     the notched-border look natively, no faked overlay. MobilePay and corporate
+     invoicing stand outside it because they settle separately. */
+  .pay{margin-top:30px}
+  .pay-k{display:block;margin-bottom:16px;font-size:11px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--silver-dim)}
+  .pay-rail{display:grid;gap:14px}
+  .pay-set{border:1px solid var(--line);border-radius:18px;margin:0;padding:2px 26px 20px;min-width:0}
+  .pay-set legend{margin-left:6px;padding:0 12px;font-size:15.5px;font-weight:600;
+    letter-spacing:.01em;color:var(--white)}
+  .pay-primary,.pay-banks{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 22px}
+  .pay-primary li{font-size:14px;font-weight:500;color:var(--white);letter-spacing:.01em}
+  .pay-banks{margin-top:13px;padding-top:13px;border-top:1px solid var(--line-soft)}
+  .pay-banks li{font-size:13px;color:var(--silver);letter-spacing:.02em}
+  .pay-solo{display:flex;gap:10px;flex-wrap:wrap}
+  .pay-chip{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);
+    border-radius:100px;padding:11px 20px;font-size:13.5px;color:var(--silver);letter-spacing:.02em}
+  .pay-chip svg{width:16px;height:16px;fill:none;stroke:var(--gold);stroke-width:1.5;
     stroke-linecap:round;stroke-linejoin:round;flex:none}
+  @media(max-width:680px){
+    .pay-set{padding:2px 18px 18px;border-radius:16px}
+    .pay-primary,.pay-banks{gap:7px 16px}
+  }
 
   /* ---------- the approach (live tracking) ---------- */
   .appr-grid{display:grid;grid-template-columns:1.4fr .6fr;gap:28px;margin-top:64px;align-items:stretch}
@@ -1096,6 +1112,11 @@
   .final .hero-ctas{justify-content:center;opacity:1;transform:none;animation:none}
   footer{border-top:1px solid var(--line);padding:64px 0 48px}
   .foot{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap}
+  .foot-brand{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+  .foot-parent{display:inline-flex;align-items:center;gap:10px;font-size:11px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--silver-dim);white-space:nowrap}
+  .foot-parent::before{content:"";flex:none;width:24px;height:1px;background:var(--gold);opacity:.75}
+  .foot-parent b{font-weight:600;letter-spacing:.14em;color:var(--silver)}
   .foot ul{list-style:none;display:flex;gap:36px;flex-wrap:wrap}
   .foot a{font-size:13px;color:var(--silver-dim);letter-spacing:.06em;transition:color var(--standard)}
   .foot a:hover{color:var(--gold)}
@@ -1723,11 +1744,31 @@
       </div>
       <div class="pay">
         <span class="pay-k">Payment methods</span>
-        <ul>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Card</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10.5 18.5h3"/></svg>MobilePay</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg>Corporate invoicing</li>
-        </ul>
+        <div class="pay-rail">
+          <fieldset class="pay-set">
+            <legend>Klarna</legend>
+            <!-- English is this page's source language; the FI/SV dictionaries
+                 restore Klarna's own Finnish product names (Lasku / Erämaksu). -->
+            <ul class="pay-primary">
+              <li>Invoice</li>
+              <li>Instalments</li>
+              <li>Mastercard</li>
+              <li>Visa</li>
+            </ul>
+            <ul class="pay-banks">
+              <li>Säästöpankki</li>
+              <li>OP</li>
+              <li>S-Pankki</li>
+              <li>Aktia</li>
+              <li>Nordea</li>
+              <li>Danske Bank</li>
+            </ul>
+          </fieldset>
+          <div class="pay-solo">
+            <span class="pay-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10.5 18.5h3"/></svg>MobilePay</span>
+            <span class="pay-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg>Corporate invoicing</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2078,7 +2119,10 @@
 <footer>
   <div class="wrap">
     <div class="foot">
-      <a class="logo" href="#top">DRIVE<span class="dot">·</span>ME</a>
+      <div class="foot-brand">
+        <a class="logo" href="#top">DRIVE<span class="dot">·</span>ME</a>
+        <span class="foot-parent">Part of <b>Mansio&nbsp;Group</b></span>
+      </div>
       <!-- Every entry points at a section that exists. Drivers, Corporate, Careers
            and Press had no destination, so they are gone rather than dead. -->
       <ul>
@@ -2347,6 +2391,7 @@
       'Type of booking':'Varauksen tyyppi', 'Destination':'Määränpää', 'Step 1 of 4':'Vaihe 1 / 4',
       'Beyond the metro':'Metropolialueen ulkopuolella', 'Event packages':'Tapahtumapaketit',
       'Subscription':'Tilaus', 'Payment methods':'Maksutavat', '/ hour':'/ tunti',
+      'Part of':'Osa', 'Invoice':'Lasku', 'Instalments':'Erämaksu',
       'Planned · Phase 2':'Suunnitteilla · Vaihe 2', 'Intended vehicle class':'Suunniteltu ajoneuvoluokka',
       'One screen. Pickup, destination, done.':'Yksi näkymä. Nouto, määränpää, valmis.',
       'Watch your driver arrive, minute by minute.':'Seuraa kuljettajan saapumista minuutti minuutilta.',
@@ -2518,6 +2563,7 @@
     'Type of booking':'Bokningstyp', 'Destination':'Destination', 'Step 1 of 4':'Steg 1 av 4',
     'Beyond the metro':'Utanför huvudstadsregionen', 'Event packages':'Evenemangspaket',
     'Subscription':'Abonnemang', 'Payment methods':'Betalningsmetoder', '/ hour':'/ timme',
+    'Part of':'En del av', 'Invoice':'Faktura', 'Instalments':'Delbetalning',
     'Planned · Phase 2':'Planerad · Fas 2', 'Intended vehicle class':'Avsedd fordonsklass',
     'One screen. Pickup, destination, done.':'En vy. Upphämtning, destination, klart.',
     'Watch your driver arrive, minute by minute.':'Följ förarens ankomst minut för minut.',
