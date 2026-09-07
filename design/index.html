@@ -301,7 +301,9 @@
   /* the rise animation needs overflow-clipped lines, so the gilt line carries its
      glow as a blurred pseudo-layer behind the text rather than a clipped drop-shadow */
   h1 .gilt{position:relative}
-  h1 .l{display:block;overflow:hidden}
+  /* the clip box is padded (and the padding cancelled by a negative margin) so the
+     mask never eats the descenders of "J", "j" or "y" in the FI/SV headlines */
+  h1 .l{display:block;overflow:hidden;padding-bottom:.16em;margin-bottom:-.16em}
   h1 .l span{display:block;transform:translateY(110%)}
   body.loaded h1 .l span{animation:rise 1100ms cubic-bezier(.16,1,.3,1) forwards}
   body.loaded h1 .l:nth-child(2) span{animation-delay:.12s}
@@ -867,8 +869,11 @@
   /* ---------- app scroll story ---------- */
   #app-story{padding:0}
   .story{height:340vh;position:relative}
+  /* The panel is pinned, so its content has to fit the viewport - it must never be
+     clipped. A 1080p laptop at the Windows-default 125% scaling reports only ~735px
+     of viewport, so the copy compacts by height rather than by width. */
   .story .stick{
-    position:sticky;top:128px;height:calc(100vh - 128px);display:flex;align-items:center;overflow:hidden;
+    position:sticky;top:112px;height:calc(100vh - 112px);display:flex;align-items:center;
   }
   .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;width:100%;
     max-width:1200px;margin:0 auto;padding:0 32px}
@@ -878,7 +883,7 @@
     .story-grid{grid-template-columns:1fr;gap:64px}
   }
   .desktop-app{
-    width:min(680px,100%);height:520px;margin:0 auto;border-radius:22px;position:relative;
+    width:min(680px,100%);height:var(--mock-h,560px);margin:0 auto;border-radius:22px;position:relative;
     border:1px solid #DDE7F1;background:#fff;
     box-shadow:0 34px 90px rgba(15,19,25,.12),inset 0 1px 0 rgba(255,255,255,.95);
     overflow:hidden;
@@ -904,7 +909,7 @@
   .desktop-sidebar span{display:block;border-radius:8px;padding:10px 11px;margin-bottom:6px;font-size:12px;color:var(--silver)}
   .desktop-sidebar span.on{background:#E7F0FF;color:var(--gold-deep);font-weight:600}
   .app-screen{
-    position:absolute;inset:0;padding:76px 28px 28px 184px;display:grid;grid-template-columns:1fr 1fr;gap:13px;
+    position:absolute;inset:0;padding:70px 26px 24px 178px;display:grid;grid-template-columns:1fr 1fr;gap:11px;
     align-content:start;
     opacity:0;transform:translateX(34px) scale(.985);pointer-events:none;
     transition:opacity 520ms cubic-bezier(.16,1,.3,1),transform 620ms cubic-bezier(.16,1,.3,1);
@@ -915,7 +920,10 @@
   .app-screen > div:first-child{grid-column:1/-1}
   .app-title{font-family:var(--font-heading);font-size:22px;font-weight:650;letter-spacing:-.02em}
   .app-sub{font-size:12px;color:var(--silver-dim)}
-  .app-block{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:#fff}
+  .app-block{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#fff}
+  /* the third block is alone on its row - span it so long FI/SV values like
+     "Aterlamnade personligen" stay on one line instead of pushing the row down */
+  .app-screen > .app-block:nth-child(4){grid-column:1/-1}
   .app-row{display:flex;flex-direction:column;align-items:flex-start;gap:4px;font-size:12px;color:var(--silver)}
   .app-row b{color:var(--white);font-weight:500}
   .app-map{
@@ -980,11 +988,11 @@
   }
   .app-btn{
     background:var(--gold-grad);color:#fff;text-align:center;border-radius:10px;
-    min-height:54px;padding:0 18px;font-size:13px;font-weight:600;letter-spacing:.02em;line-height:1;
+    min-height:50px;padding:0 18px;font-size:13px;font-weight:600;letter-spacing:.02em;line-height:1;
     display:inline-flex;align-items:center;justify-content:center;align-self:stretch;white-space:nowrap;
     box-shadow:0 10px 22px rgba(15,99,189,.20);
   }
-  .app-map,.app-map.mini{grid-column:1/-1;min-height:112px}
+  .app-map,.app-map.mini{grid-column:1/-1;min-height:100px}
   .app-fare,.app-total{
     display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;min-height:54px;
     padding:12px 14px;border-radius:8px;border:1px solid rgba(15,99,189,.28);
@@ -994,7 +1002,7 @@
   .app-fare b,.app-total b{color:var(--gold-light);font-weight:600;font-size:15px;white-space:nowrap}
   .app-driver,.app-rate{
     display:flex;align-items:center;gap:12px;
-    grid-column:1/-1;border:1px solid var(--line);border-radius:8px;padding:13px 15px;background:#fff;
+    grid-column:1/-1;border:1px solid var(--line);border-radius:8px;padding:11px 14px;background:#fff;
   }
   .app-avatar{
     width:38px;height:38px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
@@ -1010,14 +1018,18 @@
   }
   .stars{color:var(--gold);letter-spacing:.12em;font-size:13px!important}
   @media(max-width:900px){
-    .desktop-app{height:520px}
-    .app-screen{padding:76px 22px 24px 176px}
+    .desktop-app{--mock-h:560px}
+    .app-screen{padding:70px 22px 22px 172px}
   }
+  /* the sidebar goes and the grid drops to one column, so every row stacks -
+     the frame grows to match instead of cropping the last rows off the screen */
   @media(max-width:640px){
     .desktop-bar{grid-template-columns:64px 1fr;gap:10px}
     .desktop-bar span:last-child{display:none}
     .desktop-sidebar{display:none}
-    .app-screen{padding:76px 18px 22px;grid-template-columns:1fr}
+    .desktop-app{--mock-h:600px}
+    .app-screen{padding:66px 16px 20px;grid-template-columns:1fr;gap:9px}
+    .app-map,.app-map.mini{min-height:86px}
   }
   .story-copy .stage{transition:opacity 500ms cubic-bezier(.2,0,0,1)}
   .story-steps{margin-top:44px;display:flex;flex-direction:column;gap:0}
@@ -1029,6 +1041,57 @@
   .story-step.on{color:var(--silver);border-left-color:var(--gold)}
   .story-step.on b{color:var(--white)}
   .story-note{margin-top:32px;font-size:12px;font-weight:300;letter-spacing:.06em;color:var(--silver-dim)}
+
+  /* Short-viewport tiers for the pinned story panel. These sit after the base
+     rules above on purpose: a media query adds no specificity, so placing them
+     earlier would let the unconditional rules win. */
+  @media(min-width:901px) and (max-height:900px){
+    .story .stick{top:96px;height:calc(100vh - 96px)}
+    .story-grid{gap:56px}
+    .story-copy h2{font-size:clamp(30px,2.9vw,40px)}
+    .story-steps{margin-top:26px}
+    .story-step{padding:13px 0 13px 24px}
+    .story-step b{font-size:18px}
+    .story-note{margin-top:18px}
+  }
+  @media(min-width:901px) and (max-height:780px){
+    .story .stick{top:84px;height:calc(100vh - 84px)}
+    .story-copy h2{font-size:30px}
+    .story-copy .kicker{margin-bottom:10px}
+    .story-steps{margin-top:16px}
+    .story-step{padding:10px 0 10px 22px;font-size:14px}
+    .story-step b{font-size:16px}
+    .story-note{margin-top:12px}
+  }
+  /* the shortest desktop tier: the mock has to come down too, so the frame and the
+     screen rows inside it shrink together and nothing is cropped either way */
+  @media(min-width:901px) and (max-height:700px){
+    .story .stick{top:72px;height:calc(100vh - 72px)}
+    .story-grid{gap:44px}
+    .story-copy h2{font-size:27px}
+    .story-copy .kicker{margin-bottom:8px}
+    .story-steps{margin-top:12px}
+    .story-step{padding:8px 0 8px 20px;font-size:13px}
+    .story-step b{font-size:15px}
+    .story-note{margin-top:10px;font-size:11px}
+    .desktop-app{--mock-h:470px}
+    .desktop-bar{height:46px}
+    .desktop-sidebar{top:46px;width:146px}
+    .app-screen{padding:60px 20px 18px 166px;gap:8px}
+    .app-title{font-size:19px}
+    .app-block{padding:9px 12px}
+    .app-driver,.app-rate{padding:9px 12px}
+    .app-avatar{width:34px;height:34px}
+    .app-btn,.app-fare,.app-total{min-height:44px}
+    .app-map,.app-map.mini{min-height:62px}
+  }
+  /* narrow desktops: the two story columns get cramped long before the layout
+     drops to a single column, and the mock text starts wrapping */
+  @media(min-width:901px) and (max-width:1120px){
+    .story-grid{gap:40px}
+    .app-screen{padding-left:166px}
+    .desktop-sidebar{width:146px}
+  }
 
   /* ---------- stats ---------- */
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
