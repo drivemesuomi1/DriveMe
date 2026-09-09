@@ -720,6 +720,7 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
    per-service visibility survives switching back. */
 #gate-contact{display:none}
 .form-shell.is-gated .fieldset:not(:first-of-type),
+.form-shell.is-gated .form-required-note,
 .form-shell.is-gated #service-field,
 .form-shell.is-gated #quote-title,
 .form-shell.is-gated #quote-amount,
@@ -729,6 +730,15 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
 .form-shell.is-gated #submit-btn,
 .form-shell.is-gated #submit-hint{display:none}
 .form-shell.is-gated #gate-contact{display:block}
+.req{color:var(--critical);margin-left:3px;font-weight:700}
+.form-required-note{font-size:var(--t-small);color:var(--ink-500);margin-bottom:var(--s-4)}
+.field.has-error>label{color:var(--critical)}
+/* The wrapper class carries the red as well as aria-invalid: same result,
+   but it survives browsers that are lazy about attribute-selector repaints. */
+.field.has-error input,.field.has-error select,.field.has-error textarea{
+  border-color:var(--critical);box-shadow:0 0 0 3px rgba(140,47,47,.12);
+}
+
 #submit-hint{margin-top:var(--s-3)}
 #submit-hint strong{display:block;color:var(--ink-700);font-weight:600}
 #submit-hint ul{margin-top:var(--s-2);padding-left:18px;list-style:disc}

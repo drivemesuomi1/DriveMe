@@ -155,6 +155,8 @@
           <ul></ul>
         </div>
 
+        <p class="hint form-required-note">Fields marked * are required. The rest are optional; fill them in if you know them now.</p>
+
         <fieldset class="fieldset">
           <legend>What do you need?</legend>
           <div class="choice-grid" role="radiogroup" aria-label="What do you need?">
@@ -172,7 +174,7 @@
           <div id="service-field">
             
       <div class="field">
-        <label for="service">Choose the service</label>
+        <label for="service">Choose the service<span class="req" data-for="service">*</span></label>
         <select id="service" name="service" required><option value="inspection">Vehicle inspection run</option><option value="workshop">Workshop run</option><option value="tyre">Tyre service run</option><option value="wash">Wash and detailing run</option><option value="glass">Glass, body shop and recall</option><option value="pickupReturn">Pickup and return</option><option value="relocation">Vehicle relocation</option><option value="dealer">Dealer and lease handover</option><option value="business">For companies</option></select>
         
         <span class="err" id="service-err" role="alert"></span>
@@ -206,7 +208,7 @@
           <legend>Addresses</legend>
           
       <div class="field">
-        <label for="pickup_location">Collection address</label>
+        <label for="pickup_location">Collection address<span class="req" data-for="pickup_location">*</span></label>
         <input type="text" id="pickup_location" name="pickup_location" required autocomplete="street-address">
         
         <span class="err" id="pickup_location-err" role="alert"></span>
@@ -214,7 +216,7 @@
           <div id="destination-field">
             
       <div class="field">
-        <label for="destination">Destination or provider address</label>
+        <label for="destination">Destination or provider address<span class="req" data-for="destination" hidden>*</span></label>
         <input type="text" id="destination" name="destination">
         
         <span class="err" id="destination-err" role="alert"></span>
@@ -228,7 +230,7 @@
             <div id="return-address" hidden>
               
       <div class="field">
-        <label for="return_location">Return address</label>
+        <label for="return_location">Return address<span class="req" data-for="return_location" hidden>*</span></label>
         <input type="text" id="return_location" name="return_location" autocomplete="street-address">
         
         <span class="err" id="return_location-err" role="alert"></span>
@@ -237,7 +239,7 @@
           </div>
           
       <div class="field">
-        <label for="access_notes">Access and parking instructions</label>
+        <label for="access_notes">Access and parking instructions<span class="req" data-for="access_notes" hidden>*</span></label>
         <textarea id="access_notes" name="access_notes" aria-describedby="access_notes-help"></textarea>
         <span class="help" id="access_notes-help">Gate or door code, garage level, where the keys are.</span>
         <span class="err" id="access_notes-err" role="alert"></span>
@@ -249,14 +251,14 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="date">Date</label>
+        <label for="date">Date<span class="req" data-for="date">*</span></label>
         <input type="date" id="date" name="date" required>
         
         <span class="err" id="date-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="window">Collection window</label>
+        <label for="window">Collection window<span class="req" data-for="window">*</span></label>
         <select id="window" name="window" required><option value="08-10">08–10</option><option value="10-12">10–12</option><option value="12-14">12–14</option><option value="14-16">14–16</option><option value="16-18">16–18</option><option value="18-20">18–20</option></select>
         
         <span class="err" id="window-err" role="alert"></span>
@@ -265,7 +267,7 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="delivery_by">Required delivery time</label>
+        <label for="delivery_by">Required delivery time<span class="req" data-for="delivery_by" hidden>*</span></label>
         <input type="time" id="delivery_by" name="delivery_by">
         <span class="help" id="delivery_by-help">Leave empty if the schedule is flexible.</span>
         <span class="err" id="delivery_by-err" role="alert"></span>
@@ -273,7 +275,7 @@
             <div id="wait-field">
               
       <div class="field">
-        <label for="wait_minutes">Expected waiting at the destination (min)</label>
+        <label for="wait_minutes">Expected waiting at the destination (min)<span class="req" data-for="wait_minutes" hidden>*</span></label>
         <input type="number" id="wait_minutes" name="wait_minutes" min="0" max="480" step="15">
         <span class="help" id="wait_minutes-help">Every handover includes 15 min. Beyond that, waiting is 35 €/h in 30-minute units.</span>
         <span class="err" id="wait_minutes-err" role="alert"></span>
@@ -282,7 +284,7 @@
             <div id="hours-field" hidden>
               
       <div class="field">
-        <label for="hours">Driver hours needed</label>
+        <label for="hours">Driver hours needed<span class="req" data-for="hours" hidden>*</span></label>
         <input type="number" id="hours" name="hours" min="1" max="12" step="0.5" value="2">
         <span class="help" id="hours-help">Recommended minimum 2 hours.</span>
         <span class="err" id="hours-err" role="alert"></span>
@@ -297,14 +299,14 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="provider">Provider</label>
+        <label for="provider">Provider<span class="req" data-for="provider" hidden>*</span></label>
         <input type="text" id="provider" name="provider" aria-describedby="provider-help">
         <span class="help" id="provider-help">Inspection station, workshop, tyre shop, wash or other destination you choose.</span>
         <span class="err" id="provider-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="appointment_time">Confirmed time</label>
+        <label for="appointment_time">Confirmed time<span class="req" data-for="appointment_time" hidden>*</span></label>
         <input type="time" id="appointment_time" name="appointment_time">
         
         <span class="err" id="appointment_time-err" role="alert"></span>
@@ -313,14 +315,14 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="appointment_ref">Booking reference</label>
+        <label for="appointment_ref">Booking reference<span class="req" data-for="appointment_ref" hidden>*</span></label>
         <input type="text" id="appointment_ref" name="appointment_ref">
         
         <span class="err" id="appointment_ref-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="appointment_contact">Contact or phone at the destination</label>
+        <label for="appointment_contact">Contact or phone at the destination<span class="req" data-for="appointment_contact" hidden>*</span></label>
         <input type="text" id="appointment_contact" name="appointment_contact">
         
         <span class="err" id="appointment_contact-err" role="alert"></span>
@@ -328,7 +330,7 @@
           </div>
           
       <div class="field">
-        <label for="key_method">Key handover at the destination</label>
+        <label for="key_method">Key handover at the destination<span class="req" data-for="key_method" hidden>*</span></label>
         <select id="key_method" name="key_method"><option value="named">To a named person</option><option value="drop">Key drop box</option><option value="other">Other, described in the notes</option></select>
         
         <span class="err" id="key_method-err" role="alert"></span>
@@ -340,15 +342,15 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="plate">Registration</label>
+        <label for="plate">Registration<span class="req" data-for="plate">*</span></label>
         <input type="text" id="plate" name="plate" required>
         
         <span class="err" id="plate-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="vehicle_model">Make and model</label>
-        <input type="text" id="vehicle_model" name="vehicle_model" required>
+        <label for="vehicle_model">Make and model<span class="req" data-for="vehicle_model" hidden>*</span></label>
+        <input type="text" id="vehicle_model" name="vehicle_model">
         
         <span class="err" id="vehicle_model-err" role="alert"></span>
       </div>
@@ -356,28 +358,28 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="vehicle_year">Year</label>
+        <label for="vehicle_year">Year<span class="req" data-for="vehicle_year" hidden>*</span></label>
         <input type="number" id="vehicle_year" name="vehicle_year" min="1950" max="2030">
         
         <span class="err" id="vehicle_year-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="gearbox">Transmission</label>
+        <label for="gearbox">Transmission<span class="req" data-for="gearbox" hidden>*</span></label>
         <select id="gearbox" name="gearbox"><option value="automatic">Automatic</option><option value="manual">Manual</option></select>
         
         <span class="err" id="gearbox-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="fuel">Fuel type</label>
+        <label for="fuel">Fuel type<span class="req" data-for="fuel" hidden>*</span></label>
         <select id="fuel" name="fuel"><option value="petrol">Petrol</option><option value="diesel">Diesel</option><option value="hybrid">Hybrid</option><option value="ev">Electric</option></select>
         
         <span class="err" id="fuel-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="mileage">Mileage (km, estimate)</label>
+        <label for="mileage">Mileage (km, estimate)<span class="req" data-for="mileage" hidden>*</span></label>
         <input type="number" id="mileage" name="mileage" min="0" max="2000000">
         
         <span class="err" id="mileage-err" role="alert"></span>
@@ -385,7 +387,7 @@
           </div>
           
       <div class="field">
-        <label for="vehicle_notes">Special controls, faults or warning lights</label>
+        <label for="vehicle_notes">Special controls, faults or warning lights<span class="req" data-for="vehicle_notes" hidden>*</span></label>
         <textarea id="vehicle_notes" name="vehicle_notes" aria-describedby="vehicle_notes-help"></textarea>
         <span class="help" id="vehicle_notes-help">For example hand controls, wheel-lock key location, a known fault.</span>
         <span class="err" id="vehicle_notes-err" role="alert"></span>
@@ -397,28 +399,28 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="customer_name">Name</label>
+        <label for="customer_name">Name<span class="req" data-for="customer_name">*</span></label>
         <input type="text" id="customer_name" name="customer_name" required autocomplete="name">
         
         <span class="err" id="customer_name-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="customer_phone">Phone</label>
+        <label for="customer_phone">Phone<span class="req" data-for="customer_phone">*</span></label>
         <input type="tel" id="customer_phone" name="customer_phone" required autocomplete="tel">
         
         <span class="err" id="customer_phone-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="customer_email">Email</label>
+        <label for="customer_email">Email<span class="req" data-for="customer_email">*</span></label>
         <input type="email" id="customer_email" name="customer_email" required autocomplete="email">
         
         <span class="err" id="customer_email-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="customer_type">Customer type</label>
+        <label for="customer_type">Customer type<span class="req" data-for="customer_type" hidden>*</span></label>
         <select id="customer_type" name="customer_type"><option value="person">Private customer</option><option value="company">Company</option></select>
         
         <span class="err" id="customer_type-err" role="alert"></span>
@@ -428,21 +430,21 @@
             <div class="grid-2">
               
       <div class="field">
-        <label for="company_name">Company name</label>
+        <label for="company_name">Company name<span class="req" data-for="company_name" hidden>*</span></label>
         <input type="text" id="company_name" name="company_name" autocomplete="organization">
         
         <span class="err" id="company_name-err" role="alert"></span>
       </div>
               
       <div class="field">
-        <label for="business_id">Business ID</label>
+        <label for="business_id">Business ID<span class="req" data-for="business_id" hidden>*</span></label>
         <input type="text" id="business_id" name="business_id">
         
         <span class="err" id="business_id-err" role="alert"></span>
       </div>
               
       <div class="field">
-        <label for="invoice_email">Invoicing email</label>
+        <label for="invoice_email">Invoicing email<span class="req" data-for="invoice_email" hidden>*</span></label>
         <input type="email" id="invoice_email" name="invoice_email">
         
         <span class="err" id="invoice_email-err" role="alert"></span>
@@ -452,14 +454,14 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="pickup_contact">Who hands over the keys at collection?</label>
+        <label for="pickup_contact">Who hands over the keys at collection?<span class="req" data-for="pickup_contact" hidden>*</span></label>
         <select id="pickup_contact" name="pickup_contact"><option value="me">Me</option><option value="other">Someone else (name and phone)</option></select>
         
         <span class="err" id="pickup_contact-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="delivery_contact">Who receives the car?</label>
+        <label for="delivery_contact">Who receives the car?<span class="req" data-for="delivery_contact" hidden>*</span></label>
         <select id="delivery_contact" name="delivery_contact"><option value="me">Me</option><option value="other">Someone else (name and phone)</option></select>
         
         <span class="err" id="delivery_contact-err" role="alert"></span>
@@ -467,7 +469,7 @@
           </div>
           
       <div class="field">
-        <label for="contact_notes">Handover</label>
+        <label for="contact_notes">Handover<span class="req" data-for="contact_notes" hidden>*</span></label>
         <input type="text" id="contact_notes" name="contact_notes">
         
         <span class="err" id="contact_notes-err" role="alert"></span>
@@ -478,7 +480,7 @@
           <legend>Payment</legend>
           
       <div class="field">
-        <label for="payment_method">How you pay the DriveMe fee</label>
+        <label for="payment_method">How you pay the DriveMe fee<span class="req" data-for="payment_method" hidden>*</span></label>
         <select id="payment_method" name="payment_method"><option value="card">Card</option><option value="mobilepay">MobilePay</option><option value="invoice">Invoice (business accounts)</option></select>
         
         <span class="err" id="payment_method-err" role="alert"></span>

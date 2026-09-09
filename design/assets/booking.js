@@ -56,7 +56,7 @@
     if (!submitHint) return;
     // Naming what is outstanding, next to the button that will not fire yet,
     // so a disabled button reads as waiting rather than as broken.
-    var problems = collectProblems(false);
+    var problems = collectProblems('touched');
     if (!problems.length) {
       submitHint.innerHTML = '';
       show(submitHint, false);
@@ -165,6 +165,7 @@
       syncSubmitGate();
     }
     gatedLayout(s.gated);
+    syncRequiredMarks();
 
     estimate();
   }
@@ -263,11 +264,34 @@
     if (input) {
       if (message) input.setAttribute('aria-invalid', 'true');
       else input.removeAttribute('aria-invalid');
+      // The label turns red with the border: colour alone never carries the
+      // message, but it is what makes a missing field findable at a glance.
+      var wrap = input.closest ? input.closest('.field') : null;
+      if (wrap) wrap.classList.toggle('has-error', !!message);
     }
   }
 
   function visible(el) {
     return !!(el && el.offsetParent !== null && !el.disabled);
+  }
+
+  // A destination is meaningless for an hourly driver booking, required for
+  // every concierge run — one rule, read by both validation and the asterisks.
+  function destinationRequired() {
+    var s = currentService();
+    return s.category !== 'driver' && s.category !== 'business';
+  }
+
+  var touched = {};
+
+  /* The asterisks follow the live requirement, not the markup: the provider is
+     only demanded by services that need a booked appointment. */
+  function syncRequiredMarks() {
+    form.querySelectorAll('.req').forEach(function (m) {
+      var id = m.getAttribute('data-for');
+      var el = $(id);
+      m.hidden = !(el && el.required) && !(id === 'destination' && destinationRequired());
+    });
   }
 
   /**
@@ -278,14 +302,20 @@
    */
   function collectProblems(mark) {
     var problems = [];
+    // 'touched' marks only the fields the visitor has already left, so the page
+    // never opens accusing someone of not filling in a form they just arrived at.
+    var marks = function (id) {
+      return mark === true || (mark === 'touched' && touched[id]);
+    };
+    var clear = function (id) { if (mark) setError(id, ''); };
     var note = function (id, label, msg) {
-      if (mark) setError(id, msg);
+      if (marks(id)) setError(id, msg);
       problems.push({ id: id, label: label });
     };
 
     form.querySelectorAll('input[required], select[required]').forEach(function (el) {
       if (el.type === 'checkbox') return;
-      if (mark) setError(el.id, '');
+      clear(el.id);
       if (!visible(el)) return;
       if (!String(el.value || '').trim()) {
         note(el.id, labelFor(el), C.required);
@@ -294,11 +324,8 @@
       }
     });
 
-    // A destination is meaningless for an hourly driver booking, required for
-    // every concierge run.
-    var s = currentService();
-    if (s.category !== 'driver' && s.category !== 'business') {
-      if (mark) setError('destination', '');
+    if (destinationRequired()) {
+      clear('destination');
       if (!val('destination')) note('destination', labelFor($('destination')), C.required);
     }
 
@@ -317,6 +344,12 @@
     return problems;
   }
 
+  function touchedAll() {
+    form.querySelectorAll('input[id], select[id], textarea[id]').forEach(function (el) {
+      touched[el.id] = true;
+    });
+  }
+
   function problemList(problems) {
     return problems.map(function (p) {
       return '<li><a href="#' + p.id + '">' + p.label + '</a></li>';
@@ -325,6 +358,7 @@
 
   function validate() {
     var problems = collectProblems(true);
+    touchedAll();
     if (problems.length) {
       errorSummary.querySelector('ul').innerHTML = problemList(problems);
       show(errorSummary, true);
@@ -338,7 +372,8 @@
   function labelFor(el) {
     if (!el) return '';
     var lab = form.querySelector('label[for="' + el.id + '"]');
-    return lab ? lab.textContent.trim() : el.id;
+    // The label carries the required asterisk; the checklist does not need it.
+    return lab ? lab.textContent.replace(/\*\s*$/, '').trim() : el.id;
   }
 
   /* ----------------------------------------------------------- submit */
@@ -479,6 +514,14 @@
   // Any edit can complete or reopen an item on the outstanding list.
   form.addEventListener('change', syncSubmitGate);
   form.addEventListener('input', syncSubmitGate);
+  // Leaving a field is the moment its emptiness becomes a fact worth flagging.
+  form.addEventListener('focusout', function (e) {
+    if (e.target && e.target.id) {
+      touched[e.target.id] = true;
+      syncSubmitGate();
+    }
+  });
+  syncRequiredMarks();
   syncSubmitGate();
 
   var same = $('return_same');

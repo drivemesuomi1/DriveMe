@@ -114,6 +114,7 @@ const COPY = {
     badEmail: 'Tarkista sähköpostiosoite.',
     mustAccept: 'Vahvistus tarvitaan.',
     submitLocked: 'Ennen pyynnön lähettämistä:',
+    requiredNote: 'Tähdellä * merkityt kentät ovat pakollisia. Muut voit täyttää, jos tiedät ne nyt.',
     doneTitle: 'Kiitos - pyyntö on vastaanotettu',
     doneBody: 'Pyyntö ei ole vielä vahvistus. Käymme tiedot läpi ja vahvistamme kuljettajan, ajan ja kiinteän hinnan. Vastaamme palveluaikana alle 15 minuutissa.',
     doneRef: 'Viitteesi',
@@ -225,6 +226,7 @@ const COPY = {
     badEmail: 'Check the email address.',
     mustAccept: 'This confirmation is required.',
     submitLocked: 'Before you can send the request:',
+    requiredNote: 'Fields marked * are required. The rest are optional; fill them in if you know them now.',
     doneTitle: 'Thank you - your request has arrived',
     doneBody: 'A request is not yet a confirmation. We review the details and confirm the driver, the time and a fixed fee. We answer within 15 minutes during service hours.',
     doneRef: 'Your reference',
@@ -245,9 +247,12 @@ const COPY = {
   },
 };
 
+/* The asterisk is driven by the input's own `required`, so the marker cannot
+   drift away from what validation actually enforces. Conditionally required
+   fields start unmarked and booking.js toggles them. */
 const field = (id, label, input, help) => `
       <div class="field">
-        <label for="${id}">${esc(label)}</label>
+        <label for="${id}">${esc(label)}<span class="req" data-for="${id}"${/ required/.test(input) ? '' : ' hidden'}>*</span></label>
         ${input}
         ${help ? `<span class="help" id="${id}-help">${esc(help)}</span>` : ''}
         <span class="err" id="${id}-err" role="alert"></span>
@@ -319,6 +324,8 @@ export function bookingForm(locale) {
           <h2>${esc(c.errorTitle)}</h2>
           <ul></ul>
         </div>
+
+        <p class="hint form-required-note">${esc(c.requiredNote)}</p>
 
         <fieldset class="fieldset">
           <legend>${esc(c.path)}</legend>
@@ -399,7 +406,7 @@ export function bookingForm(locale) {
           <legend>${esc(c.vehicle)}</legend>
           <div class="grid-2">
             ${field('plate', c.plate, text('plate', { required: true }))}
-            ${field('vehicle_model', c.makeModel, text('vehicle_model', { required: true }))}
+            ${field('vehicle_model', c.makeModel, text('vehicle_model'))}
           </div>
           <div class="grid-2">
             ${field('vehicle_year', c.year, text('vehicle_year', { type: 'number', min: 1950, max: 2030 }))}

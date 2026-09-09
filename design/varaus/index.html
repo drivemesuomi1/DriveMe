@@ -155,6 +155,8 @@
           <ul></ul>
         </div>
 
+        <p class="hint form-required-note">Tähdellä * merkityt kentät ovat pakollisia. Muut voit täyttää, jos tiedät ne nyt.</p>
+
         <fieldset class="fieldset">
           <legend>Mitä tarvitset?</legend>
           <div class="choice-grid" role="radiogroup" aria-label="Mitä tarvitset?">
@@ -172,7 +174,7 @@
           <div id="service-field">
             
       <div class="field">
-        <label for="service">Valitse palvelu</label>
+        <label for="service">Valitse palvelu<span class="req" data-for="service">*</span></label>
         <select id="service" name="service" required><option value="inspection">Auton vienti katsastukseen</option><option value="workshop">Auton nouto huoltoon</option><option value="tyre">Auton vienti renkaanvaihtoon</option><option value="wash">Auton vienti pesuun</option><option value="glass">Lasi, kolari ja takaisinkutsu</option><option value="pickupReturn">Auton nouto ja palautus</option><option value="relocation">Auton siirtopalvelu</option><option value="dealer">Palautus autoliikkeeseen</option><option value="business">Yrityksille</option></select>
         
         <span class="err" id="service-err" role="alert"></span>
@@ -206,7 +208,7 @@
           <legend>Osoitteet</legend>
           
       <div class="field">
-        <label for="pickup_location">Nouto-osoite</label>
+        <label for="pickup_location">Nouto-osoite<span class="req" data-for="pickup_location">*</span></label>
         <input type="text" id="pickup_location" name="pickup_location" required autocomplete="street-address">
         
         <span class="err" id="pickup_location-err" role="alert"></span>
@@ -214,7 +216,7 @@
           <div id="destination-field">
             
       <div class="field">
-        <label for="destination">Kohde tai palveluntarjoajan osoite</label>
+        <label for="destination">Kohde tai palveluntarjoajan osoite<span class="req" data-for="destination" hidden>*</span></label>
         <input type="text" id="destination" name="destination">
         
         <span class="err" id="destination-err" role="alert"></span>
@@ -228,7 +230,7 @@
             <div id="return-address" hidden>
               
       <div class="field">
-        <label for="return_location">Palautusosoite</label>
+        <label for="return_location">Palautusosoite<span class="req" data-for="return_location" hidden>*</span></label>
         <input type="text" id="return_location" name="return_location" autocomplete="street-address">
         
         <span class="err" id="return_location-err" role="alert"></span>
@@ -237,7 +239,7 @@
           </div>
           
       <div class="field">
-        <label for="access_notes">Kulku- ja pysäköintiohjeet</label>
+        <label for="access_notes">Kulku- ja pysäköintiohjeet<span class="req" data-for="access_notes" hidden>*</span></label>
         <textarea id="access_notes" name="access_notes" aria-describedby="access_notes-help"></textarea>
         <span class="help" id="access_notes-help">Portti- tai ovikoodi, parkkihallin taso, mistä avaimet löytyvät.</span>
         <span class="err" id="access_notes-err" role="alert"></span>
@@ -249,14 +251,14 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="date">Päivämäärä</label>
+        <label for="date">Päivämäärä<span class="req" data-for="date">*</span></label>
         <input type="date" id="date" name="date" required>
         
         <span class="err" id="date-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="window">Noutoikkuna</label>
+        <label for="window">Noutoikkuna<span class="req" data-for="window">*</span></label>
         <select id="window" name="window" required><option value="08-10">08–10</option><option value="10-12">10–12</option><option value="12-14">12–14</option><option value="14-16">14–16</option><option value="16-18">16–18</option><option value="18-20">18–20</option></select>
         
         <span class="err" id="window-err" role="alert"></span>
@@ -265,7 +267,7 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="delivery_by">Tarvittava toimitusaika</label>
+        <label for="delivery_by">Tarvittava toimitusaika<span class="req" data-for="delivery_by" hidden>*</span></label>
         <input type="time" id="delivery_by" name="delivery_by">
         <span class="help" id="delivery_by-help">Jätä tyhjäksi, jos aikataulu on joustava.</span>
         <span class="err" id="delivery_by-err" role="alert"></span>
@@ -273,7 +275,7 @@
             <div id="wait-field">
               
       <div class="field">
-        <label for="wait_minutes">Arvioitu odotusaika kohteessa (min)</label>
+        <label for="wait_minutes">Arvioitu odotusaika kohteessa (min)<span class="req" data-for="wait_minutes" hidden>*</span></label>
         <input type="number" id="wait_minutes" name="wait_minutes" min="0" max="480" step="15">
         <span class="help" id="wait_minutes-help">Jokaiseen luovutukseen sisältyy 15 min. Sen ylittävä odotus veloitetaan 35 €/h 30 minuutin erissä.</span>
         <span class="err" id="wait_minutes-err" role="alert"></span>
@@ -282,7 +284,7 @@
             <div id="hours-field" hidden>
               
       <div class="field">
-        <label for="hours">Kuljettajan tarve tunteina</label>
+        <label for="hours">Kuljettajan tarve tunteina<span class="req" data-for="hours" hidden>*</span></label>
         <input type="number" id="hours" name="hours" min="1" max="12" step="0.5" value="2">
         <span class="help" id="hours-help">Suositeltu minimi 2 tuntia.</span>
         <span class="err" id="hours-err" role="alert"></span>
@@ -297,14 +299,14 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="provider">Palveluntarjoaja</label>
+        <label for="provider">Palveluntarjoaja<span class="req" data-for="provider" hidden>*</span></label>
         <input type="text" id="provider" name="provider" aria-describedby="provider-help">
         <span class="help" id="provider-help">Katsastusasema, korjaamo, rengasliike, pesula tai muu valitsemasi kohde.</span>
         <span class="err" id="provider-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="appointment_time">Vahvistettu aika</label>
+        <label for="appointment_time">Vahvistettu aika<span class="req" data-for="appointment_time" hidden>*</span></label>
         <input type="time" id="appointment_time" name="appointment_time">
         
         <span class="err" id="appointment_time-err" role="alert"></span>
@@ -313,14 +315,14 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="appointment_ref">Varausnumero</label>
+        <label for="appointment_ref">Varausnumero<span class="req" data-for="appointment_ref" hidden>*</span></label>
         <input type="text" id="appointment_ref" name="appointment_ref">
         
         <span class="err" id="appointment_ref-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="appointment_contact">Yhteyshenkilö tai puhelin kohteessa</label>
+        <label for="appointment_contact">Yhteyshenkilö tai puhelin kohteessa<span class="req" data-for="appointment_contact" hidden>*</span></label>
         <input type="text" id="appointment_contact" name="appointment_contact">
         
         <span class="err" id="appointment_contact-err" role="alert"></span>
@@ -328,7 +330,7 @@
           </div>
           
       <div class="field">
-        <label for="key_method">Avainten luovutus kohteessa</label>
+        <label for="key_method">Avainten luovutus kohteessa<span class="req" data-for="key_method" hidden>*</span></label>
         <select id="key_method" name="key_method"><option value="named">Nimetylle henkilölle</option><option value="drop">Avainlaatikkoon</option><option value="other">Muu, kerron lisätiedoissa</option></select>
         
         <span class="err" id="key_method-err" role="alert"></span>
@@ -340,15 +342,15 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="plate">Rekisteritunnus</label>
+        <label for="plate">Rekisteritunnus<span class="req" data-for="plate">*</span></label>
         <input type="text" id="plate" name="plate" required>
         
         <span class="err" id="plate-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="vehicle_model">Merkki ja malli</label>
-        <input type="text" id="vehicle_model" name="vehicle_model" required>
+        <label for="vehicle_model">Merkki ja malli<span class="req" data-for="vehicle_model" hidden>*</span></label>
+        <input type="text" id="vehicle_model" name="vehicle_model">
         
         <span class="err" id="vehicle_model-err" role="alert"></span>
       </div>
@@ -356,28 +358,28 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="vehicle_year">Vuosimalli</label>
+        <label for="vehicle_year">Vuosimalli<span class="req" data-for="vehicle_year" hidden>*</span></label>
         <input type="number" id="vehicle_year" name="vehicle_year" min="1950" max="2030">
         
         <span class="err" id="vehicle_year-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="gearbox">Vaihteisto</label>
+        <label for="gearbox">Vaihteisto<span class="req" data-for="gearbox" hidden>*</span></label>
         <select id="gearbox" name="gearbox"><option value="automatic">Automaatti</option><option value="manual">Manuaali</option></select>
         
         <span class="err" id="gearbox-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="fuel">Käyttövoima</label>
+        <label for="fuel">Käyttövoima<span class="req" data-for="fuel" hidden>*</span></label>
         <select id="fuel" name="fuel"><option value="petrol">Bensiini</option><option value="diesel">Diesel</option><option value="hybrid">Hybridi</option><option value="ev">Sähkö</option></select>
         
         <span class="err" id="fuel-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="mileage">Mittarilukema (km, arvio)</label>
+        <label for="mileage">Mittarilukema (km, arvio)<span class="req" data-for="mileage" hidden>*</span></label>
         <input type="number" id="mileage" name="mileage" min="0" max="2000000">
         
         <span class="err" id="mileage-err" role="alert"></span>
@@ -385,7 +387,7 @@
           </div>
           
       <div class="field">
-        <label for="vehicle_notes">Erityiset hallintalaitteet, viat tai varoitusvalot</label>
+        <label for="vehicle_notes">Erityiset hallintalaitteet, viat tai varoitusvalot<span class="req" data-for="vehicle_notes" hidden>*</span></label>
         <textarea id="vehicle_notes" name="vehicle_notes" aria-describedby="vehicle_notes-help"></textarea>
         <span class="help" id="vehicle_notes-help">Esimerkiksi käsihallintalaitteet, lukkopulttiavaimen sijainti, tiedossa oleva vika.</span>
         <span class="err" id="vehicle_notes-err" role="alert"></span>
@@ -397,28 +399,28 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="customer_name">Nimi</label>
+        <label for="customer_name">Nimi<span class="req" data-for="customer_name">*</span></label>
         <input type="text" id="customer_name" name="customer_name" required autocomplete="name">
         
         <span class="err" id="customer_name-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="customer_phone">Puhelin</label>
+        <label for="customer_phone">Puhelin<span class="req" data-for="customer_phone">*</span></label>
         <input type="tel" id="customer_phone" name="customer_phone" required autocomplete="tel">
         
         <span class="err" id="customer_phone-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="customer_email">Sähköposti</label>
+        <label for="customer_email">Sähköposti<span class="req" data-for="customer_email">*</span></label>
         <input type="email" id="customer_email" name="customer_email" required autocomplete="email">
         
         <span class="err" id="customer_email-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="customer_type">Asiakastyyppi</label>
+        <label for="customer_type">Asiakastyyppi<span class="req" data-for="customer_type" hidden>*</span></label>
         <select id="customer_type" name="customer_type"><option value="person">Yksityishenkilö</option><option value="company">Yritys</option></select>
         
         <span class="err" id="customer_type-err" role="alert"></span>
@@ -428,21 +430,21 @@
             <div class="grid-2">
               
       <div class="field">
-        <label for="company_name">Yrityksen nimi</label>
+        <label for="company_name">Yrityksen nimi<span class="req" data-for="company_name" hidden>*</span></label>
         <input type="text" id="company_name" name="company_name" autocomplete="organization">
         
         <span class="err" id="company_name-err" role="alert"></span>
       </div>
               
       <div class="field">
-        <label for="business_id">Y-tunnus</label>
+        <label for="business_id">Y-tunnus<span class="req" data-for="business_id" hidden>*</span></label>
         <input type="text" id="business_id" name="business_id">
         
         <span class="err" id="business_id-err" role="alert"></span>
       </div>
               
       <div class="field">
-        <label for="invoice_email">Laskutussähköposti</label>
+        <label for="invoice_email">Laskutussähköposti<span class="req" data-for="invoice_email" hidden>*</span></label>
         <input type="email" id="invoice_email" name="invoice_email">
         
         <span class="err" id="invoice_email-err" role="alert"></span>
@@ -452,14 +454,14 @@
           <div class="grid-2">
             
       <div class="field">
-        <label for="pickup_contact">Kuka luovuttaa avaimet noudossa?</label>
+        <label for="pickup_contact">Kuka luovuttaa avaimet noudossa?<span class="req" data-for="pickup_contact" hidden>*</span></label>
         <select id="pickup_contact" name="pickup_contact"><option value="me">Minä itse</option><option value="other">Joku muu (nimi ja puhelin)</option></select>
         
         <span class="err" id="pickup_contact-err" role="alert"></span>
       </div>
             
       <div class="field">
-        <label for="delivery_contact">Kuka vastaanottaa auton?</label>
+        <label for="delivery_contact">Kuka vastaanottaa auton?<span class="req" data-for="delivery_contact" hidden>*</span></label>
         <select id="delivery_contact" name="delivery_contact"><option value="me">Minä itse</option><option value="other">Joku muu (nimi ja puhelin)</option></select>
         
         <span class="err" id="delivery_contact-err" role="alert"></span>
@@ -467,7 +469,7 @@
           </div>
           
       <div class="field">
-        <label for="contact_notes">Luovutus</label>
+        <label for="contact_notes">Luovutus<span class="req" data-for="contact_notes" hidden>*</span></label>
         <input type="text" id="contact_notes" name="contact_notes">
         
         <span class="err" id="contact_notes-err" role="alert"></span>
@@ -478,7 +480,7 @@
           <legend>Maksu</legend>
           
       <div class="field">
-        <label for="payment_method">DriveMe-palkkion maksutapa</label>
+        <label for="payment_method">DriveMe-palkkion maksutapa<span class="req" data-for="payment_method" hidden>*</span></label>
         <select id="payment_method" name="payment_method"><option value="card">Kortti</option><option value="mobilepay">MobilePay</option><option value="invoice">Lasku (yritysasiakkaat)</option></select>
         
         <span class="err" id="payment_method-err" role="alert"></span>
