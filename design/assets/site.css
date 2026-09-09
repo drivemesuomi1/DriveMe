@@ -728,6 +728,8 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
 .form-shell.is-gated #quote-call,
 .form-shell.is-gated #submit-btn{display:none}
 .form-shell.is-gated #gate-contact{display:block}
+/* The notice replaces the form, so it needs the air a fieldset would have given it. */
+#gate-warning:not([hidden]){margin-top:var(--s-6)}
 .gate-contact-line{margin-top:var(--s-2);font-weight:600}
 .gate-contact-line a{color:var(--brand)}
 @media (max-width:940px){.form-shell{grid-template-columns:1fr}}
@@ -749,7 +751,7 @@ input:hover,select:hover,textarea:hover{border-color:var(--ink-500)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,99,189,.15)}
 input[aria-invalid="true"],select[aria-invalid="true"],textarea[aria-invalid="true"]{border-color:var(--critical);box-shadow:0 0 0 3px rgba(140,47,47,.12)}
 .err{color:var(--critical);font-size:var(--t-caption);font-weight:600}
-.choice-grid{display:grid;gap:var(--s-3);grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:var(--s-4)}
+.choice-grid{display:grid;gap:var(--s-4);grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:var(--s-4)}
 .choice{position:relative}
 .choice input{position:absolute;opacity:0;width:1px;height:1px}
 .choice span{
