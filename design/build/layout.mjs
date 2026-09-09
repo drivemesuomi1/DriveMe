@@ -96,7 +96,9 @@ ${header(o.locale, o.navKey, o.id)}
 ${o.body}
 </main>
 ${footer(o.locale)}
-<a class="btn btn-accent float-cta" id="float-cta" href="${t.bookHref}">${esc(t.requestPrice)} <span class="arrow" aria-hidden="true">→</span></a>
+${/* Not on the request page itself: there the floating CTA points at the page
+      the visitor is already reading, competing with the form's own submit. */
+  o.id === 'booking' ? '' : `<a class="btn btn-accent float-cta" id="float-cta" href="${t.bookHref}">${esc(t.requestPrice)} <span class="arrow" aria-hidden="true">→</span></a>`}
 <script src="/assets/site.js?v=4" defer></script>
 ${o.bodyEnd || ''}
 </body>
