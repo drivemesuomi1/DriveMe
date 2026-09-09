@@ -113,6 +113,7 @@ const COPY = {
     required: 'Tämä tieto tarvitaan.',
     badEmail: 'Tarkista sähköpostiosoite.',
     mustAccept: 'Vahvistus tarvitaan.',
+    submitLocked: 'Ennen pyynnön lähettämistä:',
     doneTitle: 'Kiitos - pyyntö on vastaanotettu',
     doneBody: 'Pyyntö ei ole vielä vahvistus. Käymme tiedot läpi ja vahvistamme kuljettajan, ajan ja kiinteän hinnan. Vastaamme palveluaikana alle 15 minuutissa.',
     doneRef: 'Viitteesi',
@@ -223,6 +224,7 @@ const COPY = {
     required: 'This field is required.',
     badEmail: 'Check the email address.',
     mustAccept: 'This confirmation is required.',
+    submitLocked: 'Before you can send the request:',
     doneTitle: 'Thank you - your request has arrived',
     doneBody: 'A request is not yet a confirmation. We review the details and confirm the driver, the time and a fixed fee. We answer within 15 minutes during service hours.',
     doneRef: 'Your reference',
@@ -299,6 +301,7 @@ export function bookingForm(locale) {
     services: serviceMeta,
     copy: {
       required: c.required, badEmail: c.badEmail, mustAccept: c.mustAccept,
+      submitLocked: c.submitLocked,
       errorTitle: c.errorTitle, submitting: c.submitting, submit: c.submit,
       failed: c.failed, quoteFrom: c.quoteFrom, quoteManual: c.quoteManual,
       quoteManualNote: c.quoteManualNote, quoteNote: c.quoteNote, lines: c.lines,
@@ -476,6 +479,9 @@ export function bookingForm(locale) {
         <ul class="quote-lines" id="quote-lines"></ul>
         <p class="note" id="quote-note">${esc(c.quoteNote)}</p>
         <button class="btn btn-primary" type="submit" id="submit-btn">${esc(c.submit)}</button>
+        <!-- The confirmations sit far above this sticky panel, so a disabled
+             button on its own would read as broken rather than as waiting. -->
+        <p class="note" id="submit-hint">${esc(c.submitLocked)}</p>
         <p class="note" id="quote-call"><a href="tel:${brand.phoneHref}">${esc(t.callUs)} ${esc(brand.phone)}</a></p>
 
         <!-- Replaces the whole quote panel for a gated service: there is no

@@ -29,6 +29,7 @@
   var quoteNote = $('quote-note');
   var errorSummary = $('error-summary');
   var submitBtn = $('submit-btn');
+  var submitHint = $('submit-hint');
   var donePanel = $('done-panel');
 
   /* ---------------------------------------------------------- helpers */
@@ -38,6 +39,33 @@
     }) + ' €';
   }
   function show(el, on) { if (el) el.hidden = !on; }
+
+  /**
+   * The confirmations are booking conditions, not fine print. Until every one
+   * is ticked the request cannot be accepted, so the button stays inert rather
+   * than letting the visitor submit into an error summary.
+   */
+  var ackBoxes = Array.prototype.slice.call(
+    form.querySelectorAll('input[name="ack"]')
+  );
+  function acksComplete() {
+    return ackBoxes.every(function (a) { return a.checked; });
+  }
+  function syncSubmitGate() {
+    submitBtn.disabled = !acksComplete();
+    if (!submitHint) return;
+    // Naming what is outstanding, next to the button that will not fire yet,
+    // so a disabled button reads as waiting rather than as broken.
+    var problems = collectProblems(false);
+    if (!problems.length) {
+      submitHint.innerHTML = '';
+      show(submitHint, false);
+      return;
+    }
+    submitHint.innerHTML = '<strong>' + C.submitLocked + '</strong><ul>' +
+      problemList(problems) + '</ul>';
+    show(submitHint, true);
+  }
 
   /**
    * A gated service cannot be requested, so collecting the request is pointless
@@ -134,7 +162,7 @@
     } else {
       warn.innerHTML = '';
       show(warn, false);
-      submitBtn.disabled = false;
+      syncSubmitGate();
     }
     gatedLayout(s.gated);
 
@@ -242,19 +270,27 @@
     return !!(el && el.offsetParent !== null && !el.disabled);
   }
 
-  function validate() {
+  /**
+   * Collects everything still standing between the visitor and a request.
+   * `mark` decides whether the fields are painted red as well: the live hint
+   * calls this on every keystroke and must not accuse a field the visitor has
+   * not reached yet, while the submit attempt does mark them.
+   */
+  function collectProblems(mark) {
     var problems = [];
+    var note = function (id, label, msg) {
+      if (mark) setError(id, msg);
+      problems.push({ id: id, label: label });
+    };
 
     form.querySelectorAll('input[required], select[required]').forEach(function (el) {
       if (el.type === 'checkbox') return;
-      setError(el.id, '');
+      if (mark) setError(el.id, '');
       if (!visible(el)) return;
       if (!String(el.value || '').trim()) {
-        setError(el.id, C.required);
-        problems.push({ id: el.id, label: labelFor(el) });
+        note(el.id, labelFor(el), C.required);
       } else if (el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(el.value.trim())) {
-        setError(el.id, C.badEmail);
-        problems.push({ id: el.id, label: labelFor(el) });
+        note(el.id, labelFor(el), C.badEmail);
       }
     });
 
@@ -262,25 +298,35 @@
     // every concierge run.
     var s = currentService();
     if (s.category !== 'driver' && s.category !== 'business') {
-      setError('destination', '');
-      if (!val('destination')) {
-        setError('destination', C.required);
-        problems.push({ id: 'destination', label: labelFor($('destination')) });
-      }
+      if (mark) setError('destination', '');
+      if (!val('destination')) note('destination', labelFor($('destination')), C.required);
     }
 
-    var acks = Array.prototype.slice.call(form.querySelectorAll('input[name="ack"]'));
-    var missing = acks.filter(function (a) { return !a.checked; });
-    $('ack-err').textContent = missing.length ? C.mustAccept : '';
-    if (missing.length) {
-      problems.push({ id: missing[0].id, label: FI ? 'Varauksen vahvistukset' : 'Booking confirmations' });
+    // One entry with a count, not eight lines: the confirmations are a single
+    // block on the page and listing each sentence would bury the real fields.
+    var unticked = ackBoxes.filter(function (a) { return !a.checked; });
+    if (mark) $('ack-err').textContent = unticked.length ? C.mustAccept : '';
+    if (unticked.length) {
+      problems.push({
+        id: unticked[0].id,
+        label: (FI ? 'Varauksen vahvistukset' : 'Booking confirmations') +
+          ' (' + unticked.length + '/' + ackBoxes.length + ')',
+      });
     }
 
+    return problems;
+  }
+
+  function problemList(problems) {
+    return problems.map(function (p) {
+      return '<li><a href="#' + p.id + '">' + p.label + '</a></li>';
+    }).join('');
+  }
+
+  function validate() {
+    var problems = collectProblems(true);
     if (problems.length) {
-      var ul = errorSummary.querySelector('ul');
-      ul.innerHTML = problems.map(function (p) {
-        return '<li><a href="#' + p.id + '">' + p.label + '</a></li>';
-      }).join('');
+      errorSummary.querySelector('ul').innerHTML = problemList(problems);
       show(errorSummary, true);
       errorSummary.focus();
     } else {
@@ -430,6 +476,11 @@
       if (type.value === 'company') $('payment_method').value = 'invoice';
     });
   }
+  // Any edit can complete or reopen an item on the outstanding list.
+  form.addEventListener('change', syncSubmitGate);
+  form.addEventListener('input', syncSubmitGate);
+  syncSubmitGate();
+
   var same = $('return_same');
   if (same) {
     same.addEventListener('change', function () { show($('return-address'), !same.checked); });
