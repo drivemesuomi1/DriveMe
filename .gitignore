@@ -1,1 +1,5 @@
 .netlify/
+
+# Demo bundle produced by `npm run demo` in design/ — a deploy artifact,
+# regenerate it rather than tracking 12 MB of copied video.
+driveme-demo/

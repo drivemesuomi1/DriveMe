@@ -8,9 +8,11 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "node dev-server.mjs",
+    "dev": "node build/build.mjs && node dev-server.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "npm test && node --check api/driver-location.js && node --check api/driver-trip.js && node --check api/driver-status.js"
+    "check": "npm run build && npm test && node --check api/bookings.js && node --check api/driver-location.js && node --check api/driver-trip.js && node --check api/driver-status.js",
+    "build": "node build/build.mjs",
+    "demo": "npm run build && node build/demo-bundle.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0"

@@ -7,9 +7,32 @@
       "source": "/dark",
       "destination": "/01-driveme-landing",
       "permanent": false
+    },
+    {
+      "source": "/light",
+      "destination": "/02-driveme-light",
+      "permanent": false
     }
   ],
   "headers": [
+    {
+      "source": "/(legacy/.*|01-driveme-landing|02-driveme-light|varaus/.*|en/booking/.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(site.css|site.js|booking.js)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
     {
       "source": "/assets/(.*).(jpg|png|svg|mp4)",
       "headers": [
@@ -75,5 +98,6 @@
         }
       ]
     }
-  ]
+  ],
+  "buildCommand": "npm run build"
 }

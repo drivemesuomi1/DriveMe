@@ -513,6 +513,19 @@
     </div>
 
     <div class="card">
+      <h3>Confirm the fee</h3>
+      <p class="muted below-sm">
+        What the customer saw is indicative. Nothing is confirmed until a fixed
+        DriveMe fee is set here and sent to them.
+      </p>
+      <div class="dm-field below-sm">
+        <label for="dw-price">Confirmed DriveMe fee (EUR, incl. VAT)</label>
+        <input class="dm-input" id="dw-price" type="number" min="0" step="0.01" placeholder="119.00">
+      </div>
+      <button type="button" class="dm-btn sm" id="dw-confirm-price">Confirm fee</button>
+    </div>
+
+    <div class="card">
       <h3>Driver</h3>
       <p class="muted below-sm" id="dw-availability"></p>
       <div class="dm-field"><select id="dw-driver"></select></div>
@@ -887,11 +900,11 @@
           '<span class="sub">' + esc(b.customer_phone || b.customer_email || '') + '</span></td>' +
         '<td>' + esc(b.pickup_location || '') +
           (b.destination ? '<span class="sub">→ ' + esc(b.destination) + '</span>' : '') + '</td>' +
-        '<td>' + (b.mode === 'hourly'
-            ? 'By the hour' + (b.duration_hours ? '<span class="sub">' + b.duration_hours + ' h</span>' : '')
-            : 'Point to point') + '</td>' +
+        '<td>' + esc(serviceLabel(b)) +
+          (b.provider ? '<span class="sub">' + esc(b.provider) + '</span>' : '') + '</td>' +
         '<td>' + (d ? esc(d.full_name) : '<span class="muted">Unassigned</span>') + '</td>' +
-        '<td>' + euro(b.estimated_price) + '</td>' +
+        '<td>' + euro(b.confirmed_price ?? b.estimated_price) +
+          (b.confirmed_price == null ? '<span class="sub">indicative</span>' : '') + '</td>' +
         '<td>' + pill(s.label, s.cls) + (b.is_corporate ? ' ' + pill('Corp', 'accent') : '') + '</td>' +
       '</tr>';
     }).join('');
@@ -901,6 +914,27 @@
     const tr = e.target.closest('tr[data-id]'); if (!tr) return;
     openDrawer(bookings.find(b => b.id === tr.dataset.id));
   });
+
+  /* Service names for the §7 request model. A row from before migration 0007
+     has no `service`, so fall back to the legacy hourly/point-to-point wording
+     rather than showing an empty cell. */
+  const SERVICE_NAME = {
+    inspection: 'Inspection run', workshop: 'Workshop run', tyre: 'Tyre service',
+    wash: 'Wash / detailing', glass: 'Glass / body / recall', pickupReturn: 'Pickup and return',
+    relocation: 'Relocation', dealer: 'Dealer / lease handover', personalDriver: 'Personal driver',
+    safeRideHome: 'Safe ride home', airport: 'Airport driver', business: 'Corporate',
+  };
+  const SHAPE_NAME = { oneWay: 'one way', pickupReturn: 'pickup + return', waitReturn: 'wait + return' };
+
+  function serviceLabel(b){
+    if (b.service) {
+      return (SERVICE_NAME[b.service] || b.service) +
+        (b.shape ? ' · ' + (SHAPE_NAME[b.shape] || b.shape) : '');
+    }
+    return b.mode === 'hourly'
+      ? 'By the hour' + (b.duration_hours ? ' · ' + b.duration_hours + ' h' : '')
+      : 'Point to point';
+  }
 
   /* ================= drawer ================= */
   let driverSelect = null;
@@ -912,19 +946,43 @@
     $('dw-title').textContent = 'Booking ' + refOf(b);
     $('dw-pills').innerHTML = pill(s.label, s.cls) + (b.is_corporate ? pill('Corporate', 'accent') : '');
 
+    const vehicle = [b.vehicle_plate, b.vehicle_details, b.vehicle_gearbox, b.vehicle_fuel]
+      .filter(Boolean).join(' · ');
+    const appointment = [b.provider, b.appointment_time, b.appointment_ref, b.appointment_contact]
+      .filter(Boolean).join(' · ');
+    const handover = [b.pickup_contact, b.delivery_contact, b.key_method, b.contact_notes]
+      .filter(Boolean).join(' · ');
+
+    // Rows with nothing in them are dropped: an inspection run and a
+    // relocation carry different fields, and a wall of dashes hides the ones
+    // that matter.
     $('dw-kv').innerHTML = [
+      ['Service', esc(serviceLabel(b))],
       ['Customer', esc(b.customer_name || '-')],
       ['Phone', b.customer_phone ? '<a href="tel:' + esc(b.customer_phone) + '">' + esc(b.customer_phone) + '</a>' : '-'],
       ['Email', esc(b.customer_email || '-')],
-      ['When', esc(when(b.scheduled_for))],
+      ['When', esc(when(b.scheduled_for)) + (b.collection_window ? ' · window ' + esc(b.collection_window) : '')],
+      ['Deliver by', b.delivery_by ? esc(b.delivery_by) : ''],
       ['Pickup', esc(b.pickup_location || '-')],
-      ['Drop-off', esc(b.destination || 'Open-ended (by the hour)')],
-      ['Type', b.mode === 'hourly' ? 'By the hour · ' + (b.duration_hours ?? '?') + ' h' : 'Point to point'],
-      ['Beyond metro', b.km_beyond_metro ? b.km_beyond_metro + ' km' : '-'],
-      ['Quoted', euro(b.estimated_price)],
+      ['Destination', esc(b.destination || (b.service ? '-' : 'Open-ended (by the hour)'))],
+      ['Return to', b.return_location ? esc(b.return_location) : ''],
+      ['Access', b.access_notes ? esc(b.access_notes) : ''],
+      ['Appointment', appointment ? esc(appointment) : ''],
+      ['Waiting', b.wait_minutes ? b.wait_minutes + ' min' : ''],
+      ['Driver hours', b.duration_hours ? b.duration_hours + ' h' : ''],
+      ['Vehicle', vehicle ? esc(vehicle) : ''],
+      ['Mileage', b.vehicle_mileage ? b.vehicle_mileage + ' km' : ''],
+      ['Vehicle notes', b.vehicle_notes ? esc(b.vehicle_notes) : ''],
+      ['Handover', handover ? esc(handover) : ''],
+      ['Indicative', b.quote_status === 'quote_required' ? 'Manual fixed quote required' : euro(b.estimated_price)],
+      ['Confirmed fee', b.confirmed_price != null
+        ? euro(b.confirmed_price)
+        : '<span class="muted">not confirmed</span>'],
       ['Payment', PAY[b.payment_method] || '-'],
+      ['Customer notes', b.notes ? esc(b.notes) : ''],
       ['Requested', esc(when(b.created_at))],
-    ].map(([k, v]) => '<span class="k">' + k + '</span><span class="v">' + v + '</span>').join('');
+    ].filter(function (r) { return r[1] !== ''; })
+      .map(([k, v]) => '<span class="k">' + k + '</span><span class="v">' + v + '</span>').join('');
 
     // driver availability at a glance
     const dayOf = iso => iso ? DM.time.dateISO(iso) : null;
@@ -970,6 +1028,11 @@
 
     $('dw-company').value = b.company_name || '';
     $('dw-bill-email').value = '';
+    // Pre-fill with the indicative figure so confirming an unchanged price is
+    // one click, while still being a deliberate act.
+    $('dw-price').value = b.confirmed_price != null
+      ? b.confirmed_price
+      : (b.estimated_price != null ? b.estimated_price : '');
 
     $('drawer').hidden = false;
     requestAnimationFrame(() => { $('drawer').classList.add('on'); $('scrim').classList.add('on'); });
@@ -1044,16 +1107,34 @@
     refreshCurrent();
   });
 
+  $('dw-confirm-price').addEventListener('click', async () => {
+    if (!current) return;
+    const raw = $('dw-price').value.trim();
+    const amount = Number(raw);
+    if (!raw || !Number.isFinite(amount) || amount < 0) {
+      return DM.toast('Enter the fixed fee first.', 'bad');
+    }
+    const { error } = await sb.from('bookings').update({
+      confirmed_price: Math.round(amount * 100) / 100,
+      quote_status: 'confirmed',
+    }).eq('id', current.id);
+    if (error) return DM.toast(error.message, 'bad', 6000);
+    DM.toast('Fixed fee confirmed - tell the customer before dispatching.', 'good');
+    refreshCurrent();
+  });
+
   $('dw-invoice').addEventListener('click', async () => {
     if (!current) return;
     const company = $('dw-company').value.trim() || current.company_name;
     if (!company) return DM.toast('Enter the company name first.', 'bad');
-    if (current.estimated_price == null) return DM.toast('This booking has no price to invoice.', 'bad');
+    // Invoice the confirmed fee, never the indicative estimate.
+    const amount = current.confirmed_price;
+    if (amount == null) return DM.toast('Confirm the fixed fee before invoicing.', 'bad');
     const billEmail = $('dw-bill-email').value.trim();
     await sb.from('bookings').update({ is_corporate:true, company_name:company, payment_method:'invoice' }).eq('id', current.id);
     const { data, error } = await sb.from('invoices').insert({
       booking_id: current.id, company_name: company,
-      billing_email: billEmail || null, amount: current.estimated_price
+      billing_email: billEmail || null, amount
     }).select().single();
     if (error){
       return DM.toast(error.code === '23505'
@@ -1280,8 +1361,10 @@
 
   function renderMetrics(){
     const live = bookings.filter(b => ACTIVE_STATUSES.includes(b.status)).length;
+    // Completed value counts the confirmed fee where there is one; the
+    // indicative figure is a quote, not revenue.
     const revenue = bookings.filter(b => b.status === 'completed')
-      .reduce((s, b) => s + Number(b.estimated_price || 0), 0);
+      .reduce((s, b) => s + Number(b.confirmed_price ?? b.estimated_price ?? 0), 0);
     $('m-stats').innerHTML = [
       ['Bookings', bookings.length],
       ['In progress', live],
@@ -1309,8 +1392,10 @@
     }));
 
     bars($('m-types'), [
-      ['By the hour', bookings.filter(b => b.mode === 'hourly').length],
-      ['Point to point', bookings.filter(b => b.mode === 'point_to_point').length],
+      ['Vehicle concierge', bookings.filter(b => b.mode === 'vehicle_concierge').length],
+      ['Personal driver', bookings.filter(b => b.mode === 'personal_driver').length],
+      ['Legacy hourly', bookings.filter(b => b.mode === 'hourly').length],
+      ['Legacy point to point', bookings.filter(b => b.mode === 'point_to_point').length],
     ]);
 
     const AREAS = ['Helsinki','Espoo','Vantaa','Kauniainen'];
