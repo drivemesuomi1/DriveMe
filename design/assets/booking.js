@@ -307,15 +307,19 @@
     var marks = function (id) {
       return mark === true || (mark === 'touched' && touched[id]);
     };
-    var clear = function (id) { if (mark) setError(id, ''); };
     var note = function (id, label, msg) {
       if (marks(id)) setError(id, msg);
       problems.push({ id: id, label: label });
     };
 
+    // Wipe the slate first. Errors also arrive from the API, on fields this
+    // pass never looks at, and without this they would stick for good: the
+    // visitor fixes the value and the message stays, accusing them of nothing
+    // they can see.
+    if (mark) clearAllErrors();
+
     form.querySelectorAll('input[required], select[required]').forEach(function (el) {
       if (el.type === 'checkbox') return;
-      clear(el.id);
       if (!visible(el)) return;
       if (!String(el.value || '').trim()) {
         note(el.id, labelFor(el), C.required);
@@ -325,9 +329,20 @@
     });
 
     if (destinationRequired()) {
-      clear('destination');
       if (!val('destination')) note('destination', labelFor($('destination')), C.required);
     }
+
+    // Keep the numbers inside the bounds the API enforces, so an out-of-range
+    // entry is caught here rather than coming back as a failed request.
+    form.querySelectorAll('input[type="number"]').forEach(function (el) {
+      if (!visible(el) || !String(el.value || '').trim()) return;
+      var n = parseFloat(el.value);
+      var min = el.getAttribute('min');
+      var max = el.getAttribute('max');
+      if (isNaN(n) || (min !== null && n < parseFloat(min)) || (max !== null && n > parseFloat(max))) {
+        note(el.id, labelFor(el), C.badRange);
+      }
+    });
 
     // One entry with a count, not eight lines: the confirmations are a single
     // block on the page and listing each sentence would bury the real fields.
@@ -342,6 +357,12 @@
     }
 
     return problems;
+  }
+
+  function clearAllErrors() {
+    form.querySelectorAll('.err').forEach(function (el) {
+      setError(el.id.replace(/-err$/, ''), '');
+    });
   }
 
   function touchedAll() {
