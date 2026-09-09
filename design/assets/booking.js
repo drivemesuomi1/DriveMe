@@ -38,6 +38,25 @@
     }) + ' €';
   }
   function show(el, on) { if (el) el.hidden = !on; }
+
+  /**
+   * A gated service cannot be requested, so collecting the request is pointless
+   * and the indicative price would quote something we refuse to sell. Strip the
+   * form back to the choice that got you here plus the notice explaining why.
+   *
+   * Kept visible: the first fieldset (path + service picker + the notice), so
+   * the visitor can switch back to the concierge path, and the phone link in
+   * the quote panel, which is the one action still open to them.
+   *
+   * Done with a class rather than by toggling each element's `hidden`:
+   * onServiceChange() above already decides, per service, whether the shape,
+   * appointment and destination blocks belong on screen. Setting `hidden`
+   * here would overwrite those decisions and reveal blocks that service does
+   * not use when the visitor switches back.
+   */
+  function gatedLayout(on) {
+    form.classList.toggle('is-gated', !!on);
+  }
   function val(id) { var e = $(id); return e ? String(e.value || '').trim() : ''; }
   function checked(name) {
     var e = form.querySelector('input[name="' + name + '"]:checked');
@@ -117,6 +136,7 @@
       show(warn, false);
       submitBtn.disabled = false;
     }
+    gatedLayout(s.gated);
 
     estimate();
   }
