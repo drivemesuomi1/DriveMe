@@ -169,13 +169,15 @@
           <span>I need a driver<small>A professional driver operates your own car.</small></span>
         </label>
           </div>
-          
+          <div id="service-field">
+            
       <div class="field">
         <label for="service">Choose the service</label>
         <select id="service" name="service" required><option value="inspection">Vehicle inspection run</option><option value="workshop">Workshop run</option><option value="tyre">Tyre service run</option><option value="wash">Wash and detailing run</option><option value="glass">Glass, body shop and recall</option><option value="pickupReturn">Pickup and return</option><option value="relocation">Vehicle relocation</option><option value="dealer">Dealer and lease handover</option><option value="business">For companies</option></select>
         
         <span class="err" id="service-err" role="alert"></span>
       </div>
+          </div>
           <div id="gate-warning" hidden></div>
         </fieldset>
 
@@ -535,12 +537,22 @@
       </div>
 
       <aside class="quote" aria-live="polite">
-        <h2>Indicative price</h2>
+        <h2 id="quote-title">Indicative price</h2>
         <p class="amount" id="quote-amount"><small>from</small>—</p>
         <ul class="quote-lines" id="quote-lines"></ul>
         <p class="note" id="quote-note">The indicative price includes VAT. We confirm a fixed DriveMe fee before the driver is sent. Third-party charges are not included.</p>
         <button class="btn btn-primary" type="submit" id="submit-btn">Send request</button>
-        <p class="note"><a href="tel:+358503572836">Call +358 50 357 2836</a></p>
+        <p class="note" id="quote-call"><a href="tel:+358503572836">Call +358 50 357 2836</a></p>
+
+        <!-- Replaces the whole quote panel for a gated service: there is no
+             price to indicate, so the panel becomes the way to reach us.
+             Shown/hidden by the .is-gated class on the form, not by [hidden]. -->
+        <div id="gate-contact">
+          <h2>Contact us</h2>
+          <p class="note">Contact us for more details. We will let you know as soon as this service is available.</p>
+          <p class="gate-contact-line"><a href="mailto:info@driveme.fi">info@driveme.fi</a></p>
+          <p class="gate-contact-line"><a href="tel:+358503572836">+358 50 357 2836</a></p>
+        </div>
       </aside>
     </form>
 

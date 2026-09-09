@@ -119,6 +119,8 @@ const COPY = {
     doneAgain: 'Lähetä uusi pyyntö',
     failed: 'Pyyntöä ei saatu lähetettyä. Yritä uudelleen tai soita numeroon ' + brand.phone + '.',
     gatedTitle: 'Tämä palvelu ei ole vielä varattavissa',
+    gateContactTitle: 'Ota yhteyttä',
+    gateContactBody: 'Kerromme mielellämme lisää ja ilmoitamme heti, kun palvelu on saatavilla.',
     lines: {
       base: 'Palvelun perushinta',
       driverTime: 'Kuljettajan aika',
@@ -227,6 +229,8 @@ const COPY = {
     doneAgain: 'Send another request',
     failed: 'We could not send that request. Please try again or call ' + brand.phone + '.',
     gatedTitle: 'This service is not bookable yet',
+    gateContactTitle: 'Contact us',
+    gateContactBody: 'Contact us for more details. We will let you know as soon as this service is available.',
     lines: {
       base: 'Service base price',
       driverTime: 'Driver time',
@@ -319,7 +323,9 @@ export function bookingForm(locale) {
             ${radio('path', 'car', c.pathCar, c.pathCarSub, true)}
             ${radio('path', 'driver', c.pathDriver, c.pathDriverSub, false)}
           </div>
-          ${field('service', c.serviceLabel, select('service', [...conciergeOptions, businessOption], { required: true }))}
+          <div id="service-field">
+            ${field('service', c.serviceLabel, select('service', [...conciergeOptions, businessOption], { required: true }))}
+          </div>
           <div id="gate-warning" hidden></div>
         </fieldset>
 
@@ -465,12 +471,22 @@ export function bookingForm(locale) {
       </div>
 
       <aside class="quote" aria-live="polite">
-        <h2>${esc(c.quote)}</h2>
+        <h2 id="quote-title">${esc(c.quote)}</h2>
         <p class="amount" id="quote-amount"><small>${esc(c.quoteFrom)}</small>—</p>
         <ul class="quote-lines" id="quote-lines"></ul>
         <p class="note" id="quote-note">${esc(c.quoteNote)}</p>
         <button class="btn btn-primary" type="submit" id="submit-btn">${esc(c.submit)}</button>
-        <p class="note"><a href="tel:${brand.phoneHref}">${esc(t.callUs)} ${esc(brand.phone)}</a></p>
+        <p class="note" id="quote-call"><a href="tel:${brand.phoneHref}">${esc(t.callUs)} ${esc(brand.phone)}</a></p>
+
+        <!-- Replaces the whole quote panel for a gated service: there is no
+             price to indicate, so the panel becomes the way to reach us.
+             Shown/hidden by the .is-gated class on the form, not by [hidden]. -->
+        <div id="gate-contact">
+          <h2>${esc(c.gateContactTitle)}</h2>
+          <p class="note">${esc(c.gateContactBody)}</p>
+          <p class="gate-contact-line"><a href="mailto:${brand.email}">${esc(brand.email)}</a></p>
+          <p class="gate-contact-line"><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></p>
+        </div>
       </aside>
     </form>
 
