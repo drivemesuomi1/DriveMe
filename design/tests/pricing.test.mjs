@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { quote, premiumsFor, PRODUCTS, WAITING, PREMIUMS, CANCELLATION } from '../api/_lib/pricing.js';
+import {
+  quote, premiumsFor, productFor, servicesOfType,
+  PRODUCTS, WAITING, PREMIUMS, CANCELLATION, SERVICE_PRODUCTS,
+} from '../api/_lib/pricing.js';
 
 /* A Tuesday and a Saturday at 10:00 Helsinki time, expressed in UTC so the
    test says the same thing on a CI box in another zone. Finland is UTC+3 in
@@ -12,12 +15,51 @@ const TUE_23 = new Date('2026-09-08T20:00:00Z');   // 23:00 local
 const XMAS_10 = new Date('2026-12-25T08:00:00Z');  // 10:00 local, UTC+2 in winter
 const WEEK_EARLIER = new Date('2026-09-01T07:00:00Z');
 
+test('the published starting prices are the Driver First pricing test', () => {
+  assert.equal(PRODUCTS.oneWay.from, 89);
+  assert.deepEqual(PRODUCTS.oneWay.typical, [99, 129]);
+  assert.equal(PRODUCTS.serviceRun.from, 149);
+  assert.equal(PRODUCTS.pickupReturn.from, 149);
+  assert.deepEqual(PRODUCTS.serviceRun.typical, [149, 199]);
+  assert.equal(PRODUCTS.inspection.from, 169);
+  assert.equal(PRODUCTS.handover.from, 99);
+});
+
+test('passenger products are kept out of every public price', () => {
+  for (const key of ['personalDriver', 'airport', 'designated']) {
+    assert.equal(PRODUCTS[key].hidden, true, key);
+  }
+  for (const key of servicesOfType('general_move').concat(servicesOfType('appointment_run'))) {
+    assert.notEqual(PRODUCTS[SERVICE_PRODUCTS[key].default].hidden, true, `${key} is sold and must be priced`);
+  }
+});
+
 test('a standard run is priced from the published starting price', () => {
   const q = quote({ product: 'inspection', when: TUE_10, now: WEEK_EARLIER });
   assert.equal(q.quoteOnly, false);
   assert.equal(q.from, PRODUCTS.inspection.from);
-  assert.equal(q.total, 119);
+  assert.equal(q.total, 169);
   assert.equal(q.indicative, true);
+});
+
+test('the catalogue splits into the two things sold now', () => {
+  assert.deepEqual(servicesOfType('general_move'), ['relocation', 'pickupReturn']);
+  assert.deepEqual(servicesOfType('appointment_run'), ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer']);
+  assert.deepEqual(servicesOfType('passenger'), ['personalDriver', 'safeRideHome', 'airport']);
+});
+
+test('the product follows the service and shape, never a free choice', () => {
+  assert.equal(productFor('inspection', 'waitReturn'), 'inspection');
+  assert.equal(productFor('inspection', 'pickupReturn'), 'pickupReturn');
+  assert.equal(productFor('inspection', 'oneWay'), 'oneWay');
+  assert.equal(productFor('workshop', 'pickupReturn'), 'serviceRun');
+  assert.equal(productFor('dealer', 'oneWay'), 'handover');
+  assert.equal(productFor('relocation', 'oneWay'), 'oneWay');
+  assert.equal(productFor('pickupReturn', 'pickupReturn'), 'pickupReturn');
+  // An unknown or unsupported shape falls back to the service's own default.
+  assert.equal(productFor('workshop', 'bogus'), 'serviceRun');
+  assert.equal(productFor('relocation', 'waitReturn'), 'oneWay');
+  assert.equal(productFor('nope', 'oneWay'), null);
 });
 
 test('there is no distance surcharge anywhere in the quote', () => {
@@ -63,10 +105,12 @@ test('waiting is free up to the included allowance, then billed in 30-minute uni
   assert.equal(waitLine.amount, 17.5);
 });
 
-test('wait-and-return includes a full hour before waiting is billed', () => {
-  const q = quote({ product: 'waitReturn', waitMinutes: WAITING.waitReturnIncludedMinutes, when: TUE_10, now: WEEK_EARLIER });
-  assert.equal(q.total, PRODUCTS.waitReturn.from);
-  assert.equal(q.lines.some((l) => l.key === 'waiting'), false);
+test('wait-and-return and the inspection run include a full hour of waiting', () => {
+  for (const product of ['waitReturn', 'inspection']) {
+    const q = quote({ product, waitMinutes: WAITING.waitReturnIncludedMinutes, when: TUE_10, now: WEEK_EARLIER });
+    assert.equal(q.total, PRODUCTS[product].from, product);
+    assert.equal(q.lines.some((l) => l.key === 'waiting'), false, product);
+  }
 });
 
 test('night, weekend, holiday and urgency are recognised as premiums', () => {
@@ -93,7 +137,8 @@ test('premiums do not stack — only the highest single one is charged', () => {
   const q = quote({ product: 'serviceRun', when: satNight, now: WEEK_EARLIER });
   const premiumLines = q.lines.filter((l) => l.key === 'premium');
   assert.equal(premiumLines.length, 1);
-  assert.equal(q.total, 99 + 99 * PREMIUMS.night.pct / 100);
+  const base = PRODUCTS.serviceRun.from;
+  assert.equal(q.total, base + base * PREMIUMS.night.pct / 100);
 });
 
 test('the premium applies after waiting, so it is a premium on the whole job', () => {
@@ -102,8 +147,7 @@ test('the premium applies after waiting, so it is a premium on the whole job', (
   const premium = q.lines.find((l) => l.key === 'premium').amount;
   // Rounded to cents: a price the customer sees must be payable.
   const raw = (PRODUCTS.serviceRun.from + wait) * PREMIUMS.night.pct / 100;
-  assert.equal(raw, 29.125);
-  assert.equal(premium, 29.13);
+  assert.equal(premium, Math.round(raw * 100) / 100);
   assert.equal(q.total, PRODUCTS.serviceRun.from + wait + premium);
 });
 

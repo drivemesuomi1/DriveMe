@@ -11,7 +11,7 @@
 import { ORIGIN, brand, nav, headerNav, ui, footer as footerContent, menuGroups, LOCALES } from '../content/site.mjs';
 import { byKey, services } from '../content/services.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
-import { SERVICE_PRODUCTS, PRODUCTS } from '../api/_lib/pricing.js';
+import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
 import { routes, url, serviceUrl } from './routes.mjs';
 
 export const esc = (s) => String(s ?? '')
@@ -83,8 +83,8 @@ ${canonical ? `<meta property="og:url" content="${esc(canonical)}">` : ''}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css?v=4">
-${o.headExtra || ''}
+<link rel="stylesheet" href="/assets/site.css?v=5">
+${o.noindex ? '<meta name="robots" content="noindex,follow">\n' : ''}${o.headExtra || ''}
 <script type="application/ld+json">
 ${JSON.stringify(schema.length === 1 ? schema[0] : schema, null, 0)}
 </script>
@@ -99,7 +99,7 @@ ${footer(o.locale)}
 ${/* Not on the request page itself: there the floating CTA points at the page
       the visitor is already reading, competing with the form's own submit. */
   o.id === 'booking' ? '' : `<a class="btn btn-accent float-cta" id="float-cta" href="${t.bookHref}">${esc(t.requestPrice)} <span class="arrow" aria-hidden="true">→</span></a>`}
-<script src="/assets/site.js?v=4" defer></script>
+<script src="/assets/site.js?v=5" defer></script>
 ${o.bodyEnd || ''}
 </body>
 </html>
@@ -165,13 +165,12 @@ function header(locale, navKey, id) {
 }
 
 /**
- * The services drop-down. Every service the site sells, grouped by the two
- * paths, so a visitor reaches the exact page in one move instead of landing
- * on the hub and clicking again.
+ * The services drop-down: the two things DriveMe sells now, so a visitor
+ * reaches the exact page in one move instead of landing on the hub first.
  *
- * Gated services stay listed - hiding them would leave the category
- * unexplained - but carry the same "awaiting clearance" mark they carry
- * everywhere else, and their starting price is withheld.
+ * Passenger services are not listed. The Driver First plan keeps them out of
+ * the primary navigation until they can be sold; one discreet footer link to
+ * the interest page is all that remains.
  */
 function servicesMenu(locale, navItem) {
   const g = menuGroups[locale];
@@ -179,39 +178,38 @@ function servicesMenu(locale, navItem) {
 
   const item = (key) => {
     const svc = byKey[key];
-    const gated = isServiceGated(key);
     const product = PRODUCTS[SERVICE_PRODUCTS[key].default];
-    const price = gated || !product || product.quote
+    const price = !product || product.quote || product.hidden
       ? ''
       : `<span class="mi-price">${t.priceFrom} ${product.from} €</span>`;
     return `<li><a href="${serviceUrl(key, locale)}">
-      <span class="mi-name">${esc(svc[locale].nav)}${gated ? ` <span class="mi-tag">${esc(g.gated)}</span>` : ''}</span>
+      <span class="mi-name">${esc(svc[locale].nav)}</span>
       ${price}
     </a></li>`;
   };
 
-  const group = (key) => services.filter((x) => x.category === key).map((x) => x.key);
+  const sold = (type) => servicesOfType(type).filter((k) => !isServiceGated(k));
 
   return `<div class="nav-menu" id="menu-${navItem.key}" hidden>
     <div class="nav-menu-inner">
       <div class="menu-col menu-col-wide">
-        <h2>${esc(g.concierge)}</h2>
-        <ul class="menu-list menu-list-2">${group('concierge').map(item).join('')}</ul>
+        <h2>${esc(g.appointment)}</h2>
+        <ul class="menu-list menu-list-2">${sold('appointment_run').map(item).join('')}</ul>
       </div>
       <div class="menu-col">
-        <h2>${esc(g.driver)}</h2>
-        <ul class="menu-list">${group('driver').map(item).join('')}</ul>
+        <h2>${esc(g.move)}</h2>
+        <ul class="menu-list">${sold('general_move').map(item).join('')}</ul>
       </div>
       <div class="menu-col menu-col-end">
         <h2>${esc(g.business)}</h2>
-        <ul class="menu-list">${group('business').map(item).join('')}</ul>
+        <ul class="menu-list">${sold('business').map(item).join('')}</ul>
         <ul class="menu-links">
           <li><a href="${navItem.href}">${esc(g.all)} →</a></li>
           <li><a href="${url('pricing', locale)}">${esc(g.pricing)} →</a></li>
           <li><a href="${url('safety', locale)}">${esc(g.safety)} →</a></li>
           <li><a href="${url('faq', locale)}">${esc(g.faq)} →</a></li>
         </ul>
-        <a class="btn btn-primary btn-sm" href="${t.bookHref}">${esc(t.requestPrice)} <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-primary btn-sm" href="${t.bookHref}">${esc(t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a>
       </div>
     </div>
   </div>`;
@@ -250,6 +248,7 @@ function footer(locale) {
           <li><a href="${url('faq', locale)}">${esc(nav[locale].find((n) => n.key === 'faq').label)}</a></li>
           <li><a href="${url('contact', locale)}">${esc(nav[locale].find((n) => n.key === 'contact').label)}</a></li>
           ${f.legalLinks.map((l) => `<li><a href="${l.href}">${esc(l.label)}</a></li>`).join('')}
+          ${f.interest ? `<li class="foot-quiet"><a href="${serviceUrl(f.interest.key, locale)}">${esc(f.interest.label)}</a></li>` : ''}
         </ul>
       </div>
     </div>
@@ -281,7 +280,10 @@ export function organizationSchema() {
     email: brand.email,
     image: `${ORIGIN}/assets/driveme-social-logo.png`,
     logo: `${ORIGIN}/assets/driveme-icon-512.png`,
+    description: 'DriveMe noutaa asiakkaan ajokuntoisen auton ja ajaa sen sovittuun osoitteeseen, katsastukseen, huoltoon, renkaanvaihtoon tai pesuun pääkaupunkiseudulla. Asiakas ei matkusta autossa.',
     priceRange: '€€',
+    ...(brand.businessId ? { taxID: brand.businessId } : {}),
+    knowsLanguage: ['fi', 'en'],
     address: { '@type': 'PostalAddress', addressLocality: brand.city, addressCountry: brand.country },
     areaServed: brand.coverage.map((c) => ({ '@type': 'City', name: c })),
   };

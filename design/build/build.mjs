@@ -18,12 +18,13 @@ import { fileURLToPath } from 'node:url';
 
 import { ORIGIN, LOCALES, brand, ui, nav, howItWorks, trustStrip } from '../content/site.mjs';
 import { services, byKey } from '../content/services.mjs';
+import { SERVICE_PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
 import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking } from '../content/pages.mjs';
 import { page, esc, serviceSchema, breadcrumbSchema, faqSchema } from './layout.mjs';
 import { url, serviceUrl, allPages, fileFor } from './routes.mjs';
 import {
   crumbs, serviceCards, stepsList, factCard, callout, faqList, tickList, fancy, plain,
-  fromPrice, priceValue, isGated, gateNoticeBlock, eligibilityBlock, refusalBlock, trustBar,
+  fromPrice, priceValue, typicalRange, isGated, gateNoticeBlock, eligibilityBlock, refusalBlock, trustBar,
   coverageBlock, relatedLinks, ctaBand, renderBlock, statusRail, disclaimerBlock,
 } from './blocks.mjs';
 import { serviceUrl as _serviceUrl } from './routes.mjs';
@@ -51,21 +52,25 @@ async function emitRaw(rel, body) {
 }
 
 /* ======================================================================
-   Homepage — §12.1 rebuild order:
-   1 header + CTA · 2 two-path hero · 3 trust strip · 4 service cards ·
-   5 four-step process · 6 starting prices + third-party fees ·
-   7 personal driver (gated) · 8 corporate · 9 safety · 10 reviews (only
-   when real) · 11 FAQ, coverage, contact, legal footer.
+   Homepage — the Driver First Growth Plan (13 Sep 2026):
+   1 header + price CTA · 2 hero: "a driver for your car", price request,
+   quick start, trust bar · 3 the two things sold now (move to an address,
+   run to a service) · 4 service cards · 5 four-step process · 6 starting
+   prices + typical ranges · 7 you hand over the keys, nobody rides along ·
+   8 corporate · 9 safety · 10 FAQ, coverage, contact, legal footer.
 
-   Deliberately absent (§12.1 "Remove from homepage"): founder story,
-   addressable-market counters, franchise roadmap, future-fleet section,
-   prototype screenshots, and any unsupported instant/guaranteed claim.
+   Deliberately absent: the passenger service ("I need a driver", own-car
+   chauffeur imagery) - the plan keeps it off the homepage until it can be
+   sold - plus the §12.1 removals: founder story, market counters, franchise
+   roadmap, prototype screenshots and any unsupported instant/guaranteed or
+   reply-time claim.
    ================================================================== */
 function renderHome(locale) {
   const c = home[locale];
   const t = ui[locale];
+  const fi = locale === 'fi';
   const business = byKey.business[locale];
-  const driver = byKey.personalDriver;
+  const src = (tag) => `${t.bookHref}?${fi ? 'lahde' : 'source'}=${tag}`;
 
   const body = `
 <section class="hero">
@@ -82,12 +87,13 @@ function renderHome(locale) {
   <div class="wrap hero-grid">
     <div class="hero-copy reveal">
       <p class="eyebrow">${esc(c.eyebrow)}</p>
-      <h1><span class="accent">${esc(c.h1Accent)}</span>${esc(c.h1Rest)}</h1>
+      <h1><span class="accent">${esc(c.h1Accent)}</span> ${esc(c.h1Rest)}</h1>
       <p class="lead">${esc(c.lead)}</p>
       <div class="hero-ctas">
-        <a class="btn btn-light" href="${c.paths[0].href}">${esc(c.paths[0].label)} <span class="arrow" aria-hidden="true">→</span></a>
-        <a class="btn btn-outline-light" href="${c.paths[1].href}">${esc(c.paths[1].label)}</a>
+        <a class="btn btn-light" href="${c.primary.href}">${esc(c.primary.label)} <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-outline-light" href="${c.secondary.href}">${esc(c.secondary.label)}</a>
       </div>
+      <p class="hero-trust">${esc(c.trustLine)}</p>
     </div>
     ${quickStart(locale)}
   </div>
@@ -96,13 +102,14 @@ function renderHome(locale) {
 
 <section class="sec">
   <div class="wrap">
+    <div class="sec-head"><h2>${fancy(c.offerTitle)}</h2></div>
     <div class="paths">
       ${c.paths.map((p) => `<article class="path">
-        <h2>${esc(p.label)}</h2>
+        <h3>${esc(p.label)}</h3>
         <p>${esc(p.body)}</p>
-        ${p.gated ? `<p class="pill">${esc(locale === 'fi' ? 'Odottaa lupa- ja vakuutusvahvistusta' : 'Awaiting licensing and insurance clearance')}</p>` : ''}
+        <p class="path-price">${esc(byKey[p.priceService][locale].nav)}: ${esc(fromPrice(p.priceService, locale))}</p>
         <p class="more"><a href="${p.linkHref}">${esc(p.linkLabel)} →</a></p>
-        <a class="btn ${p.gated ? 'btn-ghost' : 'btn-primary'}" href="${p.href}">${esc(p.cta || t.requestPrice)}</a>
+        <a class="btn btn-primary" href="${p.href}">${esc(p.cta)}</a>
       </article>`).join('')}
     </div>
   </div>
@@ -130,28 +137,32 @@ function renderHome(locale) {
       <p>${esc(c.priceLead)}</p>
     </div>
     <ul class="cards">
-      ${['pickupReturn', 'inspection', 'relocation'].map((k) => `<li class="card">
+      ${c.priceKeys.map((k) => {
+    const range = typicalRange(k);
+    return `<li class="card">
         <h3><a href="${serviceUrl(k, locale)}">${esc(byKey[k][locale].nav)}</a></h3>
         <p>${esc(byKey[k][locale].lead)}</p>
         <span class="from">${esc(fromPrice(k, locale))}</span>
-      </li>`).join('')}
+        ${range ? `<span class="typical">${esc(fi ? `Tyypillisesti ${range[0]}–${range[1]} €` : `Typically ${range[0]}–${range[1]} €`)}</span>` : ''}
+      </li>`;
+  }).join('')}
     </ul>
     <div style="margin-top:20px">${callout(null, t.thirdParty)}</div>
-    <p style="margin-top:16px"><a href="${url('pricing', locale)}">${esc(locale === 'fi' ? 'Koko hinnasto' : 'Full price list')} →</a></p>
+    <p style="margin-top:16px"><a href="${url('pricing', locale)}">${esc(fi ? 'Koko hinnasto' : 'Full price list')} →</a></p>
   </div>
 </section>
 
 <section class="sec sec-raised">
   <div class="wrap split">
     <div class="split-copy">
-      <h2>${fancy(c.driverTitle)}</h2>
-      <p class="lead">${esc(c.driverBody)}</p>
-      ${isGated(driver) ? gateNoticeBlock(locale) : ''}
-      <p><a class="btn btn-ghost" href="${serviceUrl('personalDriver', locale)}">${esc(byKey.personalDriver[locale].nav)}</a></p>
+      <h2>${fancy(c.handoverTitle)}</h2>
+      <p class="lead">${esc(c.handoverBody)}</p>
+      ${tickList(c.handoverPoints, 'check')}
+      <p><a class="btn btn-primary" href="${src('home_handover')}">${esc(t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
-    ${figure('/assets/l-svc-chauffeur.jpg', locale === 'fi'
-    ? 'Kuljettaja avaa auton oven asiakkaalle'
-    : 'A driver holding the car door for a customer')}
+    ${figure('/assets/l-svc-rental.jpg', fi
+    ? 'Kuljettaja ajaa asiakkaan autoa yksin'
+    : 'A driver alone at the wheel of a customer’s car')}
   </div>
 </section>
 
@@ -163,7 +174,7 @@ function renderHome(locale) {
       ${tickList(business.included.slice(0, 4), 'check')}
       <p><a class="btn btn-ghost" href="${serviceUrl('business', locale)}">${esc(business.nav)}</a></p>
     </div>
-    ${figure('/assets/l-svc-corporate.jpg', locale === 'fi'
+    ${figure('/assets/l-svc-corporate.jpg', fi
     ? 'Yritysauto noudettavana toimiston edestä'
     : 'A company car waiting for collection outside an office')}
   </div>
@@ -175,11 +186,11 @@ function renderHome(locale) {
       <h2>${fancy(c.safetyTitle)}</h2>
       <p class="lead">${esc(c.safetyBody)}</p>
       ${tickList(safetyPoints(locale), 'check')}
-      <p><a class="btn btn-ghost" href="${url('safety', locale)}">${esc(locale === 'fi' ? 'Turvallisuus ja vakuutukset' : 'Safety and insurance')}</a></p>
+      <p><a class="btn btn-ghost" href="${url('safety', locale)}">${esc(fi ? 'Turvallisuus ja vakuutukset' : 'Safety and insurance')}</a></p>
     </div>
-    ${figure('/assets/l-svc-rental.jpg', locale === 'fi'
-    ? 'Kuljettaja asiakkaan auton ratissa'
-    : 'A driver at the wheel of a customer’s car')}
+    ${figure('/assets/l-fleet-interior.jpg', fi
+    ? 'Auton keskikonsoli ja vaihteenvalitsin'
+    : 'The centre console and gear selector of a car')}
   </div>
 </section>
 
@@ -187,12 +198,12 @@ function renderHome(locale) {
   <div class="wrap">
     <div class="sec-head"><h2>${esc(t.faq)}</h2></div>
     ${faqList(homeFaq(locale))}
-    <p style="margin-top:18px"><a href="${url('faq', locale)}">${esc(locale === 'fi' ? 'Kaikki kysymykset' : 'All questions')} →</a></p>
+    <p style="margin-top:18px"><a href="${url('faq', locale)}">${esc(fi ? 'Kaikki kysymykset' : 'All questions')} →</a></p>
     <div style="margin-top:30px">${coverageBlock(locale)}</div>
   </div>
 </section>
 
-${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody })}
+${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody, primaryHref: src('home_cta') })}
 `;
 
   return page({
@@ -206,15 +217,15 @@ ${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody })}
 }
 
 /**
- * Hero quick start (§7 steps 1-3 only).
+ * Hero quick start: the first fields of the price request.
  *
  * It is deliberately NOT a second booking interface - the §12 audit found two
  * of those on the old site. Nothing here submits: it collects the three fields
  * a customer already knows, then hands them to /varaus/ as query parameters,
  * where booking.js prefills them and the real request continues.
  *
- * Gated services are absent from the list, for the same reason their pages
- * carry no request CTA.
+ * Only what is sold is listed - a move to another address, then the provider
+ * services. Passenger services are absent, as they are from the whole page.
  */
 /** Just the amount - the card renders its own "alkaen" / "from" label. */
 function bareFrom(key) {
@@ -225,31 +236,32 @@ function bareFrom(key) {
 function quickStart(locale) {
   const q = home[locale].quick;
   const t = ui[locale];
-  const options = services
-    .filter((s) => s.category === 'concierge' && !isGated(s))
-    .map((s) => `<option value="${s.key}" data-from="${esc(bareFrom(s.key))}">${esc(s[locale].nav)}</option>`)
+  const fi = locale === 'fi';
+  const appointment = servicesOfType('appointment_run').filter((k) => !isGated(byKey[k]));
+  const options = [`<option value="relocation" data-from="${esc(bareFrom('relocation'))}">${esc(q.moveOption)}</option>`]
+    .concat(appointment.map((k) => `<option value="${k}" data-from="${esc(bareFrom(k))}">${esc(byKey[k][locale].nav)}</option>`))
     .join('');
 
   return `<form class="quick-start reveal" id="quick-start" action="${t.bookHref}" method="get">
     <h2>${fancy(q.title)}</h2>
-    <p class="qs-from">${esc(q.from)} <b id="qs-from-price">${esc(bareFrom('inspection'))}</b></p>
+    <p class="qs-from">${esc(q.from)} <b id="qs-from-price">${esc(bareFrom('relocation'))}</b></p>
+    <input type="hidden" name="${fi ? 'lahde' : 'source'}" value="home_quick">
     <div class="qs-field">
       <label for="qs-service">${esc(q.service)}</label>
-      <select id="qs-service" name="${locale === 'fi' ? 'palvelu' : 'service'}">${options}</select>
+      <select id="qs-service" name="${fi ? 'palvelu' : 'service'}">${options}</select>
     </div>
     <div class="qs-field">
       <label for="qs-pickup">${esc(q.pickup)}</label>
-      <input type="text" id="qs-pickup" name="${locale === 'fi' ? 'nouto' : 'pickup'}"
+      <input type="text" id="qs-pickup" name="${fi ? 'nouto' : 'pickup'}"
              autocomplete="street-address" placeholder="${esc(q.pickupPlaceholder)}">
     </div>
     <div class="qs-field">
       <label for="qs-date">${esc(q.date)}</label>
-      <input type="date" id="qs-date" name="${locale === 'fi' ? 'pvm' : 'date'}">
+      <input type="date" id="qs-date" name="${fi ? 'pvm' : 'date'}">
     </div>
     <button class="btn btn-accent" type="submit">${esc(q.submit)} <span class="arrow" aria-hidden="true">→</span></button>
     <div class="qs-foot">
       <p class="qs-note">${esc(q.note)}</p>
-      <p class="qs-alt"><a href="${_serviceUrl('personalDriver', locale)}">${esc(q.driverLink)} →</a></p>
     </div>
   </form>`;
 }
@@ -346,6 +358,7 @@ function renderService(service, locale) {
     </div>
     <div class="meta-row">
       <span><b>${esc(t.price)}:</b> ${esc(fromPrice(service.key, locale))}</span>
+      ${gated ? '' : `<span><b>${esc(t.passengers)}:</b> ${esc(t.noPassengerShort)}</span>`}
       <span><b>${esc(locale === 'fi' ? 'Ajanvaraus' : 'Appointment')}:</b> ${esc(appointmentLabel(service.appointment, locale))}</span>
       <span><b>${esc(t.coverage)}:</b> ${esc(brand.coverage.join(', '))}</span>
     </div>
@@ -354,7 +367,7 @@ function renderService(service, locale) {
 
 <section class="sec">
   <div class="wrap stack">
-    ${gated ? gateNoticeBlock(locale) : ''}
+    ${gated ? gateNoticeBlock(locale) : callout(null, t.noPassenger)}
     <div>
       <div class="sec-head"><h2>${esc(t.steps)}</h2></div>
       ${stepsList(c.steps, { rows: true })}
@@ -402,6 +415,8 @@ ${ctaBand(locale, gated ? {
 
   return page({
     id: `service:${service.key}`, locale, navKey: 'services',
+    // Not sold yet: an interest page only, kept out of the index (Driver First plan).
+    noindex: gated,
     title: c.title, description: c.description, body,
     schema: [
       serviceSchema({
@@ -427,11 +442,34 @@ function appointmentLabel(kind, locale) {
 }
 
 function priceProse(service, locale) {
-  const from = fromPrice(service.key, locale);
-  if (locale === 'fi') {
-    return `${service[locale].nav}: ${from}. Hinta sisältää arvonlisäveron. Näet ohjeellisen hinnan varauslomakkeella heti ja vahvistamme kiinteän DriveMe-hinnan ennen kuljettajan lähtöä. Kolmannen osapuolen maksut eivät sisälly, vaan maksat ne suoraan valitsemallesi palveluntarjoajalle.`;
+  const fi = locale === 'fi';
+  const name = service[locale].nav;
+  if (isGated(service)) {
+    return fi
+      ? `${name} ei ole vielä varattavissa, joten emme julkaise sille hintaa.`
+      : `${name} cannot be booked yet, so we do not publish a price for it.`;
   }
-  return `${service[locale].nav}: ${from}, VAT included. You see an indicative price on the request form and we confirm a fixed DriveMe fee before the driver is sent. Third-party charges are not included - you pay them directly to the provider you choose.`;
+  const from = fromPrice(service.key, locale);
+  const range = typicalRange(service.key);
+  const toProvider = SERVICE_PRODUCTS[service.key].type === 'appointment_run';
+  if (fi) {
+    return [
+      `${name}: ${from}. Hinta sisältää arvonlisäveron.`,
+      range ? `Tyypillinen hinta pääkaupunkiseudulla on ${range[0]}–${range[1]} € reitin, ajankohdan ja odotuksen mukaan.` : '',
+      'Näet ohjeellisen hinnan hintapyyntölomakkeella heti ja vahvistamme kiinteän DriveMe-hinnan ennen kuljettajan lähtöä.',
+      toProvider
+        ? 'Palveluntarjoajan maksun, esimerkiksi katsastuksen tai huollon, maksat suoraan palveluntarjoajalle.'
+        : 'Mahdolliset polttoaine-, pysäköinti- ja tiemaksut kerrotaan tarjouksessa erikseen.',
+    ].filter(Boolean).join(' ');
+  }
+  return [
+    `${name}: ${from}, VAT included.`,
+    range ? `A typical job in the capital region is ${range[0]}–${range[1]} €, depending on route, timing and waiting.` : '',
+    'You see an indicative price on the request form immediately, and we confirm a fixed DriveMe fee before the driver is sent.',
+    toProvider
+      ? 'The provider’s own charge, such as the inspection or the service, is paid directly to the provider.'
+      : 'Any fuel, parking or toll costs are stated separately in the quote.',
+  ].filter(Boolean).join(' ');
 }
 
 /* ============================================== generic block pages */
@@ -613,7 +651,8 @@ ${ctaBand(locale)}`;
 /* ===================================================== sitemap/robots */
 function sitemap() {
   const items = allPages()
-    .filter((p) => p.id !== 'booking')      // request form is noindex
+    // The request form and unsold services are noindex, so they stay out.
+    .filter((p) => p.id !== 'booking' && !(p.id.startsWith('service:') && isGated(byKey[p.id.slice(8)])))
     .map((p) => {
       const alt = LOCALES
         .filter((l) => allPages().some((q) => q.id === p.id && q.locale === l))
@@ -638,9 +677,7 @@ ${items}
 }
 
 function robots() {
-  return `# DriveMe — robots.txt
-User-agent: *
-Allow: /
+  const rules = `Allow: /
 
 # Operational surfaces: no public search value, and they carry job tokens.
 Disallow: /admin
@@ -652,7 +689,17 @@ Disallow: /en/booking/
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy
 Disallow: /01-driveme-landing
-Disallow: /02-driveme-light
+Disallow: /02-driveme-light`;
+
+  // A crawler follows only the most specific group that names it, so OpenAI's
+  // search crawler gets the same rules spelled out: welcome on every public
+  // page, kept out of the same operational ones.
+  return `# DriveMe — robots.txt
+User-agent: *
+${rules}
+
+User-agent: OAI-SearchBot
+${rules}
 
 Sitemap: ${ORIGIN}/sitemap.xml
 `;

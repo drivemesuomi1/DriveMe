@@ -14,4 +14,19 @@ Disallow: /legacy
 Disallow: /01-driveme-landing
 Disallow: /02-driveme-light
 
+User-agent: OAI-SearchBot
+Allow: /
+
+# Operational surfaces: no public search value, and they carry job tokens.
+Disallow: /admin
+Disallow: /track
+Disallow: /driver
+Disallow: /varaus/
+Disallow: /en/booking/
+
+# Legacy concept pages kept for internal reference only (see /legacy).
+Disallow: /legacy
+Disallow: /01-driveme-landing
+Disallow: /02-driveme-light
+
 Sitemap: https://driveme.fi/sitemap.xml

@@ -1,9 +1,11 @@
 /**
  * Guards on the generated site.
  *
- * These are the §12 audit findings and the §11.1 technical checklist turned
- * into assertions, so a future edit cannot quietly put back a claim the
- * business cannot support. Run `npm run build` first (npm run check does).
+ * The §12 audit findings, the §11.1 technical checklist and the Driver First
+ * Growth Plan (13 Sep 2026) turned into assertions, so a future edit cannot
+ * quietly put back a claim the business cannot support, or a passenger
+ * service the business cannot sell yet. Run `npm run build` first
+ * (npm run check does).
  */
 
 import test from 'node:test';
@@ -14,12 +16,18 @@ import { fileURLToPath } from 'node:url';
 
 import { allPages, fileFor, url, serviceUrl } from '../build/routes.mjs';
 import { services } from '../content/services.mjs';
+import { ui } from '../content/site.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
+import { PRODUCTS, SERVICE_PRODUCTS } from '../api/_lib/pricing.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFile(join(ROOT, rel), 'utf8');
 
 const pages = allPages();
+const gatedKeys = services.filter((s) => isServiceGated(s.key)).map((s) => s.key);
+const soldKeys = services.filter((s) => !isServiceGated(s.key) && s.category === 'concierge').map((s) => s.key);
+/** Pages kept out of the index: the request form, and services not sold yet. */
+const noindexIds = new Set(['booking', ...gatedKeys.map((k) => `service:${k}`)]);
 
 test('every route in the URL architecture produced a file', async () => {
   for (const p of pages) {
@@ -56,17 +64,18 @@ test('indexable pages carry a self-referencing canonical and hreflang alternates
   }
 });
 
-test('the request form is noindex — it collects personal data and ranks for nothing', async () => {
-  for (const locale of ['fi', 'en']) {
-    const html = await read(fileFor(url('booking', locale)));
-    assert.match(html, /<meta name="robots" content="noindex/);
+test('the request form and unsold services are noindex', async () => {
+  for (const p of pages) {
+    const html = await read(fileFor(p.path));
+    const noindex = /<meta name="robots" content="noindex/.test(html);
+    assert.equal(noindex, noindexIds.has(p.id), `${p.path} noindex should be ${noindexIds.has(p.id)}`);
   }
 });
 
-test('nothing the audit removed has come back', async () => {
-  // §12: the metro surcharge, the subscription, the investor furniture and
-  // the unsupported "instant / guaranteed / fully insured" claims.
+test('nothing the audit or the Driver First plan removed has come back', async () => {
   const banned = [
+    // §12: the metro surcharge, the subscription, the investor furniture and
+    // the unsupported "instant / guaranteed / fully insured" claims.
     /beyond the metro/i,
     /metropolialueen ulkopuolel/i,
     /€\s?100\s?\/\s?(month|kk)/i,
@@ -77,12 +86,85 @@ test('nothing the audit removed has come back', async () => {
     /täysin vakuutettu/i,
     /taatusti|guaranteed to pass/i,
     /instant (booking|matching)/i,
+    // Driver First P0: launch placeholders, an unstaffed reply-time promise,
+    // the hourly passenger price and the passenger path.
+    /ennen julkaisua/i,
+    /before launch/i,
+    /alle 15 minuu/i,
+    /within 15 minutes/i,
+    /39 €\/h/,
+    /Tarvitsen kuljettajan/,
+    /I need a driver/,
+    /taustatarkastettu|background[- ]checked/i,
   ];
   for (const p of pages) {
     const html = await read(fileFor(p.path));
     for (const re of banned) {
       assert.equal(re.test(html), false, `${p.path} contains banned copy matching ${re}`);
     }
+  }
+});
+
+test('the homepage leads with a driver for the customer\'s own car', async () => {
+  const fi = await read('index.html');
+  assert.match(fi, /<h1><span class="accent">Kuljettaja autollesi –<\/span> silloin kun et ehdi ajaa itse\.<\/h1>/);
+  assert.match(fi, /Sinun ei tarvitse lähteä mukaan\./);
+  assert.match(fi, />Pyydä hinta auton siirrolle <span class="arrow"/);
+  assert.match(fi, /Sinun autosi\. Meidän kuljettajamme\. Selkeä hinta ennen ajoa\./);
+
+  const en = await read('en/index.html');
+  assert.match(en, /A driver for your car,/);
+  assert.match(en, />Get a price to move my car <span class="arrow"/);
+});
+
+test('no passenger service is promoted on the homepage, in the header or in the main cards', async () => {
+  for (const locale of ['fi', 'en']) {
+    const html = await read(fileFor(url('home', locale)));
+    const main = /<main id="main">([\s\S]*)<\/main>/.exec(html)[1];
+    const head = /<header class="site-head">([\s\S]*?)<\/header>/.exec(html)[1];
+    const foot = /<footer class="site-foot">([\s\S]*?)<\/footer>/.exec(html)[1];
+    const hub = await read(fileFor(url('services', locale)));
+    const hubMain = /<main id="main">([\s\S]*)<\/main>/.exec(hub)[1];
+
+    let footerLinks = 0;
+    for (const key of gatedKeys) {
+      const href = `href="${serviceUrl(key, locale)}"`;
+      assert.equal(main.includes(href), false, `homepage (${locale}) links to ${key}`);
+      assert.equal(head.includes(href), false, `header (${locale}) links to ${key}`);
+      assert.equal(hubMain.includes(href), false, `services hub (${locale}) lists ${key}`);
+      footerLinks += foot.split(href).length - 1;
+    }
+    assert.equal(footerLinks, 1, `footer (${locale}) should carry exactly one discreet interest link`);
+    assert.equal(main.includes('l-svc-chauffeur.jpg'), false, 'passenger imagery on the homepage');
+  }
+});
+
+test('the request form offers only what is sold now, and is short', async () => {
+  for (const locale of ['fi', 'en']) {
+    const html = await read(fileFor(url('booking', locale)));
+
+    const select = /<select id="service" name="service"[^>]*>([\s\S]*?)<\/select>/.exec(html)[1];
+    const values = [...select.matchAll(/value="([^"]+)"/g)].map((m) => m[1]);
+    assert.ok(values.length >= 5, 'the appointment selector should list the provider services');
+    for (const v of values) {
+      assert.equal(SERVICE_PRODUCTS[v].type, 'appointment_run', `${v} does not belong in the appointment selector`);
+    }
+
+    assert.match(html, /name="service_type" value="general_move"/);
+    assert.match(html, /name="service_type" value="appointment_run"/);
+    assert.equal(/name="path"/.test(html), false, 'the old passenger path choice is back');
+
+    // First stage: email optional, no vehicle or payment fields demanded.
+    assert.match(html, /<input type="email" id="customer_email" name="customer_email" autocomplete="email"/);
+    assert.equal(/id="customer_email"[^>]* required/.test(html), false, 'email must be optional');
+    assert.equal(/id="plate"[^>]* required/.test(html), false, 'the registration waits for the callback');
+    assert.equal(/id="payment_method"/.test(html), false, 'payment is agreed at confirmation');
+    assert.equal((html.match(/name="ack"/g) || []).length, 1, 'one up-front statement, not eight');
+
+    // The passenger service is signposted, never bookable here.
+    assert.ok(html.includes(`href="${serviceUrl('personalDriver', locale)}"`));
+    const config = JSON.parse(/<script id="booking-config" type="application\/json">([\s\S]*?)<\/script>/.exec(html)[1]);
+    assert.equal(config.products.personalDriver, undefined, 'passenger prices leaked into the form');
   }
 });
 
@@ -97,27 +179,50 @@ test('the third-party boundary is stated on every service page', async () => {
   }
 });
 
-test('a gated service offers no booking CTA and says why', async () => {
-  for (const s of services) {
-    if (!isServiceGated(s.key)) continue;
+test('every sold service page says the customer does not travel and shows its price', async () => {
+  for (const key of soldKeys) {
+    const product = PRODUCTS[SERVICE_PRODUCTS[key].default];
     for (const locale of ['fi', 'en']) {
-      const html = await read(fileFor(serviceUrl(s.key, locale)));
-      assert.equal(html.includes(`href="/varaus/?palvelu=${s.key}"`), false,
-        `${s.key} (${locale}) links to the booking form while gated`);
-      assert.equal(html.includes(`href="/en/booking/?service=${s.key}"`), false,
-        `${s.key} (${locale}) links to the booking form while gated`);
+      const html = await read(fileFor(serviceUrl(key, locale)));
+      assert.ok(html.includes(escapeHtml(ui[locale].noPassenger)), `${key} (${locale}) lacks the no-passenger statement`);
+      assert.ok(html.includes(`${ui[locale].priceFrom} ${product.from} €`), `${key} (${locale}) lacks its starting price`);
+    }
+  }
+});
+
+test('prices agree across the price list, the service pages and the schema', async () => {
+  const list = await read(fileFor(url('pricing', 'fi')));
+  for (const key of ['oneWay', 'pickupReturn', 'serviceRun', 'inspection', 'handover']) {
+    assert.ok(list.includes(`alkaen ${PRODUCTS[key].from} €`), `price list lacks ${key}`);
+  }
+  for (const key of soldKeys) {
+    const html = await read(fileFor(serviceUrl(key, 'fi')));
+    const json = JSON.parse(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/.exec(html)[1]);
+    const svc = json.find((n) => n['@type'] === 'Service');
+    assert.equal(svc.offers.price, String(PRODUCTS[SERVICE_PRODUCTS[key].default].from), `${key} schema price`);
+  }
+});
+
+test('a gated service offers no booking CTA, no price and says why', async () => {
+  for (const key of gatedKeys) {
+    for (const locale of ['fi', 'en']) {
+      const html = await read(fileFor(serviceUrl(key, locale)));
+      assert.equal(html.includes(`href="/varaus/?palvelu=${key}"`), false,
+        `${key} (${locale}) links to the booking form while gated`);
+      assert.equal(html.includes(`href="/en/booking/?service=${key}"`), false,
+        `${key} (${locale}) links to the booking form while gated`);
       assert.match(html, /(odottaa viranomais|awaiting regulatory)/i,
-        `${s.key} (${locale}) does not say it is awaiting clearance`);
+        `${key} (${locale}) does not say it is awaiting clearance`);
+      assert.equal(html.includes('"offers"'), false, `${key} (${locale}) schema claims a bookable offer`);
     }
   }
 });
 
 test('an ungated service does offer a booking CTA', async () => {
-  const open = services.filter((s) => !isServiceGated(s.key) && s.category === 'concierge');
-  assert.ok(open.length >= 6, 'the concierge catalogue should be bookable at launch');
-  for (const s of open) {
-    const html = await read(fileFor(serviceUrl(s.key, 'fi')));
-    assert.ok(html.includes(`href="/varaus/?palvelu=${s.key}"`), `${s.key} has no request CTA`);
+  assert.ok(soldKeys.length >= 6, 'the car-move catalogue should be bookable');
+  for (const key of soldKeys) {
+    const html = await read(fileFor(serviceUrl(key, 'fi')));
+    assert.ok(html.includes(`href="/varaus/?palvelu=${key}"`), `${key} has no request CTA`);
   }
 });
 
@@ -134,7 +239,7 @@ test('the sitemap lists every indexable page and no noindex one', async () => {
   const xml = await read('sitemap.xml');
   for (const p of pages) {
     const loc = `<loc>https://driveme.fi${p.path}</loc>`;
-    if (p.id === 'booking') {
+    if (noindexIds.has(p.id)) {
       assert.equal(xml.includes(loc), false, `${p.path} must not be in the sitemap`);
     } else {
       assert.ok(xml.includes(loc), `${p.path} is missing from the sitemap`);
@@ -142,11 +247,12 @@ test('the sitemap lists every indexable page and no noindex one', async () => {
   }
 });
 
-test('robots.txt keeps operational and archived surfaces out of the index', async () => {
+test('robots.txt keeps operational surfaces out and lets AI search in', async () => {
   const txt = await read('robots.txt');
   for (const path of ['/admin', '/track', '/driver', '/varaus/', '/legacy']) {
     assert.ok(txt.includes(`Disallow: ${path}`), `robots.txt does not disallow ${path}`);
   }
+  assert.match(txt, /User-agent: OAI-SearchBot\nAllow: \//);
   assert.ok(txt.includes('Sitemap: https://driveme.fi/sitemap.xml'));
 });
 

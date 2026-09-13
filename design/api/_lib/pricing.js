@@ -1,5 +1,5 @@
 /**
- * DriveMe pricing - the single source of truth for §5 of the growth strategy.
+ * DriveMe pricing - the single source of truth for every published price.
  *
  * Both the published price list and the server-side quote import this module,
  * so a page can never advertise a number the API does not charge. That drift
@@ -7,46 +7,54 @@
  * line that never reached the total, a €24 demo fare under a €105 minimum,
  * and a €100/month subscription that valued driver time below the list rate).
  *
- * Two rules the document is explicit about, both enforced below:
+ * Prices follow the pricing test in "DriveMe: A Driver for Your Car" (Driver
+ * First Growth Plan, 13 Sep 2026), VAT included:
+ *
+ *   one-way move                      from 89 €  (typically 99-129 €)
+ *   workshop / tyre / wash, return    from 149 € (typically 149-199 €)
+ *   inspection, wait and return       from 169 €
+ *   dealer or lease handover          from 99 €
+ *
+ * Two rules the strategy is explicit about, both enforced below:
  *
  *  1. No geographic surcharge input. The customer never calculates kilometres
  *     "outside a boundary". A route the service area does not cover becomes a
  *     manual fixed quote, not a surcharge the customer has to compute.
  *
- *  2. What we show before confirmation is INDICATIVE. §5: "If instant pricing
- *     is not reliable, display an indicative 'from' price and promise manual
- *     confirmation, not a fake total." Everything here produces a `from`
- *     figure plus disclosed premium lines; the fixed fee is set by a human in
- *     /admin before the job is confirmed.
+ *  2. What we show before confirmation is INDICATIVE: a `from` figure plus
+ *     disclosed premium lines. The fixed fee is set by a human in /admin
+ *     before the job is confirmed.
  *
- * OWNER DECISION PENDING (§13.1): the premium percentages and the waiting
- * rate below are the document's recommended launch structure, but the final
- * numbers need driver and support-vehicle cost modelling. They are collected
- * here so the owner changes them in one place - never in page copy.
+ * OWNER DECISION PENDING: these are test prices. The plan asks for them to be
+ * reviewed against real demand; change them here and nowhere else.
  */
 
-export const VAT_INCLUDED = true;         // §5: consumer prices shown incl. VAT
+export const VAT_INCLUDED = true;         // consumer prices shown incl. VAT
 export const CURRENCY = 'EUR';
 
 /**
- * §5 recommended launch prices. `from` is a starting price, never a total.
+ * `from` is a starting price, never a total. `typical` is the range most jobs
+ * land in, published so a starting price cannot read as a bait figure.
  * `quote: true` means the product has no starting price at all and always
- * goes to a manual fixed quote.
+ * goes to a manual fixed quote. `hidden: true` marks a passenger product that
+ * is not sold yet: its price is kept for the day it launches but is never
+ * published and never quoted to a customer.
  */
 export const PRODUCTS = {
-  oneWay: { from: 59, quote: false, unit: 'job' },
-  pickupReturn: { from: 99, quote: false, unit: 'job' },
-  waitReturn: { from: 119, quote: false, unit: 'job' },
-  inspection: { from: 119, quote: false, unit: 'job' },
-  serviceRun: { from: 99, quote: false, unit: 'job' },
-  airport: { from: 129, quote: false, unit: 'job' },
-  personalDriver: { from: 39, quote: false, unit: 'hour', minHours: 2 },
-  designated: { from: null, quote: true, unit: 'job' },
+  oneWay: { from: 89, typical: [99, 129], quote: false, unit: 'job' },
+  pickupReturn: { from: 149, typical: [149, 199], quote: false, unit: 'job' },
+  waitReturn: { from: 169, quote: false, unit: 'job' },
+  inspection: { from: 169, quote: false, unit: 'job' },
+  serviceRun: { from: 149, typical: [149, 199], quote: false, unit: 'job' },
+  handover: { from: 99, quote: false, unit: 'job' },
+  airport: { from: 129, quote: false, unit: 'job', hidden: true },
+  personalDriver: { from: 39, quote: false, unit: 'hour', minHours: 2, hidden: true },
+  designated: { from: null, quote: true, unit: 'job', hidden: true },
   longDistance: { from: null, quote: true, unit: 'job' },
   corporate: { from: null, quote: true, unit: 'contract' },
 };
 
-/** Waiting rules (§5). */
+/** Waiting rules. */
 export const WAITING = {
   // Included at each handover on every product - covers a normal reception desk.
   includedMinutes: 15,
@@ -58,8 +66,8 @@ export const WAITING = {
 };
 
 /**
- * Disclosed premiums (§5: "Keep urgent, weekend, public-holiday and night
- * work as clearly disclosed premiums"). Percentages of the DriveMe fee.
+ * Disclosed premiums, as percentages of the DriveMe fee. They never stack:
+ * a job that qualifies for several pays only the highest one.
  */
 export const PREMIUMS = {
   night: { pct: 25, fromHour: 22, toHour: 6 },
@@ -68,7 +76,7 @@ export const PREMIUMS = {
   urgent: { pct: 25, withinHours: 12 },
 };
 
-/** §5 cancellation recommendation, in machine-readable form. */
+/** Cancellation terms, in machine-readable form. */
 export const CANCELLATION = {
   freeBeforeHours: 24,
   lateFeePct: 50,
@@ -149,7 +157,7 @@ export function quote(input) {
   if (!product) throw new Error(`unknown product: ${input.product}`);
 
   // Outside the launch service area, or a product that has no list price:
-  // one manual fixed quote, never a computed guess. (§5)
+  // one manual fixed quote, never a computed guess.
   if (product.quote || input.outsideArea) {
     return { quoteOnly: true, from: null, lines: [], total: null, indicative: true };
   }
@@ -166,7 +174,7 @@ export function quote(input) {
   }
 
   // Waiting the customer has already asked for, beyond what the product includes.
-  const included = input.product === 'waitReturn'
+  const included = input.product === 'waitReturn' || input.product === 'inspection'
     ? WAITING.waitReturnIncludedMinutes
     : WAITING.includedMinutes;
   const extraWait = Math.max(0, (input.waitMinutes || 0) - included);
@@ -191,18 +199,85 @@ function round2(n) {
   return Math.round(n * 100) / 100;
 }
 
-/** Which product a service key uses by default, and which options it allows. */
-export const SERVICE_PRODUCTS = {
-  inspection: { default: 'inspection', allowed: ['inspection', 'oneWay', 'pickupReturn', 'waitReturn'] },
-  workshop: { default: 'serviceRun', allowed: ['serviceRun', 'oneWay', 'pickupReturn', 'waitReturn'] },
-  tyre: { default: 'serviceRun', allowed: ['serviceRun', 'oneWay', 'pickupReturn', 'waitReturn'] },
-  wash: { default: 'serviceRun', allowed: ['serviceRun', 'oneWay', 'pickupReturn', 'waitReturn'] },
-  glass: { default: 'serviceRun', allowed: ['serviceRun', 'oneWay', 'pickupReturn'] },
-  pickupReturn: { default: 'pickupReturn', allowed: ['pickupReturn', 'oneWay', 'waitReturn'] },
-  relocation: { default: 'oneWay', allowed: ['oneWay', 'longDistance'] },
-  dealer: { default: 'oneWay', allowed: ['oneWay', 'pickupReturn'] },
-  personalDriver: { default: 'personalDriver', allowed: ['personalDriver'] },
-  safeRideHome: { default: 'designated', allowed: ['designated'] },
-  airport: { default: 'airport', allowed: ['airport'] },
-  business: { default: 'corporate', allowed: ['corporate'] },
+/**
+ * The service catalogue as the booking flow and the API see it.
+ *
+ * `type` is the plan's split of what is sold now:
+ *   general_move    "Aja autoni toiseen osoitteeseen" - address to address
+ *   appointment_run "Vie autoni palveluun" - to an inspection, workshop,
+ *                   tyre shop, wash, body shop or dealer
+ *   passenger       a customer travels in the car - NOT sold yet
+ *   business        contract lead, priced by quote
+ *
+ * `shapes` maps each trip shape the customer can pick to the product that
+ * prices it; `defaultShape` is preselected. The server derives the product
+ * from service + shape through productFor(), so a browser can never choose a
+ * cheaper product than the shape it asked for.
+ */
+const SERVICES = {
+  inspection: {
+    type: 'appointment_run', defaultShape: 'waitReturn',
+    shapes: { waitReturn: 'inspection', pickupReturn: 'pickupReturn', oneWay: 'oneWay' },
+  },
+  workshop: {
+    type: 'appointment_run', defaultShape: 'pickupReturn',
+    shapes: { pickupReturn: 'serviceRun', waitReturn: 'waitReturn', oneWay: 'oneWay' },
+  },
+  tyre: {
+    type: 'appointment_run', defaultShape: 'pickupReturn',
+    shapes: { pickupReturn: 'serviceRun', waitReturn: 'waitReturn', oneWay: 'oneWay' },
+  },
+  wash: {
+    type: 'appointment_run', defaultShape: 'pickupReturn',
+    shapes: { pickupReturn: 'serviceRun', waitReturn: 'waitReturn', oneWay: 'oneWay' },
+  },
+  glass: {
+    type: 'appointment_run', defaultShape: 'pickupReturn',
+    shapes: { pickupReturn: 'serviceRun', oneWay: 'oneWay' },
+  },
+  dealer: {
+    type: 'appointment_run', defaultShape: 'oneWay',
+    shapes: { oneWay: 'handover', pickupReturn: 'pickupReturn' },
+  },
+  relocation: {
+    type: 'general_move', defaultShape: 'oneWay',
+    shapes: { oneWay: 'oneWay' },
+  },
+  pickupReturn: {
+    type: 'general_move', defaultShape: 'pickupReturn',
+    shapes: { pickupReturn: 'pickupReturn' },
+  },
+  personalDriver: { type: 'passenger', defaultShape: null, shapes: {}, product: 'personalDriver' },
+  safeRideHome: { type: 'passenger', defaultShape: null, shapes: {}, product: 'designated' },
+  airport: { type: 'passenger', defaultShape: null, shapes: {}, product: 'airport' },
+  business: { type: 'business', defaultShape: null, shapes: {}, product: 'corporate' },
 };
+
+/** The product that prices a service in a given shape (default shape when unknown). */
+export function productFor(service, shape) {
+  const s = SERVICES[service];
+  if (!s) return null;
+  if (s.product) return s.product;
+  return s.shapes[shape] || s.shapes[s.defaultShape];
+}
+
+/**
+ * Per-service summary used by the pages: `default` is the product behind the
+ * published "from" price, `allowed` every product the service can be priced
+ * as, `shapes` the choices the booking form offers.
+ */
+export const SERVICE_PRODUCTS = Object.fromEntries(Object.entries(SERVICES).map(([key, s]) => {
+  const def = productFor(key, s.defaultShape);
+  return [key, {
+    type: s.type,
+    default: def,
+    defaultShape: s.defaultShape,
+    shapes: { ...s.shapes },
+    allowed: [...new Set([def, ...Object.values(s.shapes)])],
+  }];
+}));
+
+/** Service keys by type, in catalogue order. */
+export function servicesOfType(type) {
+  return Object.keys(SERVICES).filter((k) => SERVICES[k].type === type);
+}

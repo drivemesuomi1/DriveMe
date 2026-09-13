@@ -4,7 +4,9 @@
  *
  * Source: "DriveMe - Service and Website Growth Strategy" (Mansio Group Oy,
  * 8 September 2026) - §6 responsibility boundaries, §8 information
- * architecture, §9/§9.1 homepage copy.
+ * architecture - as refocused by "DriveMe: A Driver for Your Car" (Driver
+ * First Growth Plan, 13 September 2026): the site sells a driver for the
+ * customer's own car, with nobody travelling in it.
  *
  * Finnish is the primary market language (§8). English mirrors it under /en/.
  * Swedish is deliberately NOT generated yet: §8 forbids machine-translating
@@ -28,6 +30,10 @@ export const brand = {
   country: 'FI',
   // §12 audit, "Coverage differs": one launch area, used everywhere.
   coverage: ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen'],
+  // OWNER DECISION PENDING: the Y-tunnus. Published on the terms page and in
+  // the LocalBusiness schema as soon as it is filled in; until then nothing
+  // placeholder-shaped is shown in its place.
+  businessId: null,
 };
 
 /**
@@ -61,27 +67,25 @@ export const nav = {
   ],
 };
 
-/** Headings inside the services drop-down (grouped as the two paths). */
+/** Headings inside the services drop-down: the two things sold now. */
 export const menuGroups = {
   fi: {
-    concierge: 'Hoida autoni puolestani',
-    driver: 'Tarvitsen kuljettajan',
+    appointment: 'Vie autoni palveluun',
+    move: 'Aja autoni toiseen osoitteeseen',
     business: 'Lisää',
     all: 'Kaikki palvelut',
     pricing: 'Hinnasto',
     safety: 'Turvallisuus',
     faq: 'Usein kysyttyä',
-    gated: 'Odottaa lupaa',
   },
   en: {
-    concierge: 'Take care of my car',
-    driver: 'I need a driver',
+    appointment: 'Take my car to a service',
+    move: 'Drive my car to another address',
     business: 'More',
     all: 'All services',
     pricing: 'Pricing',
     safety: 'Safety',
     faq: 'FAQ',
-    gated: 'Awaiting clearance',
   },
 };
 
@@ -89,7 +93,7 @@ export const ui = {
   fi: {
     lang: 'fi-FI',
     skip: 'Siirry sisältöön',
-    bookCta: 'Varaa DriveMe',
+    bookCta: 'Pyydä hinta',
     bookHref: '/varaus/',
     callUs: 'Soita',
     menu: 'Valikko',
@@ -107,18 +111,22 @@ export const ui = {
     related: 'Liittyvät palvelut',
     boundary: 'Vastuunjako',
     requestPrice: 'Pyydä hinta',
-    finalCta: 'Anna meidän hoitaa ajaminen',
+    finalCta: 'Kuljettaja autollesi, *kun et ehdi itse*',
     priceFrom: 'alkaen',
     vatNote: 'Hinnat sisältävät arvonlisäveron.',
     thirdParty: 'Kolmannen osapuolen maksut eivät sisälly hintaan, vaan ne maksetaan suoraan palveluntarjoajalle.',
     onThisPage: 'Tällä sivulla',
     allServices: 'Kaikki palvelut',
     readMore: 'Lue lisää',
+    requestMove: 'Pyydä hinta auton siirrolle',
+    noPassenger: 'Sinun ei tarvitse lähteä mukaan. Kuljettaja ajaa autosi perille, eikä autossa kuljeteta matkustajia.',
+    passengers: 'Matkustajat',
+    noPassengerShort: 'Ei matkustajia, et lähde mukaan',
   },
   en: {
     lang: 'en-FI',
     skip: 'Skip to content',
-    bookCta: 'Book DriveMe',
+    bookCta: 'Get a price',
     bookHref: '/en/booking/',
     callUs: 'Call',
     menu: 'Menu',
@@ -136,13 +144,17 @@ export const ui = {
     related: 'Related services',
     boundary: 'Responsibility boundary',
     requestPrice: 'Request a price',
-    finalCta: 'Let us handle the driving',
+    finalCta: 'A driver for your car, *when you cannot make the trip*',
     priceFrom: 'from',
     vatNote: 'Prices include Finnish VAT.',
     thirdParty: 'Third-party charges are not included and are paid directly to the provider.',
     onThisPage: 'On this page',
     allServices: 'All services',
     readMore: 'Read more',
+    requestMove: 'Get a price to move my car',
+    noPassenger: 'You do not need to travel with the car. The driver takes it to the destination and carries no passengers.',
+    passengers: 'Passengers',
+    noPassengerShort: 'None, you do not travel with it',
   },
 };
 
@@ -212,31 +224,31 @@ export const trustStrip = {
     { icon: 'price', label: 'Hinta vahvistetaan ennen ajoa' },
     { icon: 'driver', label: 'Ammattimainen kuljettaja' },
     { icon: 'doc', label: 'Dokumentoitu nouto ja palautus' },
-    { icon: 'clock', label: 'Vastaamme alle 15 minuutissa' },
+    { icon: 'key', label: 'Sinun ei tarvitse lähteä mukaan' },
     { icon: 'pin', label: 'Helsinki, Espoo, Vantaa, Kauniainen' },
   ],
   en: [
     { icon: 'price', label: 'Price confirmed in advance' },
     { icon: 'driver', label: 'Professional driver' },
     { icon: 'doc', label: 'Documented pickup and return' },
-    { icon: 'clock', label: 'We answer within 15 minutes' },
+    { icon: 'key', label: 'You do not travel with the car' },
     { icon: 'pin', label: 'Helsinki, Espoo, Vantaa, Kauniainen' },
   ],
 };
 
-/** §7 customer journey, condensed to the four customer-facing steps (§9). */
+/** The customer journey, condensed to the four steps on the homepage. */
 export const howItWorks = {
   fi: [
-    { t: 'Valitse palvelu ja lähetä tiedot', d: 'Kerro nouto-osoite, kohde, ajankohta ja auton tiedot. Näet ohjeellisen hinnan heti.' },
-    { t: 'DriveMe vahvistaa ajan, kuljettajan ja hinnan', d: 'Pyyntö ei ole vahvistettu ennen kuin olemme hyväksyneet sen. Vastaamme palveluaikana alle 15 minuutissa.' },
-    { t: 'Dokumentoimme auton kunnon ja luovutuksen', d: 'Aikaleimatut kuvat, mittarilukema sekä polttoaine- tai lataustaso noudon yhteydessä.' },
-    { t: 'Saat tilapäivitykset ja vahvistuksen', d: 'Jokainen luovutus kuitataan, ja saat vahvistuksen toimituksesta tai palautuksesta.' },
+    { t: 'Kerro, mihin auto menee', d: 'Nouto-osoite, kohde tai palveluntarjoaja ja toivottu päivä. Näet ohjeellisen hinnan heti.' },
+    { t: 'Soitamme ja vahvistamme', d: 'Käymme auton tiedot läpi ja vahvistamme kuljettajan, ajan ja kiinteän hinnan. Pyyntö ei ole vielä vahvistus.' },
+    { t: 'Kuljettaja noutaa autosi', d: 'Kuvaamme kunnon, mittarilukeman sekä polttoaine- tai lataustason. Sinun ei tarvitse lähteä mukaan.' },
+    { t: 'Auto perille tai takaisin', d: 'Jokainen luovutus kirjataan, ja saat tiedon toimituksesta tai palautuksesta.' },
   ],
   en: [
-    { t: 'Choose a service and send the details', d: 'Tell us the collection address, destination, timing and vehicle details. You see an indicative price immediately.' },
-    { t: 'DriveMe confirms the time, driver and price', d: 'A request is not confirmed until we accept it. We answer within 15 minutes during service hours.' },
-    { t: 'We document the vehicle and handover at collection', d: 'Timestamped photos, mileage and fuel or charge level when the car is collected.' },
-    { t: 'You receive status updates and confirmation', d: 'Every handover is recorded, and you get confirmation of the delivery or return.' },
+    { t: 'Tell us where the car goes', d: 'Collection address, destination or provider, and the preferred day. You see an indicative price immediately.' },
+    { t: 'We call you and confirm', d: 'We go through the vehicle details and confirm the driver, the time and a fixed price. A request is not yet a confirmation.' },
+    { t: 'The driver collects your car', d: 'We photograph condition, mileage and fuel or charge level. You do not need to travel with it.' },
+    { t: 'Delivered, or back home', d: 'Every handover is recorded, and you hear when the car is delivered or returned.' },
   ],
 };
 
@@ -288,12 +300,14 @@ export const screening = {
 
 export const footer = {
   fi: {
-    tagline: 'Kuljettaja- ja ajoneuvopalvelu pääkaupunkiseudulla.',
+    tagline: 'Kuljettaja autollesi pääkaupunkiseudulla. Sinun ei tarvitse lähteä mukaan.',
     columns: [
-      { title: 'Auton hoito', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass'] },
-      { title: 'Siirrot ja luovutukset', keys: ['pickupReturn', 'relocation', 'dealer'] },
-      { title: 'Kuljettajapalvelut', keys: ['personalDriver', 'safeRideHome', 'airport'] },
+      { title: 'Vie autoni palveluun', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
+      { title: 'Auton siirrot', keys: ['relocation', 'pickupReturn', 'business'] },
     ],
+    // The plan allows one discreet link to a single interest page for the
+    // passenger service - no price and no booking button behind it.
+    interest: { label: 'Haluatko matkustaa auton mukana? Ilmoita kiinnostuksesi', key: 'personalDriver' },
     legalLinks: [
       { label: 'Palveluehdot', href: '/ehdot/' },
       { label: 'Peruutusehdot', href: '/ehdot/#peruutus' },
@@ -304,12 +318,12 @@ export const footer = {
     note: 'DriveMe on Mansio Group Oy:n palvelu. DriveMe ei ole korjaamo, katsastusasema, rengasliike, autopesula, vakuutusyhtiö eikä maksunvälittäjä.',
   },
   en: {
-    tagline: 'Driver and vehicle concierge service in the Helsinki capital region.',
+    tagline: 'A driver for your car in the Helsinki capital region. You do not need to travel with it.',
     columns: [
-      { title: 'Vehicle care', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass'] },
-      { title: 'Moves and handovers', keys: ['pickupReturn', 'relocation', 'dealer'] },
-      { title: 'Driver services', keys: ['personalDriver', 'safeRideHome', 'airport'] },
+      { title: 'Take my car to a service', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
+      { title: 'Vehicle moves', keys: ['relocation', 'pickupReturn', 'business'] },
     ],
+    interest: { label: 'Want to travel with the car? Register your interest', key: 'personalDriver' },
     legalLinks: [
       { label: 'Terms of service', href: '/en/terms/' },
       { label: 'Cancellation', href: '/en/terms/#cancellation' },

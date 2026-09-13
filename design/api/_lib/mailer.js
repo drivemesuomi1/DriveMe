@@ -9,6 +9,7 @@
 //   OPS_EMAIL        where booking alerts go (info@driveme.fi once that inbox
 //                    exists; any address you can actually read until then)
 //   PUBLIC_BASE_URL  origin used for links inside emails, e.g. https://driveme.fi
+//   RESEND_API_URL   optional; only the test suite sets it, to a local stand-in
 //
 // Nothing here is allowed to throw. By the time we send, the booking is already
 // safely in the database — a mail outage must never turn into a lost customer.
@@ -46,7 +47,7 @@ export async function sendMail({ to, subject, html, text, replyTo }) {
   const abort = AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined;
 
   try {
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await fetch(process.env.RESEND_API_URL || 'https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         Authorization: 'Bearer ' + process.env.RESEND_API_KEY,

@@ -1,72 +1,85 @@
 /**
- * The request flow (§7 "Operational workflow and booking fields").
+ * The price request, rebuilt for "DriveMe: A Driver for Your Car" (Driver
+ * First Growth Plan, 13 Sep 2026).
  *
- * One flow, called "request" until DriveMe accepts it (§12 audit: the old
- * site had two booking interfaces and mixed request/book language). The
- * fields are exactly the groups the document lists - customer, service,
- * locations, appointment, vehicle, eligibility, handover, payment,
- * permissions - shown conditionally so a relocation booking is not asked
- * for a workshop reference.
+ * The plan's P1 item is a two-stage inquiry a customer can send from a phone
+ * in under a minute. The first stage asks only what is needed to call back
+ * with a price: what the car needs, where from, where to, when, and who to
+ * call. Registration, key handover, invoicing and the booking statements are
+ * collected on the callback and at confirmation; the optional details panel
+ * lets a customer who has them to hand add them now.
+ *
+ * Only what is sold now is offered - a general address-to-address move, or a
+ * run to an inspection, workshop, tyre shop, wash or dealer. A customer who
+ * wants to travel with the car is pointed at the interest page: that is not
+ * bookable, and the form has no way to ask for it.
  *
  * Pricing shown here is INDICATIVE and says so. The same constants that
- * produce it are exported from api/_lib/pricing.js and re-used by the
- * server, which recomputes the figure before storing it.
+ * produce it come from api/_lib/pricing.js, which the server re-uses to
+ * recompute the product and the figure before storing them.
  */
 
 import { services, byKey } from '../content/services.mjs';
-import { acknowledgements, brand, ui } from '../content/site.mjs';
-import { PRODUCTS, WAITING, PREMIUMS, SERVICE_PRODUCTS } from '../api/_lib/pricing.js';
+import { brand, ui } from '../content/site.mjs';
+import { PRODUCTS, WAITING, PREMIUMS, SERVICE_PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
 import { esc } from './layout.mjs';
-import { url } from './routes.mjs';
+import { url, serviceUrl } from './routes.mjs';
 import { isGated } from './blocks.mjs';
+
+const WINDOWS = ['08-10', '10-12', '12-14', '14-16', '16-18', '18-20'];
 
 const COPY = {
   fi: {
-    path: 'Mitä tarvitset?',
-    pathDriver: 'Tarvitsen kuljettajan',
-    pathDriverSub: 'Ammattikuljettaja ajaa omaa autoasi.',
-    pathCar: 'Hoida autoni puolestani',
-    pathCarSub: 'Noudamme auton, viemme sen palveluun ja palautamme sen.',
-    service: 'Palvelu',
-    serviceLabel: 'Valitse palvelu',
-    shape: 'Miten hoidamme työn?',
-    shapeOneWay: 'Vain yhteen suuntaan',
-    shapeOneWaySub: 'Yksi nouto ja yksi toimitus.',
-    shapeReturn: 'Nouto ja myöhempi palautus',
-    shapeReturnSub: 'Kaksi sovittua siirtoa; kuljettaja ei jää odottamaan.',
-    shapeWait: 'Odota ja palauta',
-    shapeWaitSub: `Kuljettaja odottaa enintään ${WAITING.waitReturnIncludedMinutes} min ja tuo auton takaisin.`,
-    locations: 'Osoitteet',
-    pickup: 'Nouto-osoite',
-    destination: 'Kohde tai palveluntarjoajan osoite',
-    returnTo: 'Palautusosoite',
-    returnSame: 'Palautus samaan osoitteeseen kuin nouto',
-    access: 'Kulku- ja pysäköintiohjeet',
-    accessHelp: 'Portti- tai ovikoodi, parkkihallin taso, mistä avaimet löytyvät.',
-    timing: 'Ajankohta',
-    date: 'Päivämäärä',
-    window: 'Noutoikkuna',
-    deliveryBy: 'Tarvittava toimitusaika',
-    deliveryByHelp: 'Jätä tyhjäksi, jos aikataulu on joustava.',
-    appointment: 'Ajanvaraus palveluntarjoajalla',
-    provider: 'Palveluntarjoaja',
-    providerHelp: 'Katsastusasema, korjaamo, rengasliike, pesula tai muu valitsemasi kohde.',
-    apptTime: 'Vahvistettu aika',
-    apptRef: 'Varausnumero',
-    apptContact: 'Yhteyshenkilö tai puhelin kohteessa',
-    keyMethod: 'Avainten luovutus kohteessa',
-    keyHand: 'Nimetylle henkilölle',
-    keyDrop: 'Avainlaatikkoon',
-    keyOther: 'Muu, kerron lisätiedoissa',
-    apptNotice: 'Emme lähetä kuljettajaa ennen kuin ajanvaraus on vahvistettu. Ajanvarauksen tekee ja maksun hoitaa asiakas suoraan palveluntarjoajalle.',
-    hours: 'Kuljettajan tarve tunteina',
-    hoursHelp: `Suositeltu minimi ${PRODUCTS.personalDriver.minHours} tuntia.`,
-    wait: 'Arvioitu odotusaika kohteessa (min)',
-    waitHelp: `Jokaiseen luovutukseen sisältyy ${WAITING.includedMinutes} min. Sen ylittävä odotus veloitetaan ${WAITING.hourlyRate} €/h ${WAITING.unitMinutes} minuutin erissä.`,
-    vehicle: 'Ajoneuvo',
+    typeLegend: 'Mitä autollesi tehdään?',
+    typeMove: 'Aja autoni toiseen osoitteeseen',
+    typeMoveSub: 'Kuljettaja vie auton sovittuun osoitteeseen, tarvittaessa myös takaisin.',
+    typeAppt: 'Vie autoni palveluun',
+    typeApptSub: 'Katsastus, huolto, renkaanvaihto, pesu tai autoliike. Palautus sovitusti.',
+    passengerNote: 'Haluatko matkustaa itse auton mukana? Sitä ei voi vielä varata.',
+    passengerLink: 'Ilmoita kiinnostuksesi',
+    businessNote: 'Yritysasiakas: kerro ensimmäinen siirto tässä. Sovimme sopimushinnan ja laskutuksen, kun soitamme.',
+    moveLegend: 'Minne auto menee?',
+    destination: 'Kohdeosoite',
+    returnLegend: 'Tarvitaanko paluu?',
+    returnNo: 'Ei, vain yhteen suuntaan',
+    returnYes: 'Kyllä, auto tuodaan takaisin myöhemmin',
+    apptLegend: 'Palvelu ja palveluntarjoaja',
+    service: 'Mihin palveluun auto viedään?',
+    serviceHelp: 'Muu kohde? Valitse yllä "Aja autoni toiseen osoitteeseen".',
+    serviceNames: {
+      inspection: 'Katsastus',
+      workshop: 'Huolto tai korjaamo',
+      tyre: 'Renkaanvaihto tai rengashotelli',
+      wash: 'Pesu tai detailing',
+      glass: 'Lasi, kori tai takaisinkutsu',
+      dealer: 'Autoliike, leasing tai vuokraamo',
+    },
+    provider: 'Palveluntarjoaja ja osoite',
+    providerHelp: 'Esim. katsastusasema tai korjaamo ja sen osoite. Ajan varaat ja palvelun maksat itse.',
+    apptTime: 'Varattu aika, jos tiedossa',
+    shape: 'Miten auto palaa?',
+    shapeWait: 'Kuljettaja odottaa ja tuo auton takaisin',
+    shapeWaitSub: `Odotusta enintään ${WAITING.waitReturnIncludedMinutes} min.`,
+    shapeReturn: 'Nouto ja palautus myöhemmin',
+    shapeReturnSub: 'Tuomme auton takaisin, kun palvelu on valmis.',
+    shapeOneWay: 'Vain vienti',
+    shapeOneWaySub: 'Noudat auton itse tai sovimme paluun erikseen.',
+    whereWhen: 'Nouto ja aika',
+    pickup: 'Nouto-osoite tai postinumero',
+    date: 'Toivottu päivä',
+    window: 'Toivottu aika',
+    windowFlex: 'Joustava',
+    contact: 'Kenelle soitamme?',
+    name: 'Nimi',
+    phone: 'Puhelin',
+    email: 'Sähköposti',
+    emailHelp: 'Vapaaehtoinen. Lähetämme kuittauksen, jos annat osoitteen.',
+    auth: 'Olen auton omistaja tai haltija, tai minulla on lupa antaa auto DriveMen kuljettajan ajettavaksi.',
+    authLabel: 'Lupa auton ajamiseen',
+    more: 'Lisätiedot',
+    moreSub: 'Vapaaehtoinen. Voit täyttää nämä nyt tai käydä ne läpi, kun soitamme.',
     plate: 'Rekisteritunnus',
     makeModel: 'Merkki ja malli',
-    year: 'Vuosimalli',
     gearbox: 'Vaihteisto',
     manual: 'Manuaali',
     automatic: 'Automaatti',
@@ -75,59 +88,47 @@ const COPY = {
     fuelDiesel: 'Diesel',
     fuelHybrid: 'Hybridi',
     fuelEv: 'Sähkö',
-    mileage: 'Mittarilukema (km, arvio)',
-    controls: 'Erityiset hallintalaitteet, viat tai varoitusvalot',
-    controlsHelp: 'Esimerkiksi käsihallintalaitteet, lukkopulttiavaimen sijainti, tiedossa oleva vika.',
-    customer: 'Yhteystiedot',
-    name: 'Nimi',
-    phone: 'Puhelin',
-    email: 'Sähköposti',
+    unknown: 'Ei tiedossa',
+    access: 'Kulku- ja pysäköintiohjeet',
+    accessHelp: 'Portti- tai ovikoodi, parkkihallin taso, mistä avaimet löytyvät.',
+    apptRef: 'Varausnumero',
     customerType: 'Asiakastyyppi',
     person: 'Yksityishenkilö',
     company: 'Yritys',
     companyName: 'Yrityksen nimi',
     businessId: 'Y-tunnus',
     invoiceEmail: 'Laskutussähköposti',
-    handover: 'Luovutus',
-    pickupContact: 'Kuka luovuttaa avaimet noudossa?',
-    deliveryContact: 'Kuka vastaanottaa auton?',
-    contactMe: 'Minä itse',
-    contactOther: 'Joku muu (nimi ja puhelin)',
-    payment: 'Maksu',
-    payMethod: 'DriveMe-palkkion maksutapa',
-    payCard: 'Kortti',
-    payMobile: 'MobilePay',
-    payInvoice: 'Lasku (yritysasiakkaat)',
-    payNote: 'Maksutavat vahvistetaan ennen julkaisua. Kolmannen osapuolen palvelut maksat aina suoraan palveluntarjoajalle.',
-    acks: 'Vahvistukset',
-    acksIntro: 'Nämä ovat varauksen ehtoja. Käymme ne läpi myös vahvistuksessa.',
     notes: 'Muuta huomioitavaa',
+    notesHelp: 'Esimerkiksi tiedossa olevat viat tai toive palautuksesta toiseen osoitteeseen.',
+    laterNote: 'Rekisteritunnuksen, avainten luovutuksen, valtuutuksen, maksutavan ja varauksen ehdot käymme läpi ennen vahvistusta.',
+    terms: 'Palveluehdot',
     quote: 'Ohjeellinen hinta',
-    quoteNote: 'Ohjeellinen hinta sisältää arvonlisäveron. Vahvistamme kiinteän DriveMe-hinnan ennen kuljettajan lähtöä. Kolmannen osapuolen maksut eivät sisälly.',
+    quoteNote: 'Hinta sisältää arvonlisäveron. Vahvistamme kiinteän DriveMe-hinnan ennen ajoa. Palveluntarjoajan maksut eivät sisälly.',
     quoteFrom: 'alkaen',
     quoteManual: 'Kiinteä tarjous',
-    quoteManualNote: 'Tälle työlle annamme kiinteän tarjouksen käsin - reitti tai palvelu ei sovi vakiohinnastoon.',
-    submit: 'Lähetä pyyntö',
+    quoteManualNote: 'Tälle työlle annamme kiinteän tarjouksen käsin.',
+    submit: 'Lähetä hintapyyntö',
     submitting: 'Lähetetään…',
     errorTitle: 'Tarkista nämä kohdat',
     required: 'Tämä tieto tarvitaan.',
-    badEmail: 'Tarkista sähköpostiosoite.',
+    badEmail: 'Tarkista sähköpostiosoite tai jätä kenttä tyhjäksi.',
+    badPhone: 'Tarkista puhelinnumero.',
     badRange: 'Arvo ei ole sallitulla välillä.',
-    mustAccept: 'Vahvistus tarvitaan.',
+    mustAccept: 'Tämä vahvistus tarvitaan.',
     submitLocked: 'Ennen pyynnön lähettämistä:',
-    requiredNote: 'Tähdellä * merkityt kentät ovat pakollisia. Muut voit täyttää, jos tiedät ne nyt.',
-    doneTitle: 'Kiitos - pyyntö on vastaanotettu',
-    doneBody: 'Pyyntö ei ole vielä vahvistus. Käymme tiedot läpi ja vahvistamme kuljettajan, ajan ja kiinteän hinnan. Vastaamme palveluaikana alle 15 minuutissa.',
+    requiredNote: 'Tähdellä * merkityt kentät ovat pakollisia. Pyynnön lähettäminen vie alle minuutin.',
+    doneTitle: 'Kiitos - hintapyyntö on vastaanotettu',
+    doneBody: 'Tämä on pyyntö, ei vielä vahvistus. Soitamme sinulle, käymme auton tiedot läpi ja vahvistamme kuljettajan, ajan ja kiinteän hinnan.',
+    doneCall: `Kiireellisessä asiassa soita ${brand.phone}.`,
     doneRef: 'Viitteesi',
     doneAgain: 'Lähetä uusi pyyntö',
     failed: 'Pyyntöä ei saatu lähetettyä. Yritä uudelleen tai soita numeroon ' + brand.phone + '.',
-    gatedTitle: 'Tämä palvelu ei ole vielä varattavissa',
+    gatedTitle: 'Tätä palvelua ei voi vielä varata',
+    gatedBody: 'Kuljettajaa, jonka kyydissä matkustat itse, ei voi vielä varata. Voit ilmoittaa kiinnostuksesi, niin kerromme, kun palvelu avautuu.',
     gateContactTitle: 'Ota yhteyttä',
     gateContactBody: 'Kerromme mielellämme lisää ja ilmoitamme heti, kun palvelu on saatavilla.',
     lines: {
       base: 'Palvelun perushinta',
-      driverTime: 'Kuljettajan aika',
-      waiting: 'Odotus',
       night: 'Yölisä',
       weekend: 'Viikonloppulisä',
       publicHoliday: 'Arkipyhälisä',
@@ -135,51 +136,56 @@ const COPY = {
     },
   },
   en: {
-    path: 'What do you need?',
-    pathDriver: 'I need a driver',
-    pathDriverSub: 'A professional driver operates your own car.',
-    pathCar: 'Take care of my car',
-    pathCarSub: 'We collect the car, take it to the provider and return it.',
-    service: 'Service',
-    serviceLabel: 'Choose the service',
-    shape: 'How should we run the job?',
-    shapeOneWay: 'One way only',
-    shapeOneWaySub: 'One collection and one delivery.',
+    typeLegend: 'What does your car need?',
+    typeMove: 'Drive my car to another address',
+    typeMoveSub: 'A driver takes the car to the agreed address, and back again if needed.',
+    typeAppt: 'Take my car to a service',
+    typeApptSub: 'Inspection, workshop, tyre change, wash or dealer. Returned as agreed.',
+    passengerNote: 'Want to travel with the car yourself? That cannot be booked yet.',
+    passengerLink: 'Register your interest',
+    businessNote: 'Company customer: tell us about the first move here. We agree contract pricing and invoicing when we call.',
+    moveLegend: 'Where does the car go?',
+    destination: 'Destination address',
+    returnLegend: 'Does the car need to come back?',
+    returnNo: 'No, one way only',
+    returnYes: 'Yes, bring it back later',
+    apptLegend: 'Service and provider',
+    service: 'Which service is the car going to?',
+    serviceHelp: 'Somewhere else? Choose "Drive my car to another address" above.',
+    serviceNames: {
+      inspection: 'Inspection',
+      workshop: 'Workshop or maintenance',
+      tyre: 'Tyre change or tyre hotel',
+      wash: 'Wash or detailing',
+      glass: 'Glass, body shop or recall',
+      dealer: 'Dealer, lease or rental return',
+    },
+    provider: 'Provider and address',
+    providerHelp: 'For example the inspection station or workshop and its address. You book and pay the provider yourself.',
+    apptTime: 'Booked time, if known',
+    shape: 'How does the car come back?',
+    shapeWait: 'The driver waits and brings it back',
+    shapeWaitSub: `Up to ${WAITING.waitReturnIncludedMinutes} min of waiting.`,
     shapeReturn: 'Pickup and later return',
-    shapeReturnSub: 'Two scheduled movements; the driver does not wait.',
-    shapeWait: 'Wait and return',
-    shapeWaitSub: `The driver waits up to ${WAITING.waitReturnIncludedMinutes} min and brings the car back.`,
-    locations: 'Addresses',
-    pickup: 'Collection address',
-    destination: 'Destination or provider address',
-    returnTo: 'Return address',
-    returnSame: 'Return to the collection address',
-    access: 'Access and parking instructions',
-    accessHelp: 'Gate or door code, garage level, where the keys are.',
-    timing: 'Timing',
-    date: 'Date',
-    window: 'Collection window',
-    deliveryBy: 'Required delivery time',
-    deliveryByHelp: 'Leave empty if the schedule is flexible.',
-    appointment: 'Provider appointment',
-    provider: 'Provider',
-    providerHelp: 'Inspection station, workshop, tyre shop, wash or other destination you choose.',
-    apptTime: 'Confirmed time',
-    apptRef: 'Booking reference',
-    apptContact: 'Contact or phone at the destination',
-    keyMethod: 'Key handover at the destination',
-    keyHand: 'To a named person',
-    keyDrop: 'Key drop box',
-    keyOther: 'Other, described in the notes',
-    apptNotice: 'We do not send a driver before the appointment is confirmed. You book and pay the provider directly.',
-    hours: 'Driver hours needed',
-    hoursHelp: `Recommended minimum ${PRODUCTS.personalDriver.minHours} hours.`,
-    wait: 'Expected waiting at the destination (min)',
-    waitHelp: `Every handover includes ${WAITING.includedMinutes} min. Beyond that, waiting is ${WAITING.hourlyRate} €/h in ${WAITING.unitMinutes}-minute units.`,
-    vehicle: 'Vehicle',
+    shapeReturnSub: 'We bring the car back once the service is done.',
+    shapeOneWay: 'Delivery only',
+    shapeOneWaySub: 'You collect it yourself, or we agree the return separately.',
+    whereWhen: 'Collection and timing',
+    pickup: 'Collection address or postcode',
+    date: 'Preferred day',
+    window: 'Preferred time',
+    windowFlex: 'Flexible',
+    contact: 'Who should we call?',
+    name: 'Name',
+    phone: 'Phone',
+    email: 'Email',
+    emailHelp: 'Optional. We send a receipt if you give an address.',
+    auth: 'I am the owner or keeper of the car, or I am authorised to hand it to a DriveMe driver.',
+    authLabel: 'Permission to drive the car',
+    more: 'More details',
+    moreSub: 'Optional. Fill these in now, or go through them with us when we call.',
     plate: 'Registration',
     makeModel: 'Make and model',
-    year: 'Year',
     gearbox: 'Transmission',
     manual: 'Manual',
     automatic: 'Automatic',
@@ -188,59 +194,47 @@ const COPY = {
     fuelDiesel: 'Diesel',
     fuelHybrid: 'Hybrid',
     fuelEv: 'Electric',
-    mileage: 'Mileage (km, estimate)',
-    controls: 'Special controls, faults or warning lights',
-    controlsHelp: 'For example hand controls, wheel-lock key location, a known fault.',
-    customer: 'Your details',
-    name: 'Name',
-    phone: 'Phone',
-    email: 'Email',
+    unknown: 'Not sure',
+    access: 'Access and parking instructions',
+    accessHelp: 'Gate or door code, garage level, where the keys are.',
+    apptRef: 'Booking reference',
     customerType: 'Customer type',
     person: 'Private customer',
     company: 'Company',
     companyName: 'Company name',
     businessId: 'Business ID',
     invoiceEmail: 'Invoicing email',
-    handover: 'Handover',
-    pickupContact: 'Who hands over the keys at collection?',
-    deliveryContact: 'Who receives the car?',
-    contactMe: 'Me',
-    contactOther: 'Someone else (name and phone)',
-    payment: 'Payment',
-    payMethod: 'How you pay the DriveMe fee',
-    payCard: 'Card',
-    payMobile: 'MobilePay',
-    payInvoice: 'Invoice (business accounts)',
-    payNote: 'Payment methods are confirmed before launch. Third-party services are always paid directly to the provider.',
-    acks: 'Confirmations',
-    acksIntro: 'These are booking conditions. We repeat them in the confirmation.',
     notes: 'Anything else we should know',
+    notesHelp: 'For example known faults, or a return to a different address.',
+    laterNote: 'We go through the registration, key handover, authorisation, payment method and booking terms before we confirm.',
+    terms: 'Terms of service',
     quote: 'Indicative price',
-    quoteNote: 'The indicative price includes VAT. We confirm a fixed DriveMe fee before the driver is sent. Third-party charges are not included.',
+    quoteNote: 'The price includes VAT. We confirm a fixed DriveMe fee before the drive. Provider charges are not included.',
     quoteFrom: 'from',
     quoteManual: 'Fixed quote',
-    quoteManualNote: 'This job gets a fixed quote by hand - the route or service does not fit the standard price list.',
-    submit: 'Send request',
+    quoteManualNote: 'This job gets a fixed quote by hand.',
+    submit: 'Send price request',
     submitting: 'Sending…',
     errorTitle: 'Please check these fields',
     required: 'This field is required.',
-    badEmail: 'Check the email address.',
+    badEmail: 'Check the email address, or leave it empty.',
+    badPhone: 'Check the phone number.',
     badRange: 'That value is out of range.',
     mustAccept: 'This confirmation is required.',
     submitLocked: 'Before you can send the request:',
-    requiredNote: 'Fields marked * are required. The rest are optional; fill them in if you know them now.',
-    doneTitle: 'Thank you - your request has arrived',
-    doneBody: 'A request is not yet a confirmation. We review the details and confirm the driver, the time and a fixed fee. We answer within 15 minutes during service hours.',
+    requiredNote: 'Fields marked * are required. Sending the request takes under a minute.',
+    doneTitle: 'Thank you - your price request has arrived',
+    doneBody: 'This is a request, not yet a confirmation. We will call you, go through the vehicle details and confirm the driver, the time and a fixed price.',
+    doneCall: `If it is urgent, call ${brand.phone}.`,
     doneRef: 'Your reference',
     doneAgain: 'Send another request',
     failed: 'We could not send that request. Please try again or call ' + brand.phone + '.',
-    gatedTitle: 'This service is not bookable yet',
+    gatedTitle: 'This service cannot be booked yet',
+    gatedBody: 'A driver you travel with yourself cannot be booked yet. Register your interest and we will tell you when it opens.',
     gateContactTitle: 'Contact us',
     gateContactBody: 'Contact us for more details. We will let you know as soon as this service is available.',
     lines: {
       base: 'Service base price',
-      driverTime: 'Driver time',
-      waiting: 'Waiting',
       night: 'Night premium',
       weekend: 'Weekend premium',
       publicHoliday: 'Public holiday premium',
@@ -268,8 +262,11 @@ const text = (id, opts = {}) =>
   `${opts.step ? ` step="${opts.step}"` : ''}${opts.value ? ` value="${esc(opts.value)}"` : ''}` +
   `${opts.help ? ` aria-describedby="${id}-help"` : ''}>`;
 
+const textarea = (id, help) =>
+  `<textarea id="${id}" name="${id}"${help ? ` aria-describedby="${id}-help"` : ''}></textarea>`;
+
 const select = (id, options, opts = {}) =>
-  `<select id="${id}" name="${id}"${opts.required ? ' required' : ''}>${options
+  `<select id="${id}" name="${id}"${opts.required ? ' required' : ''}${opts.help ? ` aria-describedby="${id}-help"` : ''}>${options
     .map((o) => `<option value="${esc(o.v)}"${o.selected ? ' selected' : ''}>${esc(o.l)}</option>`)
     .join('')}</select>`;
 
@@ -282,38 +279,39 @@ const radio = (name, value, label, sub, checked) => `
 export function bookingForm(locale) {
   const c = COPY[locale];
   const t = ui[locale];
+  const interestHref = serviceUrl('personalDriver', locale);
 
-  const conciergeOptions = services
-    .filter((s) => s.category === 'concierge')
-    .map((s) => ({ v: s.key, l: s[locale].nav }));
-  const driverOptions = services
-    .filter((s) => s.category === 'driver')
-    .map((s) => ({ v: s.key, l: s[locale].nav }));
-  const businessOption = { v: 'business', l: byKey.business[locale].nav };
+  // The selector lists appointment runs only - never a passenger service.
+  const appointmentKeys = servicesOfType('appointment_run').filter((k) => !isGated(byKey[k]));
+  const firstShape = SERVICE_PRODUCTS[appointmentKeys[0]].defaultShape;
 
-  const serviceMeta = Object.fromEntries(services.map((s) => [s.key, {
-    category: s.category,
-    appointment: s.appointment,
-    gated: isGated(s),
-    product: SERVICE_PRODUCTS[s.key].default,
-    allowed: SERVICE_PRODUCTS[s.key].allowed,
-    label: s[locale].nav,
-  }]));
+  const serviceMeta = Object.fromEntries(services.map((s) => {
+    const sp = SERVICE_PRODUCTS[s.key];
+    return [s.key, {
+      type: sp.type,
+      gated: isGated(s) || sp.type === 'passenger',
+      label: s[locale].nav,
+      product: sp.default,
+      shapes: sp.shapes,
+      defaultShape: sp.defaultShape,
+    }];
+  }));
 
   const config = {
     locale,
-    products: PRODUCTS,
-    waiting: WAITING,
+    // Unsold passenger prices stay out of the page entirely.
+    products: Object.fromEntries(Object.entries(PRODUCTS).filter(([, p]) => !p.hidden)),
     premiums: PREMIUMS,
     services: serviceMeta,
+    interestHref,
     copy: {
-      required: c.required, badEmail: c.badEmail, badRange: c.badRange,
-      mustAccept: c.mustAccept,
+      required: c.required, badEmail: c.badEmail, badPhone: c.badPhone, badRange: c.badRange,
+      mustAccept: c.mustAccept, authLabel: c.authLabel,
       submitLocked: c.submitLocked,
       errorTitle: c.errorTitle, submitting: c.submitting, submit: c.submit,
       failed: c.failed, quoteFrom: c.quoteFrom, quoteManual: c.quoteManual,
       quoteManualNote: c.quoteManualNote, quoteNote: c.quoteNote, lines: c.lines,
-      gatedTitle: c.gatedTitle,
+      gatedTitle: c.gatedTitle, gatedBody: c.gatedBody, passengerLink: c.passengerLink,
     },
     endpoint: '/api/bookings',
   };
@@ -331,156 +329,101 @@ export function bookingForm(locale) {
         <p class="hint form-required-note">${esc(c.requiredNote)}</p>
 
         <fieldset class="fieldset">
-          <legend>${esc(c.path)}</legend>
-          <div class="choice-grid" role="radiogroup" aria-label="${esc(c.path)}">
-            ${radio('path', 'car', c.pathCar, c.pathCarSub, true)}
-            ${radio('path', 'driver', c.pathDriver, c.pathDriverSub, false)}
+          <legend>${esc(c.typeLegend)}</legend>
+          <div class="callout" id="business-note" hidden><p>${esc(c.businessNote)}</p></div>
+          <div class="choice-grid" role="radiogroup" aria-label="${esc(c.typeLegend)}">
+            ${radio('service_type', 'general_move', c.typeMove, c.typeMoveSub, true)}
+            ${radio('service_type', 'appointment_run', c.typeAppt, c.typeApptSub, false)}
           </div>
-          <div id="service-field">
-            ${field('service', c.serviceLabel, select('service', [...conciergeOptions, businessOption], { required: true }))}
-          </div>
+          <p class="form-passenger">${esc(c.passengerNote)} <a href="${interestHref}">${esc(c.passengerLink)}</a></p>
           <div id="gate-warning" hidden></div>
         </fieldset>
 
-        <fieldset class="fieldset" id="shape-set">
-          <legend>${esc(c.shape)}</legend>
-          <div class="choice-grid" role="radiogroup" aria-label="${esc(c.shape)}">
-            ${radio('shape', 'pickupReturn', c.shapeReturn, c.shapeReturnSub, true)}
-            ${radio('shape', 'oneWay', c.shapeOneWay, c.shapeOneWaySub, false)}
-            ${radio('shape', 'waitReturn', c.shapeWait, c.shapeWaitSub, false)}
+        <fieldset class="fieldset" id="move-set">
+          <legend>${esc(c.moveLegend)}</legend>
+          ${field('destination', c.destination, text('destination', { autocomplete: 'street-address' }))}
+          <p class="field-label" id="return-label">${esc(c.returnLegend)}</p>
+          <div class="choice-grid" role="radiogroup" aria-labelledby="return-label">
+            ${radio('return_needed', 'no', c.returnNo, '', true)}
+            ${radio('return_needed', 'yes', c.returnYes, '', false)}
           </div>
         </fieldset>
 
-        <fieldset class="fieldset">
-          <legend>${esc(c.locations)}</legend>
-          ${field('pickup_location', c.pickup, text('pickup_location', { required: true, autocomplete: 'street-address' }))}
-          <div id="destination-field">
-            ${field('destination', c.destination, text('destination'))}
+        <fieldset class="fieldset" id="appointment-set" hidden>
+          <legend>${esc(c.apptLegend)}</legend>
+          <div id="service-field">
+            ${field('service', c.service, select('service', appointmentKeys.map((k) => ({ v: k, l: c.serviceNames[k] })), { help: true }), c.serviceHelp)}
           </div>
-          <div id="return-field">
-            <label class="form-check" style="margin-top:14px">
-              <input type="checkbox" id="return_same" name="return_same" checked>
-              <span>${esc(c.returnSame)}</span>
-            </label>
-            <div id="return-address" hidden>
-              ${field('return_location', c.returnTo, text('return_location', { autocomplete: 'street-address' }))}
-            </div>
-          </div>
-          ${field('access_notes', c.access, `<textarea id="access_notes" name="access_notes" aria-describedby="access_notes-help"></textarea>`, c.accessHelp)}
-        </fieldset>
-
-        <fieldset class="fieldset">
-          <legend>${esc(c.timing)}</legend>
-          <div class="grid-2">
-            ${field('date', c.date, text('date', { type: 'date', required: true }))}
-            ${field('window', c.window, select('window', [
-    { v: '08-10', l: '08–10' }, { v: '10-12', l: '10–12' }, { v: '12-14', l: '12–14' },
-    { v: '14-16', l: '14–16' }, { v: '16-18', l: '16–18' }, { v: '18-20', l: '18–20' },
-  ], { required: true }))}
-          </div>
-          <div class="grid-2">
-            ${field('delivery_by', c.deliveryBy, text('delivery_by', { type: 'time' }), c.deliveryByHelp)}
-            <div id="wait-field">
-              ${field('wait_minutes', c.wait, text('wait_minutes', { type: 'number', min: 0, max: 480, step: '15' }), c.waitHelp)}
-            </div>
-            <div id="hours-field" hidden>
-              ${field('hours', c.hours, text('hours', { type: 'number', min: 1, max: 12, step: '0.5', value: String(PRODUCTS.personalDriver.minHours) }), c.hoursHelp)}
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset class="fieldset" id="appointment-set">
-          <legend>${esc(c.appointment)}</legend>
-          <p class="hint">${esc(c.apptNotice)}</p>
           <div class="grid-2">
             ${field('provider', c.provider, text('provider', { help: true }), c.providerHelp)}
             ${field('appointment_time', c.apptTime, text('appointment_time', { type: 'time' }))}
           </div>
-          <div class="grid-2">
-            ${field('appointment_ref', c.apptRef, text('appointment_ref'))}
-            ${field('appointment_contact', c.apptContact, text('appointment_contact'))}
+          <p class="field-label" id="shape-label">${esc(c.shape)}</p>
+          <div class="choice-grid" role="radiogroup" aria-labelledby="shape-label">
+            ${radio('shape', 'waitReturn', c.shapeWait, c.shapeWaitSub, firstShape === 'waitReturn')}
+            ${radio('shape', 'pickupReturn', c.shapeReturn, c.shapeReturnSub, firstShape === 'pickupReturn')}
+            ${radio('shape', 'oneWay', c.shapeOneWay, c.shapeOneWaySub, firstShape === 'oneWay')}
           </div>
-          ${field('key_method', c.keyMethod, select('key_method', [
-    { v: 'named', l: c.keyHand }, { v: 'drop', l: c.keyDrop }, { v: 'other', l: c.keyOther },
-  ]))}
         </fieldset>
 
         <fieldset class="fieldset">
-          <legend>${esc(c.vehicle)}</legend>
+          <legend>${esc(c.whereWhen)}</legend>
+          ${field('pickup_location', c.pickup, text('pickup_location', { required: true, autocomplete: 'street-address' }))}
           <div class="grid-2">
-            ${field('plate', c.plate, text('plate', { required: true }))}
-            ${field('vehicle_model', c.makeModel, text('vehicle_model'))}
+            ${field('date', c.date, text('date', { type: 'date', required: true }))}
+            ${field('window', c.window, select('window', [
+    { v: 'flex', l: c.windowFlex },
+    ...WINDOWS.map((w) => ({ v: w, l: w.replace('-', '–') })),
+  ], { required: true }))}
           </div>
-          <div class="grid-2">
-            ${field('vehicle_year', c.year, text('vehicle_year', { type: 'number', min: 1950, max: 2030 }))}
-            ${field('gearbox', c.gearbox, select('gearbox', [
-    { v: 'automatic', l: c.automatic }, { v: 'manual', l: c.manual },
-  ]))}
-            ${field('fuel', c.fuel, select('fuel', [
-    { v: 'petrol', l: c.fuelPetrol }, { v: 'diesel', l: c.fuelDiesel },
-    { v: 'hybrid', l: c.fuelHybrid }, { v: 'ev', l: c.fuelEv },
-  ]))}
-            ${field('mileage', c.mileage, text('mileage', { type: 'number', min: 0, max: 2000000 }))}
-          </div>
-          ${field('vehicle_notes', c.controls, `<textarea id="vehicle_notes" name="vehicle_notes" aria-describedby="vehicle_notes-help"></textarea>`, c.controlsHelp)}
         </fieldset>
 
         <fieldset class="fieldset">
-          <legend>${esc(c.customer)}</legend>
+          <legend>${esc(c.contact)}</legend>
           <div class="grid-2">
             ${field('customer_name', c.name, text('customer_name', { required: true, autocomplete: 'name' }))}
-            ${field('customer_phone', c.phone, text('customer_phone', { type: 'tel', required: true, autocomplete: 'tel' }))}
-            ${field('customer_email', c.email, text('customer_email', { type: 'email', required: true, autocomplete: 'email' }))}
-            ${field('customer_type', c.customerType, select('customer_type', [
-    { v: 'person', l: c.person }, { v: 'company', l: c.company },
-  ]))}
+            ${field('customer_phone', c.phone, text('customer_phone', { type: 'tel', required: true, autocomplete: 'tel', inputmode: 'tel' }))}
           </div>
-          <div id="company-fields" hidden>
-            <div class="grid-2">
-              ${field('company_name', c.companyName, text('company_name', { autocomplete: 'organization' }))}
-              ${field('business_id', c.businessId, text('business_id'))}
-              ${field('invoice_email', c.invoiceEmail, text('invoice_email', { type: 'email' }))}
-            </div>
-          </div>
-          <div class="grid-2">
-            ${field('pickup_contact', c.pickupContact, select('pickup_contact', [
-    { v: 'me', l: c.contactMe }, { v: 'other', l: c.contactOther },
-  ]))}
-            ${field('delivery_contact', c.deliveryContact, select('delivery_contact', [
-    { v: 'me', l: c.contactMe }, { v: 'other', l: c.contactOther },
-  ]))}
-          </div>
-          ${field('contact_notes', c.handover, text('contact_notes'))}
-        </fieldset>
-
-        <fieldset class="fieldset">
-          <legend>${esc(c.payment)}</legend>
-          ${field('payment_method', c.payMethod, select('payment_method', [
-    { v: 'card', l: c.payCard }, { v: 'mobilepay', l: c.payMobile }, { v: 'invoice', l: c.payInvoice },
-  ]))}
-          <p class="hint">${esc(c.payNote)}</p>
-        </fieldset>
-
-        <fieldset class="fieldset">
-          <legend>${esc(c.acks)}</legend>
-          <p class="hint">${esc(c.acksIntro)} <a href="${url('terms', locale)}">${esc(locale === 'fi' ? 'Palveluehdot' : 'Terms of service')}</a></p>
-          <div class="checks">
-            ${acknowledgements[locale].map((a, i) => `
-            <label class="form-check">
-              <input type="checkbox" name="ack" id="ack-${i}" data-ack="${i}" required>
-              <span>${esc(a)}</span>
-            </label>`).join('')}
-          </div>
+          ${field('customer_email', c.email, text('customer_email', { type: 'email', autocomplete: 'email', help: true }), c.emailHelp)}
+          <label class="form-check auth-field">
+            <input type="checkbox" name="ack" id="ack-0" required>
+            <span>${esc(c.auth)}</span>
+          </label>
           <span class="err" id="ack-err" role="alert"></span>
         </fieldset>
 
-        <fieldset class="fieldset">
-          <legend>${esc(c.notes)}</legend>
-          <div class="field">
-            <label for="notes" class="sr-only">${esc(c.notes)}</label>
-            <textarea id="notes" name="notes"></textarea>
+        <details class="more-details" id="more-details">
+          <summary>${esc(c.more)}<small>${esc(c.moreSub)}</small></summary>
+          <div class="more-details-body">
+            <div class="grid-2">
+              ${field('plate', c.plate, text('plate', { autocomplete: 'off' }))}
+              ${field('vehicle_model', c.makeModel, text('vehicle_model'))}
+              ${field('gearbox', c.gearbox, select('gearbox', [
+    { v: '', l: c.unknown }, { v: 'automatic', l: c.automatic }, { v: 'manual', l: c.manual },
+  ]))}
+              ${field('fuel', c.fuel, select('fuel', [
+    { v: '', l: c.unknown }, { v: 'petrol', l: c.fuelPetrol }, { v: 'diesel', l: c.fuelDiesel },
+    { v: 'hybrid', l: c.fuelHybrid }, { v: 'ev', l: c.fuelEv },
+  ]))}
+            </div>
+            ${field('access_notes', c.access, textarea('access_notes', true), c.accessHelp)}
+            <div class="grid-2">
+              ${field('appointment_ref', c.apptRef, text('appointment_ref'))}
+              ${field('customer_type', c.customerType, select('customer_type', [
+    { v: 'person', l: c.person }, { v: 'company', l: c.company },
+  ]))}
+            </div>
+            <div id="company-fields" hidden>
+              <div class="grid-2">
+                ${field('company_name', c.companyName, text('company_name', { autocomplete: 'organization' }))}
+                ${field('business_id', c.businessId, text('business_id'))}
+                ${field('invoice_email', c.invoiceEmail, text('invoice_email', { type: 'email' }))}
+              </div>
+            </div>
+            ${field('notes', c.notes, textarea('notes', true), c.notesHelp)}
+            <p class="hint">${esc(c.laterNote)} <a href="${url('terms', locale)}">${esc(c.terms)}</a></p>
           </div>
-        </fieldset>
+        </details>
       </div>
 
       <aside class="quote" aria-live="polite">
@@ -489,14 +432,14 @@ export function bookingForm(locale) {
         <ul class="quote-lines" id="quote-lines"></ul>
         <p class="note" id="quote-note">${esc(c.quoteNote)}</p>
         <button class="btn btn-primary" type="submit" id="submit-btn">${esc(c.submit)}</button>
-        <!-- The confirmations sit far above this sticky panel, so a disabled
+        <!-- The confirmation sits far above this sticky panel, so a disabled
              button on its own would read as broken rather than as waiting. -->
         <p class="note" id="submit-hint">${esc(c.submitLocked)}</p>
         <p class="note" id="quote-call"><a href="tel:${brand.phoneHref}">${esc(t.callUs)} ${esc(brand.phone)}</a></p>
 
-        <!-- Replaces the whole quote panel for a gated service: there is no
-             price to indicate, so the panel becomes the way to reach us.
-             Shown/hidden by the .is-gated class on the form, not by [hidden]. -->
+        <!-- Replaces the whole quote panel when a link asks for a service that
+             is not sold: there is no price to indicate, so the panel becomes
+             the way to reach us. Shown by the .is-gated class, not [hidden]. -->
         <div id="gate-contact">
           <h2>${esc(c.gateContactTitle)}</h2>
           <p class="note">${esc(c.gateContactBody)}</p>
@@ -509,6 +452,7 @@ export function bookingForm(locale) {
     <div class="done" id="done-panel" hidden tabindex="-1">
       <h2>${esc(c.doneTitle)}</h2>
       <p>${esc(c.doneBody)}</p>
+      <p>${esc(c.doneCall)}</p>
       <p class="ref" id="done-ref"></p>
       <p style="margin-top:18px"><button class="btn btn-ghost" type="button" id="again-btn">${esc(c.doneAgain)}</button></p>
     </div>
@@ -519,7 +463,7 @@ export function bookingForm(locale) {
 }
 
 export function bookingScript() {
-  return '<script src="/assets/booking.js?v=2" defer></script>';
+  return '<script src="/assets/booking.js?v=3" defer></script>';
 }
 
 export { COPY as bookingCopy };

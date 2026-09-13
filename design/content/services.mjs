@@ -15,8 +15,9 @@
  * operational reality behind it.
  *
  * `category`:
- *   'concierge' - Take care of my car (primary growth category)
- *   'driver'    - I need a driver (premium passenger category)
+ *   'concierge' - a driver for the customer's own car, nobody travelling in
+ *                 it (sold now)
+ *   'driver'    - passenger services: interest only, not sold yet
  *   'business'  - B2B, lead form rather than instant checkout
  */
 
@@ -597,10 +598,10 @@ export const services = [
       slug: 'auton-siirtopalvelu',
       nav: 'Auton siirtopalvelu',
       short: 'Siirto',
-      title: 'Auton siirtopalvelu | Helsinki, Espoo ja Vantaa | DriveMe',
-      description: 'Luotettava ajokuntoisen auton siirtopalvelu osoitteesta toiseen dokumentoidulla noudolla ja luovutuksella.',
-      h1: 'Auton siirtopalvelu osoitteesta toiseen',
-      lead: 'Siirrämme ajokuntoisen autosi sovitusta osoitteesta toiseen, dokumentoidulla luovutuksella molemmissa päissä.',
+      title: 'Auton siirtopalvelu | Kuljettaja ajaa autosi toiseen osoitteeseen | DriveMe',
+      description: 'Kuljettaja noutaa ajokuntoisen autosi ja ajaa sen toiseen osoitteeseen pääkaupunkiseudulla. Sinun ei tarvitse lähteä mukaan, ja luovutus dokumentoidaan molemmissa päissä.',
+      h1: 'Auton siirtopalvelu: kuljettaja ajaa autosi toiseen osoitteeseen',
+      lead: 'Noudamme ajokuntoisen autosi ja ajamme sen sovittuun osoitteeseen, tarvittaessa myös takaisin. Sinun ei tarvitse lähteä mukaan, ja luovutus dokumentoidaan molemmissa päissä.',
       keywords: ['auton siirtopalvelu', 'ajoneuvon siirto', 'auton kuljetus kuljettamalla'],
       steps: [
         'Kerrot nouto- ja toimitusosoitteen sekä yhteyshenkilöt molemmissa päissä.',
@@ -628,6 +629,8 @@ export const services = [
       ],
       boundary: 'DriveMe vastaa ajetusta siirrosta ja dokumentoidusta luovutuksesta. Auton kelpoisuudesta ja tiedoista vastaa asiakas.',
       faq: [
+        { q: 'Tarvitseeko minun olla autossa mukana?', a: 'Ei. Kuljettaja ajaa auton yksin, eikä autossa kuljeteta matkustajia. Riittää, että avaimet luovutetaan sovitusti noudossa ja joku vastaanottaa auton perillä, tai avaimet jätetään sovittuun paikkaan.' },
+        { q: 'Voinko tilata myös paluun?', a: 'Kyllä. Kerro hintapyynnössä, että auto tuodaan takaisin myöhemmin, niin hinnoittelemme noudon ja palautuksen yhtenä työnä.' },
         { q: 'Ajetaanko auto vai kuljetetaanko se lavetilla?', a: 'Ajamme auton. Se on nopeampaa ja edullisempaa ajokuntoiselle autolle. Jos auto ei ole ajokuntoinen tai sitä ei saa ajaa, tarvitaan lavetti - silloin ohjaamme sinut kuljetuskumppanille.' },
         { q: 'Siirrättekö autoja pääkaupunkiseudun ulkopuolelle?', a: 'Kyllä, mutta hinnoittelemme pitkät siirrot tapauskohtaisesti, koska kuljettajan paluumatka on osa kustannusta. Pyydä tarjous reitille.' },
         { q: 'Kuka maksaa polttoaineen ja tiemaksut?', a: 'Ne kerrotaan tarjouksessa erikseen. Emme piilota niitä hintaan.' },
@@ -638,10 +641,10 @@ export const services = [
       slug: 'vehicle-relocation',
       nav: 'Vehicle relocation',
       short: 'Relocation',
-      title: 'Vehicle relocation | Helsinki, Espoo and Vantaa | DriveMe',
-      description: 'Reliable driven relocation of a roadworthy car from one address to another, with documented collection and handover.',
-      h1: 'Vehicle relocation between addresses',
-      lead: 'We move your roadworthy vehicle from one agreed address to another, with a documented handover at both ends.',
+      title: 'Vehicle relocation | A driver takes your car to another address | DriveMe',
+      description: 'A driver collects your roadworthy car and drives it to another address in the Helsinki capital region. You do not travel with it, and the handover is documented at both ends.',
+      h1: 'Vehicle relocation: a driver takes your car to another address',
+      lead: 'We collect your roadworthy car and drive it to the agreed address, and back again if needed. You do not need to travel with it, and the handover is documented at both ends.',
       keywords: ['vehicle relocation Helsinki', 'driven car transfer Finland'],
       steps: [
         'You give the collection and delivery addresses and the contacts at both ends.',
@@ -669,6 +672,8 @@ export const services = [
       ],
       boundary: 'DriveMe is responsible for the driven move and the documented handover. Vehicle eligibility and disclosure are the customer’s responsibility.',
       faq: [
+        { q: 'Do I need to travel in the car?', a: 'No. The driver drives the car alone and carries no passengers. The keys just need to be handed over as agreed at collection and someone receives the car at the destination, or the keys are left at an agreed place.' },
+        { q: 'Can I also book the return?', a: 'Yes. Say in the price request that the car should come back later, and we price the collection and return as one job.' },
         { q: 'Is the car driven or trailered?', a: 'We drive it. That is faster and cheaper for a roadworthy car. If the car cannot legally or safely be driven, it needs a trailer and we point you to a transport partner.' },
         { q: 'Do you move cars outside the capital region?', a: 'Yes, but long-distance moves are priced individually because the driver’s return trip is part of the cost. Ask for a quote on the route.' },
         { q: 'Who pays fuel and tolls?', a: 'They are stated separately in the quote. We do not hide them in the price.' },

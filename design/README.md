@@ -67,6 +67,7 @@ design/                     ← the deploy root (see Deploying)
 │   ├── 0005_realtime_tracking.sql telemetry, ETA trail, arrival + token rotation
 │   ├── 0006_driver_status_automation.sql driver-owned en-route transition
 │   └── 0007_vehicle_concierge.sql service/appointment/vehicle fields + confirmed price
+│   └── 0008_driver_first_requests.sql service/appointment/vehicle fields + confirmed price
 ├── tests/                  node:test — pricing rules, generated-site guards, tracking
 ├── dev-server.mjs          local stand-in for the host (npm run dev)
 ├── package.json
@@ -307,14 +308,19 @@ All of it lives in `api/_lib/pricing.js`. Consumer prices include VAT.
 
 | Product | Price | Notes |
 | --- | --- | --- |
-| One-way vehicle move | from €59 | one collection, one delivery |
-| Pickup and later return | from €99 | two scheduled movements |
-| Wait and return | from €119 | 60 min included, then €35/h in 30-min units |
-| Vehicle inspection run | from €119 | inspection fees excluded |
-| Workshop / tyre / wash run | from €99 | third-party fees excluded |
-| Own-car airport driver | from €129 | **gated** — legal + insurance clearance first |
-| Personal driver | €39/h, 2 h min | **gated** |
-| Designated one-way, long distance, corporate | fixed quote | never auto-computed |
+| Car moved to another address | from €89 (typically €99–129) | one collection, one delivery |
+| Pickup and later return | from €149 (typically €149–199) | two scheduled movements |
+| Workshop / tyre / wash run | from €149 (typically €149–199) | provider fees excluded |
+| Vehicle inspection run | from €169 | wait (60 min included) and return; inspection fee excluded |
+| Wait and return | from €169 | 60 min included, then €35/h in 30-min units |
+| Dealer or lease handover | from €99 | provider charges settled directly |
+| Long distance, corporate | fixed quote | never auto-computed |
+| Passenger products (personal driver, airport, safe ride home) | **hidden** | not sold; never published or quoted |
+
+These are the pricing test in *DriveMe: A Driver for Your Car* (Driver First Growth Plan,
+13 Sep 2026). `productFor(service, shape)` in the same file decides which product prices a
+request, and the server uses it too, so the browser cannot choose a cheaper product than
+the trip it asked for.
 
 Disclosed premiums: night +25%, weekend +15%, public holiday +25%, urgent (<12 h) +25%.
 They **do not stack** — only the highest one is charged.
@@ -335,10 +341,14 @@ Three things are deliberately gone, per the §12 audit:
 
 ## 5 · Day-to-day flow
 
-1. Customer sends a request from `/varaus/`: path (driver / take care of my car), the
-   service, its shape, addresses, timing, the provider appointment where one is needed,
-   the vehicle, and the §6 acknowledgements. They see an **indicative** price and a
-   reference. Nothing is confirmed yet, and the page says so.
+1. Customer sends a price request from `/varaus/` in under a minute: **drive my car to
+   another address** (and whether it comes back) or **take my car to a service** (which
+   service, the provider, the booked time), then pickup, preferred day and time, name and
+   phone. Email is optional; one box confirms they may hand the car over. Registration,
+   key handover, payment and the full booking statements are collected on the callback.
+   Nobody travels in the car — a passenger request is refused, and free text that suggests
+   one is saved with `manual_review` set. They see an **indicative** price and a reference.
+   Nothing is confirmed yet, and the page says so.
 2. Admin signs in at `/admin` → Bookings → opens the request → **confirms the fixed fee**
    (this is what makes it binding, and what invoices bill) → assigns an **approved**
    driver (availability shown at a glance) → copies the `/driver?t=…` link and sends it
@@ -358,45 +368,48 @@ Three things are deliberately gone, per the §12 audit:
 
 ### `POST /api/bookings`
 
-A **request**, not a confirmed booking. Two payload shapes are accepted: the §7 concierge
-request (identified by `service`) and the legacy booking (identified by `mode`), so an old
-page still works.
+A **request**, not a confirmed booking. Two payload shapes are accepted: the price request
+(identified by `service`) and the legacy booking (identified by `mode`), so an old page
+still works.
 
 ```jsonc
 {
-  "service": "inspection",              // required — see content/services.mjs
-  "product": "inspection",              // optional; falls back to the service default
-  "shape": "oneWay | pickupReturn | waitReturn",
-  "pickup_location": "Mannerheimintie 1", // required
-  "destination": "K1 Katsastajat, Herttoniemi", // required for concierge services
-  "return_location": null,
+  "service": "inspection",              // required — relocation | pickupReturn | inspection | workshop | tyre | wash | glass | dealer | business
+  "service_type": "appointment_run",    // general_move | appointment_run; must match the service
+  "shape": "oneWay | pickupReturn | waitReturn", // the product is derived from service + shape
+  "passenger_count": 0,                 // anything above 0 is refused with 409
+  "pickup_location": "00100 Helsinki",  // required
+  "destination": "Tapiolantie 1, Espoo",// required for a general move
+  "provider": "K1 Katsastajat, Herttoniemi", // required for an appointment run
+  "return_needed": true,                // optional; must agree with the shape
   "scheduled_for": "2026-09-15T08:00",  // Helsinki wall clock
-  "collection_window": "08-10",
-  "wait_minutes": 0,
-  "provider": "K1 Katsastajat",         // required when the service needs an appointment
+  "collection_window": "08-10 | flex",
   "appointment_time": "09:00",
-  "appointment_ref": "KA-88213",
-  "key_method": "named | drop | other",
-  "vehicle_plate": "ABC-123",           // required outside the corporate lead form
-  "vehicle_details": "Volvo V60 2019",
-  "vehicle_gearbox": "automatic",
-  "vehicle_fuel": "diesel",
-  "customer_name": "Aino V.",           // required (guest checkout §1)
-  "customer_email": "you@example.com",  // required
+  "customer_name": "Aino V.",           // required
   "customer_phone": "+358 40 1234567",  // required
+  "customer_email": null,               // optional; validated when given
+  "vehicle_owner_authorization": true,  // required — may hand the car to our driver
+  "lead_source": "utm:google/cpc/syksy | landing:/ | entry:home_quick",
+  "vehicle_plate": null,                // optional at this stage, as are the other vehicle fields
   "customer_type": "person | company",
-  "payment_method": "card | mobilepay | invoice",
-  "acknowledged": true                  // required — the §6 booking statements
+  "notes": null
 }
 ```
 
-`201 → { success, bookingId, reference, quoteStatus, indicativePrice }`
+`201 → { success, bookingId, reference, quoteStatus, indicativePrice, saved }`
 
-- The price is recomputed server-side from `_lib/pricing.js`; the browser figure is never
-  trusted, and neither is final.
-- A service behind an open launch gate is refused with `409`.
-- If migration `0003`/`0007` has not been applied, the insert retries without the unknown
-  columns rather than losing the request — the ops email carries the full detail either way.
+- The product and price are derived server-side from `_lib/pricing.js`; the browser figure
+  is never trusted, and neither is final.
+- A passenger (`passenger_count > 0`) or a service behind an open launch gate is refused
+  with `409`. Free text that suggests a passenger sets `manual_review` and prefixes the ops
+  email subject with `REVIEW —`; the request is never relabelled.
+- If migration `0003`/`0007`/`0008` has not been applied, the insert retries without the
+  unknown columns.
+- **A request is never lost silently.** If the database write fails for any reason, ops get
+  an `UNSAVED request … — enter manually` email with every field, and the customer still
+  gets their reference (`saved: false`). Only if that email fails too does the customer see
+  an error, with the phone number to call.
+- The customer receipt is sent only when an email address was given.
 - The tracking link is released only after dispatch assigns a chauffeur.
 
 ### `GET /api/track?t=<32-hex token>`
@@ -453,16 +466,22 @@ Idempotent: re-submitting an email already on that tier returns `200`.
 Gates A, B and C are also stated on `/turvallisuus/` in plain language, so the site never
 claims more than the company can evidence.
 
-### Owner decisions before launch (§13.1)
+### Owner decisions (Driver First plan)
 
-- Exact live service area and service hours (placeholder hours on `/yhteystiedot/`).
-- Final launch prices after driver and support-vehicle cost modelling.
-- Which payment methods are actually active — the form currently offers card, MobilePay
-  and invoice, and says they are confirmed before launch.
-- Whether manual-transmission, high-value, modified, classic or commercial vehicles are
-  accepted.
-- Who receives exception calls and approves refunds or rescheduling.
-- Business ID and trade-register details for `/ehdot/`.
+- **Apply migrations `0007` and `0008` in Supabase.** Until `0008` runs, a request without an
+  email or for a dealer handover cannot be stored; it reaches ops as an `UNSAVED` email instead.
+- **Test production end to end** (plan P0): one real request with and without an email, and
+  confirm the ops alert, the customer receipt and — by temporarily breaking the Supabase key
+  in a preview deploy — the `UNSAVED` failure alert. The automated suite does this against
+  local stand-ins only; nothing in it writes to the live database.
+- The real **service hours** for `/yhteystiedot/` (the page currently promises only a callback,
+  no hours and no reply-time figure).
+- Which **payment methods** are active. The request form no longer asks; payment is agreed at
+  confirmation.
+- The **Y-tunnus** — set `brand.businessId` in `content/site.mjs` and it appears on `/ehdot/`
+  and in the LocalBusiness schema.
+- Review of the **test prices** (€89 / €149 / €169 / €99) against real demand.
+- Exact live service area; which vehicles are accepted; who takes exception calls.
 
 ### Not built yet
 
@@ -471,4 +490,6 @@ claims more than the company can evidence.
   emitted until then.
 - The §11.1 content backlog (12 articles) and city coverage pages — deliberately not
   stubbed, because thin city-name copies are what the document warns against.
-- Analytics events for form start / service selection / quote shown / request submitted.
+- Analytics events for form start / service selection / quote shown / request submitted, and
+  call tracking (plan P2). The request already stores `lead_source`: campaign tags, referring
+  site, landing page and the button that led to the form.

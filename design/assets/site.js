@@ -193,4 +193,28 @@
       }
     });
   }
+
+  /* ---------------------------------------------------- lead source ---
+     Where a visit came from is only visible on the page it lands on, not on
+     the request form several clicks later. Record the campaign tags, the
+     referring site and the landing page once per visit, and let a new
+     campaign click replace them. booking.js sends this with the request. */
+  try {
+    var KEY = 'dm_src';
+    var q = new URLSearchParams(location.search);
+    var utm = ['utm_source', 'utm_medium', 'utm_campaign']
+      .map(function (k) { return (q.get(k) || '').slice(0, 60); })
+      .filter(Boolean).join('/');
+    var click = q.get('gclid') ? 'gclid' : q.get('fbclid') ? 'fbclid' : q.get('msclkid') ? 'msclkid' : '';
+    if (utm || click || !sessionStorage.getItem(KEY)) {
+      var ref = '';
+      if (document.referrer) {
+        var host = new URL(document.referrer).hostname;
+        if (host !== location.hostname) ref = host;
+      }
+      sessionStorage.setItem(KEY, JSON.stringify({
+        utm: utm, click: click, ref: ref, landing: location.pathname.slice(0, 100),
+      }));
+    }
+  } catch (e) { /* storage blocked: attribution is lost, nothing else is */ }
 }());

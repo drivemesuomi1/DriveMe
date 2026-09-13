@@ -826,3 +826,32 @@ input[aria-invalid="true"],select[aria-invalid="true"],textarea[aria-invalid="tr
   .site-head,.topbar,.site-foot,.cta-band,.btn,.float-cta,.quote-strip{display:none}
   body{font-size:11pt;background:#fff}
 }
+
+/* ==========================================================================
+   Driver First (13 Sep 2026): hero trust line, offer prices, the two-stage
+   request form and the discreet passenger-interest link.
+   ========================================================================== */
+.hero-trust{margin-top:var(--s-4);font-size:var(--t-small);font-weight:600;letter-spacing:.01em;color:#E9F2FF}
+.path .path-price{font-weight:600;color:var(--brand-deep)}
+
+.fieldset .field-label{margin-top:var(--s-6);font-weight:600;font-size:var(--t-small);color:var(--ink-700)}
+.fieldset .field-label+.choice-grid{margin-top:var(--s-3)}
+.form-passenger{margin-top:var(--s-4);font-size:var(--t-small);color:var(--ink-500)}
+.form-passenger a{color:var(--brand);font-weight:600}
+#business-note{margin-bottom:var(--s-4)}
+.auth-field{margin-top:var(--s-6)}
+
+.more-details{border:1px solid var(--ink-300);border-radius:var(--r-card);background:var(--surface);margin-bottom:var(--s-6)}
+.more-details>summary{cursor:pointer;padding:var(--s-6);font-size:var(--t-h4);font-weight:600}
+.more-details>summary small{display:block;margin-top:2px;font-size:var(--t-small);font-weight:400;color:var(--ink-500)}
+.more-details[open]>summary{border-bottom:1px solid var(--ink-300)}
+.more-details>summary:focus-visible{outline:2px solid var(--brand);outline-offset:3px;border-radius:var(--r-card)}
+.more-details-body{padding:var(--s-4) var(--s-6) var(--s-6)}
+
+.form-shell.is-gated .more-details,
+.form-shell.is-gated .form-passenger{display:none}
+
+.foot-grid .foot-quiet a{font-size:var(--t-caption);color:var(--on-navy-2);opacity:.85}
+
+.path h3{font-size:var(--t-h3)}
+.card .typical{display:block;margin-top:2px;font-size:var(--t-small);color:var(--ink-500)}

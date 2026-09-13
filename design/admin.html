@@ -957,7 +957,10 @@
     // relocation carry different fields, and a wall of dashes hides the ones
     // that matter.
     $('dw-kv').innerHTML = [
+      ['Review', b.manual_review ? '<b style="color:#8C2F2F">' + esc(b.review_reason || 'Flagged for manual review') + '</b>' : ''],
       ['Service', esc(serviceLabel(b))],
+      ['Request type', b.service_type === 'general_move' ? 'Drive my car to another address'
+        : b.service_type === 'appointment_run' ? 'Take my car to a service' : ''],
       ['Customer', esc(b.customer_name || '-')],
       ['Phone', b.customer_phone ? '<a href="tel:' + esc(b.customer_phone) + '">' + esc(b.customer_phone) + '</a>' : '-'],
       ['Email', esc(b.customer_email || '-')],
@@ -980,6 +983,9 @@
         : '<span class="muted">not confirmed</span>'],
       ['Payment', PAY[b.payment_method] || '-'],
       ['Customer notes', b.notes ? esc(b.notes) : ''],
+      ['Return needed', b.return_needed == null ? '' : (b.return_needed ? 'Yes' : 'No')],
+      ['Owner authorisation', b.vehicle_owner_authorization ? 'Confirmed on the request form' : ''],
+      ['Lead source', b.lead_source ? esc(b.lead_source) : ''],
       ['Requested', esc(when(b.created_at))],
     ].filter(function (r) { return r[1] !== ''; })
       .map(([k, v]) => '<span class="k">' + k + '</span><span class="v">' + v + '</span>').join('');

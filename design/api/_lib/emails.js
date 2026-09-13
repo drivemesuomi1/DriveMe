@@ -17,7 +17,7 @@ const SERVICE_LABEL = {
     inspection: 'Auton vienti katsastukseen', workshop: 'Auton nouto huoltoon',
     tyre: 'Auton vienti renkaanvaihtoon', wash: 'Auton vienti pesuun',
     glass: 'Lasi-, kori- tai takaisinkutsuajo', pickupReturn: 'Auton nouto ja palautus',
-    relocation: 'Auton siirtopalvelu', dealer: 'Palautus autoliikkeeseen tai leasingyhtiolle',
+    relocation: 'Auton siirtopalvelu', dealer: 'Palautus autoliikkeeseen tai leasingyhtiölle',
     personalDriver: 'Oma kuljettaja', safeRideHome: 'Turvallinen kotiinkuljetus',
     airport: 'Kuljettaja lentoasemalle', business: 'Yritysasiakkuus',
   },
@@ -37,6 +37,11 @@ const SERVICE_LABEL = {
     personalDriver: 'Personal driver', safeRideHome: 'Safe ride home',
     airport: 'Airport driver', business: 'Corporate account',
   },
+};
+
+const TYPE_LABEL = {
+  general_move: 'Drive my car to another address',
+  appointment_run: 'Take my car to a service',
 };
 
 const SHAPE_LABEL = {
@@ -80,7 +85,7 @@ const COPY = {
     subject: (ref) => `Kiitos yhteydenotostasi — varausviite ${ref}`,
     eyebrow: 'Varauspyyntö vastaanotettu',
     title: 'Kiitos yhteydenotostasi',
-    lede: 'Olemme vastaanottaneet pyyntösi ja palaamme asiaan pian — palveluaikana yleensä alle 15 minuutissa.',
+    lede: 'Olemme vastaanottaneet hintapyyntösi. Soitamme sinulle, käymme tiedot läpi ja vahvistamme hinnan.',
     next: 'Pyyntö ei ole vielä vahvistus. Vahvistamme erikseen kuljettajan, ajan ja kiinteän DriveMe-hinnan, ja vasta se tekee työstä sitovan.',
     third: 'Kolmannen osapuolen palvelut — katsastus, huolto, renkaat, pesu tai muu vastaava — maksat suoraan valitsemallesi palveluntarjoajalle. Ne eivät sisälly DriveMe-hintaan.',
     detailsHead: 'Varauksen tiedot',
@@ -112,7 +117,7 @@ const COPY = {
     subject: (ref) => `Thank you for contacting DriveMe — reference ${ref}`,
     eyebrow: 'Request received',
     title: 'Thank you for contacting DriveMe',
-    lede: "We've received your request and will get back to you shortly — usually within 15 minutes during service hours.",
+    lede: "We've received your price request. We will call you, go through the details and confirm the price.",
     next: 'A request is not yet a confirmation. We confirm the driver, the time and a fixed DriveMe fee separately, and only that makes the job binding.',
     third: 'Third-party services — inspection, maintenance, tyres, wash or similar — are paid directly to the provider you choose. They are not part of the DriveMe fee.',
     detailsHead: 'Your request',
@@ -157,8 +162,8 @@ export function customerConfirmation(booking, base, lang) {
     [L.rows.dest, booking.destination || L.open],
     [L.rows.type, type],
     [L.rows.price, price],
-    [L.rows.pay, (PAY_LABEL[lang] || PAY_LABEL.fi)[booking.payment_method] || L.notChosen],
-  ];
+    [L.rows.pay, booking.payment_method ? (PAY_LABEL[lang] || PAY_LABEL.fi)[booking.payment_method] : null],
+  ].filter((r) => r[1] != null);
 
   const html = `<!doctype html><html lang="${esc(lang === 'en' ? 'en' : 'fi')}"><body style="margin:0;padding:24px;background:#F5F8FC;font-family:Inter,-apple-system,'Segoe UI',sans-serif;color:#0B1524">
   <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #EAEFF6;border-radius:14px;overflow:hidden">
@@ -213,16 +218,19 @@ export function bookingAlert(booking, base) {
   // is harder to read at 07:00 than one that lists what was actually ordered.
   const rows = [
     ['Reference', ref],
+    ['⚠ Manual review', booking.manual_review ? (booking.review_reason || 'Flagged') : null],
+    ['Request type', TYPE_LABEL[booking.service_type] || null],
     ['Service', type],
     ['Customer', booking.customer_name],
     ['Phone', booking.customer_phone],
-    ['Email', booking.customer_email],
+    ['Email', booking.customer_email || 'Not given - call the customer'],
     ['Company', company],
     ['When', whenLocal(booking.scheduled_for) +
       (booking.collection_window ? ' · window ' + booking.collection_window : '')],
     ['Deliver by', booking.delivery_by],
     ['Pickup', booking.pickup_location],
     ['Destination', booking.destination || 'Open-ended (driver stays)'],
+    ['Return needed', booking.return_needed == null ? null : (booking.return_needed ? 'Yes' : 'No')],
     ['Return to', booking.return_location],
     ['Access notes', booking.access_notes],
     ['Appointment', appointment],
@@ -237,8 +245,10 @@ export function bookingAlert(booking, base) {
     ['Indicative price', booking.quote_status === 'quote_required'
       ? 'Manual fixed quote required'
       : euro(booking.estimated_price)],
-    ['Payment', PAY[booking.payment_method] || 'Not chosen'],
+    ['Payment', PAY[booking.payment_method] || null],
     ['Customer notes', booking.notes],
+    ['Owner authorisation', booking.vehicle_owner_authorization ? 'Confirmed on the request form' : null],
+    ['Lead source', booking.lead_source],
   ].filter(function (r) { return r[1] != null && r[1] !== ''; });
 
   const html = `<!doctype html><html><body style="margin:0;padding:24px;background:#F5F8FC;font-family:Inter,-apple-system,'Segoe UI',sans-serif;color:#0B1524">
@@ -246,7 +256,7 @@ export function bookingAlert(booking, base) {
     <div style="padding:20px 24px;border-bottom:1px solid #EAEFF6">
       <div style="font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#697687;font-weight:600">New booking</div>
       <div style="font-size:21px;font-weight:600;letter-spacing:-.01em;margin-top:4px">Reference ${esc(ref)}</div>
-      <div style="font-size:13.5px;color:#697687;margin-top:2px">Not confirmed yet — quote it, assign a driver, then confirm the fixed fee to the customer.</div>
+      <div style="font-size:13.5px;color:#697687;margin-top:2px">Not confirmed yet — call the customer, quote it, assign a driver, then confirm the fixed fee.</div>
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
       ${rows.map(([k, v]) => `<tr>
@@ -274,9 +284,26 @@ export function bookingAlert(booking, base) {
   ].join('\n');
 
   return {
-    subject: `New request ${ref} — ${type} — ${booking.customer_name}`,
+    subject: `${booking.manual_review ? 'REVIEW — ' : ''}New request ${ref} — ${type} — ${booking.customer_name}`,
     html,
     text,
-    replyTo: booking.customer_email,
+    replyTo: booking.customer_email || undefined,
+  };
+}
+
+/**
+ * Sent when a request could not be written to the database. The Driver First
+ * plan's P0: a failed save must reach a person, with everything needed to
+ * enter the request by hand, instead of disappearing into a log.
+ */
+export function requestFailureAlert(booking, base, reason) {
+  const alert = bookingAlert(booking, base);
+  const ref = booking.id.slice(0, 8).toUpperCase();
+  const banner = `<div style="max-width:560px;margin:0 auto 14px;background:#FDECEC;border:1px solid #8C2F2F;color:#5A1D1D;border-radius:12px;padding:14px 18px;font-size:14px;line-height:1.5"><b>NOT SAVED — enter this request by hand.</b><br>The database did not accept it (${esc(reason || 'unknown error')}). The customer was told the request arrived; call them back as usual.</div>`;
+  return {
+    subject: `UNSAVED request ${ref} — enter manually — ${booking.customer_name}`,
+    html: alert.html.replace(/<body[^>]*>/, (tag) => tag + banner),
+    text: ['NOT SAVED - enter this request by hand.', 'Reason: ' + (reason || 'unknown error'), '', alert.text].join('\n'),
+    replyTo: alert.replyTo,
   };
 }

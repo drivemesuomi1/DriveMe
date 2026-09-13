@@ -225,48 +225,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://driveme.fi/oma-kuljettaja/</loc>
-    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/oma-kuljettaja/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/personal-driver/"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://driveme.fi/en/personal-driver/</loc>
-    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/oma-kuljettaja/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/personal-driver/"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://driveme.fi/turvallinen-kotiinkuljetus/</loc>
-    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/turvallinen-kotiinkuljetus/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/safe-ride-home/"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://driveme.fi/en/safe-ride-home/</loc>
-    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/turvallinen-kotiinkuljetus/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/safe-ride-home/"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://driveme.fi/lentokentta-kuljettajapalvelu/</loc>
-    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/lentokentta-kuljettajapalvelu/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/airport-driver/"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://driveme.fi/en/airport-driver/</loc>
-    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/lentokentta-kuljettajapalvelu/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/airport-driver/"/>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://driveme.fi/yrityksille/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/yrityksille/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/for-companies/"/>

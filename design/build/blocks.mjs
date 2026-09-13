@@ -41,6 +41,7 @@ const TRUST_ICONS = {
   doc: '<rect x="3" y="6" width="18" height="14" rx="2.5"/><circle cx="12" cy="13" r="3.2"/><path d="M8.5 6l1.4-2.2h4.2L15.5 6"/>',
   clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/>',
   pin: '<path d="M12 21s6.5-5.6 6.5-10.2A6.5 6.5 0 0 0 5.5 10.8C5.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.4"/>',
+  key: '<circle cx="8" cy="15" r="4.2"/><path d="m11 12 8.5-8.5"/><path d="m16 7 2.5 2.5"/><path d="m18.5 4.5 2 2"/>',
 };
 
 /**
@@ -64,20 +65,28 @@ export const icon = (name) =>
 
 export const money = (n) => `${n} €`;
 
-/** "from 119 €" / "alkaen 119 €", or the quote-only wording. */
+/** "alkaen 89 €" / "from 89 €", the quote-only wording, or "not yet bookable". */
 export function fromPrice(serviceKey, locale) {
   const productKey = SERVICE_PRODUCTS[serviceKey]?.default;
   const p = PRODUCTS[productKey];
   const t = ui[locale];
+  // A passenger service is not sold, so it has no public price at all.
+  if (isServiceGated(serviceKey) || p?.hidden) return locale === 'fi' ? 'Ei vielä varattavissa' : 'Not yet bookable';
   if (!p || p.quote) return locale === 'fi' ? 'Kiinteä tarjous' : 'Fixed quote';
   if (p.unit === 'hour') return `${money(p.from)}/h`;
   return `${t.priceFrom} ${money(p.from)}`;
 }
 
-/** The numeric starting price, or null for quote-only products (schema.org). */
+/** The numeric starting price, or null for quote-only and unsold products (schema.org). */
 export function priceValue(serviceKey) {
   const p = PRODUCTS[SERVICE_PRODUCTS[serviceKey]?.default];
-  return p && !p.quote ? p.from : null;
+  return p && !p.quote && !p.hidden && !isServiceGated(serviceKey) ? p.from : null;
+}
+
+/** The typical price range [low, high] for a service, when the price list publishes one. */
+export function typicalRange(serviceKey) {
+  const p = PRODUCTS[SERVICE_PRODUCTS[serviceKey]?.default];
+  return p && p.typical && !p.hidden ? p.typical : null;
 }
 
 export function isGated(service) {
@@ -116,7 +125,7 @@ export function serviceCards(keys, locale, { showPrice = true } = {}) {
     const s = byKey[k];
     const c = s[locale];
     const gated = isGated(s);
-    const tag = gated ? `<span class="tag">${locale === 'fi' ? 'Odottaa lupaa' : 'Awaiting clearance'}</span>` : '';
+    const tag = gated ? `<span class="tag">${locale === 'fi' ? 'Ei vielä varattavissa' : 'Not yet bookable'}</span>` : '';
     const price = showPrice && !gated ? `<span class="from">${esc(fromPrice(k, locale))}</span>` : '';
     return `<li class="card">
       <span class="icon">${icon(s.icon)}</span>
@@ -190,8 +199,8 @@ export function cancellationBlock(locale, id) {
 export function ackList(locale) {
   return tickList(acknowledgements[locale], 'check',
     locale === 'fi'
-      ? 'Nämä vahvistetaan varauslomakkeella ennen pyynnön lähettämistä.'
-      : 'These are confirmed on the booking form before a request is sent.');
+      ? 'Käymme nämä läpi kanssasi ennen kuin varaus vahvistetaan.'
+      : 'We go through these with you before the booking is confirmed.');
 }
 
 export function eligibilityBlock(locale) {
@@ -243,13 +252,16 @@ export function gateNoticeBlock(locale) {
 }
 
 export function companyBlock(locale) {
-  const lines = locale === 'fi'
-    ? ['Palveluntarjoaja: ' + brand.legalName + ' (DriveMe)', 'Kotipaikka: Helsinki, Suomi', 'Puhelin: ' + brand.phone, 'Sähköposti: ' + brand.email, 'Palvelualue: ' + brand.coverage.join(', ')]
-    : ['Service provider: ' + brand.legalName + ' (DriveMe)', 'Domicile: Helsinki, Finland', 'Phone: ' + brand.phone, 'Email: ' + brand.email, 'Service area: ' + brand.coverage.join(', ')];
-  return tickList(lines, 'plain',
-    locale === 'fi'
-      ? 'Y-tunnus ja kaupparekisteritiedot lisätään ennen julkaisua.'
-      : 'Business ID and trade-register details are added before launch.');
+  const fi = locale === 'fi';
+  const lines = [
+    (fi ? 'Palveluntarjoaja: ' : 'Service provider: ') + brand.legalName + ' (DriveMe)',
+    ...(brand.businessId ? [(fi ? 'Y-tunnus: ' : 'Business ID: ') + brand.businessId] : []),
+    fi ? 'Kotipaikka: Helsinki, Suomi' : 'Domicile: Helsinki, Finland',
+    (fi ? 'Puhelin: ' : 'Phone: ') + brand.phone,
+    (fi ? 'Sähköposti: ' : 'Email: ') + brand.email,
+    (fi ? 'Palvelualue: ' : 'Service area: ') + brand.coverage.join(', '),
+  ];
+  return tickList(lines, 'plain');
 }
 
 export function coverageBlock(locale) {
@@ -267,11 +279,11 @@ export function ctaBand(locale, { title, body, primaryHref, primaryLabel, second
     <div>
       <h2>${fancy(title || t.finalCta)}</h2>
       <p>${esc(body || (locale === 'fi'
-    ? 'Pyydä hinta ja varaa DriveMe. Vastaamme palveluaikana alle 15 minuutissa.'
-    : 'Request a price and book DriveMe. We answer within 15 minutes during service hours.'))}</p>
+    ? 'Kerro, mistä auto noudetaan ja minne se menee. Vahvistamme kiinteän hinnan ennen ajoa.'
+    : 'Tell us where the car is and where it needs to go. We confirm a fixed price before the drive.'))}</p>
     </div>
     <div class="cta-actions">
-      <a class="btn btn-light" href="${primaryHref || t.bookHref}">${esc(primaryLabel || t.requestPrice)} <span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn-light" href="${primaryHref || t.bookHref}">${esc(primaryLabel || t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a>
       <a class="btn btn-outline-light" href="${secondaryHref || `tel:${brand.phoneHref}`}">${esc(secondaryLabel || `${t.callUs} ${brand.phone}`)}</a>
     </div>
   </div>

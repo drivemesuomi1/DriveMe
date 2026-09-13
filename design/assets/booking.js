@@ -1,11 +1,12 @@
 /* DriveMe — booking.js
-   The request flow (§7). Conditional fields, an indicative estimate, an
-   accessible error summary and the POST to /api/bookings.
+   The two-stage price request (Driver First Growth Plan, P1): a short first
+   stage, optional details, an indicative estimate, an accessible error
+   summary and the POST to /api/bookings.
 
-   The estimate here mirrors api/_lib/pricing.js, whose constants are
-   injected into the page as JSON at build time — so the two can only differ
-   if someone edits this arithmetic by hand. The server recomputes the figure
-   before storing it, and the fee is not final until DriveMe confirms it. */
+   The estimate mirrors api/_lib/pricing.js, whose constants are injected into
+   the page as JSON at build time. The server derives the product from the
+   service and trip shape itself and recomputes the figure before storing it,
+   and the fee is not final until DriveMe confirms it. */
 (function () {
   'use strict';
 
@@ -32,6 +33,11 @@
   var submitHint = $('submit-hint');
   var donePanel = $('done-panel');
 
+  // Set when a link asks for a service that is not sold (a passenger ride).
+  var gatedKey = null;
+  // Which part of the site sent the visitor here, for lead_source.
+  var entry = null;
+
   /* ---------------------------------------------------------- helpers */
   function money(n) {
     return (Math.round(n * 100) / 100).toLocaleString(FI ? 'fi-FI' : 'en-GB', {
@@ -39,10 +45,19 @@
     }) + ' €';
   }
   function show(el, on) { if (el) el.hidden = !on; }
+  function val(id) { var e = $(id); return e ? String(e.value || '').trim() : ''; }
+  function checked(name) {
+    var e = form.querySelector('input[name="' + name + '"]:checked');
+    return e ? e.value : '';
+  }
+  function tick(name, value) {
+    var r = form.querySelector('input[name="' + name + '"][value="' + value + '"]');
+    if (r) r.checked = true;
+  }
 
   /**
-   * The confirmations are booking conditions, not fine print. Until every one
-   * is ticked the request cannot be accepted, so the button stays inert rather
+   * The owner's permission is a booking condition, not fine print. Until it is
+   * ticked the request cannot be accepted, so the button stays inert rather
    * than letting the visitor submit into an error summary.
    */
   var ackBoxes = Array.prototype.slice.call(
@@ -52,11 +67,11 @@
     return ackBoxes.every(function (a) { return a.checked; });
   }
   function syncSubmitGate() {
-    submitBtn.disabled = !acksComplete();
+    submitBtn.disabled = !!gatedKey || !acksComplete();
     if (!submitHint) return;
     // Naming what is outstanding, next to the button that will not fire yet,
     // so a disabled button reads as waiting rather than as broken.
-    var problems = collectProblems('touched');
+    var problems = gatedKey ? [] : collectProblems('touched');
     if (!problems.length) {
       submitHint.innerHTML = '';
       show(submitHint, false);
@@ -68,125 +83,103 @@
   }
 
   /**
-   * A gated service cannot be requested, so collecting the request is pointless
-   * and the indicative price would quote something we refuse to sell. Strip the
-   * form back to the choice that got you here plus the notice explaining why.
-   *
-   * Kept visible: the first fieldset (path + service picker + the notice), so
-   * the visitor can switch back to the concierge path, and the phone link in
-   * the quote panel, which is the one action still open to them.
-   *
-   * Done with a class rather than by toggling each element's `hidden`:
-   * onServiceChange() above already decides, per service, whether the shape,
-   * appointment and destination blocks belong on screen. Setting `hidden`
-   * here would overwrite those decisions and reveal blocks that service does
-   * not use when the visitor switches back.
+   * A service that is not sold cannot be requested, so collecting the request
+   * is pointless and an indicative price would quote something we refuse to
+   * sell. Strip the form back to the first choice plus the notice explaining
+   * why. Done with a class rather than by toggling each element's `hidden`, so
+   * the per-type visibility below survives switching back.
    */
   function gatedLayout(on) {
     form.classList.toggle('is-gated', !!on);
   }
-  function val(id) { var e = $(id); return e ? String(e.value || '').trim() : ''; }
-  function checked(name) {
-    var e = form.querySelector('input[name="' + name + '"]:checked');
-    return e ? e.value : '';
+
+  function enterGated(key) {
+    gatedKey = key;
+    var warn = $('gate-warning');
+    warn.innerHTML = '<div class="callout warn"><h3>' + C.gatedTitle + '</h3><p>' + C.gatedBody +
+      ' <a href="' + CFG.interestHref + '">' + C.passengerLink + '</a></p></div>';
+    show(warn, true);
+    gatedLayout(true);
+    // Clear the type choice: with "move" still pre-ticked, clicking it would
+    // fire no change event and the visitor could never leave this notice.
+    form.querySelectorAll('input[name="service_type"]').forEach(function (r) { r.checked = false; });
+    syncSubmitGate();
   }
 
-  /* ------------------------------------------------- service switching */
-  function servicesFor(path) {
-    return Object.keys(CFG.services).filter(function (k) {
-      var cat = CFG.services[k].category;
-      return path === 'driver' ? cat === 'driver' : cat !== 'driver';
-    });
+  function leaveGated() {
+    if (!gatedKey) return;
+    gatedKey = null;
+    $('gate-warning').innerHTML = '';
+    show($('gate-warning'), false);
+    gatedLayout(false);
   }
 
-  function fillServices(path, keep) {
-    var keys = servicesFor(path);
-    var current = keep && keys.indexOf(keep) >= 0 ? keep : keys[0];
-    serviceSel.innerHTML = '';
-    keys.forEach(function (k) {
-      var o = document.createElement('option');
-      o.value = k;
-      o.textContent = CFG.services[k].label;
-      if (k === current) o.selected = true;
-      serviceSel.appendChild(o);
-    });
-    onServiceChange();
+  /* ------------------------------------------------ what is being asked */
+  function currentType() {
+    return checked('service_type') === 'appointment_run' ? 'appointment_run' : 'general_move';
+  }
+
+  // A general move is a relocation, or a pickup-and-return when the car has
+  // to come back. An appointment run is whichever provider service was picked.
+  function currentServiceKey() {
+    if (currentType() === 'appointment_run') return serviceSel.value;
+    return checked('return_needed') === 'yes' ? 'pickupReturn' : 'relocation';
   }
 
   function currentService() {
-    return CFG.services[serviceSel.value] || {};
+    return CFG.services[currentServiceKey()] || {};
   }
 
-  function onServiceChange() {
+  function currentShape() {
     var s = currentService();
-    var isDriverPath = s.category === 'driver';
-    var isBusiness = s.category === 'business';
+    if (currentType() === 'general_move') return s.defaultShape;
+    var shape = checked('shape');
+    return s.shapes && s.shapes[shape] ? shape : s.defaultShape;
+  }
 
-    // Appointment block only when the provider actually needs one (§7).
-    show($('appointment-set'), s.appointment === 'required' || s.appointment === 'recommended');
-    $('appointment-set').querySelectorAll('input,select').forEach(function (el) {
-      el.disabled = $('appointment-set').hidden;
-    });
-    var providerInput = $('provider');
-    if (providerInput) providerInput.required = s.appointment === 'required';
+  function productKey() {
+    var s = currentService();
+    return (s.shapes && s.shapes[currentShape()]) || s.product;
+  }
 
-    // Hourly driver work asks for hours; a concierge run asks for waiting.
-    show($('hours-field'), s.product === 'personalDriver');
-    show($('wait-field'), !isDriverPath && !isBusiness);
-    show($('shape-set'), !isDriverPath && !isBusiness && (s.allowed || []).length > 1);
-    show($('destination-field'), !isDriverPath || s.product !== 'personalDriver');
-    show($('return-field'), !isDriverPath && !isBusiness);
+  function syncSections() {
+    var appt = currentType() === 'appointment_run';
+    show($('appointment-set'), appt);
+    show($('move-set'), !appt);
+    // Where the car goes is never optional: an address for a move, the
+    // provider for a service run.
+    $('provider').required = appt;
+    $('destination').required = !appt;
 
-    // Shapes this service actually supports.
+    // Offer only the return shapes this service can actually be priced as.
+    var s = CFG.services[serviceSel.value] || {};
     form.querySelectorAll('input[name="shape"]').forEach(function (r) {
-      var ok = (s.allowed || []).indexOf(r.value) >= 0;
+      var ok = !!(s.shapes && s.shapes[r.value]);
       r.closest('.choice').hidden = !ok;
       r.disabled = !ok;
-      if (!ok && r.checked) {
-        var first = form.querySelector('input[name="shape"]:not([disabled])');
-        if (first) first.checked = true;
-      }
     });
+    var picked = form.querySelector('input[name="shape"]:checked');
+    if (!picked || picked.disabled) tick('shape', s.defaultShape);
 
-    // A gated service cannot be requested at all — the document's
-    // implementation principle: no bookable promise without clearance.
-    var warn = $('gate-warning');
-    if (s.gated) {
-      warn.innerHTML = '<div class="callout warn"><h3>' + C.gatedTitle + '</h3><p>' +
-        (FI
-          ? 'Voit ilmoittaa kiinnostuksesi sähköpostitse, mutta emme ota tälle palvelulle varauksia ennen viranomais- ja vakuutusvahvistusta.'
-          : 'You can register interest by email, but we take no bookings for this service before regulatory and insurance clearance.') +
-        '</p></div>';
-      show(warn, true);
-      submitBtn.disabled = true;
-    } else {
-      warn.innerHTML = '';
-      show(warn, false);
-      syncSubmitGate();
-    }
-    gatedLayout(s.gated);
     syncRequiredMarks();
-
     estimate();
+    syncSubmitGate();
+  }
+
+  function onServicePick() {
+    // A new service starts from its own usual shape: an inspection is normally
+    // a wait-and-return, a workshop visit a later return.
+    var s = CFG.services[serviceSel.value] || {};
+    tick('shape', s.defaultShape);
+    syncSections();
   }
 
   /* ------------------------------------------------------- the quote */
-  function productKey() {
-    var s = currentService();
-    if (s.category === 'driver' || s.category === 'business') return s.product;
-    var shape = checked('shape');
-    // The service's own product wins when it is the selected shape's default
-    // (an inspection run is priced as an inspection run, not as a generic
-    // pickup-and-return), otherwise the chosen shape decides.
-    if (shape && shape !== 'pickupReturn') return shape;
-    return s.product;
-  }
-
   function scheduledDate() {
     var d = val('date');
     if (!d) return null;
-    var w = val('window') || '08-10';
-    var hour = parseInt(w.split('-')[0], 10);
+    var w = val('window');
+    var hour = w && w !== 'flex' ? parseInt(w.split('-')[0], 10) : 9;
     // Interpreted as Helsinki wall-clock. The browser may sit in another
     // zone, so the premium decision is only indicative; the server re-derives
     // it in Europe/Helsinki before the fee is confirmed.
@@ -213,40 +206,18 @@
   }
 
   function estimate() {
-    var s = currentService();
-    var key = productKey();
-    var product = CFG.products[key];
+    var product = CFG.products[productKey()];
 
-    if (!product || product.quote || s.gated) {
+    if (!product || product.quote) {
       quoteAmount.innerHTML = '<small>&nbsp;</small>' + C.quoteManual;
       quoteLines.innerHTML = '';
       quoteNote.textContent = C.quoteManualNote;
       return;
     }
 
-    var lines = [];
-    var base;
-    if (product.unit === 'hour') {
-      var hours = Math.max(product.minHours || 1, Math.ceil((parseFloat(val('hours')) || 0) * 2) / 2);
-      base = hours * product.from;
-      lines.push({ label: C.lines.driverTime + ' · ' + hours + ' h', amount: base });
-    } else {
-      base = product.from;
-      lines.push({ label: C.lines.base, amount: base });
-    }
-
-    var included = key === 'waitReturn' ? CFG.waiting.waitReturnIncludedMinutes : CFG.waiting.includedMinutes;
-    var wait = parseInt(val('wait_minutes'), 10) || 0;
-    var extra = Math.max(0, wait - included);
-    if (extra > 0) {
-      var units = Math.ceil(extra / CFG.waiting.unitMinutes);
-      var amount = units * (CFG.waiting.hourlyRate * (CFG.waiting.unitMinutes / 60));
-      lines.push({ label: C.lines.waiting + ' · ' + (units * CFG.waiting.unitMinutes) + ' min', amount: amount });
-      base += amount;
-    }
-
+    var lines = [{ label: C.lines.base, amount: product.from }];
     var pr = premiumFor(scheduledDate());
-    if (pr) lines.push({ label: C.lines[pr.key] + ' · +' + pr.pct + ' %', amount: base * pr.pct / 100 });
+    if (pr) lines.push({ label: C.lines[pr.key] + ' · +' + pr.pct + ' %', amount: product.from * pr.pct / 100 });
 
     var total = lines.reduce(function (sum, l) { return sum + l.amount; }, 0);
     quoteAmount.innerHTML = '<small>' + C.quoteFrom + '</small>' + money(total);
@@ -275,22 +246,14 @@
     return !!(el && el.offsetParent !== null && !el.disabled);
   }
 
-  // A destination is meaningless for an hourly driver booking, required for
-  // every concierge run — one rule, read by both validation and the asterisks.
-  function destinationRequired() {
-    var s = currentService();
-    return s.category !== 'driver' && s.category !== 'business';
-  }
-
   var touched = {};
 
   /* The asterisks follow the live requirement, not the markup: the provider is
-     only demanded by services that need a booked appointment. */
+     only demanded for a service run, the destination only for a move. */
   function syncRequiredMarks() {
     form.querySelectorAll('.req').forEach(function (m) {
-      var id = m.getAttribute('data-for');
-      var el = $(id);
-      m.hidden = !(el && el.required) && !(id === 'destination' && destinationRequired());
+      var el = $(m.getAttribute('data-for'));
+      m.hidden = !(el && el.required);
     });
   }
 
@@ -313,27 +276,27 @@
     };
 
     // Wipe the slate first. Errors also arrive from the API, on fields this
-    // pass never looks at, and without this they would stick for good: the
-    // visitor fixes the value and the message stays, accusing them of nothing
-    // they can see.
+    // pass never looks at, and without this they would stick for good.
     if (mark) clearAllErrors();
 
     form.querySelectorAll('input[required], select[required]').forEach(function (el) {
       if (el.type === 'checkbox') return;
       if (!visible(el)) return;
-      if (!String(el.value || '').trim()) {
-        note(el.id, labelFor(el), C.required);
-      } else if (el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(el.value.trim())) {
-        note(el.id, labelFor(el), C.badEmail);
-      }
+      if (!String(el.value || '').trim()) note(el.id, labelFor(el), C.required);
     });
 
-    if (destinationRequired()) {
-      if (!val('destination')) note('destination', labelFor($('destination')), C.required);
+    // Email is optional, but a mistyped one would lose the receipt.
+    var email = val('customer_email');
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      note('customer_email', labelFor($('customer_email')), C.badEmail);
+    }
+    // The phone number is how we reach the customer; catch an obvious typo.
+    var phone = val('customer_phone');
+    if (phone && phone.replace(/\D/g, '').length < 6) {
+      note('customer_phone', labelFor($('customer_phone')), C.badPhone);
     }
 
-    // Keep the numbers inside the bounds the API enforces, so an out-of-range
-    // entry is caught here rather than coming back as a failed request.
+    // Keep the numbers inside the bounds the API enforces.
     form.querySelectorAll('input[type="number"]').forEach(function (el) {
       if (!visible(el) || !String(el.value || '').trim()) return;
       var n = parseFloat(el.value);
@@ -344,17 +307,9 @@
       }
     });
 
-    // One entry with a count, not eight lines: the confirmations are a single
-    // block on the page and listing each sentence would bury the real fields.
     var unticked = ackBoxes.filter(function (a) { return !a.checked; });
     if (mark) $('ack-err').textContent = unticked.length ? C.mustAccept : '';
-    if (unticked.length) {
-      problems.push({
-        id: unticked[0].id,
-        label: (FI ? 'Varauksen vahvistukset' : 'Booking confirmations') +
-          ' (' + unticked.length + '/' + ackBoxes.length + ')',
-      });
-    }
+    if (unticked.length) problems.push({ id: unticked[0].id, label: C.authLabel });
 
     return problems;
   }
@@ -397,70 +352,88 @@
     return lab ? lab.textContent.replace(/\*\s*$/, '').trim() : el.id;
   }
 
+  /* ------------------------------------------------------ lead source */
+  /* site.js records how the visit started (campaign tags, referring site,
+     landing page) in sessionStorage; this page adds which button sent the
+     visitor to the form. Blocked storage costs the attribution, never the
+     request. */
+  function leadSource() {
+    var parts = [];
+    try {
+      var saved = JSON.parse(sessionStorage.getItem('dm_src') || 'null');
+      if (saved) {
+        if (saved.utm) parts.push('utm:' + saved.utm);
+        if (saved.click) parts.push('click:' + saved.click);
+        if (saved.ref) parts.push('ref:' + saved.ref);
+        if (saved.landing) parts.push('landing:' + saved.landing);
+      }
+    } catch (e) { /* storage unavailable */ }
+    if (entry) parts.push('entry:' + entry);
+    return parts.length ? parts.join(' | ').slice(0, 300) : 'direct';
+  }
+
   /* ----------------------------------------------------------- submit */
   function payload() {
-    var s = currentService();
-    var shape = checked('shape');
-    var scheduled = val('date') && val('window')
-      ? val('date') + 'T' + val('window').split('-')[0].padStart(2, '0') + ':00'
-      : null;
+    var type = currentType();
+    var appt = type === 'appointment_run';
+    var shape = currentShape();
+    var win = val('window');
+    var hour = win && win !== 'flex' ? win.split('-')[0] : '09';
+    var returning = shape !== 'oneWay';
 
     return {
       language: CFG.locale,
-      path: checked('path'),
-      service: serviceSel.value,
+      service: currentServiceKey(),
+      service_type: type,
+      shape: shape,
       product: productKey(),
-      shape: shape || null,
+      // The form cannot carry a passenger; the API refuses any request that does.
+      passenger_count: 0,
       pickup_location: val('pickup_location'),
-      destination: val('destination') || null,
-      return_location: $('return_same') && $('return_same').checked ? val('pickup_location') : (val('return_location') || null),
+      destination: appt ? val('provider') : val('destination'),
+      return_needed: returning,
+      return_location: returning ? val('pickup_location') : null,
+      provider: appt ? val('provider') : null,
+      appointment_time: appt ? (val('appointment_time') || null) : null,
+      appointment_ref: appt ? (val('appointment_ref') || null) : null,
+      scheduled_for: val('date') ? val('date') + 'T' + hour.padStart(2, '0') + ':00' : null,
+      collection_window: win || null,
       access_notes: val('access_notes') || null,
-      scheduled_for: scheduled,
-      collection_window: val('window') || null,
-      delivery_by: val('delivery_by') || null,
-      wait_minutes: parseInt(val('wait_minutes'), 10) || 0,
-      duration_hours: s.product === 'personalDriver' ? (parseFloat(val('hours')) || null) : null,
-      provider: val('provider') || null,
-      appointment_time: val('appointment_time') || null,
-      appointment_ref: val('appointment_ref') || null,
-      appointment_contact: val('appointment_contact') || null,
-      key_method: val('key_method') || null,
-      vehicle_plate: val('plate'),
-      vehicle_details: [val('vehicle_model'), val('vehicle_year')].filter(Boolean).join(' '),
+      vehicle_plate: val('plate') || null,
+      vehicle_details: val('vehicle_model') || null,
       vehicle_gearbox: val('gearbox') || null,
       vehicle_fuel: val('fuel') || null,
-      vehicle_mileage: parseInt(val('mileage'), 10) || null,
-      vehicle_notes: val('vehicle_notes') || null,
       customer_name: val('customer_name'),
       customer_phone: val('customer_phone'),
-      customer_email: val('customer_email'),
+      customer_email: val('customer_email') || null,
       customer_type: val('customer_type') || 'person',
       company_name: val('company_name') || null,
       business_id: val('business_id') || null,
       invoice_email: val('invoice_email') || null,
-      pickup_contact: val('pickup_contact') || null,
-      delivery_contact: val('delivery_contact') || null,
-      contact_notes: val('contact_notes') || null,
-      payment_method: val('payment_method') || null,
       notes: val('notes') || null,
-      acknowledged: true,
+      vehicle_owner_authorization: !!($('ack-0') && $('ack-0').checked),
+      lead_source: leadSource(),
     };
+  }
+
+  function finish(reference) {
+    form.hidden = true;
+    $('done-ref').textContent = reference;
+    show(donePanel, true);
+    donePanel.focus();
+    donePanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (currentService().gated) return;
+    if (gatedKey) return;
     if (!validate()) return;
 
     submitBtn.disabled = true;
     submitBtn.textContent = C.submitting;
 
     if (DEMO) {
-      form.hidden = true;
-      $('done-ref').textContent = 'DEMO-' + String(Date.now()).slice(-6);
-      show(donePanel, true);
-      donePanel.focus();
-      donePanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      finish('DEMO-' + String(Date.now()).slice(-6));
       submitBtn.disabled = false;
       submitBtn.textContent = C.submit;
       return;
@@ -479,11 +452,7 @@
           }
           throw new Error((res.data && res.data.error) || C.failed);
         }
-        form.hidden = true;
-        $('done-ref').textContent = C.doneRef ? res.data.reference : res.data.reference;
-        show(donePanel, true);
-        donePanel.focus();
-        donePanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        finish(res.data.reference);
       })
       .catch(function (err) {
         var ul = errorSummary.querySelector('ul');
@@ -494,6 +463,7 @@
       .finally(function () {
         submitBtn.disabled = false;
         submitBtn.textContent = C.submit;
+        syncSubmitGate();
       });
   });
 
@@ -501,26 +471,25 @@
   if (again) {
     again.addEventListener('click', function () {
       form.reset();
+      touched = {};
+      leaveGated();
       form.hidden = false;
       show(donePanel, false);
-      onPathChange();
+      show($('company-fields'), false);
+      syncSections();
       form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
   /* ------------------------------------------------------------ wiring */
-  function onPathChange() {
-    fillServices(checked('path'), serviceSel.value);
-  }
-
-  form.querySelectorAll('input[name="path"]').forEach(function (r) {
-    r.addEventListener('change', onPathChange);
+  form.querySelectorAll('input[name="service_type"]').forEach(function (r) {
+    r.addEventListener('change', function () { leaveGated(); syncSections(); });
   });
-  serviceSel.addEventListener('change', onServiceChange);
-  form.querySelectorAll('input[name="shape"]').forEach(function (r) {
+  form.querySelectorAll('input[name="return_needed"], input[name="shape"]').forEach(function (r) {
     r.addEventListener('change', estimate);
   });
-  ['date', 'window', 'wait_minutes', 'hours'].forEach(function (id) {
+  serviceSel.addEventListener('change', onServicePick);
+  ['date', 'window'].forEach(function (id) {
     var el = $(id);
     if (el) el.addEventListener('change', estimate);
     if (el) el.addEventListener('input', estimate);
@@ -529,7 +498,6 @@
   if (type) {
     type.addEventListener('change', function () {
       show($('company-fields'), type.value === 'company');
-      if (type.value === 'company') $('payment_method').value = 'invoice';
     });
   }
   // Any edit can complete or reopen an item on the outstanding list.
@@ -542,33 +510,48 @@
       syncSubmitGate();
     }
   });
-  syncRequiredMarks();
-  syncSubmitGate();
 
-  var same = $('return_same');
-  if (same) {
-    same.addEventListener('change', function () { show($('return-address'), !same.checked); });
-  }
-
-  /* Deep links from the service pages and the homepage quick start:
-     /varaus/?palvelu=inspection&nouto=Mannerheimintie+1&pvm=2026-09-15 */
+  /* Deep links from the homepage and the service pages:
+     /varaus/?palvelu=inspection&nouto=00100&pvm=2026-09-15&lahde=home_hero
+     /varaus/?tyyppi=siirto   /en/booking/?type=service */
   var params = new URLSearchParams(location.search);
-  var wantedService = params.get('palvelu') || params.get('service');
+  var wanted = params.get('palvelu') || params.get('service');
+  var wantedType = params.get('tyyppi') || params.get('type');
   var wantedPath = params.get('polku') || params.get('path');
   var wantedPickup = params.get('nouto') || params.get('pickup');
   var wantedDate = params.get('pvm') || params.get('date');
+  var source = (params.get('lahde') || params.get('source') || '').replace(/[^\w:-]/g, '').slice(0, 40);
+  entry = source || (wanted ? 'service:' + String(wanted).replace(/[^\w-]/g, '').slice(0, 30) : null);
+
   if (wantedPickup && $('pickup_location')) $('pickup_location').value = wantedPickup.slice(0, 300);
   if (wantedDate && /^\d{4}-\d{2}-\d{2}$/.test(wantedDate) && $('date')) $('date').value = wantedDate;
-  if (wantedPath === 'kuljettaja' || wantedPath === 'driver') {
-    var driverRadio = form.querySelector('input[name="path"][value="driver"]');
-    if (driverRadio) driverRadio.checked = true;
+  if (wantedType === 'palvelu' || wantedType === 'service') tick('service_type', 'appointment_run');
+  if (wantedType === 'siirto' || wantedType === 'move') tick('service_type', 'general_move');
+
+  var ws = wanted && Object.prototype.hasOwnProperty.call(CFG.services, wanted) ? CFG.services[wanted] : null;
+  if (ws && !ws.gated) {
+    if (ws.type === 'appointment_run') {
+      tick('service_type', 'appointment_run');
+      serviceSel.value = wanted;
+      tick('shape', ws.defaultShape);
+    } else if (ws.type === 'general_move') {
+      tick('service_type', 'general_move');
+      tick('return_needed', wanted === 'pickupReturn' ? 'yes' : 'no');
+    } else if (ws.type === 'business') {
+      // Company leads start as a move with the company details already open;
+      // contract pricing is agreed on the call.
+      tick('service_type', 'general_move');
+      $('customer_type').value = 'company';
+      show($('company-fields'), true);
+      $('more-details').open = true;
+      show($('business-note'), true);
+    }
   }
-  if (wantedService && CFG.services[wantedService]) {
-    var cat = CFG.services[wantedService].category;
-    var pathRadio = form.querySelector('input[name="path"][value="' + (cat === 'driver' ? 'driver' : 'car') + '"]');
-    if (pathRadio) pathRadio.checked = true;
+
+  syncSections();
+  if ((ws && ws.gated) || wantedPath === 'kuljettaja' || wantedPath === 'driver') {
+    enterGated(wanted || 'personalDriver');
   }
-  fillServices(checked('path'), wantedService || null);
 
   // Today is the earliest sensible pickup date.
   var dateInput = $('date');
