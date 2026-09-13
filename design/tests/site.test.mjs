@@ -268,6 +268,27 @@ test('the 404 page is a real page and claims no canonical of its own', async () 
   assert.match(html, /Sivua ei löytynyt/);
 });
 
+test('every page carries the 2026 logo, favicon and share image', async () => {
+  for (const p of pages) {
+    const html = await read(fileFor(p.path));
+    assert.ok(html.includes('src="/assets/brand/driveme-logo-v2.png"'), `${p.path} header logo`);
+    assert.ok(html.includes('src="/assets/brand/driveme-logo-v2-on-navy.png"'), `${p.path} footer logo`);
+    assert.ok(html.includes('href="/assets/icons-v2/favicon-32.png"'), `${p.path} favicon`);
+    assert.ok(html.includes('/assets/icons-v2/social-1200x630.png'), `${p.path} share image`);
+    assert.equal(/driveme-navbar-(light|dark)\.png|driveme-social-logo\.png|driveme-icon-512\.png/.test(html), false,
+      `${p.path} still points at the old artwork`);
+  }
+  for (const app of ['admin.html', 'driver.html', 'track.html']) {
+    assert.ok((await read(app)).includes('/assets/icons-v2/favicon-32.png'), `${app} favicon`);
+  }
+  const manifest = JSON.parse(await read('site.webmanifest'));
+  for (const icon of manifest.icons) await access(join(ROOT, icon.src));
+  for (const f of ['favicon.ico', 'assets/icons-v2/apple-touch-icon.png', 'assets/icons-v2/social-1200x630.png',
+    'assets/brand/driveme-logo-v2.png', 'assets/brand/driveme-logo-v2-on-navy.png']) {
+    await access(join(ROOT, f));
+  }
+});
+
 function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');

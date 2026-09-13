@@ -120,15 +120,25 @@ rather than the ~50 MB of unused video takes in `assets/`.
 
 ## Brand mark
 
-The supplied logo is black ink plus a gold "ME" on transparency, so it works on
-white but disappears on the navy footer. `driveme-navbar-dark.png` is its
-negative, derived from the same file: every pixel that is neutral or dark
-becomes white, and pixels in the gold hue band (25-60°) keep their hue and
-saturation with the value lifted so the darkest of them still clears 4.5:1
-against the footer. Alpha is untouched, so the antialiasing stays clean.
+The 2026 logo (client artwork, Sep 2026). Originals are kept in
+`assets/brand/source/` as delivered; everything else is generated from them.
 
-If the source logo changes, regenerate it — or better, replace both files with
-a designer-supplied pair. The derivation is a stopgap, not artwork.
+| File | Used for |
+| --- | --- |
+| `assets/brand/driveme-logo-v2.png` | header logo, transparent |
+| `assets/brand/driveme-logo-v2-on-navy.png` | footer: the dark-blue letters and outer D in white, the light-blue stroke kept, readable on the navy footer |
+| `assets/brand/driveme-mark-v2.png` | the D mark on its own, 512 px, transparent |
+| `favicon.ico`, `assets/icons-v2/favicon-{16,32,48}.png` | browser tabs |
+| `assets/icons-v2/apple-touch-icon.png`, `icon-{192,512}.png` | home-screen and web-app icons, on white with safe-zone padding |
+| `assets/icons-v2/social-1200x630.png` | link previews and the LocalBusiness `image` |
+
+The sources are JPEGs on an off-white ground. Both blues share almost the same red
+channel, so the generator recovers opacity from red and snaps every pixel to the exact
+brand blue - clean edges, no JPEG haze. New file names (`-v2`, `icons-v2/`) rather than
+overwriting: Netlify serves `/assets/*.png` as immutable for a year, so a replaced file
+would never reach returning visitors.
+
+The archived concept pages (`/legacy`, `01-`, `02-`) keep their old artwork on purpose.
 
 ## Editing the site
 

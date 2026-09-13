@@ -96,6 +96,8 @@ async function main() {
   for (const rel of copied.filter((f) => f.endsWith('.html'))) {
     scan(await readFile(join(OUT, rel), 'utf8'));
   }
+  // The web app manifest names the home-screen icons.
+  if (await exists(join(ROOT, 'site.webmanifest'))) scan(await readFile(join(ROOT, 'site.webmanifest'), 'utf8'));
   // Stylesheets reference images of their own.
   for (const css of [...referenced].filter((f) => f.endsWith('.css'))) {
     if (await exists(join(ROOT, css))) scan(await readFile(join(ROOT, css), 'utf8'));

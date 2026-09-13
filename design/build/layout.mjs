@@ -68,18 +68,19 @@ ${alternates}
 <meta property="og:title" content="${esc(o.title)}">
 <meta property="og:description" content="${esc(o.description)}">
 ${canonical ? `<meta property="og:url" content="${esc(canonical)}">` : ''}
-<meta property="og:image" content="${ORIGIN}/assets/driveme-social-logo.png">
+<meta property="og:image" content="${ORIGIN}/assets/icons-v2/social-1200x630.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="DriveMe">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(o.title)}">
 <meta name="twitter:description" content="${esc(o.description)}">
-<meta name="twitter:image" content="${ORIGIN}/assets/driveme-social-logo.png">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-<link rel="manifest" href="/site.webmanifest">
+<meta name="twitter:image" content="${ORIGIN}/assets/icons-v2/social-1200x630.png">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any">
+<link rel="icon" href="/assets/icons-v2/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/assets/icons-v2/favicon-48.png" type="image/png" sizes="48x48">
+<link rel="apple-touch-icon" href="/assets/icons-v2/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="/site.webmanifest?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -147,7 +148,7 @@ function header(locale, navKey, id) {
 <header class="site-head">
   <div class="wrap head-inner">
     <a class="brand" href="${url('home', locale)}" aria-label="DriveMe">
-      <img src="/assets/brand/driveme-navbar-light.png" alt="DriveMe" width="1577" height="376" loading="eager" decoding="async">
+      <img src="/assets/brand/driveme-logo-v2.png" alt="DriveMe" width="504" height="120" loading="eager" decoding="async">
     </a>
     <nav class="site-nav" id="site-nav" aria-label="${esc(t.menu)}">
       <ul>${items}</ul>
@@ -231,7 +232,7 @@ function footer(locale) {
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <img src="/assets/brand/driveme-navbar-dark.png" alt="DriveMe" width="1577" height="376" loading="lazy" decoding="async">
+        <img src="/assets/brand/driveme-logo-v2-on-navy.png" alt="DriveMe" width="454" height="108" loading="lazy" decoding="async">
         <p>${esc(f.tagline)}</p>
         <div class="foot-contact">
           <a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a>
@@ -278,8 +279,8 @@ export function organizationSchema() {
     url: `${ORIGIN}/`,
     telephone: brand.phone,
     email: brand.email,
-    image: `${ORIGIN}/assets/driveme-social-logo.png`,
-    logo: `${ORIGIN}/assets/driveme-icon-512.png`,
+    image: `${ORIGIN}/assets/icons-v2/social-1200x630.png`,
+    logo: `${ORIGIN}/assets/icons-v2/icon-512.png`,
     description: 'DriveMe noutaa asiakkaan ajokuntoisen auton ja ajaa sen sovittuun osoitteeseen, katsastukseen, huoltoon, renkaanvaihtoon tai pesuun pääkaupunkiseudulla. Asiakas ei matkusta autossa.',
     priceRange: '€€',
     ...(brand.businessId ? { taxID: brand.businessId } : {}),
