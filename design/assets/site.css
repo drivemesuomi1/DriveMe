@@ -237,6 +237,14 @@ section[id],div[id]{scroll-margin-top:120px}
 @media (max-width:1180px){
   .head-inner{grid-template-columns:auto auto;min-height:66px}
   .nav-toggle{display:inline-flex}
+  /* Without an explicit row, opening the nav panel re-runs auto-placement for
+     every header child and shoves this row down below the panel, so the
+     language switch and Menu button appear to jump to a different spot each
+     time it opens. Pinning it to row 1 keeps it beside the logo always. */
+  /* Both axes must be pinned together: a row-only constraint jumps ahead of
+     the brand mark in the browser's placement order and lands in column 1
+     instead, swapping the two sides of the header. */
+  .head-actions{grid-row:1;grid-column:2}
   .site-nav{grid-column:1 / -1;display:none;border-top:1px solid var(--ink-100);padding-block:var(--s-2) var(--s-4)}
   .site-nav.open{display:block}
   .site-nav>ul{flex-direction:column;justify-content:flex-start;gap:2px}
@@ -709,6 +717,12 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
   transition:opacity var(--standard),transform var(--standard),visibility var(--standard);
 }
 .float-cta.on{opacity:1;visibility:visible;transform:none}
+@media (max-width:640px){
+  /* Full desktop pill padding on a small screen reads as an oversized banner
+     sitting on top of the content it is meant to float politely beside. */
+  .float-cta{min-height:44px;padding:11px 20px;font-size:var(--t-caption);gap:6px}
+  .float-cta .arrow{display:none}
+}
 
 /* ==========================================================================
    forms — request flow
