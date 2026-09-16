@@ -554,8 +554,8 @@ function renderContact(locale) {
         <h3>${esc(locale === 'fi' ? 'Yhteys' : 'Get in touch')}</h3>
         <dl class="contact-list">
           <div><dt>${esc(t.phoneLabel)}</dt><dd><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></dd></div>
-          <div><dt>${esc(t.serviceEmailLabel)}</dt><dd><a href="mailto:${brand.serviceEmail}">${esc(brand.serviceEmail)}</a></dd></div>
           <div><dt>${esc(t.generalEmailLabel)}</dt><dd><a href="mailto:${brand.email}">${esc(brand.email)}</a></dd></div>
+          <div><dt>${esc(t.serviceEmailLabel)}</dt><dd><a href="mailto:${brand.serviceEmail}">${esc(brand.serviceEmail)}</a></dd></div>
         </dl>
         <p class="contact-cta"><a href="${t.bookHref}">${esc(t.requestPrice)} →</a></p>
       </div>
