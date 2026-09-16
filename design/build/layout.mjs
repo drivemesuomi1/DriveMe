@@ -234,11 +234,12 @@ function footer(locale) {
       <div class="foot-brand">
         <img src="/assets/brand/driveme-logo-v2-on-navy.png" alt="DriveMe" width="454" height="108" loading="lazy" decoding="async">
         <p>${esc(f.tagline)}</p>
-        <div class="foot-contact">
-          <a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a>
-          <a href="mailto:${brand.email}">${esc(brand.email)}</a>
-          <span>${esc(brand.coverage.join(' · '))}</span>
-        </div>
+        <dl class="foot-contact">
+          <div><dt>${esc(t.phoneLabel)}</dt><dd><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></dd></div>
+          <div><dt>${esc(t.serviceEmailLabel)}</dt><dd><a href="mailto:${brand.serviceEmail}">${esc(brand.serviceEmail)}</a></dd></div>
+          <div><dt>${esc(t.generalEmailLabel)}</dt><dd><a href="mailto:${brand.email}">${esc(brand.email)}</a></dd></div>
+        </dl>
+        <p class="foot-area">${esc(brand.coverage.join(' · '))}</p>
       </div>
       ${cols}
       <div>
@@ -285,6 +286,14 @@ export function organizationSchema() {
     priceRange: '€€',
     ...(brand.businessId ? { taxID: brand.businessId } : {}),
     knowsLanguage: ['fi', 'en'],
+    contactPoint: [{
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      email: brand.serviceEmail,
+      telephone: brand.phone,
+      areaServed: 'FI',
+      availableLanguage: ['fi', 'en'],
+    }],
     address: { '@type': 'PostalAddress', addressLocality: brand.city, addressCountry: brand.country },
     areaServed: brand.coverage.map((c) => ({ '@type': 'City', name: c })),
   };

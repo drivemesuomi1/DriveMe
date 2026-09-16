@@ -696,8 +696,14 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
    plate, no filter. Regenerate it if the source logo changes (see README). */
 .foot-brand img{height:36px;width:auto;max-width:none}
 .foot-brand p{margin-top:var(--s-4);max-width:36ch;line-height:1.65}
-.foot-contact{margin-top:var(--s-6);display:grid;gap:var(--s-2)}
-.foot-contact a{color:#fff;font-weight:600}
+/* Labelled contact lines: a small caps label over each value, so two email
+   addresses read as two purposes rather than a repeated line. */
+.foot-contact{margin:var(--s-6) 0 0;display:grid;gap:var(--s-4)}
+.foot-contact dt,.contact-list dt{font-size:var(--t-caption);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.foot-contact dt{color:var(--on-navy-2);opacity:.8}
+.foot-contact dd,.contact-list dd{margin:2px 0 0}
+.foot-contact a{color:#fff;font-weight:600;overflow-wrap:anywhere}
+.foot-area{margin-top:var(--s-6)}
 .foot-bottom{
   margin-top:var(--s-12);padding-top:var(--s-6);border-top:1px solid var(--navy-line);
   display:flex;flex-wrap:wrap;gap:var(--s-3) var(--s-8);justify-content:space-between;
@@ -869,3 +875,9 @@ input[aria-invalid="true"],select[aria-invalid="true"],textarea[aria-invalid="tr
 
 .path h3{font-size:var(--t-h3)}
 .card .typical{display:block;margin-top:2px;font-size:var(--t-small);color:var(--ink-500)}
+
+.contact-list{margin:var(--s-4) 0 0;display:grid;gap:var(--s-4)}
+.contact-list dt{color:var(--ink-500)}
+.contact-list a{color:var(--brand);font-weight:600;overflow-wrap:anywhere}
+.contact-cta{margin-top:var(--s-6);font-weight:600}
+.contact-cta a{color:var(--brand)}

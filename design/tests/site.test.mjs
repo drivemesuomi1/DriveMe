@@ -289,6 +289,20 @@ test('every page carries the 2026 logo, favicon and share image', async () => {
   }
 });
 
+test('the footer lists both email addresses with their purpose', async () => {
+  for (const p of pages) {
+    const html = await read(fileFor(p.path));
+    const foot = /<footer class="site-foot">([\s\S]*?)<\/footer>/.exec(html)[1];
+    assert.ok(foot.includes('href="mailto:asiakaspalvelu@driveme.fi"'), `${p.path} footer lacks the customer-service email`);
+    assert.ok(foot.includes('href="mailto:info@driveme.fi"'), `${p.path} footer lacks info@driveme.fi`);
+    assert.match(foot, p.locale === 'fi' ? /<dt>Asiakaspalvelu<\/dt>/ : /<dt>Customer service<\/dt>/, `${p.path} footer label`);
+  }
+  const contact = await read(fileFor(url('contact', 'fi')));
+  assert.ok(contact.includes('<dt>Asiakaspalvelu</dt><dd><a href="mailto:asiakaspalvelu@driveme.fi">'), 'contact page lists customer service');
+  const home = await read('index.html');
+  assert.ok(home.includes('"contactType":"customer service","email":"asiakaspalvelu@driveme.fi"'), 'schema contact point');
+});
+
 function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
