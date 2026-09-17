@@ -174,9 +174,9 @@ function renderHome(locale) {
       ${tickList(business.included.slice(0, 4), 'check')}
       <p><a class="btn btn-ghost" href="${serviceUrl('business', locale)}">${esc(business.nav)}</a></p>
     </div>
-    ${figure('/assets/l-svc-corporate.jpg', fi
-    ? 'Yritysauto noudettavana toimiston edestä'
-    : 'A company car waiting for collection outside an office')}
+    ${figure('/assets/service-heroes/business.jpg', fi
+    ? 'DriveMen kuljettaja ja yritysasiakas luovuttamassa autoa'
+    : 'A DriveMe driver and business customer handing over a vehicle')}
   </div>
 </section>
 
@@ -330,20 +330,33 @@ ${ctaBand(locale)}`;
 }
 
 /* ==================================================== service pages */
+const serviceHeroImages = {
+  inspection: 'vehicle-inspection-run',
+  tyre: 'tyre-service-run',
+  glass: 'glass-body-shop-recall',
+  workshop: 'workshop-run',
+  wash: 'wash-detailing-run',
+  dealer: 'dealer-lease-handover',
+  relocation: 'vehicle-relocation',
+  pickupReturn: 'pickup-return',
+  business: 'business',
+};
+
 function renderService(service, locale) {
   const c = service[locale];
   const t = ui[locale];
   const gated = isGated(service);
   const path = serviceUrl(service.key, locale);
+  const heroImage = serviceHeroImages[service.key];
   const bookHref = service.category === 'business'
     ? `${t.bookHref}?${locale === 'fi' ? 'palvelu' : 'service'}=business`
     : `${t.bookHref}?${locale === 'fi' ? 'palvelu' : 'service'}=${service.key}`;
 
   const body = `
 <!-- Operational note (${service.key}): ${esc(service.devNote)} -->
-<section class="page-head">
-  <div class="wrap page-head-inner">
-    ${crumbs([
+<section class="page-head${heroImage ? ' service-hero' : ''}${['dealer', 'relocation'].includes(service.key) ? ' service-hero-right' : ''}">
+  ${heroImage ? `<img class="service-hero-photo" src="/assets/service-heroes/${heroImage}.jpg" alt="${esc(c.nav)}" fetchpriority="high" decoding="async">\n  ` : ''}<div class="wrap page-head-inner">
+    ${heroImage ? '<div class="service-hero-copy">\n    ' : ''}${crumbs([
     { label: t.breadcrumbHome, href: url('home', locale) },
     { label: nav[locale][0].label, href: url('services', locale) },
     { label: c.nav },
@@ -362,7 +375,7 @@ function renderService(service, locale) {
       <span><b>${esc(locale === 'fi' ? 'Ajanvaraus' : 'Appointment')}:</b> ${esc(appointmentLabel(service.appointment, locale))}</span>
       <span><b>${esc(t.coverage)}:</b> ${esc(brand.coverage.join(', '))}</span>
     </div>
-  </div>
+${heroImage ? '    </div>\n' : ''}  </div>
 </section>
 
 <section class="sec">
