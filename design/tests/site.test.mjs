@@ -303,6 +303,27 @@ test('the footer lists both email addresses with their purpose', async () => {
   assert.ok(home.includes('"contactType":"customer service","email":"asiakaspalvelu@driveme.fi"'), 'schema contact point');
 });
 
+test('the homepage shows every sold service as a photo tile right under the hero', async () => {
+  for (const locale of ['fi', 'en']) {
+    const html = await read(fileFor(url('home', locale)));
+    const heroEnd = html.indexOf('</section>', html.indexOf('<section class="hero">'));
+    const mosaicAt = html.indexOf('<section class="sec sec-navy svc-mosaic-sec">');
+    assert.ok(mosaicAt > heroEnd && html.slice(heroEnd, mosaicAt).trim() === '</section>', `${locale}: mosaic is not directly under the hero`);
+
+    const mosaic = html.slice(mosaicAt, html.indexOf('</section>', mosaicAt));
+    const expected = [...soldKeys, 'business'];
+    for (const key of expected) {
+      assert.ok(mosaic.includes(`href="${serviceUrl(key, locale)}"`), `${locale}: mosaic lacks ${key}`);
+    }
+    assert.equal((mosaic.match(/<li class="svc-tile/g) || []).length, expected.length, `${locale}: tile count`);
+    for (const key of gatedKeys) {
+      assert.equal(mosaic.includes(serviceUrl(key, locale)), false, `${locale}: mosaic shows unsold ${key}`);
+    }
+    for (const [, src] of mosaic.matchAll(/(?:src|srcset)="([^" ]+\.jpg)/g)) await access(join(ROOT, src));
+    assert.ok(mosaic.includes(`${ui[locale].priceFrom} ${PRODUCTS.oneWay.from} €`), `${locale}: relocation tile price`);
+  }
+});
+
 function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');

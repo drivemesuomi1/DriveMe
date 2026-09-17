@@ -932,3 +932,64 @@ input[aria-invalid="true"],select[aria-invalid="true"],textarea[aria-invalid="tr
 .contact-list a{color:var(--brand);font-weight:600;overflow-wrap:anywhere}
 .contact-cta{margin-top:var(--s-6);font-weight:600}
 .contact-cta a{color:var(--brand)}
+
+/* ==========================================================================
+   service mosaic under the homepage hero (after cleava.fi's service grid)
+   ========================================================================== */
+.svc-mosaic-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s-6) var(--s-12);align-items:end;margin-bottom:var(--s-8)}
+.svc-mosaic-head p{color:var(--on-navy-2);font-size:var(--t-small);line-height:1.65;max-width:52ch}
+.svc-mosaic-link{margin-top:var(--s-3)}
+.svc-mosaic-link a{color:var(--brand-on-navy);font-weight:600;text-decoration:none}
+.svc-mosaic-link a:hover{color:#fff}
+
+.svc-mosaic{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:230px;gap:var(--s-4)}
+.svc-tile-lead{grid-column:span 2;grid-row:span 2}
+.svc-tile a{
+  position:relative;isolation:isolate;display:flex;align-items:flex-end;height:100%;overflow:hidden;
+  border-radius:var(--r-card);border:1px solid rgba(255,255,255,.10);background:var(--navy-800);
+  color:#fff;text-decoration:none;transition:border-color var(--standard);
+}
+.svc-tile img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;max-width:none;object-fit:cover;transition:transform 600ms cubic-bezier(.2,0,0,1)}
+/* Clear at the top so the photo reads, dark at the foot where the text sits. */
+.svc-tile a::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,21,36,.08) 0%,rgba(8,21,36,.42) 36%,rgba(8,21,36,.86) 70%,rgba(8,21,36,.94) 100%)}
+.svc-tile-body{display:grid;gap:6px;text-shadow:0 1px 3px rgba(0,0,0,.45);padding:var(--s-6) calc(var(--s-6) + 44px) var(--s-6) var(--s-6);max-width:46ch}
+.svc-tile-title{font-size:var(--t-h4);font-weight:600;line-height:1.25;color:#fff;letter-spacing:0}
+.svc-tile-lead .svc-tile-title{font-size:var(--t-h3)}
+.svc-tile-text{font-size:var(--t-caption);line-height:1.5;color:#D7E2EE}
+.svc-tile-lead .svc-tile-text{font-size:var(--t-small)}
+.svc-tile-price{
+  justify-self:start;text-shadow:none;margin-top:4px;padding:4px 12px;border:1px solid rgba(90,162,240,.55);border-radius:var(--r-pill);
+  background:rgba(8,21,36,.40);font-size:var(--t-caption);font-weight:600;color:#9CC8FF;white-space:nowrap;
+}
+.svc-tile-arrow{
+  position:absolute;right:var(--s-6);bottom:var(--s-6);display:grid;place-items:center;width:36px;height:36px;
+  border:1px solid rgba(255,255,255,.30);border-radius:50%;font-size:15px;color:#fff;
+  transition:background var(--swift),border-color var(--swift),transform var(--standard);
+}
+.svc-tile a:hover{border-color:rgba(90,162,240,.65)}
+.svc-tile a:hover img{transform:scale(1.04)}
+.svc-tile a:hover .svc-tile-arrow{background:var(--brand);border-color:var(--brand);transform:translateX(2px)}
+.svc-tile a:focus-visible{outline:2px solid var(--brand-on-navy);outline-offset:3px}
+
+.svc-mosaic-foot{
+  display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-2) var(--s-6);margin-top:var(--s-8);padding-top:var(--s-6);
+  border-top:1px solid var(--navy-line);font-size:var(--t-small);color:var(--on-navy-2);
+}
+.svc-mosaic-label{font-size:var(--t-caption);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-on-navy)}
+.svc-mosaic-foot a{margin-left:auto;color:#fff;font-weight:600;text-decoration:none}
+.svc-mosaic-foot a:hover{color:var(--brand-on-navy)}
+
+@media (max-width:940px){
+  .svc-mosaic-head{grid-template-columns:1fr;align-items:start}
+  .svc-mosaic{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:220px}
+  .svc-tile-lead{grid-column:1 / -1}
+}
+@media (max-width:560px){
+  .svc-mosaic{grid-template-columns:1fr;grid-auto-rows:minmax(200px,auto);gap:var(--s-3)}
+  .svc-tile-lead{grid-row:auto}
+  .svc-tile-lead a{min-height:280px}
+  .svc-tile-body{padding:20px 64px 20px 20px}
+  .svc-tile-arrow{right:20px;bottom:20px}
+  .svc-mosaic-foot a{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){.svc-tile img{transition:none}}

@@ -100,6 +100,8 @@ function renderHome(locale) {
   ${trustBar(locale)}
 </section>
 
+${serviceMosaic(locale)}
+
 <section class="sec">
   <div class="wrap">
     <div class="sec-head"><h2>${fancy(c.offerTitle)}</h2></div>
@@ -112,14 +114,6 @@ function renderHome(locale) {
         <a class="btn btn-primary" href="${p.href}">${esc(p.cta)}</a>
       </article>`).join('')}
     </div>
-  </div>
-</section>
-
-<section class="sec sec-raised">
-  <div class="wrap">
-    <div class="sec-head"><h2>${fancy(c.popularTitle)}</h2></div>
-    ${serviceCards(c.popularKeys, locale)}
-    <p style="margin-top:18px"><a href="${url('services', locale)}">${esc(t.allServices)} →</a></p>
   </div>
 </section>
 
@@ -264,6 +258,73 @@ function quickStart(locale) {
       <p class="qs-note">${esc(q.note)}</p>
     </div>
   </form>`;
+}
+
+/**
+ * The service mosaic directly under the homepage hero, laid out after the
+ * service grid on cleava.fi in DriveMe's navy and blue: every service that is
+ * sold as a photo tile, the general car move as the large lead tile. Each tile
+ * links to its service page and carries a one-line summary and its price.
+ *
+ * `focus` is the object-position that keeps the driver and the car in frame
+ * when the landscape photo is cropped into a tall or narrow tile.
+ */
+const MOSAIC = [
+  { key: 'relocation', lead: true, focus: '40% 60%' },
+  { key: 'inspection', focus: '74% 55%' },
+  { key: 'workshop', focus: '62% 55%' },
+  { key: 'tyre', focus: '56% 55%' },
+  { key: 'wash', focus: '50% 58%' },
+  { key: 'pickupReturn', focus: '50% 55%' },
+  { key: 'glass', focus: '68% 45%' },
+  { key: 'dealer', focus: '36% 50%' },
+  { key: 'business', focus: '58% 45%' },
+];
+
+function serviceMosaic(locale) {
+  const c = home[locale].mosaic;
+  const t = ui[locale];
+  const fi = locale === 'fi';
+  const tiles = MOSAIC.filter((m) => !isGated(byKey[m.key])).map((m) => {
+    const s = byKey[m.key][locale];
+    const photo = `/assets/service-heroes/card/${serviceHeroImages[m.key]}`;
+    const price = priceValue(m.key) == null ? c.quote : fromPrice(m.key, locale);
+    const sizes = m.lead
+      ? '(max-width: 940px) 100vw, 800px'
+      : '(max-width: 560px) 100vw, (max-width: 940px) 50vw, 400px';
+    return `<li class="svc-tile${m.lead ? ' svc-tile-lead' : ''}">
+        <a href="${serviceUrl(m.key, locale)}">
+          <img src="${photo}-720.jpg" srcset="${photo}-720.jpg 720w, ${photo}-1280.jpg 1280w" sizes="${sizes}"
+               alt="" width="720" height="480" loading="lazy" decoding="async" style="object-position:${m.focus}">
+          <span class="svc-tile-body">
+            <h3 class="svc-tile-title">${esc(s.nav)}</h3>
+            <span class="svc-tile-text">${esc(c.blurbs[m.key])}</span>
+            <span class="svc-tile-price">${esc(price)}</span>
+          </span>
+          <span class="svc-tile-arrow" aria-hidden="true">→</span>
+        </a>
+      </li>`;
+  }).join('\n      ');
+
+  return `<section class="sec sec-navy svc-mosaic-sec">
+  <div class="wrap">
+    <div class="svc-mosaic-head">
+      <h2>${fancy(c.title)}</h2>
+      <div>
+        <p>${esc(c.intro)}</p>
+        <p class="svc-mosaic-link"><a href="${t.bookHref}?${fi ? 'lahde' : 'source'}=home_services">${esc(t.requestMove)} →</a></p>
+      </div>
+    </div>
+    <ul class="svc-mosaic">
+      ${tiles}
+    </ul>
+    <div class="svc-mosaic-foot">
+      <span class="svc-mosaic-label">${esc(t.coverage)}</span>
+      <span>${esc(brand.coverage.join(' · '))}</span>
+      <a href="${url('services', locale)}">${esc(t.allServices)} →</a>
+    </div>
+  </div>
+</section>`;
 }
 
 /** A framed photograph for a split section — same treatment as the hero. */
