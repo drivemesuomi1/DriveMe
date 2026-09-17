@@ -139,7 +139,8 @@ section[id],div[id]{scroll-margin-top:120px}
 /* ==========================================================================
    header — utility bar + white nav
    ========================================================================== */
-.topbar{background:var(--navy-900);color:var(--on-navy-2)}
+/* Above the phone menu's backdrop (z-index 99), like the header below it. */
+.topbar{background:var(--navy-900);color:var(--on-navy-2);position:relative;z-index:100}
 .topbar-inner{
   display:flex;align-items:center;justify-content:space-between;gap:var(--s-4);
   min-height:40px;font-size:var(--t-caption);letter-spacing:.06em;text-transform:uppercase;
@@ -233,6 +234,11 @@ section[id],div[id]{scroll-margin-top:120px}
 .menu-links{list-style:none;display:grid;gap:var(--s-2);margin-top:var(--s-6)}
 .menu-links a{font-size:var(--t-small);font-weight:600;text-decoration:none}
 .menu-col-end .btn{margin-top:var(--s-6);width:100%}
+/* Phone-menu actions and the dimmed page behind the open menu; both exist
+   only below the desktop breakpoint. */
+.nav-sheet-actions{display:none}
+.nav-backdrop{position:fixed;inset:0;z-index:99;background:rgba(8,21,36,.48);touch-action:none;animation:backdrop-in var(--standard) both}
+@keyframes backdrop-in{from{opacity:0}to{opacity:1}}
 
 @media (max-width:1180px){
   /* The first row keeps its own 66px. min-height on the whole grid only held
@@ -257,8 +263,9 @@ section[id],div[id]{scroll-margin-top:120px}
   .site-nav{
     display:none;position:absolute;left:0;right:0;top:100%;z-index:110;
     background:var(--surface);border-top:1px solid var(--ink-100);
-    box-shadow:0 24px 32px -24px rgba(11,27,46,.35);
-    padding:var(--s-2) var(--gutter) var(--s-8);
+    border-radius:0 0 var(--r-card) var(--r-card);
+    box-shadow:0 18px 40px -12px rgba(8,21,36,.35);
+    padding:var(--s-2) var(--gutter) var(--s-6);
   }
   .site-nav.open{display:block;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   .site-nav>ul{flex-direction:column;justify-content:flex-start;gap:2px}
@@ -272,6 +279,11 @@ section[id],div[id]{scroll-margin-top:120px}
   .nav-menu-inner{grid-template-columns:1fr;gap:var(--s-6);padding:var(--s-6)}
   .menu-col-end{border-left:0;padding-left:0;border-top:1px solid var(--ink-300);padding-top:var(--s-6)}
   .menu-list-2{grid-template-columns:1fr}
+  .nav-sheet-actions{display:grid;gap:var(--s-3);margin-top:var(--s-3);padding-top:var(--s-5,20px);border-top:1px solid var(--ink-100)}
+  .nav-sheet-actions .btn{width:100%}
+  /* The sheet already ends with this button; a second copy inside the expanded
+     Services list would repeat it a few lines above. */
+  .menu-col-end .btn{display:none}
 }
 @media (max-width:640px){
   .topbar-note{display:none}

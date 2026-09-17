@@ -13,24 +13,28 @@
   if (toggle && nav) {
     var DESKTOP_NAV = window.matchMedia('(min-width: 1181px)');
     /* On phones and tablets the open menu is a sheet below the sticky header
-       (see site.css). It fills the rest of the screen and scrolls inside
-       itself, so every link is reachable however long the Services list is,
-       and the page behind stays put. */
+       (see site.css), over a dimmed page. It is as tall as its content, capped
+       at the rest of the screen, and scrolls inside itself beyond that, so
+       every link is reachable however long the Services list is. */
+    var backdrop = document.getElementById('nav-backdrop');
     var fitNav = function () {
       if (!nav.classList.contains('open') || DESKTOP_NAV.matches) return;
       var room = window.innerHeight - nav.getBoundingClientRect().top;
-      nav.style.height = Math.max(200, Math.floor(room)) + 'px';
+      nav.style.maxHeight = Math.max(200, Math.floor(room)) + 'px';
     };
     var setNavOpen = function (open) {
       nav.classList.toggle('open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       document.documentElement.classList.toggle('nav-open', open);
+      if (backdrop) backdrop.hidden = !open || DESKTOP_NAV.matches;
       if (open) fitNav();
-      else nav.style.height = '';
+      else nav.style.maxHeight = '';
     };
     toggle.addEventListener('click', function () {
       setNavOpen(!nav.classList.contains('open'));
     });
+    // Tapping the dimmed page closes the menu, as in any app menu.
+    if (backdrop) backdrop.addEventListener('click', function () { setNavOpen(false); });
     // Phones fire resize while scrolling, as the address bar hides and
     // shows: that only changes the height, so the menu just re-fits. It
     // closes when the layout genuinely switches to desktop, where the

@@ -152,6 +152,10 @@ function header(locale, navKey, id) {
     </a>
     <nav class="site-nav" id="site-nav" aria-label="${esc(t.menu)}">
       <ul>${items}</ul>
+      <div class="nav-sheet-actions">
+        <a class="btn btn-primary" href="${t.bookHref}">${esc(t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-ghost" href="tel:${brand.phoneHref}">${esc(t.callUs)} ${esc(brand.phone)}</a>
+      </div>
     </nav>
     <div class="head-actions">
       <nav class="lang" aria-label="${esc(t.language)}">${langs}</nav>
@@ -162,7 +166,8 @@ function header(locale, navKey, id) {
       </button>
     </div>
   </div>
-</header>`;
+</header>
+<div class="nav-backdrop" id="nav-backdrop" hidden></div>`;
 }
 
 /**
