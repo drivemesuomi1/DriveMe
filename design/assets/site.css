@@ -235,7 +235,10 @@ section[id],div[id]{scroll-margin-top:120px}
 .menu-col-end .btn{margin-top:var(--s-6);width:100%}
 
 @media (max-width:1180px){
-  .head-inner{grid-template-columns:auto auto;min-height:66px}
+  /* The first row keeps its own 66px. min-height on the whole grid only held
+     while the header had one row: with the panel open the grid is taller, the
+     first row shrank to its content and the logo and buttons jumped up. */
+  .head-inner{grid-template-columns:auto auto;grid-template-rows:minmax(66px,auto);min-height:66px}
   .nav-toggle{display:inline-flex}
   /* Without an explicit row, opening the nav panel re-runs auto-placement for
      every header child and shoves this row down below the panel, so the
@@ -245,8 +248,19 @@ section[id],div[id]{scroll-margin-top:120px}
      the brand mark in the browser's placement order and lands in column 1
      instead, swapping the two sides of the header. */
   .head-actions{grid-row:1;grid-column:2}
-  .site-nav{grid-column:1 / -1;display:none;border-top:1px solid var(--ink-100);padding-block:var(--s-2) var(--s-4)}
-  .site-nav.open{display:block}
+  /* The open menu is a sheet laid over the page just below the header bar,
+     not a block that grows the header. Growing the sticky header changed the
+     page height above the fold, so the browser shifted the scroll position to
+     compensate and the header row jumped, or the menu slid off screen when it
+     was opened part-way down a page. As an overlay nothing around it moves;
+     site.js sizes it to the rest of the screen and it scrolls inside itself. */
+  .site-nav{
+    display:none;position:absolute;left:0;right:0;top:100%;z-index:110;
+    background:var(--surface);border-top:1px solid var(--ink-100);
+    box-shadow:0 24px 32px -24px rgba(11,27,46,.35);
+    padding:var(--s-2) var(--gutter) var(--s-8);
+  }
+  .site-nav.open{display:block;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   .site-nav>ul{flex-direction:column;justify-content:flex-start;gap:2px}
   .site-nav>ul>li>a{padding:13px 14px;font-size:var(--t-body)}
   .nav-trigger{width:100%;justify-content:space-between;padding:13px 14px;font-size:var(--t-body)}

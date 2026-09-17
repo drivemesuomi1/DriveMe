@@ -11,18 +11,34 @@
   var toggle = document.querySelector('.nav-toggle');
   var nav = document.getElementById('site-nav');
   if (toggle && nav) {
-    toggle.addEventListener('click', function () {
-      var open = nav.classList.toggle('open');
+    var DESKTOP_NAV = window.matchMedia('(min-width: 1181px)');
+    /* On phones and tablets the open menu is a sheet below the sticky header
+       (see site.css). It fills the rest of the screen and scrolls inside
+       itself, so every link is reachable however long the Services list is,
+       and the page behind stays put. */
+    var fitNav = function () {
+      if (!nav.classList.contains('open') || DESKTOP_NAV.matches) return;
+      var room = window.innerHeight - nav.getBoundingClientRect().top;
+      nav.style.height = Math.max(200, Math.floor(room)) + 'px';
+    };
+    var setNavOpen = function (open) {
+      nav.classList.toggle('open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.documentElement.classList.toggle('nav-open', open);
+      if (open) fitNav();
+      else nav.style.height = '';
+    };
+    toggle.addEventListener('click', function () {
+      setNavOpen(!nav.classList.contains('open'));
     });
-    // Closing on resize back to desktop avoids a nav stuck open behind the
-    // media query that hides the toggle.
-    window.addEventListener('resize', function () {
-      if (window.innerWidth > 880) {
-        nav.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
+    // Phones fire resize while scrolling, as the address bar hides and
+    // shows: that only changes the height, so the menu just re-fits. It
+    // closes when the layout genuinely switches to desktop, where the
+    // toggle is hidden and an open panel would be stuck.
+    window.addEventListener('resize', fitNav);
+    var onNavBreakpoint = function () { if (DESKTOP_NAV.matches) setNavOpen(false); };
+    if (DESKTOP_NAV.addEventListener) DESKTOP_NAV.addEventListener('change', onNavBreakpoint);
+    else if (DESKTOP_NAV.addListener) DESKTOP_NAV.addListener(onNavBreakpoint);
   }
 
   /* ------------------------------------------------- hero video ---
@@ -119,8 +135,15 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closeAll(null);
     });
-    // Crossing the breakpoint leaves a panel in the wrong mode otherwise.
-    window.addEventListener('resize', function () { closeAll(null); });
+    // Crossing the breakpoint leaves a panel in the wrong mode otherwise. Only
+    // a real width change counts: a phone fires resize when its address bar
+    // hides during a scroll, and that must not snap an open menu shut.
+    var menuWidth = window.innerWidth;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === menuWidth) return;
+      menuWidth = window.innerWidth;
+      closeAll(null);
+    });
   }
 
   /* ----------------------------------------------- entrance reveal ---
