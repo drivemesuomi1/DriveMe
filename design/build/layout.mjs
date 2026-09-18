@@ -174,9 +174,8 @@ function header(locale, navKey, id) {
  * The services drop-down: the two things DriveMe sells now, so a visitor
  * reaches the exact page in one move instead of landing on the hub first.
  *
- * Passenger services are not listed. The Driver First plan keeps them out of
- * the primary navigation until they can be sold; one discreet footer link to
- * the interest page is all that remains.
+ * Journeys with the customer in the car are listed too, now that Gate A is
+ * cleared.
  */
 function servicesMenu(locale, navItem) {
   const g = menuGroups[locale];
@@ -205,6 +204,10 @@ function servicesMenu(locale, navItem) {
       <div class="menu-col">
         <h2>${esc(g.move)}</h2>
         <ul class="menu-list">${sold('general_move').map(item).join('')}</ul>
+      </div>
+      <div class="menu-col">
+        <h2>${esc(g.passenger)}</h2>
+        <ul class="menu-list">${sold('passenger').map(item).join('')}</ul>
       </div>
       <div class="menu-col menu-col-end">
         <h2>${esc(g.business)}</h2>
@@ -255,7 +258,6 @@ function footer(locale) {
           <li><a href="${url('faq', locale)}">${esc(nav[locale].find((n) => n.key === 'faq').label)}</a></li>
           <li><a href="${url('contact', locale)}">${esc(nav[locale].find((n) => n.key === 'contact').label)}</a></li>
           ${f.legalLinks.map((l) => `<li><a href="${l.href}">${esc(l.label)}</a></li>`).join('')}
-          ${f.interest ? `<li class="foot-quiet"><a href="${serviceUrl(f.interest.key, locale)}">${esc(f.interest.label)}</a></li>` : ''}
         </ul>
       </div>
     </div>

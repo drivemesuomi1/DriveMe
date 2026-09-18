@@ -17,7 +17,8 @@
  * `category`:
  *   'concierge' - a driver for the customer's own car, nobody travelling in
  *                 it (sold now)
- *   'driver'    - passenger services: interest only, not sold yet
+ *   'driver'    - the customer travels in their own car, driven by us
+ *                 (Gate A cleared; every journey is quoted per route)
  *   'business'  - B2B, lead form rather than instant checkout
  */
 
@@ -776,6 +777,102 @@ export const services = [
 
   /* ------------------------------------------------------------------ */
   {
+    key: 'journey',
+    category: 'driver',
+    launch: 'priority',
+    appointment: 'none',
+    icon: 'driver',
+    price: { key: 'journey' },
+    related: ['airport', 'personalDriver', 'relocation'],
+    devNote: 'Quote every journey from the route, the duration, the number of passengers and the driver\'s return leg. Gate A (Traficom + insurer) is cleared - keep the written confirmation on file and re-check it before adding new journey types.',
+    fi: {
+      slug: 'kuljettaja-matkalle',
+      nav: 'Kuljettaja matkallesi',
+      short: 'Matkat',
+      title: 'Kuljettaja matkallesi omalla autollasi | Lentoasema ja pitkät matkat | DriveMe',
+      description: 'DriveMe järjestää ammattitaitoisen kuljettajan ajamaan sinua ja matkaseuruettasi omalla autollasi: lentoasemalle, toiseen kaupunkiin tai pitkälle matkalle.',
+      h1: 'Kuljettaja matkallesi omalla autollasi',
+      lead: 'Tarvitsetko kyydin lentoasemalle tai sieltä kotiin? Suunnitteletko matkaa Turkuun, Tampereelle tai Lappiin? DriveMe järjestää ammattitaitoisen kuljettajan ajamaan sinua ja matkaseuruettasi omalla autollasi - lyhyelle tai pitkälle matkalle.',
+      keywords: ['kuljettaja matkalle', 'kuljettaja lentoasemalle omalla autolla', 'kuljettaja pitkälle matkalle'],
+      steps: [
+        'Kerro reitti, ajankohta, matkustajien määrä ja tarvitsetko myös paluumatkan.',
+        'Vahvistamme kuljettajan ja kiinteän hinnan ennen matkaa.',
+        'Kuljettaja saapuu sovittuun aikaan ja ajaa omaa autoasi.',
+        'Matka päättyy sovittuun osoitteeseen, ja auto sekä avaimet jäävät sinulle.',
+      ],
+      included: [
+        'Ammattitaitoinen kuljettaja koko matkan ajaksi',
+        'Sovittu reitti, pysähdykset ja aikataulu',
+        'Kuljettajan henkilöllisyys ja tukiyhteystieto etukäteen',
+        'Kiinteä hinta, joka vahvistetaan ennen matkaa',
+      ],
+      customer: [
+        'Anna käyttöön laillinen, vakuutettu ja ajokuntoinen auto',
+        'Varmista turvavyöpaikat matkustajille ja turvaistuimet lapsille',
+        'Kerro matkatavaroiden määrä ja auton erityiset hallintalaitteet',
+        'Maksa polttoaine, lataus, tiemaksut ja pysäköinti, ellei tarjouksessa toisin sanota',
+      ],
+      excluded: [
+        'Taksinomainen kyyti ilman ennakkovarausta',
+        'Ilman saattajaa matkustavan lapsen kuljetus',
+        'Hoidollinen tai avustettu kuljetus',
+        'Turvattoman tai ajokiellossa olevan auton ajaminen',
+      ],
+      boundary: 'DriveMe vastaa kuljettajasta ja sovitusta matkasta. Auton kelpoisuudesta, vakuutuksesta ja matkustajien turvavarusteista vastaa asiakas.',
+      faq: [
+        { q: 'Kenen autolla matka ajetaan?', a: 'Sinun omallasi. Kuljettaja tulee luoksesi ja ajaa autoasi, joten matkatavarat ja lastenistuimet ovat jo paikallaan eikä autoa tarvitse vaihtaa.' },
+        { q: 'Kuinka pitkiä matkoja ajatte?', a: 'Lyhyestä lentoasemakyydistä pitkiin matkoihin, esimerkiksi Turkuun, Tampereelle tai Lappiin. Hinta muodostuu reitistä, matkan kestosta ja mahdollisesta paluumatkasta.' },
+        { q: 'Voiko mukana matkustaa useampi henkilö?', a: 'Kyllä, auton rekisteröidyn matkustajamäärän ja turvavöiden mukaan. Kerro matkustajien määrä pyynnössä, niin varaamme oikean kokoisen matkan.' },
+        { q: 'Miten paluumatka hinnoitellaan?', a: 'Kerro pyynnössä, tarvitsetko myös paluun. Yhdensuuntaisella matkalla kuljettajan paluu eritellään tarjouksessa, joten tiedät mistä maksat.' },
+        { q: 'Milloin hinta on sitova?', a: 'Kun olemme vahvistaneet kuljettajan, aikataulun ja kiinteän hinnan. Pyynnön lähettäminen ei vielä sido kumpaakaan osapuolta.' },
+      ],
+    },
+    en: {
+      slug: 'driver-for-your-journey',
+      nav: 'A driver for your journey',
+      short: 'Journeys',
+      title: 'A driver for your journey in your own car | Airport and long trips | DriveMe',
+      description: 'DriveMe arranges a professional driver to drive you and your passengers in your own car: to the airport, to another city or on a longer trip.',
+      h1: 'A driver for your journey in your own car',
+      lead: 'Going to the airport, visiting another city or planning a longer family trip? DriveMe arranges a professional driver to drive you and your passengers in your own car - a short journey or a long one.',
+      keywords: ['driver for your journey own car', 'airport driver own car Helsinki', 'long distance driver Finland'],
+      steps: [
+        'Tell us the route, the date, the number of passengers and whether you need a return journey.',
+        'We confirm the driver and a fixed price before the trip.',
+        'The driver arrives at the agreed time and drives your own car.',
+        'The journey ends at the agreed address, and the car and keys stay with you.',
+      ],
+      included: [
+        'A professional driver for the whole journey',
+        'The agreed route, stops and schedule',
+        'The driver’s identity and a support contact in advance',
+        'A fixed price, confirmed before the trip',
+      ],
+      customer: [
+        'Provide a legal, insured and roadworthy vehicle',
+        'Make sure there is a seat belt for every passenger and child seats where needed',
+        'Tell us the amount of luggage and any special controls',
+        'Pay fuel, charging, tolls and parking unless the quote says otherwise',
+      ],
+      excluded: [
+        'Taxi-style rides without a booking in advance',
+        'Transporting an unaccompanied child',
+        'Medical or assisted transport',
+        'Driving an unsafe or driving-banned vehicle',
+      ],
+      boundary: 'DriveMe is responsible for the driver and the agreed journey. Vehicle eligibility, insurance and passenger safety equipment are the customer’s responsibility.',
+      faq: [
+        { q: 'Whose car is the journey driven in?', a: 'Yours. The driver comes to you and drives your own car, so your luggage and child seats are already in place and nobody changes vehicle.' },
+        { q: 'How long can the journeys be?', a: 'From a short airport run to long trips, for example to Turku, Tampere or Lapland. The price comes from the route, the duration and any return journey.' },
+        { q: 'Can several people travel?', a: 'Yes, up to your car’s registered seating and seat belts. Tell us the number of passengers in the request.' },
+        { q: 'How is the return journey priced?', a: 'Say in the request whether you need a return. On a one-way journey the driver’s return leg is itemised in the quote, so you can see what you are paying for.' },
+        { q: 'When is the price binding?', a: 'Once we have confirmed the driver, the schedule and the fixed price. Sending the request does not yet bind either side.' },
+      ],
+    },
+  },
+
+  /* ------------------------------------------------------------------ */
+  {
     key: 'personalDriver',
     category: 'driver',
     launch: 'gated',
@@ -783,7 +880,7 @@ export const services = [
     icon: 'driver',
     price: { key: 'personalDriver' },
     related: ['safeRideHome', 'airport', 'business'],
-    devNote: 'Retain as a premium category, but keep alcohol-heavy positioning off the homepage. Lead with time, convenience, events, business and airport use. Regulatory and insurance clearance is required (Gate A).',
+    devNote: 'Retain as a premium category, but keep alcohol-heavy positioning off the homepage. Lead with time, convenience, events, business and airport use. Gate A (Traficom + insurer) is cleared; price each booking by hand.',
     fi: {
       slug: 'oma-kuljettaja',
       nav: 'Oma kuljettaja',
@@ -817,10 +914,10 @@ export const services = [
         'Turvattoman auton ajaminen',
         'Rajoittamaton odotus tai vahvistamattomat jatkot',
       ],
-      boundary: 'Kuljettajapalvelu asiakkaan omalla autolla edellyttää viranomais- ja vakuutusvahvistusta. Emme markkinoi palvelua käytettävissä olevana ennen kuin vahvistukset ovat kirjallisina.',
+      boundary: 'DriveMe vastaa kuljettajasta ja sovitusta ajasta. Auton kelpoisuudesta, vakuutuksesta ja matkustajien turvavarusteista vastaa asiakas. Hinta vahvistetaan ennen ajoa.',
       faq: [
         { q: 'Ajaako kuljettaja omaa autoani vai teidän autoanne?', a: 'Omaa autoasi. Se on palvelun ydin: tuttu auto, omat lastenistuimet ja tavarat, ei siirtymistä vieraaseen autoon.' },
-        { q: 'Onko palvelu jo saatavilla?', a: 'Matkustajakuljetus asiakkaan omalla autolla odottaa viranomais- ja vakuutusvahvistusta. Otamme yhteydenottoja vastaan, mutta emme vahvista ajoja ennen kuin asia on kirjallisesti varmistettu.' },
+        { q: 'Onko palvelu jo saatavilla?', a: 'Kyllä. Kuljettaja omalle autollesi on varattavissa, ja hinta vahvistetaan reitin ja keston mukaan ennen ajoa.' },
         { q: 'Onko tunneille minimiä?', a: 'Suositeltu minimi on kaksi tuntia. Kerromme hinnan ja minimin varauksen yhteydessä.' },
         { q: 'Kuljetatteko lapsen yksin?', a: 'Emme. Ilman saattajaa matkustavan lapsen kuljetus on suljettu palvelun ulkopuolelle.' },
       ],
@@ -858,10 +955,10 @@ export const services = [
         'Driving an unsafe vehicle',
         'Unlimited waiting or unconfirmed extensions',
       ],
-      boundary: 'Driver service in the customer’s own car requires regulatory and insurance clearance. We do not market it as available until those confirmations are in writing.',
+      boundary: 'DriveMe is responsible for the driver and the agreed hours. Vehicle eligibility, insurance and passenger safety equipment are the customer’s responsibility. The price is confirmed before the drive.',
       faq: [
         { q: 'Does the driver use my car or yours?', a: 'Yours. That is the point of the service: a familiar car, your own child seats and belongings, no transfer into a strange vehicle.' },
-        { q: 'Is the service available now?', a: 'Passenger transport in the customer’s own car is awaiting regulatory and insurance confirmation. We take expressions of interest but do not confirm jobs until that is confirmed in writing.' },
+        { q: 'Is the service available now?', a: 'Yes. A driver for your own car can be booked, and the price is confirmed from the route and duration before the drive.' },
         { q: 'Is there an hourly minimum?', a: 'The recommended minimum is two hours. We state the price and minimum with your booking.' },
         { q: 'Do you transport a child alone?', a: 'No. Unaccompanied child transport is excluded from the service.' },
       ],
@@ -911,10 +1008,10 @@ export const services = [
         'Turvattoman auton ajaminen',
         'Rajoittamaton odotus',
       ],
-      boundary: 'Palvelu kuuluu kuljettajakategoriaan ja edellyttää samaa viranomais- ja vakuutusvahvistusta kuin muu matkustajakuljetus.',
+      boundary: 'DriveMe vastaa kuljettajasta ja sovitusta matkasta. Auton kelpoisuudesta ja vakuutuksesta vastaa asiakas.',
       faq: [
         { q: 'Miksi tämä on parempi kuin taksi?', a: 'Autosi tulee kotiin kanssasi. Sitä ei tarvitse hakea aamulla, eikä pysäköinnistä kerry maksuja tai sakkoja.' },
-        { q: 'Onko palvelu jo saatavilla?', a: 'Ei vielä. Matkustajakuljetus asiakkaan omalla autolla odottaa viranomais- ja vakuutusvahvistusta.' },
+        { q: 'Onko palvelu jo saatavilla?', a: 'Kyllä. Kerro reitti ja ajankohta, niin vahvistamme kuljettajan ja kiinteän hinnan ennen ajoa.' },
         { q: 'Voiko mukana olla useampi matkustaja?', a: 'Kyllä, autosi rekisteröidyn matkustajamäärän ja turvavöiden mukaan.' },
       ],
     },
@@ -951,10 +1048,10 @@ export const services = [
         'Driving an unsafe vehicle',
         'Unlimited waiting',
       ],
-      boundary: 'This sits in the driver category and needs the same regulatory and insurance clearance as any passenger transport.',
+      boundary: 'DriveMe is responsible for the driver and the agreed journey. Vehicle eligibility and insurance are the customer’s responsibility.',
       faq: [
         { q: 'Why is this better than a taxi?', a: 'Your car comes home with you. No morning retrieval, no overnight parking charges or tickets.' },
-        { q: 'Is the service available now?', a: 'Not yet. Passenger transport in the customer’s own car is awaiting regulatory and insurance confirmation.' },
+        { q: 'Is the service available now?', a: 'Yes. Tell us the route and the time, and we confirm the driver and a fixed price before the drive.' },
         { q: 'Can more than one passenger travel?', a: 'Yes, up to your car’s registered seating and seat belts.' },
       ],
     },
@@ -969,7 +1066,7 @@ export const services = [
     icon: 'airport',
     price: { key: 'airport' },
     related: ['personalDriver', 'relocation', 'safeRideHome'],
-    devNote: 'Launch gate, not an automatic launch item. Obtain written confirmation from Traficom and the insurer on paid passenger transport in a customer\'s privately registered car. Do not rely only on the driver\'s taxi licence.',
+    devNote: 'Gate A (Traficom + insurer) is cleared for passenger transport in a customer\'s privately registered car; keep the written confirmation on file. Airport journeys are quoted per route, including the driver\'s return leg.',
     fi: {
       slug: 'lentokentta-kuljettajapalvelu',
       nav: 'Kuljettaja lentoasemalle',
@@ -1003,10 +1100,10 @@ export const services = [
         'Auton säilytys',
         'Perinteinen lentokenttäkuljetus DriveMen omalla autolla, kunnes tuote on luvitettu ja käytössä',
       ],
-      boundary: 'Palvelu on lupaportti, ei automaattinen lanseeraus. Emme vahvista ajoja ennen kirjallista viranomais- ja vakuutusvahvistusta.',
+      boundary: 'DriveMe vastaa kuljettajasta ja sovitusta matkasta sekä auton käsittelystä sovitulla tavalla. Auton kelpoisuudesta ja vakuutuksesta vastaa asiakas.',
       faq: [
         { q: 'Mihin autoni jää lennon ajaksi?', a: 'Sovitaan varauksessa. Yleisimmät vaihtoehdot ovat auton palautus kotiisi tai sovittuun osoitteeseen, tai sen nouto paluupäivänä. Säilytys ei sisälly palveluun.' },
-        { q: 'Onko palvelu jo saatavilla?', a: 'Ei. Palvelu odottaa Traficomin ja vakuutusyhtiön kirjallista vahvistusta matkustajakuljetuksesta asiakkaan omalla autolla.' },
+        { q: 'Onko palvelu jo saatavilla?', a: 'Kyllä. Kerro lennon tiedot ja matkustajien määrä, niin vahvistamme kuljettajan ja kiinteän hinnan.' },
         { q: 'Sisältyykö lentoaseman jättömaksu hintaan?', a: 'Se mainitaan tarjouksessa erikseen, jos se koskee matkaasi.' },
       ],
     },
@@ -1043,10 +1140,10 @@ export const services = [
         'Vehicle storage',
         'Traditional airport transfer in a DriveMe-owned car until that product is licensed and active',
       ],
-      boundary: 'This is a launch gate, not an automatic launch item. We confirm no jobs before written regulatory and insurance clearance.',
+      boundary: 'DriveMe is responsible for the driver, the agreed journey and handling the car as agreed. Vehicle eligibility and insurance are the customer’s responsibility.',
       faq: [
         { q: 'Where does my car go while I fly?', a: 'It is agreed in the booking. The usual options are returning it to your home or an agreed address, or collecting it on your return day. Storage is not part of the service.' },
-        { q: 'Is the service available now?', a: 'No. It awaits written Traficom and insurer confirmation on passenger transport in the customer’s own car.' },
+        { q: 'Is the service available now?', a: 'Yes. Tell us the flight details and the number of passengers, and we confirm the driver and a fixed price.' },
         { q: 'Is the airport drop-off fee included?', a: 'It is stated separately in the quote when it applies to your journey.' },
       ],
     },

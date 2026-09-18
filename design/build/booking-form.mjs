@@ -9,10 +9,10 @@
  * collected on the callback and at confirmation; the optional details panel
  * lets a customer who has them to hand add them now.
  *
- * Only what is sold now is offered - a general address-to-address move, or a
- * run to an inspection, workshop, tyre shop, wash or dealer. A customer who
- * wants to travel with the car is pointed at the interest page: that is not
- * bookable, and the form has no way to ask for it.
+ * Three things can be asked for: a general address-to-address move, a run to
+ * an inspection, workshop, tyre shop, wash or dealer - both driven with nobody
+ * in the car - or a journey, where a driver takes the customer and their
+ * passengers in the customer's own car and the price is quoted per route.
  *
  * Pricing shown here is INDICATIVE and says so. The same constants that
  * produce it come from api/_lib/pricing.js, which the server re-uses to
@@ -35,8 +35,14 @@ const COPY = {
     typeMoveSub: 'Kuljettaja vie auton sovittuun osoitteeseen, tarvittaessa myös takaisin.',
     typeAppt: 'Vie autoni palveluun',
     typeApptSub: 'Katsastus, huolto, renkaanvaihto, pesu tai autoliike. Palautus sovitusti.',
-    passengerNote: 'Haluatko matkustaa itse auton mukana? Sitä ei voi vielä varata.',
-    passengerLink: 'Ilmoita kiinnostuksesi',
+    typeJourney: 'Kuljettaja matkallesi',
+    typeJourneySub: 'Kuljettaja ajaa sinut ja matkaseurueesi omalla autollasi.',
+    journeyLegend: 'Minne matka suuntautuu?',
+    journeyDestination: 'Määränpää',
+    journeyDestinationHelp: 'Esim. Helsinki-Vantaan lentoasema, Tampere tai mökin osoite.',
+    passengers: 'Matkustajien määrä',
+    passengersHelp: 'Kuljettaja ei vie paikkaa: kerro, montako teitä matkustaa.',
+    journeyReturn: 'Tarvitsetko myös paluumatkan?',
     businessNote: 'Yritysasiakas: kerro ensimmäinen siirto tässä. Sovimme sopimushinnan ja laskutuksen, kun soitamme.',
     moveLegend: 'Minne auto menee?',
     destination: 'Kohdeosoite',
@@ -124,7 +130,7 @@ const COPY = {
     doneAgain: 'Lähetä uusi pyyntö',
     failed: 'Pyyntöä ei saatu lähetettyä. Yritä uudelleen tai soita numeroon ' + brand.phone + '.',
     gatedTitle: 'Tätä palvelua ei voi vielä varata',
-    gatedBody: 'Kuljettajaa, jonka kyydissä matkustat itse, ei voi vielä varata. Voit ilmoittaa kiinnostuksesi, niin kerromme, kun palvelu avautuu.',
+    gatedBody: 'Tämä palvelu ei ole vielä varattavissa. Kerromme heti, kun se avautuu.',
     gateContactTitle: 'Ota yhteyttä',
     gateContactBody: 'Kerromme mielellämme lisää ja ilmoitamme heti, kun palvelu on saatavilla.',
     lines: {
@@ -141,8 +147,14 @@ const COPY = {
     typeMoveSub: 'A driver takes the car to the agreed address, and back again if needed.',
     typeAppt: 'Take my car to a service',
     typeApptSub: 'Inspection, workshop, tyre change, wash or dealer. Returned as agreed.',
-    passengerNote: 'Want to travel with the car yourself? That cannot be booked yet.',
-    passengerLink: 'Register your interest',
+    typeJourney: 'A driver for my journey',
+    typeJourneySub: 'A driver takes you and your passengers in your own car.',
+    journeyLegend: 'Where does the journey go?',
+    journeyDestination: 'Destination',
+    journeyDestinationHelp: 'For example Helsinki Airport, Tampere or the address of your cottage.',
+    passengers: 'Number of passengers',
+    passengersHelp: 'The driver does not take a seat: tell us how many of you are travelling.',
+    journeyReturn: 'Do you also need a return journey?',
     businessNote: 'Company customer: tell us about the first move here. We agree contract pricing and invoicing when we call.',
     moveLegend: 'Where does the car go?',
     destination: 'Destination address',
@@ -230,7 +242,7 @@ const COPY = {
     doneAgain: 'Send another request',
     failed: 'We could not send that request. Please try again or call ' + brand.phone + '.',
     gatedTitle: 'This service cannot be booked yet',
-    gatedBody: 'A driver you travel with yourself cannot be booked yet. Register your interest and we will tell you when it opens.',
+    gatedBody: 'This service cannot be booked yet. We will tell you as soon as it opens.',
     gateContactTitle: 'Contact us',
     gateContactBody: 'Contact us for more details. We will let you know as soon as this service is available.',
     lines: {
@@ -279,7 +291,6 @@ const radio = (name, value, label, sub, checked) => `
 export function bookingForm(locale) {
   const c = COPY[locale];
   const t = ui[locale];
-  const interestHref = serviceUrl('personalDriver', locale);
 
   // The selector lists appointment runs only - never a passenger service.
   const appointmentKeys = servicesOfType('appointment_run').filter((k) => !isGated(byKey[k]));
@@ -289,7 +300,7 @@ export function bookingForm(locale) {
     const sp = SERVICE_PRODUCTS[s.key];
     return [s.key, {
       type: sp.type,
-      gated: isGated(s) || sp.type === 'passenger',
+      gated: isGated(s),
       label: s[locale].nav,
       product: sp.default,
       shapes: sp.shapes,
@@ -303,7 +314,6 @@ export function bookingForm(locale) {
     products: Object.fromEntries(Object.entries(PRODUCTS).filter(([, p]) => !p.hidden)),
     premiums: PREMIUMS,
     services: serviceMeta,
-    interestHref,
     copy: {
       required: c.required, badEmail: c.badEmail, badPhone: c.badPhone, badRange: c.badRange,
       mustAccept: c.mustAccept, authLabel: c.authLabel,
@@ -311,7 +321,8 @@ export function bookingForm(locale) {
       errorTitle: c.errorTitle, submitting: c.submitting, submit: c.submit,
       failed: c.failed, quoteFrom: c.quoteFrom, quoteManual: c.quoteManual,
       quoteManualNote: c.quoteManualNote, quoteNote: c.quoteNote, lines: c.lines,
-      gatedTitle: c.gatedTitle, gatedBody: c.gatedBody, passengerLink: c.passengerLink,
+      gatedTitle: c.gatedTitle, gatedBody: c.gatedBody,
+      journeyLegend: c.journeyLegend, moveLegend: c.moveLegend,
     },
     endpoint: '/api/bookings',
   };
@@ -334,14 +345,17 @@ export function bookingForm(locale) {
           <div class="choice-grid" role="radiogroup" aria-label="${esc(c.typeLegend)}">
             ${radio('service_type', 'general_move', c.typeMove, c.typeMoveSub, true)}
             ${radio('service_type', 'appointment_run', c.typeAppt, c.typeApptSub, false)}
+            ${radio('service_type', 'passenger_journey', c.typeJourney, c.typeJourneySub, false)}
           </div>
-          <p class="form-passenger">${esc(c.passengerNote)} <a href="${interestHref}">${esc(c.passengerLink)}</a></p>
           <div id="gate-warning" hidden></div>
         </fieldset>
 
         <fieldset class="fieldset" id="move-set">
-          <legend>${esc(c.moveLegend)}</legend>
-          ${field('destination', c.destination, text('destination', { autocomplete: 'street-address' }))}
+          <legend id="route-legend">${esc(c.moveLegend)}</legend>
+          ${field('destination', c.destination, text('destination', { autocomplete: 'street-address', help: true }), c.journeyDestinationHelp)}
+          <div id="passengers-field" hidden>
+            ${field('passengers', c.passengers, text('passengers', { type: 'number', min: 1, max: 8, value: '1', help: true }), c.passengersHelp)}
+          </div>
           <p class="field-label" id="return-label">${esc(c.returnLegend)}</p>
           <div class="choice-grid" role="radiogroup" aria-labelledby="return-label">
             ${radio('return_needed', 'no', c.returnNo, '', true)}

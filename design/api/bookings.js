@@ -11,19 +11,20 @@ import { isServiceGated } from './_lib/gates.js';
  *
  * Two payload shapes are accepted:
  *
- *  · the price request from /varaus/, identified by a `service` key. Since
- *    the Driver First Growth Plan (13 Sep 2026) that is a driver for the
- *    customer's own car with nobody travelling in it: a `general_move` to an
- *    address, or an `appointment_run` to a provider. The first stage carries
- *    only service, pickup, destination or provider, time, name and phone -
- *    email is optional and the vehicle details are collected on the callback;
+ *  · the price request from /varaus/, identified by a `service` key: a
+ *    `general_move` to an address, an `appointment_run` to a provider - both
+ *    with nobody travelling in the car - or a `passenger_journey`, where a
+ *    driver takes the customer and their passengers in the customer's own car
+ *    (Gate A, now cleared). The first stage carries only service, pickup,
+ *    destination or provider, time, name and phone; email is optional and the
+ *    vehicle details are collected on the callback;
  *  · the legacy hourly / point-to-point booking from the archived homepage,
  *    identified by `mode`. Kept working so an old page in someone's tab does
  *    not start failing silently.
  *
- * A request that carries a passenger is refused, and one whose free text
- * suggests a passenger is saved but flagged for manual review. Neither is
- * ever quietly relabelled as something else.
+ * A vehicle move that carries a passenger is refused, and one whose free text
+ * suggests a passenger is saved but flagged for manual review: a car move is
+ * never quietly turned into a journey, or the other way round.
  *
  * The price stored here is INDICATIVE. The server derives the product from
  * the service and trip shape and recomputes the figure from
@@ -40,7 +41,7 @@ const LEGACY_MODES = new Set(['hourly', 'point_to_point']);
 const PAYMENT_METHODS = new Set(['card', 'mobilepay', 'invoice']);
 const SERVICES = new Set(Object.keys(SERVICE_PRODUCTS));
 const SHAPES = new Set(['oneWay', 'pickupReturn', 'waitReturn']);
-const REQUEST_TYPES = new Set(['general_move', 'appointment_run']);
+const REQUEST_TYPES = new Set(['general_move', 'appointment_run', 'passenger_journey']);
 const KEY_METHODS = new Set(['named', 'drop', 'other']);
 const GEARBOXES = new Set(['manual', 'automatic']);
 const FUELS = new Set(['petrol', 'diesel', 'hybrid', 'ev']);
@@ -127,6 +128,10 @@ const LATER_COLUMNS = [
   'lead_source', 'manual_review', 'review_reason',
 ];
 
+// Before migration 0009 the database refuses a passenger count above zero and
+// the journey service and type; those requests reach ops by email instead.
+
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -189,14 +194,23 @@ export default async function handler(req, res) {
     /* ================================================= the price request */
     if (!SERVICES.has(service)) return fail(res, 400, 'Choose a service.', 'service');
 
-    // Someone travelling in the car is passenger transport, which DriveMe is
-    // not cleared to sell. Refuse it outright rather than book the car move
-    // and leave the customer expecting a seat.
-    const passengers = optionalNumber(body.passenger_count, { min: 0, max: 99 });
-    if (passengers === null || (passengers ?? 0) > 0) {
+    const catalogue = SERVICE_PRODUCTS[service];
+    const isJourney = catalogue.type === 'passenger';
+
+    // Who is in the car decides which service this is, so the two can never be
+    // confused: a move carries nobody, a journey carries the people who asked
+    // for it.
+    const passengers = optionalNumber(body.passenger_count, { min: 0, max: 8 });
+    if (passengers === null) {
+      return fail(res, 400, 'Tell us how many people are travelling.', 'passenger_count');
+    }
+    if (!isJourney && (passengers ?? 0) > 0) {
       return fail(res, 409,
-        'DriveMe moves your car without passengers. Travelling with the car cannot be booked yet - email info@driveme.fi to register interest.',
+        'A vehicle move is driven with nobody in the car. Choose the journey service if you are travelling too.',
         'passenger_count');
+    }
+    if (isJourney && !(passengers >= 1)) {
+      return fail(res, 400, 'Tell us how many people are travelling.', 'passenger_count');
     }
 
     // A gated service must be refused by the API as firmly as the page
@@ -208,13 +222,14 @@ export default async function handler(req, res) {
         'service');
     }
 
-    const catalogue = SERVICE_PRODUCTS[service];
     const claimedType = optionalString(body.service_type, 30);
     let requestType = null;
     if (catalogue.type === 'business') {
       requestType = REQUEST_TYPES.has(claimedType) ? claimedType : null;
     } else {
-      requestType = catalogue.type;
+      // The catalogue calls it a passenger service; the request calls that a
+      // journey, so the two names have to be mapped rather than compared.
+      requestType = catalogue.type === 'passenger' ? 'passenger_journey' : catalogue.type;
       // Never relabel: a "move" that names an inspection service is a form
       // out of step with itself, and the customer should choose again.
       if (claimedType !== undefined && claimedType !== requestType) {
@@ -228,10 +243,13 @@ export default async function handler(req, res) {
     // wait-and-return and be priced as a one-way move.
     const product = productFor(service, shape);
 
-    const returnNeeded = shape ? shape !== 'oneWay' : null;
-    if (typeof body.return_needed === 'boolean' && returnNeeded !== null && body.return_needed !== returnNeeded) {
+    // A move's shape says whether the car comes back; a journey is asked
+    // outright, because there is no shape to read it from.
+    let returnNeeded = shape ? shape !== 'oneWay' : null;
+    if (shape && typeof body.return_needed === 'boolean' && body.return_needed !== returnNeeded) {
       return fail(res, 400, 'Tell us again whether the car needs to come back.', 'return_needed');
     }
+    if (!shape && typeof body.return_needed === 'boolean') returnNeeded = body.return_needed;
 
     const waitMinutes = optionalNumber(body.wait_minutes, { min: 0, max: 480 });
     if (waitMinutes === null) return fail(res, 400, 'That waiting time is out of range.', 'wait_minutes');
@@ -242,6 +260,9 @@ export default async function handler(req, res) {
     }
     if (requestType === 'general_move' && !destination) {
       return fail(res, 400, 'Tell us where the car needs to go.', 'destination');
+    }
+    if (requestType === 'passenger_journey' && !destination) {
+      return fail(res, 400, 'Tell us where the journey goes.', 'destination');
     }
     const finalDestination = destination ?? provider ?? null;
 
@@ -263,7 +284,8 @@ export default async function handler(req, res) {
     const notes = optionalString(body.notes, 2000);
     const accessNotes = optionalString(body.access_notes, 1000);
     const vehicleNotes = optionalString(body.vehicle_notes, 1000);
-    const review = passengerReason([
+    // Only for a vehicle move: on a journey, passengers are the point.
+    const review = isJourney ? null : passengerReason([
       ['Notes', notes], ['Access notes', accessNotes], ['Vehicle notes', vehicleNotes],
       ['Destination', finalDestination], ['Provider', provider],
     ]);
@@ -272,12 +294,12 @@ export default async function handler(req, res) {
 
     row = {
       id,
-      mode: 'vehicle_concierge',
+      mode: isJourney ? 'personal_driver' : 'vehicle_concierge',
       service,
       service_type: requestType,
       product,
       shape,
-      passenger_count: 0,
+      passenger_count: isJourney ? passengers : 0,
       pickup_location: pickup,
       destination: finalDestination,
       return_needed: returnNeeded,

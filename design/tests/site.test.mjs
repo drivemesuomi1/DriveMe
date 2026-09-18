@@ -117,25 +117,28 @@ test('the homepage leads with a driver for the customer\'s own car', async () =>
   assert.match(en, />Get a price to move my car <span class="arrow"/);
 });
 
-test('no passenger service is promoted on the homepage, in the header or in the main cards', async () => {
+test('the journey service is offered everywhere a service is listed', async () => {
   for (const locale of ['fi', 'en']) {
+    const href = `href="${serviceUrl('journey', locale)}"`;
     const html = await read(fileFor(url('home', locale)));
     const main = /<main id="main">([\s\S]*)<\/main>/.exec(html)[1];
     const head = /<header class="site-head">([\s\S]*?)<\/header>/.exec(html)[1];
     const foot = /<footer class="site-foot">([\s\S]*?)<\/footer>/.exec(html)[1];
-    const hub = await read(fileFor(url('services', locale)));
-    const hubMain = /<main id="main">([\s\S]*)<\/main>/.exec(hub)[1];
+    const hubMain = /<main id="main">([\s\S]*)<\/main>/.exec(await read(fileFor(url('services', locale))))[1];
 
-    let footerLinks = 0;
-    for (const key of gatedKeys) {
-      const href = `href="${serviceUrl(key, locale)}"`;
-      assert.equal(main.includes(href), false, `homepage (${locale}) links to ${key}`);
-      assert.equal(head.includes(href), false, `header (${locale}) links to ${key}`);
-      assert.equal(hubMain.includes(href), false, `services hub (${locale}) lists ${key}`);
-      footerLinks += foot.split(href).length - 1;
-    }
-    assert.equal(footerLinks, 1, `footer (${locale}) should carry exactly one discreet interest link`);
-    assert.equal(main.includes('l-svc-chauffeur.jpg'), false, 'passenger imagery on the homepage');
+    assert.ok(main.includes(href), `homepage (${locale}) does not offer the journey`);
+    assert.ok(head.includes(href), `header menu (${locale}) does not list the journey`);
+    assert.ok(foot.includes(href), `footer (${locale}) does not list the journey`);
+    assert.ok(hubMain.includes(href), `services hub (${locale}) does not list the journey`);
+
+    // Quoted per route, so no page may publish a starting price for it.
+    const page = await read(fileFor(serviceUrl('journey', locale)));
+    const pageMain = /<main id="main">([\s\S]*)<\/main>/.exec(page)[1];
+    assert.equal(/alkaen \d+ €|from \d+ €/.test(pageMain), false, `${locale}: journey page publishes a price`);
+    assert.ok(page.includes(escapeHtml(ui[locale].withPassengers)), `${locale}: journey page should say who travels`);
+    assert.equal(page.includes(escapeHtml(ui[locale].noPassenger)), false, `${locale}: journey page still says nobody travels`);
+    assert.ok(page.includes(`href="/${locale === 'fi' ? 'varaus' : 'en/booking'}/?${locale === 'fi' ? 'palvelu' : 'service'}=journey"`),
+      `${locale}: journey page has no request CTA`);
   }
 });
 
@@ -152,6 +155,8 @@ test('the request form offers only what is sold now, and is short', async () => 
 
     assert.match(html, /name="service_type" value="general_move"/);
     assert.match(html, /name="service_type" value="appointment_run"/);
+    assert.match(html, /name="service_type" value="passenger_journey"/);
+    assert.match(html, /id="passengers" name="passengers" type="number"|<input type="number" id="passengers"/);
     assert.equal(/name="path"/.test(html), false, 'the old passenger path choice is back');
 
     // First stage: email optional, no vehicle or payment fields demanded.
@@ -311,7 +316,7 @@ test('the homepage shows every sold service as a photo tile right under the hero
     assert.ok(mosaicAt > heroEnd && html.slice(heroEnd, mosaicAt).trim() === '</section>', `${locale}: mosaic is not directly under the hero`);
 
     const mosaic = html.slice(mosaicAt, html.indexOf('</section>', mosaicAt));
-    const expected = [...soldKeys, 'business'];
+    const expected = ['journey', ...soldKeys, 'business'];
     for (const key of expected) {
       assert.ok(mosaic.includes(`href="${serviceUrl(key, locale)}"`), `${locale}: mosaic lacks ${key}`);
     }

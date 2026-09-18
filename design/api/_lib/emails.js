@@ -18,6 +18,7 @@ const SERVICE_LABEL = {
     tyre: 'Auton vienti renkaanvaihtoon', wash: 'Auton vienti pesuun',
     glass: 'Lasi-, kori- tai takaisinkutsuajo', pickupReturn: 'Auton nouto ja palautus',
     relocation: 'Auton siirtopalvelu', dealer: 'Palautus autoliikkeeseen tai leasingyhtiölle',
+    journey: 'Kuljettaja matkalle omalla autolla',
     personalDriver: 'Oma kuljettaja', safeRideHome: 'Turvallinen kotiinkuljetus',
     airport: 'Kuljettaja lentoasemalle', business: 'Yritysasiakkuus',
   },
@@ -26,6 +27,7 @@ const SERVICE_LABEL = {
     tyre: 'Bilen till dackbyte', wash: 'Bilen till tvatt',
     glass: 'Glas, plat eller aterkallelse', pickupReturn: 'Upphamtning och retur',
     relocation: 'Fordonsflytt', dealer: 'Aterlamning till bilhandel eller leasing',
+    journey: 'Forare for resan i egen bil',
     personalDriver: 'Personlig forare', safeRideHome: 'Trygg hemresa',
     airport: 'Forare till flygplatsen', business: 'Foretagskonto',
   },
@@ -34,6 +36,7 @@ const SERVICE_LABEL = {
     tyre: 'Tyre service run', wash: 'Wash and detailing run',
     glass: 'Glass, body shop or recall run', pickupReturn: 'Pickup and return',
     relocation: 'Vehicle relocation', dealer: 'Dealer or lease handover',
+    journey: 'Driver for your journey',
     personalDriver: 'Personal driver', safeRideHome: 'Safe ride home',
     airport: 'Airport driver', business: 'Corporate account',
   },
@@ -42,6 +45,7 @@ const SERVICE_LABEL = {
 const TYPE_LABEL = {
   general_move: 'Drive my car to another address',
   appointment_run: 'Take my car to a service',
+  passenger_journey: 'A driver for the journey, customer in the car',
 };
 
 const SHAPE_LABEL = {
@@ -230,6 +234,7 @@ export function bookingAlert(booking, base) {
     ['Deliver by', booking.delivery_by],
     ['Pickup', booking.pickup_location],
     ['Destination', booking.destination || 'Open-ended (driver stays)'],
+    ['Passengers', booking.passenger_count ? String(booking.passenger_count) : null],
     ['Return needed', booking.return_needed == null ? null : (booking.return_needed ? 'Yes' : 'No')],
     ['Return to', booking.return_location],
     ['Access notes', booking.access_notes],

@@ -210,7 +210,7 @@ section[id],div[id]{scroll-margin-top:120px}
   box-shadow:var(--shadow-2);margin-top:8px;overflow:hidden;
 }
 /* Gutter padding, so the menu columns line up with the page content. */
-.nav-menu-inner{display:grid;grid-template-columns:2fr 1fr 1fr;gap:var(--s-8);padding:var(--s-8) var(--gutter)}
+.nav-menu-inner{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;gap:var(--s-6) var(--s-8);padding:var(--s-8) var(--gutter)}
 .menu-col h2{
   font-size:var(--t-caption);font-weight:600;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink-500);margin-bottom:var(--s-4);
@@ -502,6 +502,7 @@ section[id],div[id]{scroll-margin-top:120px}
   .service-hero-copy .btn{text-shadow:none}
   .service-hero h1{font-size:32px;max-width:28ch}
   .service-hero .lead{font-size:17px}
+  .service-hero-passenger .service-hero-photo{object-position:90% top}
 }
 .crumbs{display:flex;flex-wrap:wrap;gap:var(--s-2);list-style:none;font-size:var(--t-small);color:var(--on-navy-2);margin-bottom:var(--s-6)}
 .crumbs li+li::before{content:"/";margin-right:var(--s-2);color:rgba(255,255,255,.35)}

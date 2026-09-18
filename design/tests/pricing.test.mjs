@@ -25,12 +25,14 @@ test('the published starting prices are the Driver First pricing test', () => {
   assert.equal(PRODUCTS.handover.from, 99);
 });
 
-test('passenger products are kept out of every public price', () => {
-  for (const key of ['personalDriver', 'airport', 'designated']) {
-    assert.equal(PRODUCTS[key].hidden, true, key);
+test('journeys are quoted per route; car moves have a starting price', () => {
+  for (const key of servicesOfType('passenger')) {
+    assert.equal(SERVICE_PRODUCTS[key].default, 'journey', key);
+    assert.equal(PRODUCTS.journey.quote, true, 'a journey is never auto-priced');
+    assert.equal(PRODUCTS.journey.from, null, 'a journey carries no list price');
   }
   for (const key of servicesOfType('general_move').concat(servicesOfType('appointment_run'))) {
-    assert.notEqual(PRODUCTS[SERVICE_PRODUCTS[key].default].hidden, true, `${key} is sold and must be priced`);
+    assert.equal(PRODUCTS[SERVICE_PRODUCTS[key].default].quote, false, `${key} is sold from a price`);
   }
 });
 
@@ -42,10 +44,10 @@ test('a standard run is priced from the published starting price', () => {
   assert.equal(q.indicative, true);
 });
 
-test('the catalogue splits into the two things sold now', () => {
+test('the catalogue splits into what is sold', () => {
   assert.deepEqual(servicesOfType('general_move'), ['relocation', 'pickupReturn']);
   assert.deepEqual(servicesOfType('appointment_run'), ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer']);
-  assert.deepEqual(servicesOfType('passenger'), ['personalDriver', 'safeRideHome', 'airport']);
+  assert.deepEqual(servicesOfType('passenger'), ['journey', 'personalDriver', 'safeRideHome', 'airport']);
 });
 
 test('the product follows the service and shape, never a free choice', () => {
@@ -78,21 +80,18 @@ test('a route outside the launch service area becomes a manual fixed quote', () 
 });
 
 test('quote-only products never invent a total', () => {
-  for (const key of ['designated', 'longDistance', 'corporate']) {
+  for (const key of ['journey', 'longDistance', 'corporate']) {
     const q = quote({ product: key, when: TUE_10, now: WEEK_EARLIER });
     assert.equal(q.quoteOnly, true, key);
     assert.equal(q.total, null, key);
   }
 });
 
-test('personal driver bills the hourly rate and never below the minimum', () => {
-  const short = quote({ product: 'personalDriver', hours: 1, when: TUE_10, now: WEEK_EARLIER });
-  assert.equal(short.total, PRODUCTS.personalDriver.minHours * PRODUCTS.personalDriver.from);
-
-  const long = quote({ product: 'personalDriver', hours: 3.2, when: TUE_10, now: WEEK_EARLIER });
-  // rounded up to the next half hour
-  assert.equal(long.lines[0].hours, 3.5);
-  assert.equal(long.total, 3.5 * PRODUCTS.personalDriver.from);
+test('a journey is quoted by hand, whatever else the request carries', () => {
+  const q = quote({ product: 'journey', waitMinutes: 90, when: TUE_23, now: WEEK_EARLIER });
+  assert.equal(q.quoteOnly, true);
+  assert.equal(q.total, null);
+  assert.deepEqual(q.lines, [], 'no premium or waiting line on a quoted journey');
 });
 
 test('waiting is free up to the included allowance, then billed in 30-minute units', () => {

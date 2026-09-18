@@ -156,7 +156,7 @@ test('an appointment run goes to the provider, and the browser cannot pick a che
   assert.equal(mails[0].reply_to, 'asiakas@example.test');
 });
 
-test('a request with a passenger is refused and nothing is saved or sent', async () => {
+test('a car move with a passenger is refused and nothing is saved or sent', async () => {
   const res = await post(move({ passenger_count: 1 }));
   assert.equal(res.statusCode, 409);
   assert.equal(res.body.field, 'passenger_count');
@@ -164,11 +164,54 @@ test('a request with a passenger is refused and nothing is saved or sent', async
   assert.equal(mails.length, 0);
 });
 
-test('a passenger service cannot be requested through the API', async () => {
+test('a journey is saved with its passengers and quoted by hand', async () => {
+  const res = await post(firstStage({
+    service: 'journey', service_type: 'passenger_journey',
+    destination: 'Helsinki-Vantaan lentoasema', passenger_count: 3, return_needed: true,
+    customer_email: 'matkustaja@example.test',
+  }));
+  assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+  const row = rows[0];
+  assert.equal(row.service, 'journey');
+  assert.equal(row.service_type, 'passenger_journey');
+  assert.equal(row.product, 'journey');
+  assert.equal(row.passenger_count, 3);
+  assert.equal(row.return_needed, true);
+  assert.equal(row.mode, 'personal_driver');
+  assert.equal(row.estimated_price, null, 'a journey is never auto-priced');
+  assert.equal(row.quote_status, 'quote_required');
+  assert.equal(row.manual_review, false, 'passengers are the point of a journey');
+});
+
+test('the older passenger pages book the same journey service', async () => {
   for (const service of ['personalDriver', 'safeRideHome', 'airport']) {
-    const res = await post(firstStage({ service, destination: 'Helsinki-Vantaa' }));
-    assert.equal(res.statusCode, 409, service);
+    const res = await post(firstStage({
+      service, service_type: 'passenger_journey', destination: 'Tampere', passenger_count: 2,
+    }));
+    assert.equal(res.statusCode, 201, service);
+    assert.equal(rows.at(-1).product, 'journey', service);
   }
+  assert.equal(rows.length, 3);
+});
+
+test('a journey needs to say how many are travelling', async () => {
+  const none = await post(firstStage({
+    service: 'journey', service_type: 'passenger_journey', destination: 'Turku', passenger_count: 0,
+  }));
+  assert.equal(none.statusCode, 400);
+  assert.equal(none.body.field, 'passenger_count');
+
+  const tooMany = await post(firstStage({
+    service: 'journey', service_type: 'passenger_journey', destination: 'Turku', passenger_count: 12,
+  }));
+  assert.equal(tooMany.statusCode, 400);
+  assert.equal(tooMany.body.field, 'passenger_count');
+
+  const nowhere = await post(firstStage({
+    service: 'journey', service_type: 'passenger_journey', passenger_count: 2,
+  }));
+  assert.equal(nowhere.statusCode, 400);
+  assert.equal(nowhere.body.field, 'destination');
   assert.equal(rows.length, 0);
 });
 

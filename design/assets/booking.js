@@ -1,7 +1,8 @@
 /* DriveMe — booking.js
-   The two-stage price request (Driver First Growth Plan, P1): a short first
-   stage, optional details, an indicative estimate, an accessible error
-   summary and the POST to /api/bookings.
+   The two-stage price request: a short first stage, optional details, an
+   indicative estimate, an accessible error summary and the POST to
+   /api/bookings. Three things can be asked for: a car move to an address, a
+   run to a provider, or a journey with the customer in the car (quoted).
 
    The estimate mirrors api/_lib/pricing.js, whose constants are injected into
    the page as JSON at build time. The server derives the product from the
@@ -96,8 +97,7 @@
   function enterGated(key) {
     gatedKey = key;
     var warn = $('gate-warning');
-    warn.innerHTML = '<div class="callout warn"><h3>' + C.gatedTitle + '</h3><p>' + C.gatedBody +
-      ' <a href="' + CFG.interestHref + '">' + C.passengerLink + '</a></p></div>';
+    warn.innerHTML = '<div class="callout warn"><h3>' + C.gatedTitle + '</h3><p>' + C.gatedBody + '</p></div>';
     show(warn, true);
     gatedLayout(true);
     // Clear the type choice: with "move" still pre-ticked, clicking it would
@@ -116,13 +116,19 @@
 
   /* ------------------------------------------------ what is being asked */
   function currentType() {
-    return checked('service_type') === 'appointment_run' ? 'appointment_run' : 'general_move';
+    var t = checked('service_type');
+    return t === 'appointment_run' || t === 'passenger_journey' ? t : 'general_move';
   }
+
+  // Which passenger service a link asked for; the journey page is the default.
+  var passengerKey = 'journey';
 
   // A general move is a relocation, or a pickup-and-return when the car has
   // to come back. An appointment run is whichever provider service was picked.
   function currentServiceKey() {
-    if (currentType() === 'appointment_run') return serviceSel.value;
+    var type = currentType();
+    if (type === 'appointment_run') return serviceSel.value;
+    if (type === 'passenger_journey') return passengerKey;
     return checked('return_needed') === 'yes' ? 'pickupReturn' : 'relocation';
   }
 
@@ -143,13 +149,18 @@
   }
 
   function syncSections() {
-    var appt = currentType() === 'appointment_run';
+    var type = currentType();
+    var appt = type === 'appointment_run';
+    var journey = type === 'passenger_journey';
     show($('appointment-set'), appt);
     show($('move-set'), !appt);
-    // Where the car goes is never optional: an address for a move, the
-    // provider for a service run.
+    show($('passengers-field'), journey);
+    $('route-legend').textContent = journey ? C.journeyLegend : C.moveLegend;
+    // Where it goes is never optional: an address for a move or a journey,
+    // the provider for a service run.
     $('provider').required = appt;
     $('destination').required = !appt;
+    $('passengers').required = journey;
 
     // Offer only the return shapes this service can actually be priced as.
     var s = CFG.services[serviceSel.value] || {};
@@ -379,7 +390,8 @@
     var shape = currentShape();
     var win = val('window');
     var hour = win && win !== 'flex' ? win.split('-')[0] : '09';
-    var returning = shape !== 'oneWay';
+    // A move's shape says whether the car comes back; a journey is asked outright.
+    var returning = shape ? shape !== 'oneWay' : checked('return_needed') === 'yes';
 
     return {
       language: CFG.locale,
@@ -387,8 +399,8 @@
       service_type: type,
       shape: shape,
       product: productKey(),
-      // The form cannot carry a passenger; the API refuses any request that does.
-      passenger_count: 0,
+      // A move carries nobody; a journey carries the people who asked for it.
+      passenger_count: type === 'passenger_journey' ? (parseInt(val('passengers'), 10) || 1) : 0,
       pickup_location: val('pickup_location'),
       destination: appt ? val('provider') : val('destination'),
       return_needed: returning,
@@ -527,6 +539,7 @@
   if (wantedDate && /^\d{4}-\d{2}-\d{2}$/.test(wantedDate) && $('date')) $('date').value = wantedDate;
   if (wantedType === 'palvelu' || wantedType === 'service') tick('service_type', 'appointment_run');
   if (wantedType === 'siirto' || wantedType === 'move') tick('service_type', 'general_move');
+  if (wantedType === 'matka' || wantedType === 'journey') tick('service_type', 'passenger_journey');
 
   var ws = wanted && Object.prototype.hasOwnProperty.call(CFG.services, wanted) ? CFG.services[wanted] : null;
   if (ws && !ws.gated) {
@@ -537,6 +550,9 @@
     } else if (ws.type === 'general_move') {
       tick('service_type', 'general_move');
       tick('return_needed', wanted === 'pickupReturn' ? 'yes' : 'no');
+    } else if (ws.type === 'passenger') {
+      passengerKey = wanted;
+      tick('service_type', 'passenger_journey');
     } else if (ws.type === 'business') {
       // Company leads start as a move with the company details already open;
       // contract pricing is agreed on the call.

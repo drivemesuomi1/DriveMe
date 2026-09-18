@@ -19,8 +19,8 @@ export const launchGates = {
   // for licensed operation. The open question is how that applies to carrying
   // a paying customer in that customer's own privately registered car.
   passengerTransport: {
-    live: false,
-    evidence: 'Written Traficom + insurer confirmation on paid passenger transport in the customer\'s own car',
+    live: true,
+    evidence: 'Written Traficom + insurer confirmation on paid passenger transport in the customer\'s own car (owner: confirmed in writing, September 2026)',
   },
   // Gate B — the statutory motor liability policy does not compensate damage
   // to the insured vehicle itself. Needs explicit cover for vehicles driven or
@@ -52,6 +52,7 @@ export const launchGates = {
  * instead of pretending to be insured.
  */
 export const SERVICE_GATES = {
+  journey: 'passengerTransport',
   personalDriver: 'passengerTransport',
   safeRideHome: 'passengerTransport',
   airport: 'passengerTransport',

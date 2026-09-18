@@ -270,7 +270,8 @@ function quickStart(locale) {
  * when the landscape photo is cropped into a tall or narrow tile.
  */
 const MOSAIC = [
-  { key: 'relocation', lead: true, focus: '40% 60%' },
+  { key: 'journey', lead: true, focus: '74% 45%' },
+  { key: 'relocation', focus: '40% 60%' },
   { key: 'inspection', focus: '74% 55%' },
   { key: 'workshop', focus: '62% 55%' },
   { key: 'tyre', focus: '56% 55%' },
@@ -392,6 +393,10 @@ ${ctaBand(locale)}`;
 
 /* ==================================================== service pages */
 const serviceHeroImages = {
+  journey: 'journey-driver',
+  personalDriver: 'personal-driver',
+  safeRideHome: 'safe-ride-home',
+  airport: 'airport-driver',
   inspection: 'vehicle-inspection-run',
   tyre: 'tyre-service-run',
   glass: 'glass-body-shop-recall',
@@ -407,6 +412,8 @@ function renderService(service, locale) {
   const c = service[locale];
   const t = ui[locale];
   const gated = isGated(service);
+  // A journey carries the customer; every other service moves the car alone.
+  const withPassengers = SERVICE_PRODUCTS[service.key].type === 'passenger';
   const path = serviceUrl(service.key, locale);
   const heroImage = serviceHeroImages[service.key];
   const bookHref = service.category === 'business'
@@ -415,7 +422,7 @@ function renderService(service, locale) {
 
   const body = `
 <!-- Operational note (${service.key}): ${esc(service.devNote)} -->
-<section class="page-head${heroImage ? ' service-hero' : ''}${['dealer', 'relocation'].includes(service.key) ? ' service-hero-right' : ''}">
+<section class="page-head${heroImage ? ' service-hero' : ''}${heroImage && service.category === 'driver' ? ' service-hero-passenger' : ''}${['dealer', 'relocation'].includes(service.key) ? ' service-hero-right' : ''}">
   ${heroImage ? `<img class="service-hero-photo" src="/assets/service-heroes/${heroImage}.jpg" alt="${esc(c.nav)}" fetchpriority="high" decoding="async">\n  ` : ''}<div class="wrap page-head-inner">
     ${heroImage ? '<div class="service-hero-copy">\n    ' : ''}${crumbs([
     { label: t.breadcrumbHome, href: url('home', locale) },
@@ -432,7 +439,7 @@ function renderService(service, locale) {
     </div>
     <div class="meta-row">
       <span><b>${esc(t.price)}:</b> ${esc(fromPrice(service.key, locale))}</span>
-      ${gated ? '' : `<span><b>${esc(t.passengers)}:</b> ${esc(t.noPassengerShort)}</span>`}
+      ${gated ? '' : `<span><b>${esc(t.passengers)}:</b> ${esc(withPassengers ? t.withPassengers : t.noPassengerShort)}</span>`}
       <span><b>${esc(locale === 'fi' ? 'Ajanvaraus' : 'Appointment')}:</b> ${esc(appointmentLabel(service.appointment, locale))}</span>
       <span><b>${esc(t.coverage)}:</b> ${esc(brand.coverage.join(', '))}</span>
     </div>
@@ -441,7 +448,7 @@ ${heroImage ? '    </div>\n' : ''}  </div>
 
 <section class="sec">
   <div class="wrap stack">
-    ${gated ? gateNoticeBlock(locale) : callout(null, t.noPassenger)}
+    ${gated ? gateNoticeBlock(locale) : withPassengers ? '' : callout(null, t.noPassenger)}
     <div>
       <div class="sec-head"><h2>${esc(t.steps)}</h2></div>
       ${stepsList(c.steps, { rows: true })}
@@ -522,6 +529,11 @@ function priceProse(service, locale) {
     return fi
       ? `${name} ei ole vielä varattavissa, joten emme julkaise sille hintaa.`
       : `${name} cannot be booked yet, so we do not publish a price for it.`;
+  }
+  if (SERVICE_PRODUCTS[service.key].type === 'passenger') {
+    return fi
+      ? `${name}: kiinteä tarjous. Hinta muodostuu reitistä, matkan kestosta, matkustajien määrästä ja kuljettajan paluusta, ja vahvistamme sen ennen matkaa. Polttoaine, lataus, tiemaksut ja pysäköinti kerrotaan tarjouksessa erikseen.`
+      : `${name}: a fixed quote. The price comes from the route, the duration, the number of passengers and the driver's return leg, and we confirm it before the trip. Fuel, charging, tolls and parking are stated separately in the quote.`;
   }
   const from = fromPrice(service.key, locale);
   const range = typicalRange(service.key);

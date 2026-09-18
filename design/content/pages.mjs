@@ -32,6 +32,16 @@ export const home = {
     offerTitle: 'Mitä autollesi *tehdään*?',
     paths: [
       {
+        key: 'journey',
+        label: 'Kuljettaja matkallesi',
+        body: 'Kuljettaja ajaa sinut ja matkaseurueesi omalla autollasi: lentoasemalle, toiseen kaupunkiin tai pitkälle matkalle. Kerro reitti, ajankohta ja matkustajien määrä.',
+        priceService: 'journey',
+        href: '/varaus/?tyyppi=matka&lahde=home_journey',
+        cta: 'Pyydä hinta',
+        linkLabel: 'Kuljettaja matkallesi',
+        linkHref: '/kuljettaja-matkalle/',
+      },
+      {
         key: 'move',
         label: 'Aja autoni toiseen osoitteeseen',
         body: 'Kuljettaja noutaa autosi ja ajaa sen sovittuun osoitteeseen: uuteen kotiin, työpaikalle, mökille tai toiselle pysäköintipaikalle. Kerro, tarvitaanko myös paluu.',
@@ -70,8 +80,9 @@ export const home = {
     mosaic: {
       title: 'DriveMen *palvelut*',
       intro: 'Kuljettaja ajaa autosi sinne, minne sen pitää mennä: toiseen osoitteeseen, katsastukseen, huoltoon tai pesuun. Sinun ei tarvitse lähteä mukaan.',
-      quote: 'Pyydä tarjous',
+      quote: 'Pyydä hinta',
       blurbs: {
+        journey: 'Kuljettaja ajaa sinut ja matkaseurueesi lentoasemalle tai pitkälle matkalle.',
         relocation: 'Kuljettaja ajaa autosi toiseen osoitteeseen, tarvittaessa myös takaisin.',
         inspection: 'Katsastukseen ja takaisin katsastuspapereiden kanssa.',
         workshop: 'Nouto, toimitus korjaamolle ja palautus valmiina.',
@@ -93,7 +104,7 @@ export const home = {
       'Nouto kotoa, työpaikalta tai pysäköintihallista',
       'Kunto, mittarilukema ja polttoaine- tai lataustaso kuvataan noudossa',
       'Kuljettaja ei hyväksy lisätöitä puolestasi',
-      'Autossa ei kuljeteta matkustajia',
+      'Auton siirroissa autossa ei kuljeteta matkustajia',
     ],
     businessTitle: 'Yritysautojen *siirrot*',
     businessBody: 'Toistuvat siirrot, huoltoajot ja työntekijäluovutukset yhdeltä kumppanilta, työkohtaisella tilatiedolla ja yhdellä kuukausilaskulla.',
@@ -116,6 +127,16 @@ export const home = {
     trustLine: 'Your car. Our driver. A clear price before the drive.',
     offerTitle: 'What does your car *need*?',
     paths: [
+      {
+        key: 'journey',
+        label: 'A driver for your journey',
+        body: 'A driver takes you and your passengers in your own car: to the airport, to another city or on a longer trip. Tell us the route, the date and how many are travelling.',
+        priceService: 'journey',
+        href: '/en/booking/?type=journey&source=home_journey',
+        cta: 'Request a quote',
+        linkLabel: 'A driver for your journey',
+        linkHref: '/en/driver-for-your-journey/',
+      },
       {
         key: 'move',
         label: 'Drive my car to another address',
@@ -153,6 +174,7 @@ export const home = {
       intro: 'A driver takes your car where it needs to go: another address, an inspection, a workshop or a wash. You do not need to travel with it.',
       quote: 'Request a quote',
       blurbs: {
+        journey: 'A driver takes you and your passengers to the airport or on a longer trip.',
         relocation: 'A driver takes your car to another address, and back again if needed.',
         inspection: 'To the inspection and back, with the paperwork.',
         workshop: 'Collected, delivered to the workshop and returned when ready.',
@@ -174,7 +196,7 @@ export const home = {
       'Collection from home, work or a parking garage',
       'Condition, mileage and fuel or charge level photographed at collection',
       'The driver approves no extra work on your behalf',
-      'No passengers travel in the car',
+      'No passengers travel in the car during a vehicle move',
     ],
     businessTitle: 'Company *vehicle movements*',
     businessBody: 'Recurring movements, service runs and employee handovers from one partner, with job-level status and a single monthly invoice.',
@@ -198,6 +220,7 @@ export const servicesHub = {
     groups: [
       { title: 'Vie autoni palveluun', body: 'Nouto, toimitus valitsemaasi palveluun ja palautus sovitusti. Ajan varaat ja palvelun maksat itse.', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
       { title: 'Aja autoni toiseen osoitteeseen', body: 'Ajokuntoinen auto sovitusta osoitteesta toiseen, tarvittaessa myös takaisin.', keys: ['relocation', 'pickupReturn'] },
+      { title: 'Kuljettaja matkallesi', body: 'Kuljettaja ajaa sinut ja matkaseurueesi omalla autollasi. Jokainen matka hinnoitellaan reitin mukaan.', keys: ['journey', 'personalDriver', 'safeRideHome', 'airport'] },
       { title: 'Yrityksille', body: 'Toistuvat siirrot, huoltoajot ja luovutukset yhdellä sopimuksella.', keys: ['business'] },
     ],
   },
@@ -210,6 +233,7 @@ export const servicesHub = {
     groups: [
       { title: 'Take my car to a service', body: 'Collection, delivery to the provider you choose, and return as agreed. You book and pay the provider yourself.', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
       { title: 'Drive my car to another address', body: 'A roadworthy car from one agreed address to another, and back again if needed.', keys: ['relocation', 'pickupReturn'] },
+      { title: 'A driver for your journey', body: 'A driver takes you and your passengers in your own car. Every journey is quoted from its route.', keys: ['journey', 'personalDriver', 'safeRideHome', 'airport'] },
       { title: 'For companies', body: 'Recurring movements, service runs and handovers under one agreement.', keys: ['business'] },
     ],
   },
@@ -228,6 +252,7 @@ const priceRowsFi = [
   ['Auton vienti katsastukseen', `alkaen ${fmt(PRODUCTS.inspection.from)}`, `Nouto, odotus enintään ${WAITING.waitReturnIncludedMinutes} min ja palautus`, 'Katsastusmaksu maksetaan suoraan asemalle'],
   ['Odota ja palauta', `alkaen ${fmt(PRODUCTS.waitReturn.from)}`, `Nouto, odotus enintään ${WAITING.waitReturnIncludedMinutes} min ja palautus`, `Sen jälkeen ${fmt(WAITING.hourlyRate)}/h ${WAITING.unitMinutes} minuutin erissä`],
   ['Palautus autoliikkeeseen tai leasingyhtiölle', `alkaen ${fmt(PRODUCTS.handover.from)}`, 'Nouto ja dokumentoitu luovutus', 'Palveluntarjoajan veloitukset maksat suoraan'],
+  ['Kuljettaja matkallesi omalla autollasi', 'Kiinteä tarjous', 'Kuljettaja, sovittu reitti ja aikataulu', 'Hinta muodostuu reitistä, kestosta, matkustajamäärästä ja paluusta'],
   ['Pitkän matkan siirto', 'Kiinteä tarjous', 'Ajettu siirto pääkaupunkiseudun ulkopuolelle', 'Polttoaine, lataus ja kuljettajan paluu eritellään'],
   ['Yritysasiakkaat', 'Sopimushinta', 'Toistuvat siirrot, raportointi ja laskutus', 'Kuukausittainen vähimmäismäärä tai palvelumaksu'],
 ];
@@ -239,6 +264,7 @@ const priceRowsEn = [
   ['Vehicle inspection run', `from ${fmt(PRODUCTS.inspection.from)}`, `Collection, up to ${WAITING.waitReturnIncludedMinutes} min wait, return`, 'The inspection fee is paid directly to the station'],
   ['Wait and return', `from ${fmt(PRODUCTS.waitReturn.from)}`, `Collection, up to ${WAITING.waitReturnIncludedMinutes} min wait, return`, `Then ${fmt(WAITING.hourlyRate)}/h in ${WAITING.unitMinutes}-minute units`],
   ['Dealer or lease handover', `from ${fmt(PRODUCTS.handover.from)}`, 'Collection and documented handover', 'Provider charges are settled directly'],
+  ['A driver for your journey in your own car', 'Fixed quote', 'A driver, the agreed route and schedule', 'Priced from the route, duration, passengers and return leg'],
   ['Long-distance relocation', 'Fixed quote', 'Driven move outside the capital region', 'Fuel, charging and the driver’s return stated explicitly'],
   ['Corporate fleet', 'Contract pricing', 'Recurring moves, reporting and invoicing', 'Minimum monthly volume or service fee'],
 ];
@@ -249,7 +275,7 @@ export const pricing = {
     title: 'DriveMe hinnasto | Kuljettaja- ja noutopalvelut',
     description: `DriveMen hinnat: auton siirto alkaen ${PRODUCTS.oneWay.from} €, huolto-, rengas- tai pesuajo alkaen ${PRODUCTS.serviceRun.from} €, katsastusajo alkaen ${PRODUCTS.inspection.from} €. Palveluntarjoajan maksut eivät sisälly.`,
     h1: 'DriveMe *hinnasto*',
-    lead: 'Hinnat sisältävät arvonlisäveron. Näet ohjeellisen hinnan heti hintapyyntölomakkeella ja vahvistamme kiinteän DriveMe-hinnan ennen kuljettajan lähtöä. Autossa ei kuljeteta matkustajia.',
+    lead: 'Hinnat sisältävät arvonlisäveron. Näet ohjeellisen hinnan heti hintapyyntölomakkeella ja vahvistamme kiinteän DriveMe-hinnan ennen kuljettajan lähtöä. Matkat, joilla matkustat itse mukana, hinnoitellaan reitin mukaan.',
     blocks: [
       {
         type: 'priceTable',
@@ -301,7 +327,7 @@ export const pricing = {
     title: 'DriveMe pricing | Driver and vehicle concierge',
     description: `DriveMe prices: a car moved to another address from ${PRODUCTS.oneWay.from} €, workshop, tyre or wash run from ${PRODUCTS.serviceRun.from} €, inspection run from ${PRODUCTS.inspection.from} €. Provider charges are not included.`,
     h1: 'DriveMe *pricing*',
-    lead: 'Prices include Finnish VAT. You see an indicative price on the request form and we confirm a fixed DriveMe fee before the driver is sent. No passengers travel in the car.',
+    lead: 'Prices include Finnish VAT. You see an indicative price on the request form and we confirm a fixed DriveMe fee before the driver is sent. Journeys where you travel in the car are quoted per route.',
     blocks: [
       { type: 'priceTable', head: ['Service', 'Price', 'Includes', 'Notes'], rows: priceRowsEn },
       {
@@ -593,7 +619,7 @@ export const faqPage = {
       { q: 'Onko DriveMe korjaamo tai katsastusasema?', a: 'Ei. DriveMe myy kuljetuksen, säilytysvastuun ajon ajaksi, dokumentoidun luovutuksen ja sovitun koordinoinnin - ei korjausta, katsastusta, neuvontaa eikä maksunvälitystä.' },
       { q: 'Millä alueella toimitte?', a: 'Helsinki, Espoo, Vantaa ja Kauniainen. Pidemmät siirrot hinnoittelemme tapauskohtaisesti.' },
       { q: 'Milloin varaus on sitova?', a: 'Kun olemme vahvistaneet kuljettajan, ajan ja kiinteän hinnan. Lomakkeen lähettäminen luo vasta pyynnön.' },
-      { q: 'Voinko matkustaa auton mukana?', a: 'Et tällä hetkellä. DriveMe siirtää autosi ilman matkustajia, eikä sinun tarvitse lähteä mukaan. Voit ilmoittaa kiinnostuksesi palveluun, jossa matkustat itse.' },
+      { q: 'Voinko matkustaa auton mukana?', a: 'Kyllä. Kuljettaja matkallesi -palvelussa kuljettaja ajaa sinut ja matkaseurueesi omalla autollasi, esimerkiksi lentoasemalle tai pitkälle matkalle. Auton siirroissa taas kukaan ei matkusta autossa.' },
       { q: 'Miten peruutus toimii?', a: 'Maksuton vähintään 24 tuntia ennen noutoa. Alle 24 tuntia: 50 % DriveMe-palkkiosta. Kuljettajan lähdön jälkeen veloitamme perusmaksun ja toteutuneen ajan ehtojen mukaisesti.' },
     ],
   },
@@ -615,7 +641,7 @@ export const faqPage = {
       { q: 'Is DriveMe a workshop or inspection station?', a: 'No. DriveMe sells transportation, custody during the drive, documented handover and agreed coordination - not repairs, inspections, advice or payment intermediation.' },
       { q: 'Where do you operate?', a: 'Helsinki, Espoo, Vantaa and Kauniainen. Longer moves are priced individually.' },
       { q: 'When is a booking binding?', a: 'When we have confirmed the driver, the time and the fixed fee. Submitting the form only creates a request.' },
-      { q: 'Can I travel with the car?', a: 'Not at the moment. DriveMe moves your car with no passengers, and you do not need to travel with it. You can register interest in a service where you ride along.' },
+      { q: 'Can I travel with the car?', a: 'Yes. With "a driver for your journey" a driver takes you and your passengers in your own car, for example to the airport or on a longer trip. On a vehicle move, nobody travels in the car.' },
       { q: 'How does cancellation work?', a: 'Free at least 24 hours before pickup. Under 24 hours: 50% of the DriveMe fee. After driver dispatch we charge the base fee and incurred time under the terms.' },
     ],
   },

@@ -100,6 +100,22 @@
       <span class="mi-price">alkaen 149 €</span>
     </a></li></ul>
       </div>
+      <div class="menu-col">
+        <h2>Kuljettaja matkallesi</h2>
+        <ul class="menu-list"><li><a href="/kuljettaja-matkalle/">
+      <span class="mi-name">Kuljettaja matkallesi</span>
+      
+    </a></li><li><a href="/oma-kuljettaja/">
+      <span class="mi-name">Oma kuljettaja</span>
+      
+    </a></li><li><a href="/turvallinen-kotiinkuljetus/">
+      <span class="mi-name">Turvallinen kotiinkuljetus</span>
+      
+    </a></li><li><a href="/lentokentta-kuljettajapalvelu/">
+      <span class="mi-name">Kuljettaja lentoasemalle</span>
+      
+    </a></li></ul>
+      </div>
       <div class="menu-col menu-col-end">
         <h2>Lisää</h2>
         <ul class="menu-list"><li><a href="/yrityksille/">
@@ -168,20 +184,33 @@
           <input type="radio" name="service_type" value="appointment_run">
           <span>Vie autoni palveluun<small>Katsastus, huolto, renkaanvaihto, pesu tai autoliike. Palautus sovitusti.</small></span>
         </label>
+            
+        <label class="choice">
+          <input type="radio" name="service_type" value="passenger_journey">
+          <span>Kuljettaja matkallesi<small>Kuljettaja ajaa sinut ja matkaseurueesi omalla autollasi.</small></span>
+        </label>
           </div>
-          <p class="form-passenger">Haluatko matkustaa itse auton mukana? Sitä ei voi vielä varata. <a href="/oma-kuljettaja/">Ilmoita kiinnostuksesi</a></p>
           <div id="gate-warning" hidden></div>
         </fieldset>
 
         <fieldset class="fieldset" id="move-set">
-          <legend>Minne auto menee?</legend>
+          <legend id="route-legend">Minne auto menee?</legend>
           
       <div class="field">
         <label for="destination">Kohdeosoite<span class="req" data-for="destination" hidden>*</span></label>
-        <input type="text" id="destination" name="destination" autocomplete="street-address">
-        
+        <input type="text" id="destination" name="destination" autocomplete="street-address" aria-describedby="destination-help">
+        <span class="help" id="destination-help">Esim. Helsinki-Vantaan lentoasema, Tampere tai mökin osoite.</span>
         <span class="err" id="destination-err" role="alert"></span>
       </div>
+          <div id="passengers-field" hidden>
+            
+      <div class="field">
+        <label for="passengers">Matkustajien määrä<span class="req" data-for="passengers" hidden>*</span></label>
+        <input type="number" id="passengers" name="passengers" min="1" max="8" value="1" aria-describedby="passengers-help">
+        <span class="help" id="passengers-help">Kuljettaja ei vie paikkaa: kerro, montako teitä matkustaa.</span>
+        <span class="err" id="passengers-err" role="alert"></span>
+      </div>
+          </div>
           <p class="field-label" id="return-label">Tarvitaanko paluu?</p>
           <div class="choice-grid" role="radiogroup" aria-labelledby="return-label">
             
@@ -429,7 +458,7 @@
   </div>
 </section>
 
-<script id="booking-config" type="application/json">{"locale":"fi","products":{"oneWay":{"from":89,"typical":[99,129],"quote":false,"unit":"job"},"pickupReturn":{"from":149,"typical":[149,199],"quote":false,"unit":"job"},"waitReturn":{"from":169,"quote":false,"unit":"job"},"inspection":{"from":169,"quote":false,"unit":"job"},"serviceRun":{"from":149,"typical":[149,199],"quote":false,"unit":"job"},"handover":{"from":99,"quote":false,"unit":"job"},"longDistance":{"from":null,"quote":true,"unit":"job"},"corporate":{"from":null,"quote":true,"unit":"contract"}},"premiums":{"night":{"pct":25,"fromHour":22,"toHour":6},"weekend":{"pct":15},"publicHoliday":{"pct":25},"urgent":{"pct":25,"withinHours":12}},"services":{"inspection":{"type":"appointment_run","gated":false,"label":"Auton vienti katsastukseen","product":"inspection","shapes":{"waitReturn":"inspection","pickupReturn":"pickupReturn","oneWay":"oneWay"},"defaultShape":"waitReturn"},"workshop":{"type":"appointment_run","gated":false,"label":"Auton nouto huoltoon","product":"serviceRun","shapes":{"pickupReturn":"serviceRun","waitReturn":"waitReturn","oneWay":"oneWay"},"defaultShape":"pickupReturn"},"tyre":{"type":"appointment_run","gated":false,"label":"Auton vienti renkaanvaihtoon","product":"serviceRun","shapes":{"pickupReturn":"serviceRun","waitReturn":"waitReturn","oneWay":"oneWay"},"defaultShape":"pickupReturn"},"wash":{"type":"appointment_run","gated":false,"label":"Auton vienti pesuun","product":"serviceRun","shapes":{"pickupReturn":"serviceRun","waitReturn":"waitReturn","oneWay":"oneWay"},"defaultShape":"pickupReturn"},"glass":{"type":"appointment_run","gated":false,"label":"Lasi, kolari ja takaisinkutsu","product":"serviceRun","shapes":{"pickupReturn":"serviceRun","oneWay":"oneWay"},"defaultShape":"pickupReturn"},"pickupReturn":{"type":"general_move","gated":false,"label":"Auton nouto ja palautus","product":"pickupReturn","shapes":{"pickupReturn":"pickupReturn"},"defaultShape":"pickupReturn"},"relocation":{"type":"general_move","gated":false,"label":"Auton siirtopalvelu","product":"oneWay","shapes":{"oneWay":"oneWay"},"defaultShape":"oneWay"},"dealer":{"type":"appointment_run","gated":false,"label":"Palautus autoliikkeeseen","product":"handover","shapes":{"oneWay":"handover","pickupReturn":"pickupReturn"},"defaultShape":"oneWay"},"personalDriver":{"type":"passenger","gated":true,"label":"Oma kuljettaja","product":"personalDriver","shapes":{},"defaultShape":null},"safeRideHome":{"type":"passenger","gated":true,"label":"Turvallinen kotiinkuljetus","product":"designated","shapes":{},"defaultShape":null},"airport":{"type":"passenger","gated":true,"label":"Kuljettaja lentoasemalle","product":"airport","shapes":{},"defaultShape":null},"business":{"type":"business","gated":false,"label":"Yrityksille","product":"corporate","shapes":{},"defaultShape":null}},"interestHref":"/oma-kuljettaja/","copy":{"required":"Tämä tieto tarvitaan.","badEmail":"Tarkista sähköpostiosoite tai jätä kenttä tyhjäksi.","badPhone":"Tarkista puhelinnumero.","badRange":"Arvo ei ole sallitulla välillä.","mustAccept":"Tämä vahvistus tarvitaan.","authLabel":"Lupa auton ajamiseen","submitLocked":"Ennen pyynnön lähettämistä:","errorTitle":"Tarkista nämä kohdat","submitting":"Lähetetään…","submit":"Lähetä hintapyyntö","failed":"Pyyntöä ei saatu lähetettyä. Yritä uudelleen tai soita numeroon +358 50 357 2836.","quoteFrom":"alkaen","quoteManual":"Kiinteä tarjous","quoteManualNote":"Tälle työlle annamme kiinteän tarjouksen käsin.","quoteNote":"Hinta sisältää arvonlisäveron. Vahvistamme kiinteän DriveMe-hinnan ennen ajoa. Palveluntarjoajan maksut eivät sisälly.","lines":{"base":"Palvelun perushinta","night":"Yölisä","weekend":"Viikonloppulisä","publicHoliday":"Arkipyhälisä","urgent":"Kiirelisä"},"gatedTitle":"Tätä palvelua ei voi vielä varata","gatedBody":"Kuljettajaa, jonka kyydissä matkustat itse, ei voi vielä varata. Voit ilmoittaa kiinnostuksesi, niin kerromme, kun palvelu avautuu.","passengerLink":"Ilmoita kiinnostuksesi"},"endpoint":"/api/bookings"}</script>
+<script id="booking-config" type="application/json">{"locale":"fi","products":{"oneWay":{"from":89,"typical":[99,129],"quote":false,"unit":"job"},"pickupReturn":{"from":149,"typical":[149,199],"quote":false,"unit":"job"},"waitReturn":{"from":169,"quote":false,"unit":"job"},"inspection":{"from":169,"quote":false,"unit":"job"},"serviceRun":{"from":149,"typical":[149,199],"quote":false,"unit":"job"},"handover":{"from":99,"quote":false,"unit":"job"},"journey":{"from":null,"quote":true,"unit":"job"},"longDistance":{"from":null,"quote":true,"unit":"job"},"corporate":{"from":null,"quote":true,"unit":"contract"}},"premiums":{"night":{"pct":25,"fromHour":22,"toHour":6},"weekend":{"pct":15},"publicHoliday":{"pct":25},"urgent":{"pct":25,"withinHours":12}},"services":{"inspection":{"type":"appointment_run","gated":false,"label":"Auton vienti katsastukseen","product":"inspection","shapes":{"waitReturn":"inspection","pickupReturn":"pickupReturn","oneWay":"oneWay"},"defaultShape":"waitReturn"},"workshop":{"type":"appointment_run","gated":false,"label":"Auton nouto huoltoon","product":"serviceRun","shapes":{"pickupReturn":"serviceRun","waitReturn":"waitReturn","oneWay":"oneWay"},"defaultShape":"pickupReturn"},"tyre":{"type":"appointment_run","gated":false,"label":"Auton vienti renkaanvaihtoon","product":"serviceRun","shapes":{"pickupReturn":"serviceRun","waitReturn":"waitReturn","oneWay":"oneWay"},"defaultShape":"pickupReturn"},"wash":{"type":"appointment_run","gated":false,"label":"Auton vienti pesuun","product":"serviceRun","shapes":{"pickupReturn":"serviceRun","waitReturn":"waitReturn","oneWay":"oneWay"},"defaultShape":"pickupReturn"},"glass":{"type":"appointment_run","gated":false,"label":"Lasi, kolari ja takaisinkutsu","product":"serviceRun","shapes":{"pickupReturn":"serviceRun","oneWay":"oneWay"},"defaultShape":"pickupReturn"},"pickupReturn":{"type":"general_move","gated":false,"label":"Auton nouto ja palautus","product":"pickupReturn","shapes":{"pickupReturn":"pickupReturn"},"defaultShape":"pickupReturn"},"relocation":{"type":"general_move","gated":false,"label":"Auton siirtopalvelu","product":"oneWay","shapes":{"oneWay":"oneWay"},"defaultShape":"oneWay"},"dealer":{"type":"appointment_run","gated":false,"label":"Palautus autoliikkeeseen","product":"handover","shapes":{"oneWay":"handover","pickupReturn":"pickupReturn"},"defaultShape":"oneWay"},"journey":{"type":"passenger","gated":false,"label":"Kuljettaja matkallesi","product":"journey","shapes":{},"defaultShape":null},"personalDriver":{"type":"passenger","gated":false,"label":"Oma kuljettaja","product":"journey","shapes":{},"defaultShape":null},"safeRideHome":{"type":"passenger","gated":false,"label":"Turvallinen kotiinkuljetus","product":"journey","shapes":{},"defaultShape":null},"airport":{"type":"passenger","gated":false,"label":"Kuljettaja lentoasemalle","product":"journey","shapes":{},"defaultShape":null},"business":{"type":"business","gated":false,"label":"Yrityksille","product":"corporate","shapes":{},"defaultShape":null}},"copy":{"required":"Tämä tieto tarvitaan.","badEmail":"Tarkista sähköpostiosoite tai jätä kenttä tyhjäksi.","badPhone":"Tarkista puhelinnumero.","badRange":"Arvo ei ole sallitulla välillä.","mustAccept":"Tämä vahvistus tarvitaan.","authLabel":"Lupa auton ajamiseen","submitLocked":"Ennen pyynnön lähettämistä:","errorTitle":"Tarkista nämä kohdat","submitting":"Lähetetään…","submit":"Lähetä hintapyyntö","failed":"Pyyntöä ei saatu lähetettyä. Yritä uudelleen tai soita numeroon +358 50 357 2836.","quoteFrom":"alkaen","quoteManual":"Kiinteä tarjous","quoteManualNote":"Tälle työlle annamme kiinteän tarjouksen käsin.","quoteNote":"Hinta sisältää arvonlisäveron. Vahvistamme kiinteän DriveMe-hinnan ennen ajoa. Palveluntarjoajan maksut eivät sisälly.","lines":{"base":"Palvelun perushinta","night":"Yölisä","weekend":"Viikonloppulisä","publicHoliday":"Arkipyhälisä","urgent":"Kiirelisä"},"gatedTitle":"Tätä palvelua ei voi vielä varata","gatedBody":"Tämä palvelu ei ole vielä varattavissa. Kerromme heti, kun se avautuu.","journeyLegend":"Minne matka suuntautuu?","moveLegend":"Minne auto menee?"},"endpoint":"/api/bookings"}</script>
 </main>
 <footer class="site-foot">
   <div class="wrap">
@@ -454,6 +483,10 @@
         <ul><li><a href="/auton-siirtopalvelu/">Auton siirtopalvelu</a></li><li><a href="/auton-nouto-ja-palautus/">Auton nouto ja palautus</a></li><li><a href="/yrityksille/">Yrityksille</a></li></ul>
       </div>
       <div>
+        <h3>Kuljettaja matkallesi</h3>
+        <ul><li><a href="/kuljettaja-matkalle/">Kuljettaja matkallesi</a></li><li><a href="/oma-kuljettaja/">Oma kuljettaja</a></li><li><a href="/turvallinen-kotiinkuljetus/">Turvallinen kotiinkuljetus</a></li><li><a href="/lentokentta-kuljettajapalvelu/">Kuljettaja lentoasemalle</a></li></ul>
+      </div>
+      <div>
         <h3>Tietoa</h3>
         <ul>
           <li><a href="/nain-se-toimii/">Näin se toimii</a></li>
@@ -461,7 +494,6 @@
           <li><a href="/usein-kysyttya/">Usein kysyttyä</a></li>
           <li><a href="/yhteystiedot/">Yhteystiedot</a></li>
           <li><a href="/ehdot/">Palveluehdot</a></li><li><a href="/ehdot/#peruutus">Peruutusehdot</a></li><li><a href="/ehdot/#tietosuoja">Tietosuoja</a></li><li><a href="/turvallisuus/">Turvallisuus</a></li>
-          <li class="foot-quiet"><a href="/oma-kuljettaja/">Haluatko matkustaa auton mukana? Ilmoita kiinnostuksesi</a></li>
         </ul>
       </div>
     </div>

@@ -36,9 +36,10 @@ export const CURRENCY = 'EUR';
  * `from` is a starting price, never a total. `typical` is the range most jobs
  * land in, published so a starting price cannot read as a bait figure.
  * `quote: true` means the product has no starting price at all and always
- * goes to a manual fixed quote. `hidden: true` marks a passenger product that
- * is not sold yet: its price is kept for the day it launches but is never
- * published and never quoted to a customer.
+ * goes to a manual fixed quote.
+ *
+ * Journeys with the customer in the car are quoted per route rather than
+ * priced from a list.
  */
 export const PRODUCTS = {
   oneWay: { from: 89, typical: [99, 129], quote: false, unit: 'job' },
@@ -47,9 +48,9 @@ export const PRODUCTS = {
   inspection: { from: 169, quote: false, unit: 'job' },
   serviceRun: { from: 149, typical: [149, 199], quote: false, unit: 'job' },
   handover: { from: 99, quote: false, unit: 'job' },
-  airport: { from: 129, quote: false, unit: 'job', hidden: true },
-  personalDriver: { from: 39, quote: false, unit: 'hour', minHours: 2, hidden: true },
-  designated: { from: null, quote: true, unit: 'job', hidden: true },
+  // A journey with the customer in the car: route, duration and driver
+  // logistics differ too much for a list price, so every one is quoted.
+  journey: { from: null, quote: true, unit: 'job' },
   longDistance: { from: null, quote: true, unit: 'job' },
   corporate: { from: null, quote: true, unit: 'contract' },
 };
@@ -206,7 +207,8 @@ function round2(n) {
  *   general_move    "Aja autoni toiseen osoitteeseen" - address to address
  *   appointment_run "Vie autoni palveluun" - to an inspection, workshop,
  *                   tyre shop, wash, body shop or dealer
- *   passenger       a customer travels in the car - NOT sold yet
+ *   passenger       the customer and their passengers travel in the car,
+ *                   driven by us - quoted per route
  *   business        contract lead, priced by quote
  *
  * `shapes` maps each trip shape the customer can pick to the product that
@@ -247,9 +249,10 @@ const SERVICES = {
     type: 'general_move', defaultShape: 'pickupReturn',
     shapes: { pickupReturn: 'pickupReturn' },
   },
-  personalDriver: { type: 'passenger', defaultShape: null, shapes: {}, product: 'personalDriver' },
-  safeRideHome: { type: 'passenger', defaultShape: null, shapes: {}, product: 'designated' },
-  airport: { type: 'passenger', defaultShape: null, shapes: {}, product: 'airport' },
+  journey: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
+  personalDriver: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
+  safeRideHome: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
+  airport: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
   business: { type: 'business', defaultShape: null, shapes: {}, product: 'corporate' },
 };
 

@@ -73,6 +73,7 @@ export const menuGroups = {
   fi: {
     appointment: 'Vie autoni palveluun',
     move: 'Aja autoni toiseen osoitteeseen',
+    passenger: 'Kuljettaja matkallesi',
     business: 'Lisää',
     all: 'Kaikki palvelut',
     pricing: 'Hinnasto',
@@ -82,6 +83,7 @@ export const menuGroups = {
   en: {
     appointment: 'Take my car to a service',
     move: 'Drive my car to another address',
+    passenger: 'A driver for your journey',
     business: 'More',
     all: 'All services',
     pricing: 'Pricing',
@@ -126,6 +128,7 @@ export const ui = {
     noPassenger: 'Sinun ei tarvitse lähteä mukaan. Kuljettaja ajaa autosi perille, eikä autossa kuljeteta matkustajia.',
     passengers: 'Matkustajat',
     noPassengerShort: 'Ei matkustajia, et lähde mukaan',
+    withPassengers: 'Sinä ja matkaseurueesi',
   },
   en: {
     lang: 'en-FI',
@@ -162,6 +165,7 @@ export const ui = {
     noPassenger: 'You do not need to travel with the car. The driver takes it to the destination and carries no passengers.',
     passengers: 'Passengers',
     noPassengerShort: 'None, you do not travel with it',
+    withPassengers: 'You and your passengers',
   },
 };
 
@@ -311,10 +315,8 @@ export const footer = {
     columns: [
       { title: 'Vie autoni palveluun', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
       { title: 'Auton siirrot', keys: ['relocation', 'pickupReturn', 'business'] },
+      { title: 'Kuljettaja matkallesi', keys: ['journey', 'personalDriver', 'safeRideHome', 'airport'] },
     ],
-    // The plan allows one discreet link to a single interest page for the
-    // passenger service - no price and no booking button behind it.
-    interest: { label: 'Haluatko matkustaa auton mukana? Ilmoita kiinnostuksesi', key: 'personalDriver' },
     legalLinks: [
       { label: 'Palveluehdot', href: '/ehdot/' },
       { label: 'Peruutusehdot', href: '/ehdot/#peruutus' },
@@ -329,8 +331,8 @@ export const footer = {
     columns: [
       { title: 'Take my car to a service', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
       { title: 'Vehicle moves', keys: ['relocation', 'pickupReturn', 'business'] },
+      { title: 'A driver for your journey', keys: ['journey', 'personalDriver', 'safeRideHome', 'airport'] },
     ],
-    interest: { label: 'Want to travel with the car? Register your interest', key: 'personalDriver' },
     legalLinks: [
       { label: 'Terms of service', href: '/en/terms/' },
       { label: 'Cancellation', href: '/en/terms/#cancellation' },
