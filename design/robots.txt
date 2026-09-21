@@ -8,6 +8,7 @@ Disallow: /track
 Disallow: /driver
 Disallow: /varaus/
 Disallow: /en/booking/
+Disallow: /sv/offert/
 
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy
@@ -23,6 +24,7 @@ Disallow: /track
 Disallow: /driver
 Disallow: /varaus/
 Disallow: /en/booking/
+Disallow: /sv/offert/
 
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy

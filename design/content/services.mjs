@@ -1246,6 +1246,13 @@ export const services = [
   },
 ];
 
+/* Swedish, from content/sv/services.mjs: same keys, one reviewable document. */
+import * as SV from './sv/services.mjs';
+for (const s of services) {
+  if (!SV[s.key]) throw new Error(`no Swedish content for service: ${s.key}`);
+  s.sv = SV[s.key];
+}
+
 export const byKey = Object.fromEntries(services.map((s) => [s.key, s]));
 
 /** Services offered in the "Take care of my car" path of the booking flow. */

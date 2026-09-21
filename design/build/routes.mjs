@@ -19,21 +19,26 @@ function register(id, per) {
   routes[id] = per;
 }
 
-register('home', { fi: dir(home.fi.slug), en: dir(home.en.slug) });
-register('services', { fi: dir(servicesHub.fi.slug), en: dir(servicesHub.en.slug) });
-register('pricing', { fi: dir(pricing.fi.slug), en: dir(pricing.en.slug) });
-register('how', { fi: dir(howPage.fi.slug), en: dir(howPage.en.slug) });
-register('safety', { fi: dir(safety.fi.slug), en: dir(safety.en.slug) });
-register('faq', { fi: dir(faqPage.fi.slug), en: dir(faqPage.en.slug) });
-register('terms', { fi: dir(terms.fi.slug), en: dir(terms.en.slug) });
-register('contact', { fi: dir(contact.fi.slug), en: dir(contact.en.slug) });
-register('booking', { fi: dir(booking.fi.slug), en: dir(booking.en.slug) });
+/** Every locale's path for one page, from that locale's own slug. */
+const perLocale = (def) => Object.fromEntries(LOCALES.map((l) => [l, dir(def[l].slug)]));
 
+register('home', perLocale(home));
+register('services', perLocale(servicesHub));
+register('pricing', perLocale(pricing));
+register('how', perLocale(howPage));
+register('safety', perLocale(safety));
+register('faq', perLocale(faqPage));
+register('terms', perLocale(terms));
+register('contact', perLocale(contact));
+register('booking', perLocale(booking));
+
+// A service slug is stored without its language folder, so it reads the same
+// in every language file: /auton-vienti-katsastukseen/, /en/car-to-inspection/,
+// /sv/bil-till-besiktning/.
 for (const s of services) {
-  register(`service:${s.key}`, {
-    fi: dir(s.fi.slug),
-    en: `/en/${s.en.slug}/`,
-  });
+  register(`service:${s.key}`, Object.fromEntries(LOCALES.map((l) => [
+    l, l === DEFAULT_LOCALE ? dir(s[l].slug) : `/${l}/${s[l].slug}/`,
+  ])));
 }
 
 /** Path of a page in one locale. */

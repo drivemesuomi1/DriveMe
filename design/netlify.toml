@@ -266,6 +266,11 @@
   [headers.values]
     X-Robots-Tag = "noindex, follow"
 
+[[headers]]
+  for = "/sv/offert/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
 # Operational surfaces: never cache, never index.
 [[headers]]
   for = "/admin"

@@ -16,7 +16,7 @@ import { mkdir, writeFile, readFile, rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { ORIGIN, LOCALES, brand, ui, nav, howItWorks, trustStrip } from '../content/site.mjs';
+import { ORIGIN, LOCALES, brand, ui, words, nav, howItWorks, trustStrip } from '../content/site.mjs';
 import { services, byKey } from '../content/services.mjs';
 import { SERVICE_PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
 import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking } from '../content/pages.mjs';
@@ -68,9 +68,9 @@ async function emitRaw(rel, body) {
 function renderHome(locale) {
   const c = home[locale];
   const t = ui[locale];
-  const fi = locale === 'fi';
+  const w = words[locale];
   const business = byKey.business[locale];
-  const src = (tag) => `${t.bookHref}?${fi ? 'lahde' : 'source'}=${tag}`;
+  const src = (tag) => `${t.bookHref}?${w.params.source}=${tag}`;
 
   const body = `
 <section class="hero">
@@ -137,12 +137,12 @@ ${serviceMosaic(locale)}
         <h3><a href="${serviceUrl(k, locale)}">${esc(byKey[k][locale].nav)}</a></h3>
         <p>${esc(byKey[k][locale].lead)}</p>
         <span class="from">${esc(fromPrice(k, locale))}</span>
-        ${range ? `<span class="typical">${esc(fi ? `Tyypillisesti ${range[0]}–${range[1]} €` : `Typically ${range[0]}–${range[1]} €`)}</span>` : ''}
+        ${range ? `<span class="typical">${esc(w.typicalShort(range[0], range[1]))}</span>` : ''}
       </li>`;
   }).join('')}
     </ul>
     <div style="margin-top:20px">${callout(null, t.thirdParty)}</div>
-    <p style="margin-top:16px"><a href="${url('pricing', locale)}">${esc(fi ? 'Koko hinnasto' : 'Full price list')} →</a></p>
+    <p style="margin-top:16px"><a href="${url('pricing', locale)}">${esc(w.fullPriceList)} →</a></p>
   </div>
 </section>
 
@@ -154,9 +154,7 @@ ${serviceMosaic(locale)}
       ${tickList(c.handoverPoints, 'check')}
       <p><a class="btn btn-primary" href="${src('home_handover')}">${esc(t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
-    ${figure('/assets/l-svc-rental.jpg', fi
-    ? 'Kuljettaja ajaa asiakkaan autoa yksin'
-    : 'A driver alone at the wheel of a customer’s car')}
+    ${figure('/assets/l-svc-rental.jpg', w.alt.handover)}
   </div>
 </section>
 
@@ -168,9 +166,7 @@ ${serviceMosaic(locale)}
       ${tickList(business.included.slice(0, 4), 'check')}
       <p><a class="btn btn-ghost" href="${serviceUrl('business', locale)}">${esc(business.nav)}</a></p>
     </div>
-    ${figure('/assets/service-heroes/business.jpg', fi
-    ? 'DriveMen kuljettaja ja yritysasiakas luovuttamassa autoa'
-    : 'A DriveMe driver and business customer handing over a vehicle')}
+    ${figure('/assets/service-heroes/business.jpg', w.alt.corporate)}
   </div>
 </section>
 
@@ -180,11 +176,9 @@ ${serviceMosaic(locale)}
       <h2>${fancy(c.safetyTitle)}</h2>
       <p class="lead">${esc(c.safetyBody)}</p>
       ${tickList(safetyPoints(locale), 'check')}
-      <p><a class="btn btn-ghost" href="${url('safety', locale)}">${esc(fi ? 'Turvallisuus ja vakuutukset' : 'Safety and insurance')}</a></p>
+      <p><a class="btn btn-ghost" href="${url('safety', locale)}">${esc(w.safetyAndInsurance)}</a></p>
     </div>
-    ${figure('/assets/l-fleet-interior.jpg', fi
-    ? 'Auton keskikonsoli ja vaihteenvalitsin'
-    : 'The centre console and gear selector of a car')}
+    ${figure('/assets/l-fleet-interior.jpg', w.alt.interior)}
   </div>
 </section>
 
@@ -192,7 +186,7 @@ ${serviceMosaic(locale)}
   <div class="wrap">
     <div class="sec-head"><h2>${esc(t.faq)}</h2></div>
     ${faqList(homeFaq(locale))}
-    <p style="margin-top:18px"><a href="${url('faq', locale)}">${esc(fi ? 'Kaikki kysymykset' : 'All questions')} →</a></p>
+    <p style="margin-top:18px"><a href="${url('faq', locale)}">${esc(w.allQuestions)} →</a></p>
     <div style="margin-top:30px">${coverageBlock(locale)}</div>
   </div>
 </section>
@@ -230,7 +224,7 @@ function bareFrom(key) {
 function quickStart(locale) {
   const q = home[locale].quick;
   const t = ui[locale];
-  const fi = locale === 'fi';
+  const w = words[locale];
   const appointment = servicesOfType('appointment_run').filter((k) => !isGated(byKey[k]));
   const options = [`<option value="relocation" data-from="${esc(bareFrom('relocation'))}">${esc(q.moveOption)}</option>`]
     .concat(appointment.map((k) => `<option value="${k}" data-from="${esc(bareFrom(k))}">${esc(byKey[k][locale].nav)}</option>`))
@@ -239,19 +233,19 @@ function quickStart(locale) {
   return `<form class="quick-start reveal" id="quick-start" action="${t.bookHref}" method="get">
     <h2>${fancy(q.title)}</h2>
     <p class="qs-from">${esc(q.from)} <b id="qs-from-price">${esc(bareFrom('relocation'))}</b></p>
-    <input type="hidden" name="${fi ? 'lahde' : 'source'}" value="home_quick">
+    <input type="hidden" name="${w.params.source}" value="home_quick">
     <div class="qs-field">
       <label for="qs-service">${esc(q.service)}</label>
-      <select id="qs-service" name="${fi ? 'palvelu' : 'service'}">${options}</select>
+      <select id="qs-service" name="${w.params.service}">${options}</select>
     </div>
     <div class="qs-field">
       <label for="qs-pickup">${esc(q.pickup)}</label>
-      <input type="text" id="qs-pickup" name="${fi ? 'nouto' : 'pickup'}"
+      <input type="text" id="qs-pickup" name="${w.params.pickup}"
              autocomplete="street-address" placeholder="${esc(q.pickupPlaceholder)}">
     </div>
     <div class="qs-field">
       <label for="qs-date">${esc(q.date)}</label>
-      <input type="date" id="qs-date" name="${fi ? 'pvm' : 'date'}">
+      <input type="date" id="qs-date" name="${w.params.date}">
     </div>
     <button class="btn btn-accent" type="submit">${esc(q.submit)} <span class="arrow" aria-hidden="true">→</span></button>
     <div class="qs-foot">
@@ -285,7 +279,7 @@ const MOSAIC = [
 function serviceMosaic(locale) {
   const c = home[locale].mosaic;
   const t = ui[locale];
-  const fi = locale === 'fi';
+  const w = words[locale];
   const tiles = MOSAIC.filter((m) => !isGated(byKey[m.key])).map((m) => {
     const s = byKey[m.key][locale];
     const photo = `/assets/service-heroes/card/${serviceHeroImages[m.key]}`;
@@ -313,7 +307,7 @@ function serviceMosaic(locale) {
       <h2>${fancy(c.title)}</h2>
       <div>
         <p>${esc(c.intro)}</p>
-        <p class="svc-mosaic-link"><a href="${t.bookHref}?${fi ? 'lahde' : 'source'}=home_services">${esc(t.requestMove)} →</a></p>
+        <p class="svc-mosaic-link"><a href="${t.bookHref}?${w.params.source}=home_services">${esc(t.requestMove)} →</a></p>
       </div>
     </div>
     <ul class="svc-mosaic">
@@ -321,7 +315,7 @@ function serviceMosaic(locale) {
     </ul>
     <div class="svc-mosaic-foot">
       <span class="svc-mosaic-label">${esc(t.coverage)}</span>
-      <span>${esc(brand.coverage.join(' · '))}</span>
+      <span>${esc(words[locale].cities.join(' · '))}</span>
       <a href="${url('services', locale)}">${esc(t.allServices)} →</a>
     </div>
   </div>
@@ -340,19 +334,7 @@ function figure(src, alt) {
  * the page behind it carries the full picture, gates included.
  */
 function safetyPoints(locale) {
-  return locale === 'fi'
-    ? [
-      'Aikaleimatut kuvat noudossa ja palautuksessa',
-      'Mittarilukema sekä polttoaine- tai lataustaso kirjataan',
-      'Luovutuksen aika, paikka ja vastaanottaja tallennetaan',
-      'Kerromme avoimesti, mitkä lupa- ja vakuutusasiat ovat vielä kesken',
-    ]
-    : [
-      'Timestamped photos at collection and at return',
-      'Mileage and fuel or charge level recorded',
-      'Handover time, place and receiver logged',
-      'We state plainly which licensing and insurance items are still open',
-    ];
+  return words[locale].safetyPoints;
 }
 
 function homeFaq(locale) {
@@ -417,8 +399,8 @@ function renderService(service, locale) {
   const path = serviceUrl(service.key, locale);
   const heroImage = serviceHeroImages[service.key];
   const bookHref = service.category === 'business'
-    ? `${t.bookHref}?${locale === 'fi' ? 'palvelu' : 'service'}=business`
-    : `${t.bookHref}?${locale === 'fi' ? 'palvelu' : 'service'}=${service.key}`;
+    ? `${t.bookHref}?${words[locale].params.service}=business`
+    : `${t.bookHref}?${words[locale].params.service}=${service.key}`;
 
   const body = `
 <!-- Operational note (${service.key}): ${esc(service.devNote)} -->
@@ -433,15 +415,15 @@ function renderService(service, locale) {
     <p class="lead">${esc(c.lead)}</p>
     <div class="hero-ctas" style="margin-top:24px">
       ${gated
-    ? `<a class="btn btn-ghost" href="mailto:${brand.email}?subject=${encodeURIComponent(c.nav)}">${esc(locale === 'fi' ? 'Ilmoita kiinnostuksesi' : 'Register interest')}</a>`
+    ? `<a class="btn btn-ghost" href="mailto:${brand.email}?subject=${encodeURIComponent(c.nav)}">${esc(words[locale].registerInterest)}</a>`
     : `<a class="btn btn-primary" href="${bookHref}">${esc(t.requestPrice)}</a>`}
       <a class="btn btn-ghost" href="tel:${brand.phoneHref}">${esc(t.callUs)} ${esc(brand.phone)}</a>
     </div>
     <div class="meta-row">
       <span><b>${esc(t.price)}:</b> ${esc(fromPrice(service.key, locale))}</span>
       ${gated ? '' : `<span><b>${esc(t.passengers)}:</b> ${esc(withPassengers ? t.withPassengers : t.noPassengerShort)}</span>`}
-      <span><b>${esc(locale === 'fi' ? 'Ajanvaraus' : 'Appointment')}:</b> ${esc(appointmentLabel(service.appointment, locale))}</span>
-      <span><b>${esc(t.coverage)}:</b> ${esc(brand.coverage.join(', '))}</span>
+      <span><b>${esc(words[locale].appointment)}:</b> ${esc(appointmentLabel(service.appointment, locale))}</span>
+      <span><b>${esc(t.coverage)}:</b> ${esc(words[locale].cities.join(', '))}</span>
     </div>
 ${heroImage ? '    </div>\n' : ''}  </div>
 </section>
@@ -471,7 +453,7 @@ ${heroImage ? '    </div>\n' : ''}  </div>
     <div>
       <div class="sec-head"><h2>${esc(t.price)}</h2></div>
       <p class="prose">${esc(priceProse(service, locale))}</p>
-      <p style="margin-top:12px"><a href="${url('pricing', locale)}">${esc(locale === 'fi' ? 'Koko hinnasto' : 'Full price list')} →</a></p>
+      <p style="margin-top:12px"><a href="${url('pricing', locale)}">${esc(words[locale].fullPriceList)} →</a></p>
     </div>
 
     <div>
@@ -485,12 +467,10 @@ ${heroImage ? '    </div>\n' : ''}  </div>
 </section>
 
 ${ctaBand(locale, gated ? {
-    title: locale === 'fi' ? 'Kerro kiinnostuksestasi' : 'Register your interest',
-    body: locale === 'fi'
-      ? 'Ilmoitamme heti, kun lupa- ja vakuutusasiat on vahvistettu ja palvelu on varattavissa.'
-      : 'We will tell you as soon as the licensing and insurance position is confirmed and the service is bookable.',
+    title: words[locale].interestTitle,
+    body: words[locale].interestBody,
     primaryHref: `mailto:${brand.email}?subject=${encodeURIComponent(c.nav)}`,
-    primaryLabel: locale === 'fi' ? 'Lähetä sähköposti' : 'Send an email',
+    primaryLabel: words[locale].sendEmail,
   } : { primaryHref: bookHref })}
 `;
 
@@ -515,46 +495,22 @@ ${ctaBand(locale, gated ? {
 }
 
 function appointmentLabel(kind, locale) {
-  const map = {
-    fi: { required: 'Vaaditaan', recommended: 'Suositeltu', none: 'Ei tarvita', flight: 'Lennon tiedot', depends: 'Riippuu työstä' },
-    en: { required: 'Required', recommended: 'Recommended', none: 'Not needed', flight: 'Flight details', depends: 'Depends on the job' },
-  };
-  return map[locale][kind] || map[locale].depends;
+  const labels = words[locale].appointmentLabels;
+  return labels[kind] || labels.depends;
 }
 
 function priceProse(service, locale) {
-  const fi = locale === 'fi';
+  const w = words[locale].price;
   const name = service[locale].nav;
-  if (isGated(service)) {
-    return fi
-      ? `${name} ei ole vielä varattavissa, joten emme julkaise sille hintaa.`
-      : `${name} cannot be booked yet, so we do not publish a price for it.`;
-  }
-  if (SERVICE_PRODUCTS[service.key].type === 'passenger') {
-    return fi
-      ? `${name}: kiinteä tarjous. Hinta muodostuu reitistä, matkan kestosta, matkustajien määrästä ja kuljettajan paluusta, ja vahvistamme sen ennen matkaa. Polttoaine, lataus, tiemaksut ja pysäköinti kerrotaan tarjouksessa erikseen.`
-      : `${name}: a fixed quote. The price comes from the route, the duration, the number of passengers and the driver's return leg, and we confirm it before the trip. Fuel, charging, tolls and parking are stated separately in the quote.`;
-  }
-  const from = fromPrice(service.key, locale);
+  if (isGated(service)) return w.gated(name);
+  if (SERVICE_PRODUCTS[service.key].type === 'passenger') return w.journey(name);
+
   const range = typicalRange(service.key);
-  const toProvider = SERVICE_PRODUCTS[service.key].type === 'appointment_run';
-  if (fi) {
-    return [
-      `${name}: ${from}. Hinta sisältää arvonlisäveron.`,
-      range ? `Tyypillinen hinta pääkaupunkiseudulla on ${range[0]}–${range[1]} € reitin, ajankohdan ja odotuksen mukaan.` : '',
-      'Näet ohjeellisen hinnan hintapyyntölomakkeella heti ja vahvistamme kiinteän DriveMe-hinnan ennen kuljettajan lähtöä.',
-      toProvider
-        ? 'Palveluntarjoajan maksun, esimerkiksi katsastuksen tai huollon, maksat suoraan palveluntarjoajalle.'
-        : 'Mahdolliset polttoaine-, pysäköinti- ja tiemaksut kerrotaan tarjouksessa erikseen.',
-    ].filter(Boolean).join(' ');
-  }
   return [
-    `${name}: ${from}, VAT included.`,
-    range ? `A typical job in the capital region is ${range[0]}–${range[1]} €, depending on route, timing and waiting.` : '',
-    'You see an indicative price on the request form immediately, and we confirm a fixed DriveMe fee before the driver is sent.',
-    toProvider
-      ? 'The provider’s own charge, such as the inspection or the service, is paid directly to the provider.'
-      : 'Any fuel, parking or toll costs are stated separately in the quote.',
+    w.intro(name, fromPrice(service.key, locale)),
+    range ? w.typical(range[0], range[1]) : '',
+    w.indicative,
+    SERVICE_PRODUCTS[service.key].type === 'appointment_run' ? w.toProvider : w.ownCosts,
   ].filter(Boolean).join(' ');
 }
 
@@ -572,7 +528,7 @@ function renderBlockPage(id, def, locale, navKey) {
 </section>
 <section class="sec">
   <div class="wrap stack">
-    ${c.reviewNotice ? callout(locale === 'fi' ? 'Tarkastus kesken' : 'Review pending', c.reviewNotice, 'warn') : ''}
+    ${c.reviewNotice ? callout(words[locale].reviewPending, c.reviewNotice, 'warn') : ''}
     ${c.blocks.map((b) => renderBlock(b, locale)).join('\n')}
   </div>
 </section>
@@ -637,7 +593,7 @@ function renderContact(locale) {
   <div class="wrap">
     <div class="facts">
       <div class="fact">
-        <h3>${esc(locale === 'fi' ? 'Yhteys' : 'Get in touch')}</h3>
+        <h3>${esc(words[locale].getInTouch)}</h3>
         <dl class="contact-list">
           <div><dt>${esc(t.phoneLabel)}</dt><dd><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></dd></div>
           <div><dt>${esc(t.generalEmailLabel)}</dt><dd><a href="mailto:${brand.email}">${esc(brand.email)}</a></dd></div>
@@ -651,7 +607,7 @@ function renderContact(locale) {
       </div>
       <div class="fact">
         <h3>${esc(c.areaTitle)}</h3>
-        ${tickList(brand.coverage, 'check', c.areaNote)}
+        ${tickList(words[locale].cities, 'check', c.areaNote)}
       </div>
     </div>
     <div style="margin-top:26px">${disclaimerBlock(locale)}</div>
@@ -770,8 +726,7 @@ function robots() {
 Disallow: /admin
 Disallow: /track
 Disallow: /driver
-Disallow: /varaus/
-Disallow: /en/booking/
+${LOCALES.map((l) => `Disallow: ${url('booking', l)}`).join('\n')}
 
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy

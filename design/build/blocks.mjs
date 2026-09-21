@@ -8,7 +8,7 @@
  */
 
 import {
-  brand, ui, disclaimer, acknowledgements, eligibility as eligibilityCopy,
+  brand, ui, words, disclaimer, acknowledgements, eligibility as eligibilityCopy,
   refusal, cancellation, statusModel, launchGates, gateNotice, screening, trustStrip,
 } from '../content/site.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
@@ -71,8 +71,8 @@ export function fromPrice(serviceKey, locale) {
   const p = PRODUCTS[productKey];
   const t = ui[locale];
   // A passenger service is not sold, so it has no public price at all.
-  if (isServiceGated(serviceKey) || p?.hidden) return locale === 'fi' ? 'Ei vielä varattavissa' : 'Not yet bookable';
-  if (!p || p.quote) return locale === 'fi' ? 'Kiinteä tarjous' : 'Fixed quote';
+  if (isServiceGated(serviceKey) || p?.hidden) return words[locale].notBookable;
+  if (!p || p.quote) return words[locale].fixedQuote;
   if (p.unit === 'hour') return `${money(p.from)}/h`;
   return `${t.priceFrom} ${money(p.from)}`;
 }
@@ -125,7 +125,7 @@ export function serviceCards(keys, locale, { showPrice = true } = {}) {
     const s = byKey[k];
     const c = s[locale];
     const gated = isGated(s);
-    const tag = gated ? `<span class="tag">${locale === 'fi' ? 'Ei vielä varattavissa' : 'Not yet bookable'}</span>` : '';
+    const tag = gated ? `<span class="tag">${words[locale].notBookable}</span>` : '';
     const price = showPrice && !gated ? `<span class="from">${esc(fromPrice(k, locale))}</span>` : '';
     return `<li class="card">
       <span class="icon">${icon(s.icon)}</span>
@@ -197,10 +197,7 @@ export function cancellationBlock(locale, id) {
 }
 
 export function ackList(locale) {
-  return tickList(acknowledgements[locale], 'check',
-    locale === 'fi'
-      ? 'Käymme nämä läpi kanssasi ennen kuin varaus vahvistetaan.'
-      : 'We go through these with you before the booking is confirmed.');
+  return tickList(acknowledgements[locale], 'check', words[locale].ackNote);
 }
 
 export function eligibilityBlock(locale) {
@@ -233,11 +230,17 @@ const GATE_COPY = {
     driverScreening: ['Driver screening', 'We state only the checks we can lawfully carry out and document. We do not publish broad criminal or driving-record claims before counsel and data-protection guidance approve the exact checks.'],
     consumerTerms: ['Consumer terms and cancellation', 'Finnish counsel reviews distance-selling information, cancellation rights, liability, complaints and price changes. Terms cannot remove mandatory consumer rights.'],
   },
+  sv: {
+    passengerTransport: ['Persontransport i kundens egen bil', 'Enligt Traficom kräver kommersiell persontransport med personbil taxitrafiktillstånd, taxiförarlegitimation för föraren och att fordonet är registrerat för tillståndspliktig användning. Vi marknadsför inte förartjänsten som tillgänglig innan vi skriftligt har bekräftat hur detta gäller körning i kundens egen bil.'],
+    custodyInsurance: ['Försäkring för kundens bil i DriveMes vård', 'Trafikförsäkringen ersätter inte skador på det försäkrade fordonet självt. Vi skaffar ett separat skydd för bilar som körs eller förvaras av oss, för förlorade nycklar, stöld och parkeringsskador. Vi använder ordet "försäkrad" först när formuleringen motsvarar försäkringsvillkoren.'],
+    driverScreening: ['Bakgrundskontroll av förare', 'Vi berättar bara om de kontroller vi lagligt kan göra och dokumentera. Vi publicerar inga allmänt hållna påståenden om brotts- eller körhistorik innan jurist och dataskyddsanvisningar har godkänt kontrollernas innehåll.'],
+    consumerTerms: ['Konsumentvillkor och ångerrätt', 'En finsk jurist granskar informationen om distansförsäljning, ångerrätten, ansvaret, reklamationerna och prisförändringarna. Villkoren kan inte ta bort tvingande konsumenträttigheter.'],
+  },
 };
 
 export function gateList(locale) {
-  const cleared = locale === 'fi' ? 'Vahvistettu' : 'Cleared';
-  const waiting = locale === 'fi' ? 'Odottaa vahvistusta' : 'Awaiting confirmation';
+  const cleared = words[locale].gateCleared;
+  const waiting = words[locale].gateWaiting;
   return `<div class="gates">${Object.entries(launchGates).map(([key, gate]) => {
     const [title, body] = GATE_COPY[locale][key];
     return `<div class="gate ${gate.live ? 'cleared' : 'open'}">
@@ -248,27 +251,25 @@ export function gateList(locale) {
 }
 
 export function gateNoticeBlock(locale) {
-  return `<div class="callout warn"><h3>${esc(locale === 'fi' ? 'Palvelu ei ole vielä varattavissa' : 'Not yet bookable')}</h3><p>${esc(gateNotice[locale])}</p></div>`;
+  return `<div class="callout warn"><h3>${esc(words[locale].gateNoticeTitle)}</h3><p>${esc(gateNotice[locale])}</p></div>`;
 }
 
 export function companyBlock(locale) {
-  const fi = locale === 'fi';
+  const w = words[locale];
   const lines = [
-    (fi ? 'Palveluntarjoaja: ' : 'Service provider: ') + brand.legalName + ' (DriveMe)',
-    ...(brand.businessId ? [(fi ? 'Y-tunnus: ' : 'Business ID: ') + brand.businessId] : []),
-    fi ? 'Kotipaikka: Helsinki, Suomi' : 'Domicile: Helsinki, Finland',
-    (fi ? 'Puhelin: ' : 'Phone: ') + brand.phone,
-    (fi ? 'Sähköposti: ' : 'Email: ') + brand.email,
-    (fi ? 'Palvelualue: ' : 'Service area: ') + brand.coverage.join(', '),
+    w.companyProvider + brand.legalName + ' (DriveMe)',
+    ...(brand.businessId ? [w.companyBusinessId + brand.businessId] : []),
+    w.companyDomicile,
+    w.companyPhone + brand.phone,
+    w.companyEmail + brand.email,
+    w.companyArea + w.cities.join(', '),
   ];
   return tickList(lines, 'plain');
 }
 
 export function coverageBlock(locale) {
   const t = ui[locale];
-  const body = locale === 'fi'
-    ? `Palvelemme tällä hetkellä alueilla ${brand.coverage.join(', ')}. Pidemmät siirrot hinnoittelemme tapauskohtaisesti.`
-    : `We currently serve ${brand.coverage.join(', ')}. Longer moves are priced individually.`;
+  const body = words[locale].coverageBody(words[locale].cities.join(', '));
   return `<div><h2>${esc(t.coverage)}</h2><p class="prose" style="margin-top:10px">${esc(body)}</p></div>`;
 }
 
@@ -278,9 +279,7 @@ export function ctaBand(locale, { title, body, primaryHref, primaryLabel, second
   <div class="wrap cta-inner">
     <div>
       <h2>${fancy(title || t.finalCta)}</h2>
-      <p>${esc(body || (locale === 'fi'
-    ? 'Kerro, mistä auto noudetaan ja minne se menee. Vahvistamme kiinteän hinnan ennen ajoa.'
-    : 'Tell us where the car is and where it needs to go. We confirm a fixed price before the drive.'))}</p>
+      <p>${esc(body || words[locale].ctaBody)}</p>
     </div>
     <div class="cta-actions">
       <a class="btn btn-light" href="${primaryHref || t.bookHref}">${esc(primaryLabel || t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a>

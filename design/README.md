@@ -21,7 +21,8 @@ design/                     ← the deploy root (see Deploying)
 ├── content/                the strategy document as data — edit copy HERE, not in HTML
 │   ├── site.mjs            brand, nav, coverage, disclaimer, acknowledgements, gates
 │   ├── services.mjs        the 12 service pages: copy, inclusions, exclusions, FAQ
-│   └── pages.mjs           home, hub, pricing, how-it-works, safety, FAQ, terms, contact
+│   ├── pages.mjs           home, hub, pricing, how-it-works, safety, FAQ, terms, contact
+│   └── sv/                 the Swedish wording, merged into the objects above
 ├── build/                  the generator (no framework, no runtime templating)
 │   ├── build.mjs           `npm run build` — writes the §8 URL architecture
 │   ├── routes.mjs          the single URL map: canonicals, hreflang, sitemap, links
@@ -31,7 +32,8 @@ design/                     ← the deploy root (see Deploying)
 ├── index.html              GENERATED homepage (§12.1 rebuild order)
 ├── palvelut/ … yrityksille/   GENERATED Finnish service + info pages
 ├── en/                     GENERATED English mirror
-├── varaus/, en/booking/    GENERATED request flow (noindex)
+├── sv/                     GENERATED Swedish mirror
+├── varaus/, en/booking/, sv/offert/   GENERATED request flow (noindex)
 ├── sitemap.xml, robots.txt, 404.html   GENERATED
 ├── legacy/index.html       archived pre-2026-09-08 concept homepage, noindex, /legacy
 ├── 02-driveme-light.html   older light copy, served at /light   (noindex)
@@ -163,6 +165,32 @@ old page instead of leaving an orphan behind.
 2. **Published prices and charged prices come from one file.** `api/_lib/pricing.js` is
    imported by the price list, the request form and the server-side quote. There is no
    second copy to drift.
+
+### Three languages
+
+`LOCALES` in `content/site.mjs` is `['fi', 'en', 'sv']`, and every page exists in all three:
+Finnish at the root, English under `/en/`, Swedish under `/sv/`. Swedish is an official
+language of Finland, so it is published rather than translated on demand.
+
+- **Where the words live.** Finnish and English sit side by side in each content object.
+  Swedish sits in `content/sv/` and is merged into those objects at the foot of
+  `content/site.mjs`, `content/services.mjs` and `content/pages.mjs`, so a Swedish speaker
+  can read and correct one document instead of hunting through three files. Adding a
+  service without Swedish copy fails the build rather than shipping a Finnish page under a
+  Swedish URL.
+- **Micro-copy.** The words the templates need (button labels, table headings, the query
+  parameters each language uses) live in the `words` map in `content/site.mjs`. A fourth
+  language means one more entry there, not a hunt for `locale === 'fi' ?` in `build/`.
+- **The switch.** `langSwitch()` in `build/layout.mjs` renders it twice: in the header, and
+  inside the phone menu where the header has no room. Both are built from `routes[id]`, so
+  every link points at *this* page in the other language - never back to the front page.
+- **Memory.** `assets/site.js` stores the language a visitor picks (`dm_lang`) and, on a
+  page in another language, offers a link to the same page in the remembered one. It never
+  redirects: the URL someone asked for is the URL they get, and each URL stays one language
+  for a crawler.
+- **Deep links.** Each language links into the request form in its own words
+  (`?palvelu=` / `?service=` / `?tjanst=`); `assets/booking.js` accepts all three spellings,
+  so an old or edited link keeps working.
 
 ## 0 · Maps, geocoding and routing
 
@@ -491,13 +519,13 @@ claims more than the company can evidence.
 - The **Y-tunnus** — set `brand.businessId` in `content/site.mjs` and it appears on `/ehdot/`
   and in the LocalBusiness schema.
 - Review of the **test prices** (€89 / €149 / €169 / €99) against real demand.
+- A native speaker's **read-through of the Swedish** (`content/sv/`), in particular the terms,
+  the cancellation rules and the launch-gate wording. The copy was written for the site, not
+  machine-translated, but §8 still wants a human signature on the legal pages.
 - Exact live service area; which vehicles are accepted; who takes exception calls.
 
 ### Not built yet
 
-- **Swedish** (`/sv/`). §8 forbids machine-translating legal terms and service promises, so
-  the third locale waits for a human translation of `content/*.mjs`. No `sv-FI` hreflang is
-  emitted until then.
 - The §11.1 content backlog (12 articles) and city coverage pages — deliberately not
   stubbed, because thin city-name copies are what the document warns against.
 - Analytics events for form start / service selection / quote shown / request submitted, and

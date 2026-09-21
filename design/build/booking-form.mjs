@@ -25,6 +25,7 @@ import { PRODUCTS, WAITING, PREMIUMS, SERVICE_PRODUCTS, servicesOfType } from '.
 import { esc } from './layout.mjs';
 import { url, serviceUrl } from './routes.mjs';
 import { isGated } from './blocks.mjs';
+import { form as svForm } from '../content/sv/form.mjs';
 
 const WINDOWS = ['08-10', '10-12', '12-14', '14-16', '16-18', '18-20'];
 
@@ -255,6 +256,8 @@ const COPY = {
   },
 };
 
+COPY.sv = svForm;
+
 /* The asterisk is driven by the input's own `required`, so the marker cannot
    drift away from what validation actually enforces. Conditionally required
    fields start unmarked and booking.js toggles them. */
@@ -323,6 +326,7 @@ export function bookingForm(locale) {
       quoteManualNote: c.quoteManualNote, quoteNote: c.quoteNote, lines: c.lines,
       gatedTitle: c.gatedTitle, gatedBody: c.gatedBody,
       journeyLegend: c.journeyLegend, moveLegend: c.moveLegend,
+      doneRef: c.doneRef,
     },
     endpoint: '/api/bookings',
   };

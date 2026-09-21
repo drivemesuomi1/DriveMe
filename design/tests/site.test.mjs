@@ -14,9 +14,9 @@ import { readFile, access } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { allPages, fileFor, url, serviceUrl } from '../build/routes.mjs';
+import { allPages, fileFor, url, serviceUrl, routes } from '../build/routes.mjs';
 import { services } from '../content/services.mjs';
-import { ui } from '../content/site.mjs';
+import { ui, words, LOCALES } from '../content/site.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
 import { PRODUCTS, SERVICE_PRODUCTS } from '../api/_lib/pricing.js';
 
@@ -60,6 +60,7 @@ test('indexable pages carry a self-referencing canonical and hreflang alternates
       `${p.path} lacks a self-referencing canonical`);
     assert.match(html, /hreflang="fi-FI"/, `${p.path} lacks the fi alternate`);
     assert.match(html, /hreflang="en-FI"/, `${p.path} lacks the en alternate`);
+    assert.match(html, /hreflang="sv-FI"/, `${p.path} lacks the sv alternate`);
     assert.match(html, /hreflang="x-default"/, `${p.path} lacks x-default`);
   }
 });
@@ -118,7 +119,7 @@ test('the homepage leads with a driver for the customer\'s own car', async () =>
 });
 
 test('the journey service is offered everywhere a service is listed', async () => {
-  for (const locale of ['fi', 'en']) {
+  for (const locale of LOCALES) {
     const href = `href="${serviceUrl('journey', locale)}"`;
     const html = await read(fileFor(url('home', locale)));
     const main = /<main id="main">([\s\S]*)<\/main>/.exec(html)[1];
@@ -134,16 +135,16 @@ test('the journey service is offered everywhere a service is listed', async () =
     // Quoted per route, so no page may publish a starting price for it.
     const page = await read(fileFor(serviceUrl('journey', locale)));
     const pageMain = /<main id="main">([\s\S]*)<\/main>/.exec(page)[1];
-    assert.equal(/alkaen \d+ €|from \d+ €/.test(pageMain), false, `${locale}: journey page publishes a price`);
+    assert.equal(new RegExp(`${ui[locale].priceFrom} \d+ €`).test(pageMain), false, `${locale}: journey page publishes a price`);
     assert.ok(page.includes(escapeHtml(ui[locale].withPassengers)), `${locale}: journey page should say who travels`);
     assert.equal(page.includes(escapeHtml(ui[locale].noPassenger)), false, `${locale}: journey page still says nobody travels`);
-    assert.ok(page.includes(`href="/${locale === 'fi' ? 'varaus' : 'en/booking'}/?${locale === 'fi' ? 'palvelu' : 'service'}=journey"`),
+    assert.ok(page.includes(`href="${url('booking', locale)}?${words[locale].params.service}=journey"`),
       `${locale}: journey page has no request CTA`);
   }
 });
 
 test('the request form offers only what is sold now, and is short', async () => {
-  for (const locale of ['fi', 'en']) {
+  for (const locale of LOCALES) {
     const html = await read(fileFor(url('booking', locale)));
 
     const select = /<select id="service" name="service"[^>]*>([\s\S]*?)<\/select>/.exec(html)[1];
@@ -175,7 +176,7 @@ test('the request form offers only what is sold now, and is short', async () => 
 
 test('the third-party boundary is stated on every service page', async () => {
   for (const s of services) {
-    for (const locale of ['fi', 'en']) {
+    for (const locale of LOCALES) {
       const html = await read(fileFor(serviceUrl(s.key, locale)));
       const boundary = s[locale].boundary.slice(0, 40);
       assert.ok(html.includes(escapeHtml(boundary)),
@@ -187,7 +188,7 @@ test('the third-party boundary is stated on every service page', async () => {
 test('every sold service page says the customer does not travel and shows its price', async () => {
   for (const key of soldKeys) {
     const product = PRODUCTS[SERVICE_PRODUCTS[key].default];
-    for (const locale of ['fi', 'en']) {
+    for (const locale of LOCALES) {
       const html = await read(fileFor(serviceUrl(key, locale)));
       assert.ok(html.includes(escapeHtml(ui[locale].noPassenger)), `${key} (${locale}) lacks the no-passenger statement`);
       assert.ok(html.includes(`${ui[locale].priceFrom} ${product.from} €`), `${key} (${locale}) lacks its starting price`);
@@ -210,12 +211,12 @@ test('prices agree across the price list, the service pages and the schema', asy
 
 test('a gated service offers no booking CTA, no price and says why', async () => {
   for (const key of gatedKeys) {
-    for (const locale of ['fi', 'en']) {
+    for (const locale of LOCALES) {
       const html = await read(fileFor(serviceUrl(key, locale)));
-      assert.equal(html.includes(`href="/varaus/?palvelu=${key}"`), false,
-        `${key} (${locale}) links to the booking form while gated`);
-      assert.equal(html.includes(`href="/en/booking/?service=${key}"`), false,
-        `${key} (${locale}) links to the booking form while gated`);
+      for (const l of LOCALES) {
+        assert.equal(html.includes(`href="${url('booking', l)}?${words[l].params.service}=${key}"`), false,
+          `${key} (${locale}) links to the booking form while gated`);
+      }
       assert.match(html, /(odottaa viranomais|awaiting regulatory)/i,
         `${key} (${locale}) does not say it is awaiting clearance`);
       assert.equal(html.includes('"offers"'), false, `${key} (${locale}) schema claims a bookable offer`);
@@ -254,9 +255,12 @@ test('the sitemap lists every indexable page and no noindex one', async () => {
 
 test('robots.txt keeps operational surfaces out and lets AI search in', async () => {
   const txt = await read('robots.txt');
-  for (const path of ['/admin', '/track', '/driver', '/varaus/', '/legacy']) {
+  for (const path of ['/admin', '/track', '/driver', '/legacy', ...LOCALES.map((l) => url('booking', l))]) {
     assert.ok(txt.includes(`Disallow: ${path}`), `robots.txt does not disallow ${path}`);
   }
+  // The host blocks it too, so a form URL that leaks is noindex either way.
+  const netlify = await read('netlify.toml');
+  for (const l of LOCALES) assert.ok(netlify.includes(`for = "${url('booking', l)}*"`), `netlify.toml does not noindex the ${l} form`);
   assert.match(txt, /User-agent: OAI-SearchBot\nAllow: \//);
   assert.ok(txt.includes('Sitemap: https://driveme.fi/sitemap.xml'));
 });
@@ -300,7 +304,7 @@ test('the footer lists both email addresses with their purpose', async () => {
     const foot = /<footer class="site-foot">([\s\S]*?)<\/footer>/.exec(html)[1];
     assert.ok(foot.includes('href="mailto:asiakaspalvelu@driveme.fi"'), `${p.path} footer lacks the customer-service email`);
     assert.ok(foot.includes('href="mailto:info@driveme.fi"'), `${p.path} footer lacks info@driveme.fi`);
-    assert.match(foot, p.locale === 'fi' ? /<dt>Asiakaspalvelu<\/dt>/ : /<dt>Customer service<\/dt>/, `${p.path} footer label`);
+    assert.ok(foot.includes(`<dt>${escapeHtml(ui[p.locale].serviceEmailLabel)}</dt>`), `${p.path} footer label`);
   }
   const contact = await read(fileFor(url('contact', 'fi')));
   assert.ok(contact.includes('<dt>Asiakaspalvelu</dt><dd><a href="mailto:asiakaspalvelu@driveme.fi">'), 'contact page lists customer service');
@@ -308,8 +312,36 @@ test('the footer lists both email addresses with their purpose', async () => {
   assert.ok(home.includes('"contactType":"customer service","email":"asiakaspalvelu@driveme.fi"'), 'schema contact point');
 });
 
+test('every page offers all three languages and keeps you on the same page', async () => {
+  for (const p of pages) {
+    const html = await read(fileFor(p.path));
+    const head = /<header class="site-head">([\s\S]*?)<\/header>/.exec(html)[1];
+    assert.match(html, new RegExp(`<html lang="${p.locale}">`), `${p.path} is not marked as ${p.locale}`);
+    // The service area is named in the page's own language: Helsingfors, not Helsinki.
+    const cities = words[p.locale].cities.join(' · ');
+    assert.ok(html.includes(`<p class="topbar-note">${cities}</p>`), `${p.path} names the area in another language`);
+    assert.ok(html.includes(`<p class="foot-area">${cities}</p>`), `${p.path} footer names the area in another language`);
+
+    // The header switch and the copy inside the phone menu, both complete.
+    for (const cls of ['lang-head', 'lang-sheet']) {
+      const at = head.indexOf(`<nav class="lang ${cls}"`);
+      assert.ok(at >= 0, `${p.path} has no ${cls} language switch`);
+      const sw = head.slice(at, head.indexOf(`</nav>`, at));
+      for (const l of LOCALES) {
+        assert.ok(sw.includes(`data-lang="${l}"`), `${p.path} (${cls}) does not offer ${l}`);
+      }
+      assert.ok(sw.includes(`lang="${p.locale}" data-lang="${p.locale}" aria-label`), `${p.path} (${cls}) marks no current language`);
+      // Same page, other language - not a dump back to the front page.
+      const target = routes[p.id] ? routes[p.id] : null;
+      if (target) {
+        for (const l of LOCALES) assert.ok(sw.includes(`href="${target[l]}"`), `${p.path} (${cls}) sends ${l} elsewhere`);
+      }
+    }
+  }
+});
+
 test('the homepage shows every sold service as a photo tile right under the hero', async () => {
-  for (const locale of ['fi', 'en']) {
+  for (const locale of LOCALES) {
     const html = await read(fileFor(url('home', locale)));
     const heroEnd = html.indexOf('</section>', html.indexOf('<section class="hero">'));
     const mosaicAt = html.indexOf('<section class="sec sec-navy svc-mosaic-sec">');

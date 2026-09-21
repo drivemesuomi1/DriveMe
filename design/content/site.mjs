@@ -8,14 +8,14 @@
  * First Growth Plan, 13 September 2026): the site sells a driver for the
  * customer's own car, with nobody travelling in it.
  *
- * Finnish is the primary market language (§8). English mirrors it under /en/.
- * Swedish is deliberately NOT generated yet: §8 forbids machine-translating
- * legal terms and service promises, so /sv/ waits for a human translation of
- * this file. Until then no sv-FI hreflang is emitted - a broken alternate is
- * worse than a missing one.
+ * Finnish is the primary market language (§8). English mirrors it under /en/
+ * and Swedish under /sv/ - Swedish is an official language of Finland, so the
+ * site is published in it rather than translated on demand. The Swedish copy
+ * lives in content/sv/ so a Swedish speaker can read and correct it as one
+ * document; it is merged into these objects at the foot of this file.
  */
 
-export const LOCALES = ['fi', 'en'];
+export const LOCALES = ['fi', 'en', 'sv'];
 export const DEFAULT_LOCALE = 'fi';
 
 export const ORIGIN = 'https://driveme.fi';
@@ -342,4 +342,147 @@ export const footer = {
     company: 'Mansio Group Oy · Helsinki, Finland',
     note: 'DriveMe is a service of Mansio Group Oy. DriveMe is not a workshop, inspection station, tyre shop, car wash, insurer or payment intermediary.',
   },
+};
+
+/* ==========================================================================
+   Swedish
+   ==========================================================================
+   Merged rather than interleaved: content/sv/ holds the Swedish wording as
+   one readable document, and these assignments give every object its `sv`
+   alongside `fi` and `en`. */
+import * as SV from './sv/site.mjs';
+
+Object.assign(nav, { sv: SV.nav });
+Object.assign(menuGroups, { sv: SV.menuGroups });
+Object.assign(ui, { sv: SV.ui });
+Object.assign(disclaimer, { sv: SV.disclaimer });
+Object.assign(acknowledgements, { sv: SV.acknowledgements });
+Object.assign(eligibility, { sv: SV.eligibility });
+Object.assign(refusal, { sv: SV.refusal });
+Object.assign(trustStrip, { sv: SV.trustStrip });
+Object.assign(howItWorks, { sv: SV.howItWorks });
+Object.assign(statusModel, { sv: SV.statusModel });
+Object.assign(cancellation, { sv: SV.cancellation });
+Object.assign(gateNotice, { sv: SV.gateNotice });
+Object.assign(screening, { sv: SV.screening });
+Object.assign(footer, { sv: SV.footer });
+
+/**
+ * Micro-copy the page templates need: the words that used to sit inline in
+ * build/ as `locale === 'fi' ? ... : ...`, which cannot express a third
+ * language.
+ */
+export const words = {
+  fi: {
+    // The service area in this language: the Swedish page says Helsingfors.
+    cities: brand.coverage,
+    notBookable: 'Ei vielä varattavissa',
+    fixedQuote: 'Kiinteä tarjous',
+    ackNote: 'Käymme nämä läpi kanssasi ennen kuin varaus vahvistetaan.',
+    gateCleared: 'Vahvistettu',
+    gateWaiting: 'Odottaa vahvistusta',
+    gateNoticeTitle: 'Palvelu ei ole vielä varattavissa',
+    companyProvider: 'Palveluntarjoaja: ',
+    companyBusinessId: 'Y-tunnus: ',
+    companyDomicile: 'Kotipaikka: Helsinki, Suomi',
+    companyPhone: 'Puhelin: ',
+    companyEmail: 'Sähköposti: ',
+    companyArea: 'Palvelualue: ',
+    coverageBody: (areas) => `Palvelemme tällä hetkellä alueilla ${areas}. Pidemmät siirrot hinnoittelemme tapauskohtaisesti.`,
+    ctaBody: 'Kerro, mistä auto noudetaan ja minne se menee. Vahvistamme kiinteän hinnan ennen ajoa.',
+    registerInterest: 'Ilmoita kiinnostuksesi',
+    interestTitle: 'Kerro kiinnostuksestasi',
+    interestBody: 'Ilmoitamme heti, kun lupa- ja vakuutusasiat on vahvistettu ja palvelu on varattavissa.',
+    sendEmail: 'Lähetä sähköposti',
+    appointment: 'Ajanvaraus',
+    fullPriceList: 'Koko hinnasto',
+    allQuestions: 'Kaikki kysymykset',
+    safetyAndInsurance: 'Turvallisuus ja vakuutukset',
+    reviewPending: 'Tarkastus kesken',
+    getInTouch: 'Yhteys',
+    information: 'Tietoa',
+    params: { source: 'lahde', service: 'palvelu', pickup: 'nouto', date: 'pvm', type: 'tyyppi' },
+    typeValues: { move: 'siirto', service: 'palvelu', journey: 'matka' },
+    typicalShort: (a, b) => `Tyypillisesti ${a}–${b} €`,
+    safetyPoints: [
+      'Aikaleimatut kuvat noudossa ja palautuksessa',
+      'Mittarilukema sekä polttoaine- tai lataustaso kirjataan',
+      'Luovutuksen aika, paikka ja vastaanottaja tallennetaan',
+      'Kerromme avoimesti, mitkä lupa- ja vakuutusasiat ovat vielä kesken',
+    ],
+    price: {
+      gated: (name) => `${name} ei ole vielä varattavissa, joten emme julkaise sille hintaa.`,
+      journey: (name) => `${name}: kiinteä tarjous. Hinta muodostuu reitistä, matkan kestosta, matkustajien määrästä ja kuljettajan paluusta, ja vahvistamme sen ennen matkaa. Polttoaine, lataus, tiemaksut ja pysäköinti kerrotaan tarjouksessa erikseen.`,
+      intro: (name, from) => `${name}: ${from}. Hinta sisältää arvonlisäveron.`,
+      typical: (a, b) => `Tyypillinen hinta pääkaupunkiseudulla on ${a}–${b} € reitin, ajankohdan ja odotuksen mukaan.`,
+      indicative: 'Näet ohjeellisen hinnan hintapyyntölomakkeella heti ja vahvistamme kiinteän DriveMe-hinnan ennen kuljettajan lähtöä.',
+      toProvider: 'Palveluntarjoajan maksun, esimerkiksi katsastuksen tai huollon, maksat suoraan palveluntarjoajalle.',
+      ownCosts: 'Mahdolliset polttoaine-, pysäköinti- ja tiemaksut kerrotaan tarjouksessa erikseen.',
+    },
+    appointmentLabels: {
+      required: 'Vaaditaan', recommended: 'Suositeltu', none: 'Ei tarvita',
+      flight: 'Lennon tiedot', depends: 'Riippuu työstä',
+    },
+    alt: {
+      handover: 'Kuljettaja ajaa asiakkaan autoa yksin',
+      corporate: 'DriveMen kuljettaja ja yritysasiakas luovuttamassa autoa',
+      interior: 'Auton keskikonsoli ja vaihteenvalitsin',
+    },
+  },
+  en: {
+    cities: brand.coverage,
+    notBookable: 'Not yet bookable',
+    fixedQuote: 'Fixed quote',
+    ackNote: 'We go through these with you before the booking is confirmed.',
+    gateCleared: 'Cleared',
+    gateWaiting: 'Awaiting confirmation',
+    gateNoticeTitle: 'Not yet bookable',
+    companyProvider: 'Service provider: ',
+    companyBusinessId: 'Business ID: ',
+    companyDomicile: 'Domicile: Helsinki, Finland',
+    companyPhone: 'Phone: ',
+    companyEmail: 'Email: ',
+    companyArea: 'Service area: ',
+    coverageBody: (areas) => `We currently serve ${areas}. Longer moves are priced individually.`,
+    ctaBody: 'Tell us where the car is and where it needs to go. We confirm a fixed price before the drive.',
+    registerInterest: 'Register interest',
+    interestTitle: 'Register your interest',
+    interestBody: 'We will tell you as soon as the licensing and insurance position is confirmed and the service is bookable.',
+    sendEmail: 'Send an email',
+    appointment: 'Appointment',
+    fullPriceList: 'Full price list',
+    allQuestions: 'All questions',
+    safetyAndInsurance: 'Safety and insurance',
+    reviewPending: 'Review pending',
+    getInTouch: 'Get in touch',
+    information: 'Information',
+    params: { source: 'source', service: 'service', pickup: 'pickup', date: 'date', type: 'type' },
+    typeValues: { move: 'move', service: 'service', journey: 'journey' },
+    typicalShort: (a, b) => `Typically ${a}–${b} €`,
+    safetyPoints: [
+      'Timestamped photos at collection and at return',
+      'Mileage and fuel or charge level recorded',
+      'Handover time, place and receiver logged',
+      'We state plainly which licensing and insurance items are still open',
+    ],
+    price: {
+      gated: (name) => `${name} cannot be booked yet, so we do not publish a price for it.`,
+      journey: (name) => `${name}: a fixed quote. The price comes from the route, the duration, the number of passengers and the driver's return leg, and we confirm it before the trip. Fuel, charging, tolls and parking are stated separately in the quote.`,
+      intro: (name, from) => `${name}: ${from}, VAT included.`,
+      typical: (a, b) => `A typical job in the capital region is ${a}–${b} €, depending on route, timing and waiting.`,
+      indicative: 'You see an indicative price on the request form immediately, and we confirm a fixed DriveMe fee before the driver is sent.',
+      toProvider: 'The provider\u2019s own charge, such as the inspection or the service, is paid directly to the provider.',
+      ownCosts: 'Any fuel, parking or toll costs are stated separately in the quote.',
+    },
+    appointmentLabels: {
+      required: 'Required', recommended: 'Recommended', none: 'Not needed',
+      flight: 'Flight details', depends: 'Depends on the job',
+    },
+    alt: {
+      handover: 'A driver alone at the wheel of a customer\u2019s car',
+      corporate: 'A DriveMe driver and business customer handing over a vehicle',
+      interior: 'The centre console and gear selector of a car',
+    },
+  },
+  sv: SV.words,
 };

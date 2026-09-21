@@ -244,4 +244,59 @@
       }));
     }
   } catch (e) { /* storage blocked: attribution is lost, nothing else is */ }
+
+  /* ------------------------------------------------ language memory ---
+     A visitor who switches to Swedish should not have to switch again on the
+     next page they open from Google. We remember the language they chose and
+     offer it - we never redirect: the page someone asked for is the page they
+     get, and a crawler sees one language per URL.
+
+     The offer is built from the switch itself, so it always points at this
+     same page in the other language. */
+  try {
+    var LKEY = 'dm_lang';
+    var HIDE = 'dm_lang_hint_off';
+    var OFFER = {
+      fi: { text: 'Jatka suomeksi', close: 'Sulje' },
+      en: { text: 'Continue in English', close: 'Dismiss' },
+      sv: { text: 'Fortsätt på svenska', close: 'Stäng' },
+    };
+    var links = document.querySelectorAll('.lang a[data-lang]');
+    for (var i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', function () {
+        try {
+          localStorage.setItem(LKEY, this.getAttribute('data-lang'));
+          sessionStorage.removeItem(HIDE);
+        } catch (e) { /* nothing to remember, the link still works */ }
+      });
+    }
+
+    var here = document.documentElement.getAttribute('lang');
+    var saved = localStorage.getItem(LKEY);
+    var hint = document.getElementById('lang-hint');
+    if (hint && saved && saved !== here && OFFER[saved] && !sessionStorage.getItem(HIDE)) {
+      var target = document.querySelector('.lang-head a[data-lang="' + saved + '"]')
+        || document.querySelector('.lang a[data-lang="' + saved + '"]');
+      if (target) {
+        var wrap = document.createElement('div');
+        wrap.className = 'wrap';
+        var a = document.createElement('a');
+        a.href = target.getAttribute('href');
+        a.setAttribute('lang', saved);
+        a.setAttribute('hreflang', target.getAttribute('hreflang') || saved);
+        a.textContent = OFFER[saved].text + ' →';
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.textContent = OFFER[saved].close;
+        close.addEventListener('click', function () {
+          hint.hidden = true;
+          try { sessionStorage.setItem(HIDE, '1'); } catch (e) { /* one more bar this visit */ }
+        });
+        wrap.appendChild(a);
+        wrap.appendChild(close);
+        hint.appendChild(wrap);
+        hint.hidden = false;
+      }
+    }
+  } catch (e) { /* storage blocked: the switch in the header still works */ }
 }());

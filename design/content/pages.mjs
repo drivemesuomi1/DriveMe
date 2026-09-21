@@ -807,4 +807,16 @@ export const booking = {
   },
 };
 
+/* Swedish, from content/sv/pages.mjs. */
+import * as SV from './sv/pages.mjs';
+Object.assign(home, { sv: SV.home });
+Object.assign(servicesHub, { sv: SV.servicesHub });
+Object.assign(pricing, { sv: SV.pricing });
+Object.assign(howPage, { sv: SV.howPage });
+Object.assign(safety, { sv: SV.safety });
+Object.assign(faqPage, { sv: SV.faqPage });
+Object.assign(terms, { sv: SV.terms });
+Object.assign(contact, { sv: SV.contact });
+Object.assign(booking, { sv: SV.booking });
+
 export { CANCELLATION };

@@ -8,7 +8,7 @@
  * keyboard-operable header with a skip link.
  */
 
-import { ORIGIN, brand, nav, headerNav, ui, footer as footerContent, menuGroups, LOCALES } from '../content/site.mjs';
+import { ORIGIN, brand, nav, headerNav, ui, words, footer as footerContent, menuGroups, LOCALES } from '../content/site.mjs';
 import { byKey, services } from '../content/services.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
 import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
@@ -19,7 +19,8 @@ export const esc = (s) => String(s ?? '')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 const abs = (path) => `${ORIGIN}${path}`;
-const HREFLANG = { fi: 'fi-FI', en: 'en-FI' };
+const HREFLANG = { fi: 'fi-FI', en: 'en-FI', sv: 'sv-FI' };
+const OG_LOCALE = { fi: 'fi_FI', en: 'en_FI', sv: 'sv_FI' };
 
 /**
  * @param {object} o
@@ -64,7 +65,7 @@ ${alternates}
 <meta name="theme-color" content="#0B1B2E">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DriveMe">
-<meta property="og:locale" content="${o.locale === 'fi' ? 'fi_FI' : 'en_FI'}">
+<meta property="og:locale" content="${OG_LOCALE[o.locale]}">
 <meta property="og:title" content="${esc(o.title)}">
 <meta property="og:description" content="${esc(o.description)}">
 ${canonical ? `<meta property="og:url" content="${esc(canonical)}">` : ''}
@@ -124,15 +125,10 @@ function header(locale, navKey, id) {
   }).join('');
 
   const per = routes[id] || routes.home;
-  const langs = LOCALES.map((l) => {
-    const href = per[l] || url('home', l);
-    const cur = l === locale ? ' aria-current="true"' : '';
-    return `<a href="${href}" hreflang="${HREFLANG[l]}" lang="${l}"${cur}>${l.toUpperCase()}</a>`;
-  }).join('');
 
   return `<div class="topbar">
   <div class="wrap topbar-inner">
-    <p class="topbar-note">${esc(brand.coverage.join(' · '))}</p>
+    <p class="topbar-note">${esc(words[locale].cities.join(' · '))}</p>
     <div class="topbar-links">
       <a href="mailto:${brand.email}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
@@ -155,10 +151,14 @@ function header(locale, navKey, id) {
       <div class="nav-sheet-actions">
         <a class="btn btn-primary" href="${t.bookHref}">${esc(t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a>
         <a class="btn btn-ghost" href="tel:${brand.phoneHref}">${esc(t.callUs)} ${esc(brand.phone)}</a>
+        <div class="lang-sheet-row">
+          <span class="lang-sheet-label">${esc(t.language)}</span>
+          ${langSwitch(locale, per, 'lang-sheet')}
+        </div>
       </div>
     </nav>
     <div class="head-actions">
-      <nav class="lang" aria-label="${esc(t.language)}">${langs}</nav>
+      ${langSwitch(locale, per, 'lang-head')}
       <a class="btn btn-primary btn-sm btn-cta" href="${t.bookHref}">${esc(t.bookCta)} <span class="arrow" aria-hidden="true">→</span></a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
@@ -167,7 +167,33 @@ function header(locale, navKey, id) {
     </div>
   </div>
 </header>
-<div class="nav-backdrop" id="nav-backdrop" hidden></div>`;
+<div class="nav-backdrop" id="nav-backdrop" hidden></div>
+<div class="lang-hint" id="lang-hint" hidden></div>`;
+}
+
+/* Small flags, drawn rather than typed: the flag emoji the brief uses render
+   as bare letters on Windows, which is most of the Finnish desktop market. */
+const FLAGS = {
+  fi: '<svg viewBox="0 0 20 14" aria-hidden="true" focusable="false"><rect width="20" height="14" fill="#fff"/><path d="M0 5h20v4H0z" fill="#003580"/><path d="M5.6 0h4v14h-4z" fill="#003580"/></svg>',
+  en: '<svg viewBox="0 0 20 14" aria-hidden="true" focusable="false"><rect width="20" height="14" fill="#012169"/><path d="M0 0 20 14M20 0 0 14" stroke="#fff" stroke-width="2.8"/><path d="M0 0 20 14M20 0 0 14" stroke="#C8102E" stroke-width="1.5"/><path d="M10 0v14M0 7h20" stroke="#fff" stroke-width="4.4"/><path d="M10 0v14M0 7h20" stroke="#C8102E" stroke-width="2.4"/></svg>',
+  sv: '<svg viewBox="0 0 20 14" aria-hidden="true" focusable="false"><rect width="20" height="14" fill="#006AA7"/><path d="M0 5h20v4H0z" fill="#FECC02"/><path d="M5.6 0h4v14h-4z" fill="#FECC02"/></svg>',
+};
+
+/** What each language calls itself, for the link's accessible name. */
+const LANG_NAME = { fi: 'Suomeksi', en: 'In English', sv: 'På svenska' };
+
+/**
+ * The language switch. `per` is this page's address in each language, so a
+ * visitor reading the inspection page in Finnish lands on the inspection page
+ * in Swedish - not back on the front page.
+ */
+function langSwitch(locale, per, variant) {
+  const links = LOCALES.map((l) => {
+    const href = per[l] || url('home', l);
+    const cur = l === locale ? ' aria-current="true"' : '';
+    return `<a href="${href}" hreflang="${HREFLANG[l]}" lang="${l}" data-lang="${l}" aria-label="${esc(LANG_NAME[l])}"${cur}>${FLAGS[l]}<span>${l.toUpperCase()}</span></a>`;
+  }).join('');
+  return `<nav class="lang ${variant}" aria-label="${esc(ui[locale].language)}">${links}</nav>`;
 }
 
 /**
@@ -247,11 +273,11 @@ function footer(locale) {
           <div><dt>${esc(t.generalEmailLabel)}</dt><dd><a href="mailto:${brand.email}">${esc(brand.email)}</a></dd></div>
           <div><dt>${esc(t.serviceEmailLabel)}</dt><dd><a href="mailto:${brand.serviceEmail}">${esc(brand.serviceEmail)}</a></dd></div>
         </dl>
-        <p class="foot-area">${esc(brand.coverage.join(' · '))}</p>
+        <p class="foot-area">${esc(words[locale].cities.join(' · '))}</p>
       </div>
       ${cols}
       <div>
-        <h3>${esc(locale === 'fi' ? 'Tietoa' : 'Information')}</h3>
+        <h3>${esc(words[locale].information)}</h3>
         <ul>
           <li><a href="${url('how', locale)}">${esc(nav[locale].find((n) => n.key === 'how').label)}</a></li>
           <li><a href="${url('pricing', locale)}">${esc(nav[locale].find((n) => n.key === 'pricing').label)}</a></li>
@@ -292,14 +318,14 @@ export function organizationSchema() {
     description: 'DriveMe noutaa asiakkaan ajokuntoisen auton ja ajaa sen sovittuun osoitteeseen, katsastukseen, huoltoon, renkaanvaihtoon tai pesuun pääkaupunkiseudulla. Asiakas ei matkusta autossa.',
     priceRange: '€€',
     ...(brand.businessId ? { taxID: brand.businessId } : {}),
-    knowsLanguage: ['fi', 'en'],
+    knowsLanguage: LOCALES,
     contactPoint: [{
       '@type': 'ContactPoint',
       contactType: 'customer service',
       email: brand.serviceEmail,
       telephone: brand.phone,
       areaServed: 'FI',
-      availableLanguage: ['fi', 'en'],
+      availableLanguage: LOCALES,
     }],
     address: { '@type': 'PostalAddress', addressLocality: brand.city, addressCountry: brand.country },
     areaServed: brand.coverage.map((c) => ({ '@type': 'City', name: c })),

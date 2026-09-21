@@ -16,7 +16,7 @@
   ],
   "headers": [
     {
-      "source": "/(legacy/.*|01-driveme-landing|02-driveme-light|varaus/.*|en/booking/.*)",
+      "source": "/(legacy/.*|01-driveme-landing|02-driveme-light|varaus/.*|en/booking/.*|sv/offert/.*)",
       "headers": [
         {
           "key": "X-Robots-Tag",

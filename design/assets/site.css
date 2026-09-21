@@ -175,13 +175,37 @@ section[id],div[id]{scroll-margin-top:120px}
 .site-nav>ul>li>a[aria-current="page"]{color:var(--brand-deep);font-weight:600;background:var(--brand-soft)}
 .head-actions{display:flex;align-items:center;gap:var(--s-3);justify-self:end}
 
-.lang{display:inline-flex;border:1px solid var(--ink-300);border-radius:var(--r-pill);overflow:hidden;background:var(--surface)}
+.lang{
+  display:inline-flex;align-items:center;gap:2px;padding:3px;
+  border:1px solid var(--ink-300);border-radius:var(--r-pill);background:var(--surface);
+}
 .lang a{
-  padding:8px 13px;font-size:var(--t-caption);font-weight:600;letter-spacing:.08em;
+  display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:var(--r-pill);
+  font-size:var(--t-caption);font-weight:600;letter-spacing:.06em;
   color:var(--ink-500);text-decoration:none;transition:background var(--swift),color var(--swift);
 }
+.lang a svg{width:18px;height:12.6px;border-radius:2px;flex:none;box-shadow:0 0 0 1px rgba(8,21,36,.12)}
 .lang a:hover{background:var(--ink-100);color:var(--ink-900)}
 .lang a[aria-current="true"]{background:var(--navy-800);color:#fff}
+.lang a[aria-current="true"] svg{box-shadow:0 0 0 1px rgba(255,255,255,.35)}
+
+/* Inside the phone menu the switch is a full-width row, not a chip. */
+.lang-sheet-row{display:none}
+.lang-sheet{width:100%;justify-content:space-between}
+.lang-sheet a{flex:1;justify-content:center}
+
+/* Offered, never forced: if the visitor picked a language before, this bar
+   points at the same page in it. No redirect - a crawler and a visitor who
+   followed a Finnish link both keep the page they asked for. */
+.lang-hint{background:var(--navy-800);color:#fff}
+.lang-hint .wrap{display:flex;align-items:center;justify-content:center;gap:var(--s-4);padding:10px var(--gutter);flex-wrap:wrap}
+.lang-hint a{color:#fff;font-weight:600;font-size:var(--t-small);text-decoration:none;border-bottom:1px solid rgba(255,255,255,.5)}
+.lang-hint a:hover{border-bottom-color:#fff}
+.lang-hint button{
+  background:none;border:0;color:rgba(255,255,255,.72);font:inherit;font-size:var(--t-caption);
+  cursor:pointer;padding:4px 6px;
+}
+.lang-hint button:hover{color:#fff}
 
 .nav-toggle{
   display:none;align-items:center;gap:var(--s-2);min-height:44px;padding:10px 16px;
@@ -281,6 +305,8 @@ section[id],div[id]{scroll-margin-top:120px}
   .menu-list-2{grid-template-columns:1fr}
   .nav-sheet-actions{display:grid;gap:var(--s-3);margin-top:var(--s-3);padding-top:var(--s-5,20px);border-top:1px solid var(--ink-100)}
   .nav-sheet-actions .btn{width:100%}
+  .lang-sheet-row{display:grid;gap:var(--s-2);margin-top:var(--s-2)}
+  .lang-sheet-label{font-size:var(--t-caption);font-weight:600;letter-spacing:.06em;color:var(--ink-500)}
   /* The sheet already ends with this button; a second copy inside the expanded
      Services list would repeat it a few lines above. */
   .menu-col-end .btn{display:none}
@@ -292,6 +318,9 @@ section[id],div[id]{scroll-margin-top:120px}
   .brand img{height:30px}
   .head-actions{gap:var(--s-2)}
   .head-actions .btn-cta{display:none}
+  /* Three languages do not fit beside the logo and Menu on a phone; the sheet
+     carries the switch at this width. */
+  .lang-head{display:none}
 }
 
 /* ==========================================================================

@@ -23,13 +23,13 @@ const SERVICE_LABEL = {
     airport: 'Kuljettaja lentoasemalle', business: 'Yritysasiakkuus',
   },
   sv: {
-    inspection: 'Bilen till besiktning', workshop: 'Bilen till service',
-    tyre: 'Bilen till dackbyte', wash: 'Bilen till tvatt',
-    glass: 'Glas, plat eller aterkallelse', pickupReturn: 'Upphamtning och retur',
-    relocation: 'Fordonsflytt', dealer: 'Aterlamning till bilhandel eller leasing',
-    journey: 'Forare for resan i egen bil',
-    personalDriver: 'Personlig forare', safeRideHome: 'Trygg hemresa',
-    airport: 'Forare till flygplatsen', business: 'Foretagskonto',
+    inspection: 'Bilen till besiktning', workshop: 'Bilen till verkstad',
+    tyre: 'Bilen till däckbyte', wash: 'Bilen till biltvätt',
+    glass: 'Glas, plåt och återkallelse', pickupReturn: 'Upphämtning och retur',
+    relocation: 'Bilflytt', dealer: 'Återlämning till bilhandel eller leasingbolag',
+    journey: 'Förare för din resa i din egen bil',
+    personalDriver: 'Personlig förare', safeRideHome: 'Trygg hemresa',
+    airport: 'Förare till flygplatsen', business: 'Företagskund',
   },
   en: {
     inspection: 'Vehicle inspection run', workshop: 'Workshop run',
@@ -50,7 +50,7 @@ const TYPE_LABEL = {
 
 const SHAPE_LABEL = {
   fi: { oneWay: 'Yhteen suuntaan', pickupReturn: 'Nouto ja palautus', waitReturn: 'Odota ja palauta' },
-  sv: { oneWay: 'Enkel riktning', pickupReturn: 'Upphamtning och retur', waitReturn: 'Vanta och returnera' },
+  sv: { oneWay: 'Enkel riktning', pickupReturn: 'Upphämtning och retur', waitReturn: 'Föraren väntar och kör tillbaka' },
   en: { oneWay: 'One way', pickupReturn: 'Pickup and return', waitReturn: 'Wait and return' },
 };
 
@@ -105,7 +105,7 @@ const COPY = {
     subject: (ref) => `Tack för din förfrågan — bokningsreferens ${ref}`,
     eyebrow: 'Förfrågan mottagen',
     title: 'Tack för din förfrågan',
-    lede: 'Vi har tagit emot din förfrågan och återkommer inom kort.',
+    lede: 'Vi har tagit emot din prisförfrågan. Vi ringer dig, går igenom uppgifterna och bekräftar priset.',
     next: 'En förfrågan är ännu inte en bekräftelse. Vi bekräftar förare, tid och ett fast DriveMe-pris separat.',
     third: 'Tredjepartstjänster — besiktning, service, däck eller tvätt — betalar du direkt till leverantören. De ingår inte i DriveMe-priset.',
     detailsHead: 'Din förfrågan',

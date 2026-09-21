@@ -22,7 +22,8 @@
      never present on a real deploy, so production always posts for real. */
   var DEMO = !!document.querySelector('meta[name="driveme-demo"]');
   var C = CFG.copy;
-  var FI = CFG.locale === 'fi';
+  /* Finnish and Swedish both write 1 234,50; English writes 1,234.50. */
+  var NUM_LOCALE = { fi: 'fi-FI', en: 'en-GB', sv: 'sv-FI' }[CFG.locale] || 'en-GB';
 
   var $ = function (id) { return document.getElementById(id); };
   var serviceSel = $('service');
@@ -41,7 +42,7 @@
 
   /* ---------------------------------------------------------- helpers */
   function money(n) {
-    return (Math.round(n * 100) / 100).toLocaleString(FI ? 'fi-FI' : 'en-GB', {
+    return (Math.round(n * 100) / 100).toLocaleString(NUM_LOCALE, {
       minimumFractionDigits: 0, maximumFractionDigits: 2,
     }) + ' €';
   }
@@ -430,7 +431,9 @@
 
   function finish(reference) {
     form.hidden = true;
-    $('done-ref').textContent = reference;
+    // Labelled, in the page's language: a bare code on its own line reads
+    // like an error, and the customer quotes this on the phone.
+    $('done-ref').textContent = C.doneRef + ': ' + reference;
     show(donePanel, true);
     donePanel.focus();
     donePanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -523,23 +526,33 @@
     }
   });
 
-  /* Deep links from the homepage and the service pages:
+  /* Deep links from the homepage and the service pages. Each language links
+     in its own words, and every language's spelling is accepted here so a
+     shared or edited link keeps working:
      /varaus/?palvelu=inspection&nouto=00100&pvm=2026-09-15&lahde=home_hero
-     /varaus/?tyyppi=siirto   /en/booking/?type=service */
+     /en/booking/?service=inspection&type=service
+     /sv/offert/?tjanst=inspection&hamtning=00100&datum=2026-09-15&kalla=home_hero */
   var params = new URLSearchParams(location.search);
-  var wanted = params.get('palvelu') || params.get('service');
-  var wantedType = params.get('tyyppi') || params.get('type');
-  var wantedPath = params.get('polku') || params.get('path');
-  var wantedPickup = params.get('nouto') || params.get('pickup');
-  var wantedDate = params.get('pvm') || params.get('date');
-  var source = (params.get('lahde') || params.get('source') || '').replace(/[^\w:-]/g, '').slice(0, 40);
+  var param = function () {
+    for (var i = 0; i < arguments.length; i++) {
+      var v = params.get(arguments[i]);
+      if (v) return v;
+    }
+    return null;
+  };
+  var wanted = param('palvelu', 'service', 'tjanst');
+  var wantedType = param('tyyppi', 'type', 'typ');
+  var wantedPath = param('polku', 'path');
+  var wantedPickup = param('nouto', 'pickup', 'hamtning');
+  var wantedDate = param('pvm', 'date', 'datum');
+  var source = (param('lahde', 'source', 'kalla') || '').replace(/[^\w:-]/g, '').slice(0, 40);
   entry = source || (wanted ? 'service:' + String(wanted).replace(/[^\w-]/g, '').slice(0, 30) : null);
 
   if (wantedPickup && $('pickup_location')) $('pickup_location').value = wantedPickup.slice(0, 300);
   if (wantedDate && /^\d{4}-\d{2}-\d{2}$/.test(wantedDate) && $('date')) $('date').value = wantedDate;
-  if (wantedType === 'palvelu' || wantedType === 'service') tick('service_type', 'appointment_run');
-  if (wantedType === 'siirto' || wantedType === 'move') tick('service_type', 'general_move');
-  if (wantedType === 'matka' || wantedType === 'journey') tick('service_type', 'passenger_journey');
+  if (wantedType === 'palvelu' || wantedType === 'service' || wantedType === 'tjanst') tick('service_type', 'appointment_run');
+  if (wantedType === 'siirto' || wantedType === 'move' || wantedType === 'flytt') tick('service_type', 'general_move');
+  if (wantedType === 'matka' || wantedType === 'journey' || wantedType === 'resa') tick('service_type', 'passenger_journey');
 
   var ws = wanted && Object.prototype.hasOwnProperty.call(CFG.services, wanted) ? CFG.services[wanted] : null;
   if (ws && !ws.gated) {
