@@ -245,6 +245,43 @@
     }
   } catch (e) { /* storage blocked: attribution is lost, nothing else is */ }
 
+  /* ------------------------------------------------ language switch ---
+     The drop-down already opens on hover and on focus from CSS, so it works
+     with this file blocked. What it cannot do is open on a tap, or tell a
+     screen reader whether it is open, so that is all this adds. */
+  var langSwitch = document.querySelector('.lang-head');
+  if (langSwitch) {
+    var langTrigger = langSwitch.querySelector('.lang-trigger');
+    var setLangOpen = function (on) {
+      langSwitch.setAttribute('data-open', on ? 'true' : 'false');
+      langTrigger.setAttribute('aria-expanded', on ? 'true' : 'false');
+    };
+    // With this running, hover is driven from here rather than from :hover, or
+    // a click while the pointer is still on the trigger would close the menu in
+    // markup and leave it open on screen. The stylesheet stands down.
+    document.documentElement.classList.add('has-js');
+    langTrigger.addEventListener('click', function () {
+      setLangOpen(langSwitch.getAttribute('data-open') !== 'true');
+    });
+    // A touch screen reports a tap as a mouse enter too, which would open the
+    // menu and let the tap that followed close it again.
+    if (window.matchMedia('(hover: hover)').matches) {
+      langSwitch.addEventListener('mouseenter', function () { setLangOpen(true); });
+      langSwitch.addEventListener('mouseleave', function () { setLangOpen(false); });
+    }
+    langSwitch.addEventListener('focusout', function (e) {
+      if (!langSwitch.contains(e.relatedTarget)) setLangOpen(false);
+    });
+    document.addEventListener('click', function (e) {
+      if (!langSwitch.contains(e.target)) setLangOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || langSwitch.getAttribute('data-open') !== 'true') return;
+      setLangOpen(false);
+      langTrigger.focus();
+    });
+  }
+
   /* ------------------------------------------------ language memory ---
      A visitor who switches to Swedish should not have to switch again on the
      next page they open from Google. We remember the language they chose and

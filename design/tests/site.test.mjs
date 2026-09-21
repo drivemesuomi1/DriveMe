@@ -312,6 +312,9 @@ test('the footer lists both email addresses with their purpose', async () => {
   assert.ok(home.includes('"contactType":"customer service","email":"asiakaspalvelu@driveme.fi"'), 'schema contact point');
 });
 
+/** How each language names itself in the switch. */
+const LANG_NAMES = { fi: 'Suomi', en: 'English', sv: 'Svenska' };
+
 test('every page offers all three languages and keeps you on the same page', async () => {
   for (const p of pages) {
     const html = await read(fileFor(p.path));
@@ -330,13 +333,20 @@ test('every page offers all three languages and keeps you on the same page', asy
       for (const l of LOCALES) {
         assert.ok(sw.includes(`data-lang="${l}"`), `${p.path} (${cls}) does not offer ${l}`);
       }
-      assert.ok(sw.includes(`lang="${p.locale}" data-lang="${p.locale}" aria-label`), `${p.path} (${cls}) marks no current language`);
+      assert.ok(sw.includes(`data-lang="${p.locale}" aria-current="true"`), `${p.path} (${cls}) marks no current language`);
+      // Each language names itself, so a visitor recognises their own.
+      for (const l of LOCALES) assert.ok(sw.includes(`>${LANG_NAMES[l]}</span>`), `${p.path} (${cls}) does not name ${l} in ${l}`);
       // Same page, other language - not a dump back to the front page.
       const target = routes[p.id] ? routes[p.id] : null;
       if (target) {
         for (const l of LOCALES) assert.ok(sw.includes(`href="${target[l]}"`), `${p.path} (${cls}) sends ${l} elsewhere`);
       }
     }
+
+    // The header shows which language you are reading before it is opened.
+    const trigger = head.slice(head.indexOf('<button type="button" class="lang-trigger"'));
+    assert.ok(trigger.startsWith('<button type="button" class="lang-trigger" aria-expanded="false"'), `${p.path} has no language trigger`);
+    assert.ok(trigger.slice(0, trigger.indexOf('</button>')).includes(`<span>${p.locale.toUpperCase()}</span>`), `${p.path} trigger does not show ${p.locale}`);
   }
 });
 

@@ -179,21 +179,45 @@ const FLAGS = {
   sv: '<svg viewBox="0 0 20 14" aria-hidden="true" focusable="false"><rect width="20" height="14" fill="#006AA7"/><path d="M0 5h20v4H0z" fill="#FECC02"/><path d="M5.6 0h4v14h-4z" fill="#FECC02"/></svg>',
 };
 
-/** What each language calls itself, for the link's accessible name. */
-const LANG_NAME = { fi: 'Suomeksi', en: 'In English', sv: 'På svenska' };
+/** What each language calls itself — how a visitor recognises their own. */
+const LANG_NAME = { fi: 'Suomi', en: 'English', sv: 'Svenska' };
+
+const CHEVRON = '<svg class="lang-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+const CHECK = '<svg class="lang-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4 10-10"/></svg>';
 
 /**
  * The language switch. `per` is this page's address in each language, so a
  * visitor reading the inspection page in Finnish lands on the inspection page
  * in Swedish - not back on the front page.
+ *
+ * In the header it is a trigger showing the current language and a drop-down
+ * naming the others as they name themselves. The drop-down opens on hover and
+ * on focus in CSS alone, so it works with JavaScript off; site.js adds the
+ * click for touch and keeps `aria-expanded` truthful.
+ *
+ * In the phone menu there is no hover and no room to hide anything, so the
+ * same list is simply open.
  */
 function langSwitch(locale, per, variant) {
-  const links = LOCALES.map((l) => {
+  const items = LOCALES.map((l) => {
     const href = per[l] || url('home', l);
-    const cur = l === locale ? ' aria-current="true"' : '';
-    return `<a href="${href}" hreflang="${HREFLANG[l]}" lang="${l}" data-lang="${l}" aria-label="${esc(LANG_NAME[l])}"${cur}>${FLAGS[l]}<span>${l.toUpperCase()}</span></a>`;
+    const cur = l === locale;
+    return `<li><a href="${href}" hreflang="${HREFLANG[l]}" lang="${l}" data-lang="${l}"${cur ? ' aria-current="true"' : ''}>
+        ${FLAGS[l]}<span class="lang-name">${esc(LANG_NAME[l])}</span>${cur ? CHECK : ''}
+      </a></li>`;
   }).join('');
-  return `<nav class="lang ${variant}" aria-label="${esc(ui[locale].language)}">${links}</nav>`;
+  const list = `<ul class="lang-menu">${items}</ul>`;
+  const label = esc(ui[locale].language);
+
+  if (variant === 'lang-sheet') {
+    return `<nav class="lang lang-sheet" aria-label="${label}">${list}</nav>`;
+  }
+  return `<nav class="lang lang-head" aria-label="${label}">
+      <button type="button" class="lang-trigger" aria-expanded="false" aria-label="${label}: ${esc(LANG_NAME[locale])}">
+        ${FLAGS[locale]}<span>${locale.toUpperCase()}</span>${CHEVRON}
+      </button>
+      ${list}
+    </nav>`;
 }
 
 /**
