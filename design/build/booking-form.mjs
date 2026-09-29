@@ -113,6 +113,8 @@ const COPY = {
     quoteNote: 'Hinta sisältää arvonlisäveron. Vahvistamme kiinteän DriveMe-hinnan ennen ajoa. Palveluntarjoajan maksut eivät sisälly.',
     quoteFrom: 'alkaen',
     quoteManual: 'Kiinteä tarjous',
+    offerCode: 'Tarjouskoodi',
+    offerCodeHelp: 'Vapaaehtoinen. Jos sinulla on kampanjakoodi, kirjoita se tähän.',
     quoteManualNote: 'Tälle työlle annamme kiinteän tarjouksen käsin.',
     submit: 'Lähetä hintapyyntö',
     submitting: 'Lähetetään…',
@@ -225,6 +227,8 @@ const COPY = {
     quoteNote: 'The price includes VAT. We confirm a fixed DriveMe fee before the drive. Provider charges are not included.',
     quoteFrom: 'from',
     quoteManual: 'Fixed quote',
+    offerCode: 'Offer code',
+    offerCodeHelp: 'Optional. If you have a campaign code, enter it here.',
     quoteManualNote: 'This job gets a fixed quote by hand.',
     submit: 'Send price request',
     submitting: 'Sending…',
@@ -275,6 +279,8 @@ const text = (id, opts = {}) =>
   `${opts.inputmode ? ` inputmode="${opts.inputmode}"` : ''}` +
   `${opts.min !== undefined ? ` min="${opts.min}"` : ''}${opts.max !== undefined ? ` max="${opts.max}"` : ''}` +
   `${opts.step ? ` step="${opts.step}"` : ''}${opts.value ? ` value="${esc(opts.value)}"` : ''}` +
+  `${opts.maxlength ? ` maxlength="${opts.maxlength}"` : ''}` +
+  `${opts.autocapitalize ? ` autocapitalize="${opts.autocapitalize}"` : ''}` +
   `${opts.help ? ` aria-describedby="${id}-help"` : ''}>`;
 
 const textarea = (id, help) =>
@@ -324,6 +330,7 @@ export function bookingForm(locale) {
       errorTitle: c.errorTitle, submitting: c.submitting, submit: c.submit,
       failed: c.failed, quoteFrom: c.quoteFrom, quoteManual: c.quoteManual,
       quoteManualNote: c.quoteManualNote, quoteNote: c.quoteNote, lines: c.lines,
+      offerCode: c.offerCode,
       gatedTitle: c.gatedTitle, gatedBody: c.gatedBody,
       journeyLegend: c.journeyLegend, moveLegend: c.moveLegend,
       doneRef: c.doneRef,
@@ -403,6 +410,11 @@ export function bookingForm(locale) {
             ${field('customer_phone', c.phone, text('customer_phone', { type: 'tel', required: true, autocomplete: 'tel', inputmode: 'tel' }))}
           </div>
           ${field('customer_email', c.email, text('customer_email', { type: 'email', autocomplete: 'email', help: true }), c.emailHelp)}
+          <!-- Optional, and out here rather than inside the collapsed details:
+               someone who came for a campaign should see where the code goes
+               without opening anything. Arriving from the offer page fills it
+               in already. -->
+          ${field('offer_code', c.offerCode, text('offer_code', { help: true, autocapitalize: 'characters', maxlength: 20 }), c.offerCodeHelp)}
           <label class="form-check auth-field">
             <input type="checkbox" name="ack" id="ack-0" required>
             <span>${esc(c.auth)}</span>

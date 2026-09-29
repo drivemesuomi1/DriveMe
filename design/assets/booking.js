@@ -424,6 +424,7 @@
       business_id: val('business_id') || null,
       invoice_email: val('invoice_email') || null,
       notes: val('notes') || null,
+      offer_code: val('offer_code').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20) || null,
       vehicle_owner_authorization: !!($('ack-0') && $('ack-0').checked),
       lead_source: leadSource(),
     };
@@ -547,6 +548,13 @@
   var wantedDate = param('pvm', 'date', 'datum');
   var source = (param('lahde', 'source', 'kalla') || '').replace(/[^\w:-]/g, '').slice(0, 40);
   entry = source || (wanted ? 'service:' + String(wanted).replace(/[^\w-]/g, '').slice(0, 30) : null);
+
+  /* A campaign code carried over from the offer page fills in the field the
+     customer could also have typed themselves. The discount is applied when
+     we confirm the price, so nothing here touches the estimate - a number on
+     screen that the confirmation does not repeat is an argument later. */
+  var offerCode = (param('etu', 'offer', 'erbjudande') || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20);
+  if (offerCode && $('offer_code')) $('offer_code').value = offerCode;
 
   if (wantedPickup && $('pickup_location')) $('pickup_location').value = wantedPickup.slice(0, 300);
   if (wantedDate && /^\d{4}-\d{2}-\d{2}$/.test(wantedDate) && $('date')) $('date').value = wantedDate;

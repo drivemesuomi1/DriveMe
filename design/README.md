@@ -192,6 +192,27 @@ language of Finland, so it is published rather than translated on demand.
   (`?palvelu=` / `?service=` / `?tjanst=`); `assets/booking.js` accepts all three spellings,
   so an old or edited link keeps working.
 
+### The new-customer campaign
+
+`content/offer.mjs` holds the 10 % first-booking offer: the code, the percentage
+and the end date in `OFFER`, the page copy per language beside it (Swedish in
+`content/sv/offer.mjs`). Changing the code or the date there changes the page,
+the strip above the header and the link that carries the code to the form.
+
+- **It expires by itself.** A build after `OFFER.endsAt` drops the strip and the
+  page switches to "this offer has ended"; `site.js` also removes a strip served
+  from a cache after that date. A discount left on screen is a promise the
+  business has to honour.
+- **The code changes no price.** It travels to the request form as `?etu=` /
+  `?offer=` / `?erbjudande=`, is written into the notes the ops team reads and
+  shown on the quote panel. The estimate stays the one `api/_lib/pricing.js`
+  computes, so the page and the ops email never disagree; the 10 % is applied
+  when the fixed price is confirmed.
+- **One claim from the brief was not published as written.** It offered a
+  "screened" driver; Gate C is open, so the page says what `screening` in
+  `content/site.mjs` says - the licence is verified and recorded and the driver
+  is trained on DriveMe's rules.
+
 ## 0 · Maps, geocoding and routing
 
 The booking console and the tracking page use three free, CORS-friendly services

@@ -58,6 +58,11 @@ export function trustBar(locale) {
   </div>`;
 }
 
+/** One trust-bar glyph on its own, for panels outside the hero band. */
+export const trustIcon = (name) =>
+  `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${TRUST_ICONS[name] || TRUST_ICONS.doc}</svg>`;
+
 export const icon = (name) =>
   `<svg viewBox="0 0 24 24" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ICONS.pickup}</svg>`;
 

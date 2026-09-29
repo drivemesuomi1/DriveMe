@@ -127,6 +127,34 @@ test('a general move is saved from the first stage alone, without an email', asy
   assert.equal(mails[0].reply_to, undefined);
 });
 
+test('a campaign code rides along with the request and reaches ops', async () => {
+  const res = await post(move({ offer_code: 'driveme10', notes: 'Avaimet vartijalla.', customer_email: 'kampanja@example.test' }));
+  assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+
+  // Saved with the booking, upper-cased, and the customer's own note kept.
+  const row = rows[0];
+  assert.ok(row.notes.startsWith('Offer code: DRIVEME10\n'), row.notes);
+  assert.match(row.notes, /Avaimet vartijalla\./);
+
+  // The estimate is untouched: the discount is applied when ops confirms.
+  assert.equal(row.estimated_price, 89);
+
+  // Ops sees it on a line of its own, not buried in the free text.
+  assert.match(mails[0].text, /Offer code:? ?.{0,4}DRIVEME10/);
+  assert.equal(/Offer code: DRIVEME10/.test(mails[0].text.split('Customer notes')[1] || ''), false,
+    'the code should not be repeated inside the customer notes');
+
+  // And the customer's receipt repeats it back to them.
+  assert.equal(mails.length, 2);
+  assert.match(mails[1].text + mails[1].html, /DRIVEME10/);
+});
+
+test('a request without a code keeps its notes exactly as written', async () => {
+  await post(move({ notes: 'Auto on pihassa.' }));
+  assert.equal(rows[0].notes, 'Auto on pihassa.');
+  assert.equal(/Offer code/.test(mails[0].text), false);
+});
+
 test('a move that has to come back is priced as a pickup and return', async () => {
   const res = await post(move({ service: 'pickupReturn', shape: 'pickupReturn', return_needed: true }));
   assert.equal(res.statusCode, 201, JSON.stringify(res.body));

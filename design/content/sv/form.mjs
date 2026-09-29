@@ -92,6 +92,8 @@ export const form = {
   quoteNote: 'Priset inkluderar moms. Vi bekräftar ett fast DriveMe-pris före körningen. Leverantörens avgifter ingår inte.',
   quoteFrom: 'från',
   quoteManual: 'Fast offert',
+  offerCode: 'Förmånskod',
+  offerCodeHelp: 'Frivillig. Har du en kampanjkod skriver du in den här.',
   quoteManualNote: 'Det här uppdraget offererar vi för hand.',
   submit: 'Skicka prisförfrågan',
   submitting: 'Skickar…',

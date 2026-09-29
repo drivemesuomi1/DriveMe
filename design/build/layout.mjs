@@ -13,6 +13,7 @@ import { byKey, services } from '../content/services.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
 import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
 import { routes, url, serviceUrl } from './routes.mjs';
+import { offer, OFFER, offerExpired } from '../content/offer.mjs';
 
 export const esc = (s) => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -54,7 +55,7 @@ export function page(o) {
   const schema = [organizationSchema(), ...(o.schema || [])];
 
   return `<!DOCTYPE html>
-<html lang="${o.locale}">
+<html lang="${o.locale}"${showPromo(o.id) ? ' class="has-promo"' : ''}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -126,7 +127,7 @@ function header(locale, navKey, id) {
 
   const per = routes[id] || routes.home;
 
-  return `<div class="topbar">
+  return `${promoBar(locale, id)}<div class="topbar">
   <div class="wrap topbar-inner">
     <p class="topbar-note">${esc(words[locale].cities.join(' · '))}</p>
     <div class="topbar-links">
@@ -169,6 +170,33 @@ function header(locale, navKey, id) {
 </header>
 <div class="nav-backdrop" id="nav-backdrop" hidden></div>
 <div class="lang-hint" id="lang-hint" hidden></div>`;
+}
+
+/**
+ * The campaign strip above the header. One line, the whole of it a link to
+ * the offer page, on every page except the offer page itself.
+ *
+ * It expires on its own, twice over: a build after the end date leaves it out
+ * altogether, and `data-until` lets site.js hide it on a page still sitting in
+ * a CDN cache. A discount that outlives its end date is a promise the business
+ * has to honour or explain.
+ */
+/** Does this page carry the strip? The offer page does not advertise itself. */
+const showPromo = (id) => id !== 'offer' && !offerExpired();
+
+function promoBar(locale, id) {
+  if (!showPromo(id)) return '';
+  const c = offer[locale].bar;
+  return `<a class="promo-bar" href="${url('offer', locale)}" data-until="${OFFER.endsAt}">
+  <span class="wrap promo-inner">
+    <span class="promo-lead">${esc(c.lead)}</span>
+    <span class="promo-dot" aria-hidden="true"></span>
+    <span class="promo-text">${esc(c.text)}</span>
+    <span class="promo-more"><span class="promo-more-label">${esc(c.more)}</span><span class="arrow" aria-hidden="true">→</span></span>
+  </span>
+  <span class="promo-sheen" aria-hidden="true"></span>
+</a>
+`;
 }
 
 /* Small flags, drawn rather than typed: the flag emoji the brief uses render

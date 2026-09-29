@@ -20,10 +20,11 @@ import { ORIGIN, LOCALES, brand, ui, words, nav, howItWorks, trustStrip } from '
 import { services, byKey } from '../content/services.mjs';
 import { SERVICE_PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
 import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking } from '../content/pages.mjs';
+import { offer, OFFER, offerExpired } from '../content/offer.mjs';
 import { page, esc, serviceSchema, breadcrumbSchema, faqSchema } from './layout.mjs';
 import { url, serviceUrl, allPages, fileFor } from './routes.mjs';
 import {
-  crumbs, serviceCards, stepsList, factCard, callout, faqList, tickList, fancy, plain,
+  crumbs, serviceCards, stepsList, factCard, callout, faqList, tickList, fancy, plain, trustIcon,
   fromPrice, priceValue, typicalRange, isGated, gateNoticeBlock, eligibilityBlock, refusalBlock, trustBar,
   coverageBlock, relatedLinks, ctaBand, renderBlock, statusRail, disclaimerBlock,
 } from './blocks.mjs';
@@ -577,6 +578,106 @@ ${ctaBand(locale)}`;
   });
 }
 
+/* ============================================ new-customer offer page
+   A campaign page, so it carries the code and the end date rather than any
+   new promise: the services, the prices and the boundaries are the ones the
+   rest of the site already states, and each section links to the service page
+   that sells it. Past the end date the page stays (links to it live on in
+   inboxes and search results) but says the offer has closed. */
+function renderOffer(locale) {
+  const c = offer[locale];
+  const t = ui[locale];
+  const over = offerExpired();
+  const bookHref = `${t.bookHref}?${words[locale].params.source}=offer&${words[locale].params.offer}=${OFFER.code}`;
+
+  // Copy on one side, the photograph of that service on the other, turn and
+  // turn about - the same split the homepage uses. A column of headings over
+  // an empty half of the screen is what the page looked like before.
+  const section = (s, i) => `<section class="sec${i % 2 ? ' sec-raised' : ''}">
+  <div class="wrap split${i % 2 ? ' split-flip' : ''}">
+    <div class="split-copy">
+      <h2>${fancy(s.title)}</h2>
+      <p class="lead">${esc(s.body[0])}</p>
+      ${s.body.slice(1).map((p) => `<p class="prose">${esc(p)}</p>`).join('')}
+      ${s.list ? tickList(s.list, 'check', null, { two: s.list.length > 4 }) : ''}
+      ${s.after ? `<p class="prose">${esc(s.after)}</p>` : ''}
+      ${s.services ? `<ul class="linkset">${s.services.map((k) => (
+    `<li><a href="${serviceUrl(k, locale)}">${esc(byKey[k][locale].nav)}</a></li>`
+  )).join('')}</ul>` : ''}
+    </div>
+    ${figure(s.photo, s.alt)}
+  </div>
+</section>`;
+
+  const body = `
+<section class="page-head offer-head service-hero">
+  <img class="service-hero-photo" src="/assets/service-heroes/new-customer-offer.jpg" alt="" width="1672" height="941" fetchpriority="high" decoding="async">
+  <div class="wrap page-head-inner">
+    <div class="service-hero-copy">
+    ${crumbs([{ label: t.breadcrumbHome, href: url('home', locale) }, { label: plain(c.h1) }])}
+    <p class="eyebrow">${esc(c.eyebrow)}</p>
+    <h1>${fancy(c.h1)}</h1>
+    <p class="lead">${esc(c.lead)}</p>
+    ${over ? callout(null, c.expired, 'warn') : `<div class="offer-code">
+      <span class="offer-code-label">${esc(c.codeLabel)}</span>
+      <strong class="offer-code-value">${esc(OFFER.code)}</strong>
+    </div>
+    <p class="offer-code-hint">${esc(c.codeHint)}</p>`}
+    <div class="offer-actions">
+      <a class="btn btn-primary" href="${over ? t.bookHref : bookHref}">${esc(over ? t.requestMove : c.cta)} <span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn-ghost" href="${url('pricing', locale)}">${esc(c.ctaSecondary)}</a>
+    </div>
+    <p class="offer-meta">${over ? '' : `<span class="offer-until">${esc(c.validUntil)}</span> · `}${esc(c.areaLine)}</p>
+    </div>
+  </div>
+</section>
+
+${c.sections.map(section).join('\n')}
+
+<section class="sec sec-navy">
+  <div class="wrap">
+    <div class="sec-head"><h2>${fancy(c.whyTitle)}</h2></div>
+    <ul class="offer-why">
+      ${c.why.map((w) => `<li>
+        <span class="offer-why-icon">${trustIcon(w.icon)}</span>
+        <h3>${esc(w.title)}</h3>
+        <p>${esc(w.body)}</p>
+      </li>`).join('')}
+    </ul>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><h2>${fancy(c.stepsTitle)}</h2></div>
+    ${stepsList(c.steps.map((s) => ({ t: s.title, d: s.body })), { cols: true })}
+  </div>
+</section>
+
+${ctaBand(locale, over ? {} : {
+    title: c.bandTitle, body: c.bandBody, primaryHref: bookHref, primaryLabel: c.bandCta,
+  })}
+
+<section class="sec sec-raised">
+  <div class="wrap stack">
+    <div class="offer-terms">
+      <h2>${esc(c.termsTitle)}</h2>
+      ${c.terms.map((p) => `<p>${esc(p)}</p>`).join('')}
+    </div>
+    ${disclaimerBlock(locale)}
+  </div>
+</section>`;
+
+  return page({
+    id: 'offer', locale, navKey: null,
+    title: c.title, description: c.description, body,
+    schema: [breadcrumbSchema([
+      { label: t.breadcrumbHome, href: url('home', locale) },
+      { label: plain(c.h1), href: url('offer', locale) },
+    ])],
+  });
+}
+
 /* ========================================================== contact */
 function renderContact(locale) {
   const c = contact[locale];
@@ -767,6 +868,7 @@ async function main() {
     await emit(url('faq', locale), renderFaq(locale));
     await emit(url('contact', locale), renderContact(locale));
     await emit(url('booking', locale), renderBooking(locale));
+    await emit(url('offer', locale), renderOffer(locale));
     for (const s of services) {
       await emit(serviceUrl(s.key, locale), renderService(s, locale));
     }

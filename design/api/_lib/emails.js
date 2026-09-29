@@ -93,7 +93,7 @@ const COPY = {
     next: 'Pyyntö ei ole vielä vahvistus. Vahvistamme erikseen kuljettajan, ajan ja kiinteän DriveMe-hinnan, ja vasta se tekee työstä sitovan.',
     third: 'Kolmannen osapuolen palvelut — katsastus, huolto, renkaat, pesu tai muu vastaava — maksat suoraan valitsemallesi palveluntarjoajalle. Ne eivät sisälly DriveMe-hintaan.',
     detailsHead: 'Varauksen tiedot',
-    rows: { ref:'Viite', when:'Ajankohta', pickup:'Noutopaikka', dest:'Määränpää', type:'Varaustyyppi', price:'Hinta-arvio', pay:'Maksutapa' },
+    rows: { ref:'Viite', when:'Ajankohta', pickup:'Noutopaikka', dest:'Määränpää', type:'Varaustyyppi', price:'Hinta-arvio', pay:'Maksutapa', offer:'Tarjouskoodi' },
     open: 'Avoin — kuljettaja pysyy mukanasi',
     hourly: (h) => `Tuntiveloitus${h ? ` · ${h} h` : ''}`,
     p2p: 'Pisteestä pisteeseen',
@@ -109,7 +109,7 @@ const COPY = {
     next: 'En förfrågan är ännu inte en bekräftelse. Vi bekräftar förare, tid och ett fast DriveMe-pris separat.',
     third: 'Tredjepartstjänster — besiktning, service, däck eller tvätt — betalar du direkt till leverantören. De ingår inte i DriveMe-priset.',
     detailsHead: 'Din förfrågan',
-    rows: { ref:'Referens', when:'Tidpunkt', pickup:'Upphämtning', dest:'Destination', type:'Bokningstyp', price:'Prisuppskattning', pay:'Betalning' },
+    rows: { ref:'Referens', when:'Tidpunkt', pickup:'Upphämtning', dest:'Destination', type:'Bokningstyp', price:'Prisuppskattning', pay:'Betalning', offer:'Förmånskod' },
     open: 'Öppen — föraren stannar hos dig',
     hourly: (h) => `Per timme${h ? ` · ${h} h` : ''}`,
     p2p: 'Punkt till punkt',
@@ -125,7 +125,7 @@ const COPY = {
     next: 'A request is not yet a confirmation. We confirm the driver, the time and a fixed DriveMe fee separately, and only that makes the job binding.',
     third: 'Third-party services — inspection, maintenance, tyres, wash or similar — are paid directly to the provider you choose. They are not part of the DriveMe fee.',
     detailsHead: 'Your request',
-    rows: { ref:'Reference', when:'When', pickup:'Pickup', dest:'Drop-off', type:'Booking type', price:'Estimated price', pay:'Payment' },
+    rows: { ref:'Reference', when:'When', pickup:'Pickup', dest:'Drop-off', type:'Booking type', price:'Estimated price', pay:'Payment', offer:'Offer code' },
     open: 'Open-ended — the driver stays with you',
     hourly: (h) => `By the hour${h ? ` · ${h} h` : ''}`,
     p2p: 'Point to point',
@@ -167,6 +167,7 @@ export function customerConfirmation(booking, base, lang) {
     [L.rows.type, type],
     [L.rows.price, price],
     [L.rows.pay, booking.payment_method ? (PAY_LABEL[lang] || PAY_LABEL.fi)[booking.payment_method] : null],
+    [L.rows.offer, offerCodeOf(booking)],
   ].filter((r) => r[1] != null);
 
   const html = `<!doctype html><html lang="${esc(lang === 'en' ? 'en' : 'fi')}"><body style="margin:0;padding:24px;background:#F5F8FC;font-family:Inter,-apple-system,'Segoe UI',sans-serif;color:#0B1524">
@@ -198,6 +199,14 @@ export function customerConfirmation(booking, base, lang) {
 
   return { subject: L.subject(ref), html, text };
 }
+
+/* The request form keeps a campaign code on the first line of the notes (see
+   api/bookings.js: it needs no column of its own, and ops applies the discount
+   by hand when confirming the price). These read that line, and the notes
+   without it. */
+const OFFER_LINE = /^Offer code: ([A-Z0-9-]{1,20})\n?/;
+const offerCodeOf = (booking) => (OFFER_LINE.exec(booking.notes || '') || [])[1] || null;
+const plainNotesOf = (booking) => (booking.notes || '').replace(OFFER_LINE, '').trim() || null;
 
 /**
  * Alert to the ops inbox for a new booking.
@@ -251,7 +260,8 @@ export function bookingAlert(booking, base) {
       ? 'Manual fixed quote required'
       : euro(booking.estimated_price)],
     ['Payment', PAY[booking.payment_method] || null],
-    ['Customer notes', booking.notes],
+    ['★ Offer code', offerCodeOf(booking)],
+    ['Customer notes', plainNotesOf(booking)],
     ['Owner authorisation', booking.vehicle_owner_authorization ? 'Confirmed on the request form' : null],
     ['Lead source', booking.lead_source],
   ].filter(function (r) { return r[1] != null && r[1] !== ''; });

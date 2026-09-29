@@ -155,6 +155,9 @@ section[id],div[id]{scroll-margin-top:120px}
 .topbar-links svg{width:14px;height:14px;fill:none;stroke:var(--brand-on-navy);stroke-width:1.6}
 
 .site-head{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--ink-100)}
+/* The campaign strip is sticky too, so the header comes to rest under it and
+   the two travel together. Without the strip the header still stops at 0. */
+.has-promo .site-head{top:var(--promo-h)}
 .head-inner{
   display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;
   align-items:center;gap:var(--s-6);min-height:76px;
@@ -174,6 +177,141 @@ section[id],div[id]{scroll-margin-top:120px}
 .site-nav>ul>li>a:hover{background:var(--ink-100);color:var(--ink-900)}
 .site-nav>ul>li>a[aria-current="page"]{color:var(--brand-deep);font-weight:600;background:var(--brand-soft)}
 .head-actions{display:flex;align-items:center;gap:var(--s-3);justify-self:end}
+
+/* ---- campaign strip -------------------------------------------------- */
+/* One quiet line above the header, the whole of it a link: what the offer is
+   and where to read it. The code itself lives on the page - a code on every
+   page of the site reads as an advert, not as an announcement.
+
+   A slow sheen crosses it about every nine seconds. It is a soft moving
+   highlight, not a blink: the background never changes brightness on its own,
+   nothing flashes, and it stops entirely for a visitor who asks for less
+   motion. */
+:root{--promo-h:40px}
+.promo-bar{
+  display:block;position:sticky;top:0;z-index:101;
+  overflow:hidden;text-decoration:none;color:#fff;
+  background:linear-gradient(100deg,#07121F 0%,#0C1F35 46%,#123A63 100%);
+  box-shadow:inset 0 -1px 0 rgba(90,162,240,.32);
+}
+.promo-inner{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  min-height:40px;padding:8px var(--gutter);text-align:center;
+}
+.promo-lead{
+  font-size:var(--t-caption);font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--brand-on-navy);
+}
+.promo-dot{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.4);flex:none}
+.promo-text{font-size:var(--t-small);font-weight:500;color:rgba(255,255,255,.94);letter-spacing:.01em}
+.promo-more{
+  display:inline-flex;align-items:center;gap:6px;margin-left:4px;
+  font-size:var(--t-caption);font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(255,255,255,.72);
+}
+.promo-more .arrow{transition:transform var(--swift)}
+.promo-bar:hover .promo-more{color:#fff}
+.promo-bar:hover .promo-more .arrow{transform:translateX(3px)}
+.promo-bar:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+
+.promo-sheen{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.promo-sheen::before{
+  content:"";position:absolute;top:-60%;bottom:-60%;left:0;width:26%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.13),transparent);
+  transform:translateX(-160%) skewX(-14deg);
+  animation:promo-sheen 9s cubic-bezier(.45,0,.2,1) infinite;
+}
+@keyframes promo-sheen{
+  0%{transform:translateX(-160%) skewX(-14deg)}
+  45%,100%{transform:translateX(480%) skewX(-14deg)}
+}
+
+@media (max-width:1080px){.promo-more{display:none}}
+@media (max-width:760px){
+  /* One line or nothing: a wrapped strip eats the top of the hero. */
+  .promo-lead{display:none}
+  .promo-dot{display:none}
+  :root{--promo-h:36px}
+  .promo-inner{gap:8px;min-height:36px;flex-wrap:nowrap}
+  .promo-text{white-space:nowrap;font-size:var(--t-caption)}
+  .promo-more{display:inline-flex;margin-left:0}
+  .promo-more-label{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .promo-more .arrow{transition:none}
+  .promo-sheen::before{animation:none;display:none}
+}
+
+.offer-applied{
+  display:inline-block;margin:0 0 10px;padding:6px 12px;border-radius:8px;
+  background:var(--brand-soft);color:var(--brand-deep);
+  font-size:var(--t-caption);font-weight:700;letter-spacing:.06em;
+}
+
+/* ---- the offer page -------------------------------------------------- */
+/* The head of this page is the navy panel every page head uses, so the code
+   and its small print are written for a dark ground. */
+.offer-code{
+  display:inline-flex;align-items:center;flex-wrap:wrap;gap:var(--s-3);margin-top:var(--s-6);
+  padding:14px 20px;border-radius:var(--r-card);
+  border:1px dashed rgba(255,255,255,.45);background:rgba(255,255,255,.08);
+}
+.offer-code-label{font-size:var(--t-caption);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-on-navy)}
+.offer-code-value{
+  font-size:1.45rem;font-weight:800;letter-spacing:.18em;color:#fff;
+  user-select:all;                      /* one click selects the whole code */
+}
+.offer-code-hint{margin-top:var(--s-3);font-size:var(--t-small);color:var(--on-navy-2)}
+.offer-actions{display:flex;flex-wrap:wrap;gap:var(--s-3);margin-top:var(--s-6)}
+.offer-meta{margin-top:var(--s-4);font-size:var(--t-small);color:var(--on-navy-2)}
+.offer-until{font-weight:700;color:#fff}
+
+/* Four reasons on navy: panels of their own rather than the white cards used
+   on light sections, which would put white headings on a white ground. Each
+   one leads with a glyph from the same set the hero trust bar uses. */
+.offer-why{
+  list-style:none;margin:0;padding:0;display:grid;gap:0;
+  grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--navy-line);border-radius:var(--r-card);overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+}
+.offer-why li{
+  display:flex;flex-direction:column;align-items:flex-start;
+  padding:var(--s-6);border-left:1px solid var(--navy-line);
+  transition:background var(--standard);
+}
+.offer-why li:first-child{border-left:0}
+.offer-why li:hover{background:rgba(255,255,255,.04)}
+@media (max-width:1000px){
+  .offer-why{grid-template-columns:repeat(2,1fr)}
+  .offer-why li:nth-child(2n+1){border-left:0}
+  .offer-why li:nth-child(n+3){border-top:1px solid var(--navy-line)}
+}
+@media (max-width:620px){
+  .offer-why{grid-template-columns:1fr}
+  .offer-why li{border-left:0}
+  .offer-why li + li{border-top:1px solid var(--navy-line)}
+  .offer-why h3{min-height:0}
+}
+.offer-why-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:44px;height:44px;margin-bottom:var(--s-5);border-radius:14px;
+  background:rgba(90,162,240,.14);color:var(--brand-on-navy);
+}
+.offer-why-icon svg{width:22px;height:22px}
+.offer-why h3{
+  font-size:1.06rem;line-height:1.35;margin-bottom:var(--s-3);color:#fff;letter-spacing:-.005em;
+  min-height:2.7em;                 /* a two-line heading must not push its body down alone */
+}
+.offer-why p{color:var(--on-navy-2);font-size:var(--t-small);line-height:1.62}
+@media (prefers-reduced-motion:reduce){.offer-why li{transition:none}}
+/* The section copy: lead, then prose, then the list and the service links. */
+.offer-head + .sec .split-copy .lead{margin-top:var(--s-4)}
+.split-copy .ticks{margin-top:var(--s-5)}
+.split-copy .prose + .prose{margin-top:var(--s-3)}
+.split-copy .linkset{margin-top:var(--s-5)}
+.offer-terms p{font-size:var(--t-small);color:var(--ink-700);margin-top:var(--s-3);max-width:74ch}
 
 /* The switch shows the language you are reading; the rest wait under it,
    named as they name themselves. */
@@ -560,6 +698,7 @@ section[id],div[id]{scroll-margin-top:120px}
 .service-hero .meta-row{color:#e1e5e9;gap:12px 24px}
 .service-hero-right::before{background:linear-gradient(270deg,rgba(10,14,18,.92),rgba(10,14,18,.82) 32%,rgba(10,14,18,.20) 62%,transparent 82%)}
 .service-hero-right .service-hero-copy{margin-left:auto}
+.offer-head .service-hero-photo{object-position:70% center}
 @media (max-width:940px){
   /* Phones and tablets keep the desktop composition: the photo stays behind
      the copy. The side gradient becomes a top-to-bottom veil, so the upper
@@ -575,6 +714,9 @@ section[id],div[id]{scroll-margin-top:120px}
   .service-hero h1{font-size:32px;max-width:28ch}
   .service-hero .lead{font-size:17px}
   .service-hero-passenger .service-hero-photo{object-position:90% top}
+  .offer-head .service-hero-photo{height:320px;object-position:75% center}
+  .offer-head::before{background:linear-gradient(180deg,transparent 140px,#15191d 320px)}
+  .offer-head .page-head-inner{padding-top:260px}
 }
 .crumbs{display:flex;flex-wrap:wrap;gap:var(--s-2);list-style:none;font-size:var(--t-small);color:var(--on-navy-2);margin-bottom:var(--s-6)}
 .crumbs li+li::before{content:"/";margin-right:var(--s-2);color:rgba(255,255,255,.35)}

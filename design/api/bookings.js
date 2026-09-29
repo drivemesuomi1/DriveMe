@@ -281,7 +281,15 @@ export default async function handler(req, res) {
       when: scheduledDate ?? undefined,
     });
 
-    const notes = optionalString(body.notes, 2000);
+    // A campaign code the customer typed, or brought from the offer page. It
+    // is kept on the first line of the notes rather than in a column of its
+    // own: the booking has to carry it - ops applies the discount by hand when
+    // confirming the price - and this needs no migration to do that.
+    // emails.js lifts it back out onto its own line in the alert.
+    const offerCode = (optionalString(body.offer_code, 20) || '')
+      .toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20) || null;
+    const ownNotes = optionalString(body.notes, 2000);
+    const notes = offerCode ? [`Offer code: ${offerCode}`, ownNotes].filter(Boolean).join('\n') : ownNotes;
     const accessNotes = optionalString(body.access_notes, 1000);
     const vehicleNotes = optionalString(body.vehicle_notes, 1000);
     // Only for a vehicle move: on a journey, passengers are the point.

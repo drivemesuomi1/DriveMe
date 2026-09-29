@@ -178,7 +178,7 @@ export const words = {
   getInTouch: 'Kontakt',
   information: 'Information',
   /** Query-string names the request form understands in this language. */
-  params: { source: 'kalla', service: 'tjanst', pickup: 'hamtning', date: 'datum', type: 'typ' },
+  params: { source: 'kalla', service: 'tjanst', pickup: 'hamtning', date: 'datum', type: 'typ', offer: 'erbjudande' },
   typeValues: { move: 'flytt', service: 'service', journey: 'resa' },
   typicalShort: (a, b) => `Vanligtvis ${a}–${b} €`,
   safetyPoints: [

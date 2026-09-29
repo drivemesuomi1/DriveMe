@@ -245,6 +245,18 @@
     }
   } catch (e) { /* storage blocked: attribution is lost, nothing else is */ }
 
+  /* ---------------------------------------------- campaign strip ---
+     The build leaves the strip out once the offer has ended, but a page
+     served from a cache can be older than that. A discount on screen is a
+     promise, so the page checks the date itself. */
+  var promo = document.querySelector('.promo-bar');
+  if (promo) {
+    var until = promo.getAttribute('data-until');
+    var today = new Date();
+    var iso = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+    if (until && iso > until) promo.parentNode.removeChild(promo);
+  }
+
   /* ------------------------------------------------ language switch ---
      The drop-down already opens on hover and on focus from CSS, so it works
      with this file blocked. What it cannot do is open on a tap, or tell a

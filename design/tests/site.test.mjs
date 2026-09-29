@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { allPages, fileFor, url, serviceUrl, routes } from '../build/routes.mjs';
 import { services } from '../content/services.mjs';
 import { ui, words, LOCALES } from '../content/site.mjs';
+import { offer, OFFER, offerExpired } from '../content/offer.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
 import { PRODUCTS, SERVICE_PRODUCTS } from '../api/_lib/pricing.js';
 
@@ -319,7 +320,7 @@ test('every page offers all three languages and keeps you on the same page', asy
   for (const p of pages) {
     const html = await read(fileFor(p.path));
     const head = /<header class="site-head">([\s\S]*?)<\/header>/.exec(html)[1];
-    assert.match(html, new RegExp(`<html lang="${p.locale}">`), `${p.path} is not marked as ${p.locale}`);
+    assert.match(html, new RegExp(`<html lang="${p.locale}"[ >]`), `${p.path} is not marked as ${p.locale}`);
     // The service area is named in the page's own language: Helsingfors, not Helsinki.
     const cities = words[p.locale].cities.join(' · ');
     assert.ok(html.includes(`<p class="topbar-note">${cities}</p>`), `${p.path} names the area in another language`);
@@ -347,6 +348,64 @@ test('every page offers all three languages and keeps you on the same page', asy
     const trigger = head.slice(head.indexOf('<button type="button" class="lang-trigger"'));
     assert.ok(trigger.startsWith('<button type="button" class="lang-trigger" aria-expanded="false"'), `${p.path} has no language trigger`);
     assert.ok(trigger.slice(0, trigger.indexOf('</button>')).includes(`<span>${p.locale.toUpperCase()}</span>`), `${p.path} trigger does not show ${p.locale}`);
+  }
+});
+
+test('the new-customer offer is one page per language, with its code and end date', async () => {
+  for (const locale of LOCALES) {
+    const html = await read(fileFor(url('offer', locale)));
+    const c = offer[locale];
+    assert.match(html, new RegExp(`<html lang="${locale}"[ >]`), `${locale} offer page language`);
+    assert.ok(html.includes(`<title>${escapeHtml(c.title)}</title>`), `${locale} offer page title`);
+    assert.ok(html.includes(escapeHtml(c.description)), `${locale} offer page description`);
+    assert.ok(html.includes(OFFER.code), `${locale} offer page does not show the code`);
+
+    // The code travels to the request form in this language's own word.
+    const href = `${ui[locale].bookHref}?${words[locale].params.source}=offer&${words[locale].params.offer}=${OFFER.code}`;
+    assert.ok(html.includes(`href="${href}"`), `${locale} offer page does not carry the code to the form`);
+
+    // A campaign page states the terms it is bound by, and who it is for.
+    for (const term of c.terms) assert.ok(html.includes(escapeHtml(term.slice(0, 60))), `${locale} offer terms`);
+    assert.ok(html.includes(escapeHtml(c.areaLine)), `${locale} offer page does not name the area`);
+
+    // It is an ordinary indexable page: canonical, alternates, in the sitemap.
+    assert.ok(html.includes(`<link rel="canonical" href="https://driveme.fi${url('offer', locale)}">`), `${locale} offer canonical`);
+    const xml = await read('sitemap.xml');
+    assert.ok(xml.includes(`<loc>https://driveme.fi${url('offer', locale)}</loc>`), `${locale} offer page missing from the sitemap`);
+  }
+});
+
+test('the request form takes an offer code, optionally, in every language', async () => {
+  for (const locale of LOCALES) {
+    const html = await read(fileFor(url('booking', locale)));
+    const input = /<input type="text" id="offer_code"[^>]*>/.exec(html);
+    assert.ok(input, `${locale} form has no offer code field`);
+    assert.equal(/required/.test(input[0]), false, `${locale} offer code must stay optional`);
+    assert.ok(html.includes('id="offer_code-help"'), `${locale} offer code field has no help text`);
+    // Out in the open, not inside the collapsed optional details.
+    assert.ok(html.indexOf('id="offer_code"') < html.indexOf('<details class="more-details"'),
+      `${locale} offer code field is buried in the optional section`);
+  }
+});
+
+test('the campaign strip sits above the header of every page but the offer itself', async () => {
+  if (offerExpired()) return;   // past the end date the build drops it on purpose
+  for (const p of pages) {
+    const html = await read(fileFor(p.path));
+    if (p.id === 'offer') {
+      assert.equal(html.includes('class="promo-bar"'), false, 'the offer page advertises itself');
+      continue;
+    }
+    const bar = /<a class="promo-bar" href="([^"]+)" data-until="([^"]+)">([\s\S]*?)<\/a>/.exec(html);
+    assert.ok(bar, `${p.path} has no campaign strip`);
+    assert.equal(bar[1], url('offer', p.locale), `${p.path} strip points at another language`);
+    assert.equal(bar[2], OFFER.endsAt, `${p.path} strip carries the wrong end date`);
+    assert.ok(bar[3].includes(escapeHtml(offer[p.locale].bar.text)), `${p.path} strip is not in ${p.locale}`);
+    // The code belongs on the offer page. Repeated on every page of the site
+    // it reads as an advert rather than an announcement.
+    assert.equal(bar[3].includes(OFFER.code), false, `${p.path} strip carries the code`);
+    // Above the header, not inside it: the header is sticky and this is not.
+    assert.ok(html.indexOf('class="promo-bar"') < html.indexOf('<header class="site-head">'), `${p.path} strip is not above the header`);
   }
 });
 

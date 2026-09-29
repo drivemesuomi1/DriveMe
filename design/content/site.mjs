@@ -401,7 +401,7 @@ export const words = {
     reviewPending: 'Tarkastus kesken',
     getInTouch: 'Yhteys',
     information: 'Tietoa',
-    params: { source: 'lahde', service: 'palvelu', pickup: 'nouto', date: 'pvm', type: 'tyyppi' },
+    params: { source: 'lahde', service: 'palvelu', pickup: 'nouto', date: 'pvm', type: 'tyyppi', offer: 'etu' },
     typeValues: { move: 'siirto', service: 'palvelu', journey: 'matka' },
     typicalShort: (a, b) => `Tyypillisesti ${a}–${b} €`,
     safetyPoints: [
@@ -456,7 +456,7 @@ export const words = {
     reviewPending: 'Review pending',
     getInTouch: 'Get in touch',
     information: 'Information',
-    params: { source: 'source', service: 'service', pickup: 'pickup', date: 'date', type: 'type' },
+    params: { source: 'source', service: 'service', pickup: 'pickup', date: 'date', type: 'type', offer: 'offer' },
     typeValues: { move: 'move', service: 'service', journey: 'journey' },
     typicalShort: (a, b) => `Typically ${a}–${b} €`,
     safetyPoints: [
