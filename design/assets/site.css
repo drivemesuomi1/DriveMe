@@ -714,9 +714,13 @@ section[id],div[id]{scroll-margin-top:120px}
   .service-hero h1{font-size:32px;max-width:28ch}
   .service-hero .lead{font-size:17px}
   .service-hero-passenger .service-hero-photo{object-position:90% top}
-  .offer-head .service-hero-photo{height:320px;object-position:75% center}
-  .offer-head::before{background:linear-gradient(180deg,transparent 140px,#15191d 320px)}
-  .offer-head .page-head-inner{padding-top:260px}
+  /* The offer hero is a service hero like any other: the photo fills the
+     section behind the copy. It used to be cropped to a 320px band with the
+     text pushed below it, which read as a picture pasted above the page. */
+  /* The photo is wide and the hero is tall, so a phone sees a narrow vertical
+     slice of it. 62% lands on the middle of the car - doors and mirror - which
+     still reads as a car; the front and rear crops read as fragments. */
+  .offer-head .service-hero-photo{object-position:62% center}
 }
 .crumbs{display:flex;flex-wrap:wrap;gap:var(--s-2);list-style:none;font-size:var(--t-small);color:var(--on-navy-2);margin-bottom:var(--s-6)}
 .crumbs li+li::before{content:"/";margin-right:var(--s-2);color:rgba(255,255,255,.35)}
