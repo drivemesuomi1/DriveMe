@@ -31,6 +31,16 @@ import {
 import { serviceUrl as _serviceUrl } from './routes.mjs';
 import { bookingForm, bookingScript } from './booking-form.mjs';
 
+/* The hero photograph (client, 5 Oct 2026), in place of the reel that used to
+   run here. Two widths: a phone fetches a quarter of the bytes of the large
+   one, and neither is anywhere near the 7.6MB the video cost. The file names
+   carry the year because /assets is cached for a year - a new picture needs a
+   new name to reach anyone who has been here before. */
+const HERO_PHOTO = {
+  src: '/assets/hero-chauffeur-2026.jpg',
+  srcset: '/assets/hero-chauffeur-2026-1000.jpg 1000w, /assets/hero-chauffeur-2026.jpg 1600w',
+};
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const MANIFEST = join(ROOT, '.generated-files.json');
 
@@ -75,14 +85,11 @@ function renderHome(locale) {
 
   const body = `
 <section class="hero">
-  <!-- Full-bleed reel. The scrim is weighted to the left so the copy keeps its
-       contrast while the footage stays readable on the right. -->
+  <!-- Full-bleed photograph. The scrim is weighted to the left so the copy
+       keeps its contrast while the picture stays readable on the right. -->
   <div class="hero-bg" aria-hidden="true">
-    <video id="hero-video" muted loop playsinline autoplay
-           preload="metadata" poster="/assets/hero-poster.jpg">
-      <source src="/assets/hero-mercedes-premium-mobile.mp4" type="video/mp4" media="(max-width: 640px)">
-      <source src="/assets/hero-mercedes-premium-reel.mp4" type="video/mp4">
-    </video>
+    <img class="hero-photo" src="${HERO_PHOTO.src}" srcset="${HERO_PHOTO.srcset}" sizes="100vw"
+         alt="" width="1600" height="900" fetchpriority="high" decoding="async">
     <span class="hero-scrim"></span>
   </div>
   <div class="wrap hero-grid">
@@ -198,6 +205,10 @@ ${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody, primaryHref: src('home_c
   return page({
     id: 'home', locale, navKey: null,
     title: c.title, description: c.description, body,
+    // The hero photograph is the largest thing on the page and the first thing
+    // a visitor sees, so the browser is told to fetch it before it has parsed
+    // the body - it is the Largest Contentful Paint on every homepage.
+    headExtra: `<link rel="preload" as="image" href="${HERO_PHOTO.src}" imagesrcset="${HERO_PHOTO.srcset}" imagesizes="100vw" fetchpriority="high">`,
     schema: [
       breadcrumbSchema([{ label: ui[locale].breadcrumbHome, href: url('home', locale) }]),
       faqSchema(homeFaq(locale)),

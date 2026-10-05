@@ -142,6 +142,25 @@ would never reach returning visitors.
 
 The archived concept pages (`/legacy`, `01-`, `02-`) keep their old artwork on purpose.
 
+## Hero photograph
+
+The homepage hero is a still (client artwork, 5 Oct 2026), not the reel it used to be:
+`assets/hero-chauffeur-2026.jpg` at 1600px and `-1000.jpg` for phones, named in
+`HERO_PHOTO` in `build/build.mjs` and referenced nowhere else. It is preloaded and
+marked `fetchpriority="high"` because it is the page's largest paint.
+
+- **Weight.** 159kB and 78kB, against 7.4MB for the reel and 2MB for its phone cut.
+  The hero now costs a fiftieth of what it did on a desktop connection.
+- **Framing.** The photograph is wide and a phone hero is tall, so a phone sees a
+  narrow column of it: `object-position` anchors that column on the wheel and the
+  windscreen (`32% 40%` under 640px) rather than on the middle of the dashboard.
+- **Resolution.** The supplied file is 1600x900. That is enough for the hero at
+  normal density and slightly soft on a large retina screen - a 2560px original of
+  the same shot, or a portrait crop for phones, would both be worth asking for.
+- The old reel (`hero-mercedes-premium-*.mp4`, `hero-poster.jpg`) is still in
+  `assets/` but nothing references it. The demo bundle only copies what the pages
+  use, so it no longer ships.
+
 ## Editing the site
 
 Never edit a generated `.html` by hand — the next build overwrites it. Change

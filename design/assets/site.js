@@ -45,30 +45,8 @@
     else if (DESKTOP_NAV.addListener) DESKTOP_NAV.addListener(onNavBreakpoint);
   }
 
-  /* ------------------------------------------------- hero video ---
-     autoplay is in the markup so the video runs without JS, but a viewer who
-     asked their OS for reduced motion should get the poster frame instead of
-     a looping reel they cannot stop. */
-  var hero = document.getElementById('hero-video');
-  if (hero && window.matchMedia) {
-    var still = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var apply = function () {
-      if (still.matches) {
-        hero.removeAttribute('autoplay');
-        hero.pause();
-        hero.currentTime = 0;
-        hero.load();            // repaint the poster over the paused frame
-      } else if (hero.paused) {
-        var p = hero.play();
-        // Autoplay can still be refused (data saver, low power mode). The
-        // poster carries the hero on its own, so a rejection is not an error.
-        if (p && p.catch) p.catch(function () {});
-      }
-    };
-    apply();
-    if (still.addEventListener) still.addEventListener('change', apply);
-    else if (still.addListener) still.addListener(apply);
-  }
+  /* The hero is a photograph now, not a reel, so the reduced-motion guard
+     that used to pause it is gone: there is nothing left moving to pause. */
 
   /* --------------------------------------------- services menu ---
      Hover is an enhancement, never the only way in: the trigger is a real

@@ -571,9 +571,15 @@ section[id],div[id]{scroll-margin-top:120px}
 .hero .trust-strip li{color:#DFE8F3}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:var(--s-3);margin-top:var(--s-8)}
 
-/* Full-bleed reel behind the whole hero. */
-.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
-.hero-bg video{width:100%;height:100%;object-fit:cover;display:block}
+/* Full-bleed photograph behind the whole hero. */
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;background:#0A0E12}
+.hero-photo{
+  width:100%;height:100%;object-fit:cover;display:block;
+  /* The driver sits left of centre: on a wide screen the frame is kept whole,
+     and as the hero narrows the crop holds the wheel and the road rather than
+     drifting onto the empty passenger seat. */
+  object-position:50% 46%;
+}
 /* Weighted to the left: the copy column needs 4.5:1 against white text, the
    right stays light enough that the footage still reads. */
 .hero-scrim{
@@ -640,6 +646,10 @@ section[id],div[id]{scroll-margin-top:120px}
   .hero h1{max-width:18ch}
   /* One column: the scrim has to darken the whole frame, not just one side. */
   .hero-scrim{background:linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.72) 55%,rgba(0,0,0,.80) 100%)}
+  /* A phone hero is tall and the photograph is wide, so only a narrow
+     column of it survives the crop. Anchor that column on the driver and
+     the wheel rather than on the middle of the dashboard. */
+  .hero-photo{object-position:32% 40%}
 }
 
 /* ==========================================================================

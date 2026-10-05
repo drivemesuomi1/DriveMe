@@ -10,7 +10,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile, access } from 'node:fs/promises';
+import { readFile, access, stat } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -406,6 +406,35 @@ test('the campaign strip sits above the header of every page but the offer itsel
     assert.equal(bar[3].includes(OFFER.code), false, `${p.path} strip carries the code`);
     // Above the header, not inside it: the header is sticky and this is not.
     assert.ok(html.indexOf('class="promo-bar"') < html.indexOf('<header class="site-head">'), `${p.path} strip is not above the header`);
+  }
+});
+
+test('the homepage hero is a photograph, preloaded, in two widths', async () => {
+  for (const locale of LOCALES) {
+    const html = await read(fileFor(url('home', locale)));
+    const hero = /<div class="hero-bg"[\s\S]*?<\/div>/.exec(html);
+    assert.ok(hero, `${locale} homepage has no hero background`);
+
+    // The reel is gone: no video element, no .mp4 anywhere on the page.
+    assert.equal(/<video/.test(html), false, `${locale} homepage still carries a video`);
+    assert.equal(/\.mp4/.test(html), false, `${locale} homepage still references the reel`);
+
+    const img = /<img class="hero-photo"[^>]*>/.exec(hero[0]);
+    assert.ok(img, `${locale} hero has no photograph`);
+    assert.match(img[0], /fetchpriority="high"/, `${locale} hero photo is not prioritised`);
+    assert.match(img[0], /width="1600" height="900"/, `${locale} hero photo reserves no space`);
+    assert.match(img[0], /srcset="[^"]*1000w,[^"]*1600w"/, `${locale} hero photo has no small variant`);
+    assert.ok(hero[0].includes('<span class="hero-scrim">'), `${locale} hero lost its scrim`);
+
+    // Preloaded, because it is the largest paint on the page.
+    assert.match(html, /<link rel="preload" as="image" href="\/assets\/hero-chauffeur-2026\.jpg"[^>]*imagesrcset=/,
+      `${locale} hero photo is not preloaded`);
+  }
+
+  // Both files exist and stay small enough to be a hero, not a download.
+  for (const [file, limit] of [['assets/hero-chauffeur-2026.jpg', 400], ['assets/hero-chauffeur-2026-1000.jpg', 200]]) {
+    const { size } = await stat(join(ROOT, file));
+    assert.ok(size > 0 && size < limit * 1024, `${file} is ${Math.round(size / 1024)}kB, over the ${limit}kB budget`);
   }
 });
 
