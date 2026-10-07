@@ -20,7 +20,7 @@ export const esc = (s) => String(s ?? '')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 const abs = (path) => `${ORIGIN}${path}`;
-const HREFLANG = { fi: 'fi-FI', en: 'en-FI', sv: 'sv-FI' };
+export const HREFLANG = { fi: 'fi-FI', en: 'en-FI', sv: 'sv-FI' };
 const OG_LOCALE = { fi: 'fi_FI', en: 'en_FI', sv: 'sv_FI' };
 
 /**
@@ -381,6 +381,38 @@ export function organizationSchema() {
     }],
     address: { '@type': 'PostalAddress', addressLocality: brand.city, addressCountry: brand.country },
     areaServed: brand.coverage.map((c) => ({ '@type': 'City', name: c })),
+    // What we actually sell, with the prices the pricing file computes. A
+    // search engine - or an assistant answering "who drives my car to the
+    // inspection in Helsinki" - can read the catalogue without parsing prose.
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'DriveMe',
+      itemListElement: services
+        .filter((s) => !isServiceGated(s.key) && s.key !== 'business')
+        .map((s) => {
+          const product = PRODUCTS[SERVICE_PRODUCTS[s.key]?.default];
+          const offer = {
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: s.fi.nav,
+              url: `${ORIGIN}${routes[`service:${s.key}`].fi}`,
+              areaServed: brand.coverage.map((c) => ({ '@type': 'City', name: c })),
+            },
+          };
+          // A quote-only service publishes no figure, here or anywhere else.
+          if (product && !product.quote && !product.hidden) {
+            offer.priceCurrency = 'EUR';
+            offer.priceSpecification = {
+              '@type': 'PriceSpecification',
+              priceCurrency: 'EUR',
+              minPrice: product.from,
+              valueAddedTaxIncluded: true,
+            };
+          }
+          return offer;
+        }),
+    },
   };
 }
 

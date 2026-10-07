@@ -18,10 +18,10 @@ import { fileURLToPath } from 'node:url';
 
 import { ORIGIN, LOCALES, brand, ui, words, nav, howItWorks, trustStrip } from '../content/site.mjs';
 import { services, byKey } from '../content/services.mjs';
-import { SERVICE_PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
+import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
 import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking } from '../content/pages.mjs';
 import { offer, OFFER, offerExpired } from '../content/offer.mjs';
-import { page, esc, serviceSchema, breadcrumbSchema, faqSchema } from './layout.mjs';
+import { page, esc, serviceSchema, breadcrumbSchema, faqSchema, HREFLANG } from './layout.mjs';
 import { url, serviceUrl, allPages, fileFor } from './routes.mjs';
 import {
   crumbs, serviceCards, stepsList, factCard, callout, faqList, tickList, fancy, plain, trustIcon,
@@ -813,8 +813,13 @@ function sitemap() {
         .filter((l) => allPages().some((q) => q.id === p.id && q.locale === l))
         .map((l) => {
           const q = allPages().find((x) => x.id === p.id && x.locale === l);
-          return `    <xhtml:link rel="alternate" hreflang="${l === 'fi' ? 'fi-FI' : 'en-FI'}" href="${ORIGIN}${q.path}"/>`;
-        }).join('\n');
+          return `    <xhtml:link rel="alternate" hreflang="${HREFLANG[l]}" href="${ORIGIN}${q.path}"/>`;
+        }).join('\n')
+        // x-default points at Finnish, the primary market language. The table
+        // is the one layout.mjs uses for the <head> links: this used to be its
+        // own ternary, which labelled the Swedish page en-FI and left two
+        // alternates claiming the same language - enough to void the cluster.
+        + `\n    <xhtml:link rel="alternate" hreflang="x-default" href="${ORIGIN}${allPages().find((x) => x.id === p.id && x.locale === 'fi').path}"/>`;
       const priority = p.id === 'home' ? '1.0' : p.id.startsWith('service:') ? '0.8' : '0.6';
       return `  <url>
     <loc>${ORIGIN}${p.path}</loc>
@@ -845,17 +850,74 @@ Disallow: /legacy
 Disallow: /01-driveme-landing
 Disallow: /02-driveme-light`;
 
-  // A crawler follows only the most specific group that names it, so OpenAI's
-  // search crawler gets the same rules spelled out: welcome on every public
-  // page, kept out of the same operational ones.
+  // A crawler follows only the most specific group that names it, so the
+  // crawlers that decide whether an assistant may cite us get the same rules
+  // spelled out: welcome on every public page, kept out of the same
+  // operational ones. These are the search-and-citation bots, not the
+  // model-training ones (GPTBot, ClaudeBot, CCBot) - training access is the
+  // owner's call and is left to the catch-all group.
+  const AI_SEARCH_BOTS = [
+    'OAI-SearchBot',      // whether ChatGPT Search can cite us
+    'Claude-SearchBot',   // whether Claude's search can cite us
+    'PerplexityBot',      // Perplexity's index
+    'Google-Extended',    // Gemini grounding
+  ];
+
   return `# DriveMe — robots.txt
 User-agent: *
 ${rules}
 
-User-agent: OAI-SearchBot
-${rules}
+${AI_SEARCH_BOTS.map((bot) => `User-agent: ${bot}\n${rules}`).join('\n\n')}
 
 Sitemap: ${ORIGIN}/sitemap.xml
+`;
+}
+
+/**
+ * /llms.txt — the plain-language summary an assistant reads when it is asked
+ * who drives a car to the inspection in Helsinki. Generated from the same
+ * content and the same price file as the pages, so it cannot drift from them.
+ */
+function llmsTxt() {
+  const line = (key) => {
+    const s = byKey[key];
+    const product = PRODUCTS[SERVICE_PRODUCTS[key]?.default];
+    const price = !product || product.quote || product.hidden
+      ? 'quoted individually'
+      : `from ${product.from} € incl. VAT`;
+    return `- [${s.fi.nav}](${ORIGIN}${url(`service:${key}`, 'fi')}) — ${price}. ${s.en.short}`;
+  };
+  const sold = services.filter((s) => !isGated(s)).map((s) => s.key);
+
+  return `# DriveMe
+
+> A driver for your own car in the Helsinki capital region. We collect a
+> roadworthy car and drive it where it needs to go — the inspection, a
+> workshop, a tyre change, a wash, or another address — and bring it back as
+> agreed. We also drive the customer in their own car when they ask for it.
+> DriveMe brings the driver, never the car.
+
+- Operator: ${brand.legalName} (DriveMe), ${brand.city}, Finland
+- Service area: ${brand.coverage.join(', ')}
+- Phone: ${brand.phone} · Email: ${brand.email}
+- Languages: Finnish (${ORIGIN}/), English (${ORIGIN}/en/), Swedish (${ORIGIN}/sv/)
+- Prices include VAT. Third-party charges (inspection, service, tyres, wash)
+  are paid by the customer directly to that provider.
+- A request is not a booking: DriveMe calls back and confirms a fixed price
+  before anyone drives.
+
+## Services
+
+${sold.map(line).join('\n')}
+
+## Key pages
+
+- [Prices](${ORIGIN}${url('pricing', 'fi')})
+- [How it works](${ORIGIN}${url('how', 'fi')})
+- [Safety and insurance](${ORIGIN}${url('safety', 'fi')})
+- [Frequently asked questions](${ORIGIN}${url('faq', 'fi')})
+- [Terms of service](${ORIGIN}${url('terms', 'fi')})
+- [Contact](${ORIGIN}${url('contact', 'fi')})
 `;
 }
 
@@ -888,6 +950,7 @@ async function main() {
   await emitRaw('404.html', render404());
   await emitRaw('sitemap.xml', sitemap());
   await emitRaw('robots.txt', robots());
+  await emitRaw('llms.txt', llmsTxt());
 
   await writeFile(MANIFEST, JSON.stringify(written.sort(), null, 2), 'utf8');
   console.log(`built ${written.length} files:`);

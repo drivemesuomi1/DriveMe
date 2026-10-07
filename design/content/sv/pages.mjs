@@ -18,7 +18,7 @@ const range = (p) => `${p.typical[0]}-${p.typical[1]} €`;
 
 export const home = {
   slug: 'sv',
-  title: 'En förare för din bil | Bilflytt, besiktning och service | DriveMe',
+  title: 'En förare för din bil i Helsingfors | Bilflytt | DriveMe',
   description: 'DriveMe hämtar din körklara bil och kör den till den adress, besiktning, verkstad, däckfirma eller biltvätt du väljer i huvudstadsregionen. Du behöver inte åka med.',
   eyebrow: 'Bilflytt i huvudstadsregionen',
   h1: 'En förare för din bil - när du inte hinner köra själv.',
@@ -111,7 +111,7 @@ export const home = {
 
 export const servicesHub = {
   slug: 'sv/tjanster',
-  title: 'Bilflyttar och servicekörningar | DriveMe',
+  title: 'Bilflyttar och servicekörningar i Helsingfors | DriveMe',
   description: 'Alla DriveMes tjänster: bilen till besiktning, verkstad, däckbyte och tvätt, bilflytt mellan adresser, förare för din resa och flyttar av företagsbilar.',
   h1: 'Bilflyttar och *servicekörningar*',
   lead: 'En förare kör din bil dit den ska. Du behöver inte åka med, och leverantören väljer du alltid själv.',
@@ -137,7 +137,7 @@ const priceRows = [
 
 export const pricing = {
   slug: 'sv/priser',
-  title: 'DriveMes priser | Bilflytt och servicekörningar',
+  title: 'DriveMes priser | Förartjänster i Helsingfors',
   description: `DriveMes priser: bilflytt från ${PRODUCTS.oneWay.from} €, service-, däck- eller tvättkörning från ${PRODUCTS.serviceRun.from} €, besiktningskörning från ${PRODUCTS.inspection.from} €. Leverantörens avgifter ingår inte.`,
   h1: 'DriveMes *priser*',
   lead: 'Priserna inkluderar moms. Du ser ett riktpris direkt i formuläret och vi bekräftar ett fast DriveMe-pris innan föraren åker. Resor där du själv åker med prissätts utifrån rutten.',

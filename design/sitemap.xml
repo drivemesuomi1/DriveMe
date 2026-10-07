@@ -4,7 +4,8 @@
     <loc>https://driveme.fi/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -12,7 +13,8 @@
     <loc>https://driveme.fi/en/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -20,7 +22,8 @@
     <loc>https://driveme.fi/sv/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -28,7 +31,8 @@
     <loc>https://driveme.fi/palvelut/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/palvelut/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/services/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/tjanster/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/tjanster/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/palvelut/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -36,7 +40,8 @@
     <loc>https://driveme.fi/en/services/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/palvelut/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/services/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/tjanster/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/tjanster/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/palvelut/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -44,7 +49,8 @@
     <loc>https://driveme.fi/sv/tjanster/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/palvelut/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/services/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/tjanster/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/tjanster/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/palvelut/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -52,7 +58,8 @@
     <loc>https://driveme.fi/hinnasto/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/hinnasto/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/pricing/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/priser/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/priser/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/hinnasto/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -60,7 +67,8 @@
     <loc>https://driveme.fi/en/pricing/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/hinnasto/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/pricing/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/priser/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/priser/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/hinnasto/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -68,7 +76,8 @@
     <loc>https://driveme.fi/sv/priser/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/hinnasto/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/pricing/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/priser/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/priser/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/hinnasto/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -76,7 +85,8 @@
     <loc>https://driveme.fi/nain-se-toimii/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/nain-se-toimii/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/how-it-works/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/sa-fungerar-det/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/sa-fungerar-det/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/nain-se-toimii/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -84,7 +94,8 @@
     <loc>https://driveme.fi/en/how-it-works/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/nain-se-toimii/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/how-it-works/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/sa-fungerar-det/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/sa-fungerar-det/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/nain-se-toimii/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -92,7 +103,8 @@
     <loc>https://driveme.fi/sv/sa-fungerar-det/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/nain-se-toimii/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/how-it-works/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/sa-fungerar-det/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/sa-fungerar-det/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/nain-se-toimii/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -100,7 +112,8 @@
     <loc>https://driveme.fi/turvallisuus/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/turvallisuus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/safety/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/sakerhet/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/sakerhet/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/turvallisuus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -108,7 +121,8 @@
     <loc>https://driveme.fi/en/safety/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/turvallisuus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/safety/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/sakerhet/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/sakerhet/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/turvallisuus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -116,7 +130,8 @@
     <loc>https://driveme.fi/sv/sakerhet/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/turvallisuus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/safety/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/sakerhet/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/sakerhet/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/turvallisuus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -124,7 +139,8 @@
     <loc>https://driveme.fi/usein-kysyttya/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/usein-kysyttya/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/faq/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/vanliga-fragor/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/vanliga-fragor/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/usein-kysyttya/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -132,7 +148,8 @@
     <loc>https://driveme.fi/en/faq/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/usein-kysyttya/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/faq/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/vanliga-fragor/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/vanliga-fragor/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/usein-kysyttya/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -140,7 +157,8 @@
     <loc>https://driveme.fi/sv/vanliga-fragor/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/usein-kysyttya/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/faq/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/vanliga-fragor/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/vanliga-fragor/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/usein-kysyttya/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -148,7 +166,8 @@
     <loc>https://driveme.fi/ehdot/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/ehdot/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/terms/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/villkor/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/villkor/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/ehdot/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -156,7 +175,8 @@
     <loc>https://driveme.fi/en/terms/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/ehdot/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/terms/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/villkor/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/villkor/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/ehdot/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -164,7 +184,8 @@
     <loc>https://driveme.fi/sv/villkor/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/ehdot/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/terms/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/villkor/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/villkor/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/ehdot/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -172,7 +193,8 @@
     <loc>https://driveme.fi/yhteystiedot/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/yhteystiedot/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/contact/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/kontakt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/kontakt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/yhteystiedot/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -180,7 +202,8 @@
     <loc>https://driveme.fi/en/contact/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/yhteystiedot/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/contact/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/kontakt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/kontakt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/yhteystiedot/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -188,7 +211,8 @@
     <loc>https://driveme.fi/sv/kontakt/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/yhteystiedot/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/contact/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/kontakt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/kontakt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/yhteystiedot/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -196,7 +220,8 @@
     <loc>https://driveme.fi/uuden-asiakkaan-etu/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/uuden-asiakkaan-etu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/new-customer-offer/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/nykundserbjudande/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/nykundserbjudande/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/uuden-asiakkaan-etu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -204,7 +229,8 @@
     <loc>https://driveme.fi/en/new-customer-offer/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/uuden-asiakkaan-etu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/new-customer-offer/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/nykundserbjudande/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/nykundserbjudande/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/uuden-asiakkaan-etu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -212,7 +238,8 @@
     <loc>https://driveme.fi/sv/nykundserbjudande/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/uuden-asiakkaan-etu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/new-customer-offer/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/nykundserbjudande/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/nykundserbjudande/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/uuden-asiakkaan-etu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -220,7 +247,8 @@
     <loc>https://driveme.fi/auton-vienti-katsastukseen/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-katsastukseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-inspection/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-besiktning/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-besiktning/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-katsastukseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -228,7 +256,8 @@
     <loc>https://driveme.fi/en/car-to-inspection/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-katsastukseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-inspection/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-besiktning/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-besiktning/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-katsastukseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -236,7 +265,8 @@
     <loc>https://driveme.fi/sv/bil-till-besiktning/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-katsastukseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-inspection/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-besiktning/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-besiktning/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-katsastukseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -244,7 +274,8 @@
     <loc>https://driveme.fi/auton-vienti-huoltoon/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-huoltoon/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-workshop/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-verkstad/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-verkstad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-huoltoon/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -252,7 +283,8 @@
     <loc>https://driveme.fi/en/car-to-workshop/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-huoltoon/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-workshop/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-verkstad/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-verkstad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-huoltoon/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -260,7 +292,8 @@
     <loc>https://driveme.fi/sv/bil-till-verkstad/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-huoltoon/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-workshop/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-verkstad/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-verkstad/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-huoltoon/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -268,7 +301,8 @@
     <loc>https://driveme.fi/auton-vienti-renkaanvaihtoon/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-renkaanvaihtoon/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-tyre-service/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-dackbyte/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-dackbyte/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-renkaanvaihtoon/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -276,7 +310,8 @@
     <loc>https://driveme.fi/en/car-to-tyre-service/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-renkaanvaihtoon/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-tyre-service/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-dackbyte/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-dackbyte/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-renkaanvaihtoon/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -284,7 +319,8 @@
     <loc>https://driveme.fi/sv/bil-till-dackbyte/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-renkaanvaihtoon/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-tyre-service/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-dackbyte/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-dackbyte/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-renkaanvaihtoon/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -292,7 +328,8 @@
     <loc>https://driveme.fi/auton-vienti-pesuun/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-pesuun/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-wash/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-biltvatt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-biltvatt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-pesuun/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -300,7 +337,8 @@
     <loc>https://driveme.fi/en/car-to-wash/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-pesuun/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-wash/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-biltvatt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-biltvatt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-pesuun/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -308,7 +346,8 @@
     <loc>https://driveme.fi/sv/bil-till-biltvatt/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-pesuun/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-wash/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bil-till-biltvatt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bil-till-biltvatt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-pesuun/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -316,7 +355,8 @@
     <loc>https://driveme.fi/auton-vienti-korjaukseen/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-korjaukseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-body-shop/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/glas-plat-och-aterkallelse/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/glas-plat-och-aterkallelse/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-korjaukseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -324,7 +364,8 @@
     <loc>https://driveme.fi/en/car-to-body-shop/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-korjaukseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-body-shop/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/glas-plat-och-aterkallelse/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/glas-plat-och-aterkallelse/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-korjaukseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -332,7 +373,8 @@
     <loc>https://driveme.fi/sv/glas-plat-och-aterkallelse/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-vienti-korjaukseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/car-to-body-shop/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/glas-plat-och-aterkallelse/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/glas-plat-och-aterkallelse/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-vienti-korjaukseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -340,7 +382,8 @@
     <loc>https://driveme.fi/auton-nouto-ja-palautus/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-nouto-ja-palautus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/vehicle-pickup-and-return/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/upphamtning-och-retur/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/upphamtning-och-retur/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-nouto-ja-palautus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -348,7 +391,8 @@
     <loc>https://driveme.fi/en/vehicle-pickup-and-return/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-nouto-ja-palautus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/vehicle-pickup-and-return/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/upphamtning-och-retur/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/upphamtning-och-retur/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-nouto-ja-palautus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -356,7 +400,8 @@
     <loc>https://driveme.fi/sv/upphamtning-och-retur/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-nouto-ja-palautus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/vehicle-pickup-and-return/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/upphamtning-och-retur/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/upphamtning-och-retur/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-nouto-ja-palautus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -364,7 +409,8 @@
     <loc>https://driveme.fi/auton-siirtopalvelu/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-siirtopalvelu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/vehicle-relocation/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bilflytt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bilflytt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-siirtopalvelu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -372,7 +418,8 @@
     <loc>https://driveme.fi/en/vehicle-relocation/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-siirtopalvelu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/vehicle-relocation/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bilflytt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bilflytt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-siirtopalvelu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -380,7 +427,8 @@
     <loc>https://driveme.fi/sv/bilflytt/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-siirtopalvelu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/vehicle-relocation/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/bilflytt/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/bilflytt/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-siirtopalvelu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -388,7 +436,8 @@
     <loc>https://driveme.fi/auton-palautus-autoliikkeeseen/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-palautus-autoliikkeeseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/dealer-and-lease-handover/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/aterlamning-till-bilhandel/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/aterlamning-till-bilhandel/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-palautus-autoliikkeeseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -396,7 +445,8 @@
     <loc>https://driveme.fi/en/dealer-and-lease-handover/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-palautus-autoliikkeeseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/dealer-and-lease-handover/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/aterlamning-till-bilhandel/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/aterlamning-till-bilhandel/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-palautus-autoliikkeeseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -404,7 +454,8 @@
     <loc>https://driveme.fi/sv/aterlamning-till-bilhandel/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/auton-palautus-autoliikkeeseen/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/dealer-and-lease-handover/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/aterlamning-till-bilhandel/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/aterlamning-till-bilhandel/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/auton-palautus-autoliikkeeseen/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -412,7 +463,8 @@
     <loc>https://driveme.fi/kuljettaja-matkalle/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/kuljettaja-matkalle/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/driver-for-your-journey/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/forare-for-din-resa/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/forare-for-din-resa/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/kuljettaja-matkalle/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -420,7 +472,8 @@
     <loc>https://driveme.fi/en/driver-for-your-journey/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/kuljettaja-matkalle/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/driver-for-your-journey/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/forare-for-din-resa/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/forare-for-din-resa/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/kuljettaja-matkalle/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -428,7 +481,8 @@
     <loc>https://driveme.fi/sv/forare-for-din-resa/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/kuljettaja-matkalle/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/driver-for-your-journey/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/forare-for-din-resa/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/forare-for-din-resa/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/kuljettaja-matkalle/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -436,7 +490,8 @@
     <loc>https://driveme.fi/oma-kuljettaja/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/oma-kuljettaja/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/personal-driver/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/personlig-forare/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/personlig-forare/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/oma-kuljettaja/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -444,7 +499,8 @@
     <loc>https://driveme.fi/en/personal-driver/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/oma-kuljettaja/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/personal-driver/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/personlig-forare/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/personlig-forare/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/oma-kuljettaja/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -452,7 +508,8 @@
     <loc>https://driveme.fi/sv/personlig-forare/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/oma-kuljettaja/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/personal-driver/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/personlig-forare/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/personlig-forare/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/oma-kuljettaja/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -460,7 +517,8 @@
     <loc>https://driveme.fi/turvallinen-kotiinkuljetus/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/turvallinen-kotiinkuljetus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/safe-ride-home/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/trygg-hemresa/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/trygg-hemresa/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/turvallinen-kotiinkuljetus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -468,7 +526,8 @@
     <loc>https://driveme.fi/en/safe-ride-home/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/turvallinen-kotiinkuljetus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/safe-ride-home/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/trygg-hemresa/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/trygg-hemresa/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/turvallinen-kotiinkuljetus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -476,7 +535,8 @@
     <loc>https://driveme.fi/sv/trygg-hemresa/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/turvallinen-kotiinkuljetus/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/safe-ride-home/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/trygg-hemresa/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/trygg-hemresa/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/turvallinen-kotiinkuljetus/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -484,7 +544,8 @@
     <loc>https://driveme.fi/lentokentta-kuljettajapalvelu/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/lentokentta-kuljettajapalvelu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/airport-driver/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/forare-till-flygplatsen/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/forare-till-flygplatsen/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/lentokentta-kuljettajapalvelu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -492,7 +553,8 @@
     <loc>https://driveme.fi/en/airport-driver/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/lentokentta-kuljettajapalvelu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/airport-driver/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/forare-till-flygplatsen/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/forare-till-flygplatsen/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/lentokentta-kuljettajapalvelu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -500,7 +562,8 @@
     <loc>https://driveme.fi/sv/forare-till-flygplatsen/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/lentokentta-kuljettajapalvelu/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/airport-driver/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/forare-till-flygplatsen/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/forare-till-flygplatsen/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/lentokentta-kuljettajapalvelu/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -508,7 +571,8 @@
     <loc>https://driveme.fi/yrityksille/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/yrityksille/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/for-companies/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/for-foretag/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/for-foretag/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/yrityksille/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -516,7 +580,8 @@
     <loc>https://driveme.fi/en/for-companies/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/yrityksille/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/for-companies/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/for-foretag/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/for-foretag/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/yrityksille/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -524,7 +589,8 @@
     <loc>https://driveme.fi/sv/for-foretag/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/yrityksille/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/for-companies/"/>
-    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/sv/for-foretag/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/for-foretag/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/yrityksille/"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

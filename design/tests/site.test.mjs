@@ -29,6 +29,7 @@ const gatedKeys = services.filter((s) => isServiceGated(s.key)).map((s) => s.key
 const soldKeys = services.filter((s) => !isServiceGated(s.key) && s.category === 'concierge').map((s) => s.key);
 /** Pages kept out of the index: the request form, and services not sold yet. */
 const noindexIds = new Set(['booking', ...gatedKeys.map((k) => `service:${k}`)]);
+const brandCoverage = 'Helsinki, Espoo, Vantaa, Kauniainen';
 
 test('every route in the URL architecture produced a file', async () => {
   for (const p of pages) {
@@ -252,6 +253,48 @@ test('the sitemap lists every indexable page and no noindex one', async () => {
       assert.ok(xml.includes(loc), `${p.path} is missing from the sitemap`);
     }
   }
+});
+
+test('every service page names where the service happens', async () => {
+  // A local service page that never says its city competes nationally against
+  // companies that do. The area words we accept are the ones we actually serve.
+  const place = /Helsin|Espoo|Esbo|Vanda|Vanta|Kaunia|Granku|pääkaupunkiseu|capital region|huvudstadsreg/i;
+  for (const s of services) {
+    if (isServiceGated(s.key)) continue;
+    for (const locale of LOCALES) {
+      assert.match(s[locale].title, place, `${s.key} (${locale}) title names no place`);
+    }
+  }
+});
+
+test('the sitemap labels each language correctly and names a default', async () => {
+  const xml = await read('sitemap.xml');
+  const home = /<url>\s*<loc>https:\/\/driveme\.fi\/<\/loc>([\s\S]*?)<\/url>/.exec(xml);
+  assert.ok(home, 'the homepage is missing from the sitemap');
+  for (const locale of LOCALES) {
+    const tag = `hreflang="${locale === 'fi' ? 'fi-FI' : locale === 'en' ? 'en-FI' : 'sv-FI'}" href="https://driveme.fi${url('home', locale)}"`;
+    assert.ok(home[1].includes(tag), `the sitemap mislabels ${locale}: ${home[1]}`);
+  }
+  assert.ok(home[1].includes('hreflang="x-default" href="https://driveme.fi/"'), 'no x-default in the sitemap');
+  // No language may be claimed twice: that voids the whole cluster.
+  for (const tag of ['fi-FI', 'en-FI', 'sv-FI']) {
+    assert.equal((home[1].match(new RegExp(`hreflang="${tag}"`, 'g')) || []).length, 1, `${tag} is claimed twice`);
+  }
+});
+
+test('llms.txt tells an assistant what we sell, at the price we charge', async () => {
+  const txt = await read('llms.txt');
+  assert.match(txt, /^# DriveMe/, 'llms.txt has no title');
+  assert.ok(txt.includes(brandCoverage), 'llms.txt does not state the service area');
+  for (const key of soldKeys) {
+    const path = url(`service:${key}`, 'fi');
+    assert.ok(txt.includes(`https://driveme.fi${path}`), `llms.txt omits ${key}`);
+  }
+  // Prices in it come from the same file the pages and the API use.
+  for (const key of ['oneWay', 'inspection']) {
+    assert.ok(txt.includes(`from ${PRODUCTS[key].from} €`), `llms.txt lost the ${key} price`);
+  }
+  assert.equal(/journey.*from \d+ €/i.test(txt), false, 'llms.txt publishes a price for a quoted service');
 });
 
 test('robots.txt keeps operational surfaces out and lets AI search in', async () => {

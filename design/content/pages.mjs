@@ -19,7 +19,7 @@ const fmt = (n) => `${n} €`;
 export const home = {
   fi: {
     slug: '',
-    title: 'Kuljettaja autollesi | Auton siirto, katsastus ja huolto | DriveMe',
+    title: 'Kuljettaja autollesi Helsingissä | Auton siirtopalvelu | DriveMe',
     description: 'DriveMe noutaa ajokuntoisen autosi ja ajaa sen valitsemaasi osoitteeseen, katsastukseen, huoltoon, renkaanvaihtoon tai pesuun pääkaupunkiseudulla. Sinun ei tarvitse lähteä mukaan.',
     eyebrow: 'Auton siirrot pääkaupunkiseudulla',
     h1: 'Kuljettaja autollesi - silloin kun et ehdi ajaa itse.',
@@ -115,7 +115,7 @@ export const home = {
   },
   en: {
     slug: 'en',
-    title: 'A driver for your car | Vehicle moves and service runs | DriveMe',
+    title: 'A driver for your car in Helsinki | Vehicle moves | DriveMe',
     description: 'DriveMe collects your roadworthy car and drives it to your chosen address, inspection, workshop, tyre service or car wash in the Helsinki capital region. You do not need to travel with it.',
     eyebrow: 'Vehicle moves in the capital region',
     h1: 'A driver for your car, when you cannot make the trip.',
@@ -213,7 +213,7 @@ export const home = {
 export const servicesHub = {
   fi: {
     slug: 'palvelut',
-    title: 'Auton siirto- ja noutopalvelut | DriveMe',
+    title: 'Auton siirto- ja noutopalvelut Helsingissä | DriveMe',
     description: 'DriveMen palvelut: auton vienti katsastukseen, huoltoon, renkaanvaihtoon ja pesuun, auton siirto osoitteesta toiseen sekä yritysautojen siirrot. Sinun ei tarvitse lähteä mukaan.',
     h1: 'Auton siirto- ja *noutopalvelut*',
     lead: 'Kuljettaja ajaa autosi sinne, minne sen pitää mennä. Sinun ei tarvitse lähteä mukaan, ja palveluntarjoajan valitset aina itse.',
@@ -226,7 +226,7 @@ export const servicesHub = {
   },
   en: {
     slug: 'en/services',
-    title: 'Vehicle moves and service runs | DriveMe',
+    title: 'Vehicle moves and service runs in Helsinki | DriveMe',
     description: 'Every DriveMe service: taking your car to an inspection, workshop, tyre service or wash, moving it between addresses, and company vehicle movements. You do not need to travel with it.',
     h1: 'Vehicle moves and *service runs*',
     lead: 'A driver takes your car where it needs to go. You do not need to travel with it, and you always choose the provider.',
@@ -272,7 +272,7 @@ const priceRowsEn = [
 export const pricing = {
   fi: {
     slug: 'hinnasto',
-    title: 'DriveMe hinnasto | Kuljettaja- ja noutopalvelut',
+    title: 'DriveMe hinnasto | Kuljettajapalvelut Helsingissä',
     description: `DriveMen hinnat: auton siirto alkaen ${PRODUCTS.oneWay.from} €, huolto-, rengas- tai pesuajo alkaen ${PRODUCTS.serviceRun.from} €, katsastusajo alkaen ${PRODUCTS.inspection.from} €. Palveluntarjoajan maksut eivät sisälly.`,
     h1: 'DriveMe *hinnasto*',
     lead: 'Hinnat sisältävät arvonlisäveron. Näet ohjeellisen hinnan heti hintapyyntölomakkeella ja vahvistamme kiinteän DriveMe-hinnan ennen kuljettajan lähtöä. Matkat, joilla matkustat itse mukana, hinnoitellaan reitin mukaan.',
@@ -324,7 +324,7 @@ export const pricing = {
   },
   en: {
     slug: 'en/pricing',
-    title: 'DriveMe pricing | Driver and vehicle concierge',
+    title: 'DriveMe pricing | Driver services in Helsinki',
     description: `DriveMe prices: a car moved to another address from ${PRODUCTS.oneWay.from} €, workshop, tyre or wash run from ${PRODUCTS.serviceRun.from} €, inspection run from ${PRODUCTS.inspection.from} €. Provider charges are not included.`,
     h1: 'DriveMe *pricing*',
     lead: 'Prices include Finnish VAT. You see an indicative price on the request form and we confirm a fixed DriveMe fee before the driver is sent. Journeys where you travel in the car are quoted per route.',
