@@ -564,6 +564,7 @@
     return null;
   };
   var wanted = param('palvelu', 'service', 'tjanst');
+  if (wanted && CFG.aliases && CFG.aliases[wanted]) wanted = CFG.aliases[wanted];
   var wantedType = param('tyyppi', 'type', 'typ');
   var wantedPath = param('polku', 'path');
   var wantedPickup = param('nouto', 'pickup', 'hamtning');

@@ -21,7 +21,7 @@
 
 import { services, byKey } from '../content/services.mjs';
 import { brand, ui } from '../content/site.mjs';
-import { PRODUCTS, WAITING, PREMIUMS, SERVICE_PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
+import { PRODUCTS, WAITING, PREMIUMS, SERVICE_PRODUCTS, SERVICE_ALIASES, servicesOfType } from '../api/_lib/pricing.js';
 import { esc } from './layout.mjs';
 import { url, serviceUrl } from './routes.mjs';
 import { isGated } from './blocks.mjs';
@@ -361,6 +361,9 @@ export function bookingForm(locale) {
       journeyLegend: c.journeyLegend, moveLegend: c.moveLegend,
       doneRef: c.doneRef,
     },
+    // Retired service keys and what answers for them now, so a link made
+    // before the catalogue was consolidated still opens the right service.
+    aliases: SERVICE_ALIASES,
     endpoint: '/api/bookings',
   };
 
