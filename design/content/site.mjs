@@ -44,12 +44,15 @@ export const brand = {
  * breathe. Both stay one hover away in the services menu, sit in the footer,
  * and are linked from the homepage sections that describe them.
  */
-export const headerNav = ['services', 'how', 'pricing', 'business', 'contact'];
+// Five items, two of them menus. "How it works" sits inside both menus
+// rather than taking a sixth slot in the bar.
+export const headerNav = ['services', 'serviceTransfers', 'business', 'pricing', 'contact'];
 
 /** §8 recommended navigation — the full set of top-level pages. */
 export const nav = {
   fi: [
-    { key: 'services', label: 'Palvelut', href: '/palvelut/', menu: true },
+    { key: 'services', label: 'Autonsiirrot', href: '/palvelut/', menu: 'move' },
+    { key: 'serviceTransfers', label: 'Huoltosiirrot', href: '/huoltosiirto/' },
     { key: 'how', label: 'Näin se toimii', href: '/nain-se-toimii/' },
     { key: 'pricing', label: 'Hinnasto', href: '/hinnasto/' },
     { key: 'business', label: 'Yrityksille', href: '/yrityksille/' },
@@ -58,7 +61,8 @@ export const nav = {
     { key: 'contact', label: 'Yhteystiedot', href: '/yhteystiedot/' },
   ],
   en: [
-    { key: 'services', label: 'Services', href: '/en/services/', menu: true },
+    { key: 'services', label: 'Vehicle transfers', href: '/en/services/', menu: 'move' },
+    { key: 'serviceTransfers', label: 'Service transfers', href: '/en/service-transfer/' },
     { key: 'how', label: 'How it works', href: '/en/how-it-works/' },
     { key: 'pricing', label: 'Pricing', href: '/en/pricing/' },
     { key: 'business', label: 'For companies', href: '/en/for-companies/' },
@@ -71,21 +75,29 @@ export const nav = {
 /** Headings inside the services drop-down: the two things sold now. */
 export const menuGroups = {
   fi: {
-    appointment: 'Vie autoni palveluun',
-    move: 'Aja autoni toiseen osoitteeseen',
-    passenger: 'Kuljettaja matkallesi',
-    business: 'Lisää',
+    appointment: 'Huoltosiirrot',
+    appointmentIntro: 'Yksi siirto, minkä tahansa varatun autopalvelun luo ja takaisin.',
+    destinations: 'Mihin siirto sopii',
+    move: 'Autonsiirrot',
+    moveIntro: 'Ajokuntoinen auto paikasta toiseen, dokumentoidulla luovutuksella.',
+    passenger: 'Kuljettajapalvelu',
+    business: 'Yrityksille',
     all: 'Kaikki palvelut',
+    how: 'Näin se toimii',
     pricing: 'Hinnasto',
     safety: 'Turvallisuus',
     faq: 'Usein kysyttyä',
   },
   en: {
-    appointment: 'Take my car to a service',
-    move: 'Drive my car to another address',
-    passenger: 'A driver for your journey',
-    business: 'More',
+    appointment: 'Service transfers',
+    appointmentIntro: 'One transfer, to any booked car service and back again.',
+    destinations: 'What it covers',
+    move: 'Vehicle transfers',
+    moveIntro: 'A roadworthy car from one place to another, handover documented.',
+    passenger: 'Driver service',
+    business: 'For companies',
     all: 'All services',
+    how: 'How it works',
     pricing: 'Pricing',
     safety: 'Safety',
     faq: 'FAQ',
@@ -97,7 +109,7 @@ export const ui = {
     lang: 'fi-FI',
     skip: 'Siirry sisältöön',
     bookCta: 'Pyydä hinta',
-    bookHref: '/varaus/',
+    bookHref: '/pyyda-tarjous/',
     callUs: 'Soita',
     menu: 'Valikko',
     close: 'Sulje',
@@ -134,7 +146,7 @@ export const ui = {
     lang: 'en-FI',
     skip: 'Skip to content',
     bookCta: 'Get a price',
-    bookHref: '/en/booking/',
+    bookHref: '/en/request-a-quote/',
     callUs: 'Call',
     menu: 'Menu',
     close: 'Close',
@@ -313,9 +325,9 @@ export const footer = {
   fi: {
     tagline: 'Kuljettaja autollesi pääkaupunkiseudulla. Sinun ei tarvitse lähteä mukaan.',
     columns: [
-      { title: 'Vie autoni palveluun', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
-      { title: 'Auton siirrot', keys: ['relocation', 'pickupReturn', 'business'] },
-      { title: 'Kuljettaja matkallesi', keys: ['journey', 'personalDriver', 'safeRideHome', 'airport'] },
+      { title: 'Autonsiirrot yrityksille', keys: ['branchTransfer', 'homeDelivery', 'purchasedCarPickup'] },
+      { title: 'Siirrot ja huoltoajot', keys: ['workshopTransfer', 'relocation'] },
+      { title: 'Muut palvelut', keys: ['business', 'personalDriver'] },
     ],
     legalLinks: [
       { label: 'Palveluehdot', href: '/ehdot/' },
@@ -329,9 +341,9 @@ export const footer = {
   en: {
     tagline: 'A driver for your car in the Helsinki capital region. You do not need to travel with it.',
     columns: [
-      { title: 'Take my car to a service', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
-      { title: 'Vehicle moves', keys: ['relocation', 'pickupReturn', 'business'] },
-      { title: 'A driver for your journey', keys: ['journey', 'personalDriver', 'safeRideHome', 'airport'] },
+      { title: 'Transfers for businesses', keys: ['branchTransfer', 'homeDelivery', 'purchasedCarPickup'] },
+      { title: 'Transfers and service runs', keys: ['workshopTransfer', 'relocation'] },
+      { title: 'Other services', keys: ['business', 'personalDriver'] },
     ],
     legalLinks: [
       { label: 'Terms of service', href: '/en/terms/' },

@@ -27,6 +27,11 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var serviceSel = $('service');
+  // Which of the four transfers a vehicle move is. The three request types the
+  // API understands are unchanged; this says which product the move is for.
+  var moveServiceSel = $('move_service');
+  // A delivery or a purchase collection has a counterparty at the other end.
+  var COUNTERPARTY = { homeDelivery: 1, purchasedCarPickup: 1 };
   var quoteAmount = $('quote-amount');
   var quoteLines = $('quote-lines');
   var quoteNote = $('quote-note');
@@ -122,7 +127,7 @@
   }
 
   // Which passenger service a link asked for; the journey page is the default.
-  var passengerKey = 'journey';
+  var passengerKey = 'personalDriver';
 
   // A general move is a relocation, or a pickup-and-return when the car has
   // to come back. An appointment run is whichever provider service was picked.
@@ -130,7 +135,17 @@
     var type = currentType();
     if (type === 'appointment_run') return serviceSel.value;
     if (type === 'passenger_journey') return passengerKey;
-    return checked('return_needed') === 'yes' ? 'pickupReturn' : 'relocation';
+    // A move is one of the four transfers; the general one is the default.
+    return (moveServiceSel && moveServiceSel.value) || 'relocation';
+  }
+
+  /* A delivery to a customer and a collection from a seller both have someone
+     at the other end who hands over or receives the car. Nothing else does. */
+  function syncCounterparty() {
+    var field = $('counterparty-field');
+    if (!field) return;
+    var show = currentType() === 'general_move' && !!COUNTERPARTY[currentServiceKey()];
+    field.hidden = !show;
   }
 
   function currentService() {
@@ -155,6 +170,8 @@
     var journey = type === 'passenger_journey';
     show($('appointment-set'), appt);
     show($('move-set'), !appt);
+    show($('move-service-field'), type === 'general_move');
+    syncCounterparty();
     show($('passengers-field'), journey);
     $('route-legend').textContent = journey ? C.journeyLegend : C.moveLegend;
     // Where it goes is never optional: an address for a move or a journey,
@@ -411,7 +428,9 @@
       appointment_ref: appt ? (val('appointment_ref') || null) : null,
       scheduled_for: val('date') ? val('date') + 'T' + hour.padStart(2, '0') + ':00' : null,
       collection_window: win || null,
-      access_notes: val('access_notes') || null,
+      access_notes: [val('key_instructions'), val('access_notes')].filter(Boolean).join(' | ') || null,
+      pickup_contact: currentServiceKey() === 'purchasedCarPickup' ? (val('counterparty_contact') || null) : null,
+      delivery_contact: currentServiceKey() === 'homeDelivery' ? (val('counterparty_contact') || null) : null,
       vehicle_plate: val('plate') || null,
       vehicle_details: val('vehicle_model') || null,
       vehicle_gearbox: val('gearbox') || null,
@@ -505,6 +524,9 @@
     r.addEventListener('change', estimate);
   });
   serviceSel.addEventListener('change', onServicePick);
+  if (moveServiceSel) {
+    moveServiceSel.addEventListener('change', function () { syncCounterparty(); estimate(); });
+  }
   ['date', 'window'].forEach(function (id) {
     var el = $(id);
     if (el) el.addEventListener('change', estimate);

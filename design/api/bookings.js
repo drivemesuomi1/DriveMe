@@ -3,7 +3,7 @@ import { getClient, isConfigured } from './_lib/supabase.js';
 import { send, fail, readJson, isEmail, optionalString, optionalNumber } from './_lib/http.js';
 import { sendMail, mailConfig } from './_lib/mailer.js';
 import { bookingAlert, customerConfirmation, requestFailureAlert } from './_lib/emails.js';
-import { quote, SERVICE_PRODUCTS, productFor } from './_lib/pricing.js';
+import { quote, SERVICE_PRODUCTS, productFor, resolveService } from './_lib/pricing.js';
 import { isServiceGated } from './_lib/gates.js';
 
 /**
@@ -141,7 +141,10 @@ export default async function handler(req, res) {
   const body = await readJson(req);
   if (!body) return fail(res, 400, 'We could not read that request.');
 
-  const service = optionalString(body.service, 40);
+  // A retired key - a bookmarked ?palvelu=inspection, an old campaign link -
+  // resolves to the service that answers for it now, so a request made from a
+  // page Google has not recrawled yet still lands in the right queue.
+  const service = resolveService(optionalString(body.service, 40));
   const isConcierge = service !== undefined;
 
   /* ---------------------------------------------- shared customer fields */

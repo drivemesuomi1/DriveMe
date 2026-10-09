@@ -156,7 +156,7 @@ test('a request without a code keeps its notes exactly as written', async () => 
 });
 
 test('a move that has to come back is priced as a pickup and return', async () => {
-  const res = await post(move({ service: 'pickupReturn', shape: 'pickupReturn', return_needed: true }));
+  const res = await post(move({ service: 'pickupReturn', shape: 'pickupReturn', return_needed: true }));  // retired key, resolves to relocation
   assert.equal(res.statusCode, 201, JSON.stringify(res.body));
   assert.equal(rows[0].product, 'pickupReturn');
   assert.equal(rows[0].return_needed, true);
@@ -173,7 +173,9 @@ test('an appointment run goes to the provider, and the browser cannot pick a che
   assert.equal(res.statusCode, 201, JSON.stringify(res.body));
   const row = rows[0];
   assert.equal(row.service_type, 'appointment_run');
-  assert.equal(row.product, 'inspection');
+  // The inspection page is a service transfer now; waiting and returning is
+  // the same job at the same price, under the product that names it.
+  assert.equal(row.product, 'waitReturn');
   assert.equal(row.estimated_price, 169);
   assert.equal(row.destination, 'Katsastusasema, Tapiolantie 1, Espoo');
 
@@ -200,7 +202,7 @@ test('a journey is saved with its passengers and quoted by hand', async () => {
   }));
   assert.equal(res.statusCode, 201, JSON.stringify(res.body));
   const row = rows[0];
-  assert.equal(row.service, 'journey');
+  assert.equal(row.service, 'personalDriver', 'the journey page folded into the private driver');
   assert.equal(row.service_type, 'passenger_journey');
   assert.equal(row.product, 'journey');
   assert.equal(row.passenger_count, 3);

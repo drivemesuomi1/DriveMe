@@ -272,32 +272,13 @@ function servicesMenu(locale, navItem) {
   };
 
   const sold = (type) => servicesOfType(type).filter((k) => !isServiceGated(k));
+  const keys = sold('general_move').concat(sold('appointment_run'));
 
+  // Nothing but the services: no blurb, no neighbouring column, no links to
+  // pages the header already carries. Every entry leads somewhere of its own.
   return `<div class="nav-menu" id="menu-${navItem.key}" hidden>
     <div class="nav-menu-inner">
-      <div class="menu-col menu-col-wide">
-        <h2>${esc(g.appointment)}</h2>
-        <ul class="menu-list menu-list-2">${sold('appointment_run').map(item).join('')}</ul>
-      </div>
-      <div class="menu-col">
-        <h2>${esc(g.move)}</h2>
-        <ul class="menu-list">${sold('general_move').map(item).join('')}</ul>
-      </div>
-      <div class="menu-col">
-        <h2>${esc(g.passenger)}</h2>
-        <ul class="menu-list">${sold('passenger').map(item).join('')}</ul>
-      </div>
-      <div class="menu-col menu-col-end">
-        <h2>${esc(g.business)}</h2>
-        <ul class="menu-list">${sold('business').map(item).join('')}</ul>
-        <ul class="menu-links">
-          <li><a href="${navItem.href}">${esc(g.all)} →</a></li>
-          <li><a href="${url('pricing', locale)}">${esc(g.pricing)} →</a></li>
-          <li><a href="${url('safety', locale)}">${esc(g.safety)} →</a></li>
-          <li><a href="${url('faq', locale)}">${esc(g.faq)} →</a></li>
-        </ul>
-        <a class="btn btn-primary btn-sm" href="${t.bookHref}">${esc(t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a>
-      </div>
+      <ul class="menu-list">${keys.map(item).join('')}</ul>
     </div>
   </div>`;
 }

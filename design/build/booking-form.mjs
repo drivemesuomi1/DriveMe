@@ -31,13 +31,26 @@ const WINDOWS = ['08-10', '10-12', '12-14', '14-16', '16-18', '18-20'];
 
 const COPY = {
   fi: {
-    typeLegend: 'Mitä autollesi tehdään?',
-    typeMove: 'Aja autoni toiseen osoitteeseen',
-    typeMoveSub: 'Kuljettaja vie auton sovittuun osoitteeseen, tarvittaessa myös takaisin.',
-    typeAppt: 'Vie autoni palveluun',
-    typeApptSub: 'Katsastus, huolto, renkaanvaihto, pesu tai autoliike. Palautus sovitusti.',
-    typeJourney: 'Kuljettaja matkallesi',
-    typeJourneySub: 'Kuljettaja ajaa sinut ja matkaseurueesi omalla autollasi.',
+    typeLegend: 'Mikä siirto on kyseessä?',
+    typeMove: 'Autonsiirto',
+    typeMoveSub: 'Toimipisteiden välinen siirto, kotiintoimitus, ostoauton nouto tai yksittäinen siirto.',
+    typeAppt: 'Huoltosiirto',
+    typeApptSub: 'Auto varattuun huoltoon, katsastukseen, renkaanvaihtoon tai pesuun ja takaisin.',
+    typeJourney: 'Oma kuljettaja',
+    typeJourneySub: 'Kuljettaja ajaa sinua ja matkaseuruettasi omalla autollasi.',
+    moveService: 'Minkä tyyppinen siirto?',
+    moveServiceHelp: 'Valinta ohjaa tarjouksen oikealle tiimille. Voit tarkentaa yksityiskohdat viestikentässä.',
+    moveServiceNames: {
+      branchTransfer: 'Toimipisteiden välinen siirto',
+      homeDelivery: 'Kotiintoimitus asiakkaalle',
+      purchasedCarPickup: 'Ostoauton nouto myyjältä',
+      relocation: 'Yksittäinen siirto toiseen osoitteeseen',
+    },
+    counterparty: 'Myyjän tai vastaanottajan yhteystiedot',
+    counterpartyHelp: 'Nimi ja puhelinnumero sekä tieto siitä, kuka auton saa luovuttaa tai vastaanottaa.',
+    keyInstructions: 'Avainten luovutus ja kulkuohjeet',
+    keyInstructionsHelp: 'Avainlaatikon koodi, vartijan tiedot tai muu sovittu käytäntö. Arkaluonteiset koodit voi kertoa myös puhelimessa.',
+    customerTypeLegend: 'Kuka tarjouksen pyytää?',
     journeyLegend: 'Minne matka suuntautuu?',
     journeyDestination: 'Määränpää',
     journeyDestinationHelp: 'Esim. Helsinki-Vantaan lentoasema, Tampere tai mökin osoite.',
@@ -145,13 +158,26 @@ const COPY = {
     },
   },
   en: {
-    typeLegend: 'What does your car need?',
-    typeMove: 'Drive my car to another address',
-    typeMoveSub: 'A driver takes the car to the agreed address, and back again if needed.',
-    typeAppt: 'Take my car to a service',
-    typeApptSub: 'Inspection, workshop, tyre change, wash or dealer. Returned as agreed.',
-    typeJourney: 'A driver for my journey',
+    typeLegend: 'Which transfer is it?',
+    typeMove: 'Vehicle transfer',
+    typeMoveSub: 'A branch move, a delivery to a customer, a purchased-car collection or a single move.',
+    typeAppt: 'Service transfer',
+    typeApptSub: 'A car to a booked service, inspection, tyre change or wash and back again.',
+    typeJourney: 'Personal driver',
     typeJourneySub: 'A driver takes you and your passengers in your own car.',
+    moveService: 'What kind of transfer?',
+    moveServiceHelp: 'This routes the quote to the right team. You can add the details in the message field.',
+    moveServiceNames: {
+      branchTransfer: 'Between our own sites',
+      homeDelivery: 'Delivery to a customer',
+      purchasedCarPickup: 'Collection of a purchased car',
+      relocation: 'A single move to another address',
+    },
+    counterparty: 'Seller or recipient contact',
+    counterpartyHelp: 'Name and phone number, and who is allowed to release or receive the car.',
+    keyInstructions: 'Keys and access instructions',
+    keyInstructionsHelp: 'Key-box code, security desk or whatever has been agreed. Sensitive codes can also be given on the phone.',
+    customerTypeLegend: 'Who is asking for the quote?',
     journeyLegend: 'Where does the journey go?',
     journeyDestination: 'Destination',
     journeyDestinationHelp: 'For example Helsinki Airport, Tampere or the address of your cottage.',
@@ -363,6 +389,18 @@ export function bookingForm(locale) {
 
         <fieldset class="fieldset" id="move-set">
           <legend id="route-legend">${esc(c.moveLegend)}</legend>
+          <div id="move-service-field">
+            ${field('move_service', c.moveService, select('move_service', [
+    { v: 'branchTransfer', l: c.moveServiceNames.branchTransfer },
+    { v: 'homeDelivery', l: c.moveServiceNames.homeDelivery },
+    { v: 'purchasedCarPickup', l: c.moveServiceNames.purchasedCarPickup },
+    { v: 'relocation', l: c.moveServiceNames.relocation, selected: true },
+  ], { help: true }), c.moveServiceHelp)}
+          </div>
+          <div id="counterparty-field" hidden>
+            ${field('counterparty_contact', c.counterparty, text('counterparty_contact', { help: true }), c.counterpartyHelp)}
+            ${field('key_instructions', c.keyInstructions, text('key_instructions', { help: true }), c.keyInstructionsHelp)}
+          </div>
           ${field('destination', c.destination, text('destination', { autocomplete: 'street-address', help: true }), c.journeyDestinationHelp)}
           <div id="passengers-field" hidden>
             ${field('passengers', c.passengers, text('passengers', { type: 'number', min: 1, max: 8, value: '1', help: true }), c.passengersHelp)}
@@ -409,6 +447,9 @@ export function bookingForm(locale) {
             ${field('customer_name', c.name, text('customer_name', { required: true, autocomplete: 'name' }))}
             ${field('customer_phone', c.phone, text('customer_phone', { type: 'tel', required: true, autocomplete: 'tel', inputmode: 'tel' }))}
           </div>
+          ${field('customer_type', c.customerTypeLegend, select('customer_type', [
+    { v: 'person', l: c.person }, { v: 'company', l: c.company },
+  ]))}
           ${field('customer_email', c.email, text('customer_email', { type: 'email', autocomplete: 'email', help: true }), c.emailHelp)}
           <!-- Optional, and out here rather than inside the collapsed details:
                someone who came for a campaign should see where the code goes
@@ -439,9 +480,6 @@ export function bookingForm(locale) {
             ${field('access_notes', c.access, textarea('access_notes', true), c.accessHelp)}
             <div class="grid-2">
               ${field('appointment_ref', c.apptRef, text('appointment_ref'))}
-              ${field('customer_type', c.customerType, select('customer_type', [
-    { v: 'person', l: c.person }, { v: 'company', l: c.company },
-  ]))}
             </div>
             <div id="company-fields" hidden>
               <div class="grid-2">

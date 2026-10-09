@@ -15,7 +15,8 @@
  */
 
 export const nav = [
-  { key: 'services', label: 'Tjänster', href: '/sv/tjanster/', menu: true },
+  { key: 'services', label: 'Bilflyttar', href: '/sv/tjanster/', menu: 'move' },
+  { key: 'serviceTransfers', label: 'Serviceflyttar', href: '/sv/serviceflytt/' },
   { key: 'how', label: 'Så fungerar det', href: '/sv/sa-fungerar-det/' },
   { key: 'pricing', label: 'Priser', href: '/sv/priser/' },
   { key: 'business', label: 'För företag', href: '/sv/for-foretag/' },
@@ -25,9 +26,13 @@ export const nav = [
 ];
 
 export const menuGroups = {
-  appointment: 'Ta min bil till en tjänst',
-  move: 'Kör min bil till en annan adress',
-  passenger: 'Förare för din resa',
+  appointment: 'Serviceflyttar',
+  appointmentIntro: 'En flytt, till vilken bokad biltjänst som helst och tillbaka.',
+  destinations: 'Vad flytten passar för',
+  move: 'Bilflyttar',
+  moveIntro: 'En körduglig bil från en plats till en annan, med dokumenterad överlämning.',
+  passenger: 'Förartjänst',
+  how: 'Så fungerar det',
   business: 'Mer',
   all: 'Alla tjänster',
   pricing: 'Priser',
@@ -39,7 +44,7 @@ export const ui = {
   lang: 'sv-FI',
   skip: 'Hoppa till innehållet',
   bookCta: 'Begär pris',
-  bookHref: '/sv/offert/',
+  bookHref: '/sv/begar-offert/',
   callUs: 'Ring',
   menu: 'Meny',
   close: 'Stäng',
@@ -135,9 +140,9 @@ export const screening = {
 export const footer = {
   tagline: 'En förare för din bil i huvudstadsregionen. Du behöver inte åka med.',
   columns: [
-    { title: 'Ta min bil till en tjänst', keys: ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer'] },
-    { title: 'Bilflytt', keys: ['relocation', 'pickupReturn', 'business'] },
-    { title: 'Förare för din resa', keys: ['journey', 'personalDriver', 'safeRideHome', 'airport'] },
+    { title: 'Bilflyttar för företag', keys: ['branchTransfer', 'homeDelivery', 'purchasedCarPickup'] },
+    { title: 'Flyttar och servicekörningar', keys: ['workshopTransfer', 'relocation'] },
+    { title: 'Andra tjänster', keys: ['business', 'personalDriver'] },
   ],
   legalLinks: [
     { label: 'Servicevillkor', href: '/sv/villkor/' },

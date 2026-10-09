@@ -12,6 +12,171 @@
       "source": "/light",
       "destination": "/02-driveme-light",
       "permanent": false
+    },
+    {
+      "source": "/auton-vienti-katsastukseen",
+      "destination": "/huoltosiirto/",
+      "permanent": true
+    },
+    {
+      "source": "/auton-vienti-huoltoon",
+      "destination": "/huoltosiirto/",
+      "permanent": true
+    },
+    {
+      "source": "/auton-vienti-renkaanvaihtoon",
+      "destination": "/huoltosiirto/",
+      "permanent": true
+    },
+    {
+      "source": "/auton-vienti-pesuun",
+      "destination": "/huoltosiirto/",
+      "permanent": true
+    },
+    {
+      "source": "/auton-vienti-korjaukseen",
+      "destination": "/huoltosiirto/",
+      "permanent": true
+    },
+    {
+      "source": "/en/car-to-inspection",
+      "destination": "/en/service-transfer/",
+      "permanent": true
+    },
+    {
+      "source": "/en/car-to-workshop",
+      "destination": "/en/service-transfer/",
+      "permanent": true
+    },
+    {
+      "source": "/en/car-to-tyre-service",
+      "destination": "/en/service-transfer/",
+      "permanent": true
+    },
+    {
+      "source": "/en/car-to-wash",
+      "destination": "/en/service-transfer/",
+      "permanent": true
+    },
+    {
+      "source": "/en/car-to-body-shop",
+      "destination": "/en/service-transfer/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/bil-till-besiktning",
+      "destination": "/sv/serviceflytt/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/bil-till-verkstad",
+      "destination": "/sv/serviceflytt/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/bil-till-dackbyte",
+      "destination": "/sv/serviceflytt/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/bil-till-biltvatt",
+      "destination": "/sv/serviceflytt/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/glas-plat-och-aterkallelse",
+      "destination": "/sv/serviceflytt/",
+      "permanent": true
+    },
+    {
+      "source": "/auton-nouto-ja-palautus",
+      "destination": "/auton-siirtopalvelu/",
+      "permanent": true
+    },
+    {
+      "source": "/auton-palautus-autoliikkeeseen",
+      "destination": "/auton-siirtopalvelu/",
+      "permanent": true
+    },
+    {
+      "source": "/en/vehicle-pickup-and-return",
+      "destination": "/en/vehicle-relocation/",
+      "permanent": true
+    },
+    {
+      "source": "/en/dealer-and-lease-handover",
+      "destination": "/en/vehicle-relocation/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/upphamtning-och-retur",
+      "destination": "/sv/bilflytt/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/aterlamning-till-bilhandel",
+      "destination": "/sv/bilflytt/",
+      "permanent": true
+    },
+    {
+      "source": "/kuljettaja-matkalle",
+      "destination": "/oma-kuljettaja/",
+      "permanent": true
+    },
+    {
+      "source": "/lentokentta-kuljettajapalvelu",
+      "destination": "/oma-kuljettaja/",
+      "permanent": true
+    },
+    {
+      "source": "/turvallinen-kotiinkuljetus",
+      "destination": "/oma-kuljettaja/",
+      "permanent": true
+    },
+    {
+      "source": "/en/driver-for-your-journey",
+      "destination": "/en/personal-driver/",
+      "permanent": true
+    },
+    {
+      "source": "/en/airport-driver",
+      "destination": "/en/personal-driver/",
+      "permanent": true
+    },
+    {
+      "source": "/en/safe-ride-home",
+      "destination": "/en/personal-driver/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/forare-for-din-resa",
+      "destination": "/sv/personlig-forare/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/forare-till-flygplatsen",
+      "destination": "/sv/personlig-forare/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/trygg-hemresa",
+      "destination": "/sv/personlig-forare/",
+      "permanent": true
+    },
+    {
+      "source": "/varaus",
+      "destination": "/pyyda-tarjous/",
+      "permanent": true
+    },
+    {
+      "source": "/en/booking",
+      "destination": "/en/request-a-quote/",
+      "permanent": true
+    },
+    {
+      "source": "/sv/offert",
+      "destination": "/sv/begar-offert/",
+      "permanent": true
     }
   ],
   "headers": [

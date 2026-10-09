@@ -46,7 +46,7 @@ export const offer = {
         'Till en annan stad eller på en längre resa',
       ],
       after: 'Du får en personlig och punktlig tjänst utan att behöva beställa en separat bil.',
-      services: ['journey', 'personalDriver'],
+      services: ['personalDriver', 'relocation'],
     },
     {
       title: 'Flygplatstransfer i din egen bil',
@@ -56,7 +56,7 @@ export const offer = {
         'Behöver du en förare till eller från Helsingfors-Vanda flygplats? DriveMes förare kommer till den överenskomna adressen och kör dig till terminalen i din egen bil.',
         'Föraren kan också möta dig på flygplatsen och köra dig hem eller dit du ska.',
       ],
-      services: ['airport'],
+      services: ['personalDriver'],
     },
     {
       title: 'Vi kör bilen åt dig',
@@ -72,7 +72,7 @@ export const offer = {
         'Till en annan adress',
       ],
       after: 'Vi returnerar bilen enligt överenskommelse. Besiktning, service, reparation, tvätt och andra avgifter till tredje part betalar kunden direkt till leverantören.',
-      services: ['inspection', 'workshop', 'tyre', 'wash'],
+      services: ['workshopTransfer', 'relocation'],
     },
     {
       title: 'Förartjänst för företag',

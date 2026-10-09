@@ -17,18 +17,12 @@
 
 ## Services
 
-- [Auton vienti katsastukseen](https://driveme.fi/auton-vienti-katsastukseen/) — from 169 € incl. VAT. Inspection
-- [Auton nouto huoltoon](https://driveme.fi/auton-vienti-huoltoon/) — from 149 € incl. VAT. Workshop
-- [Auton vienti renkaanvaihtoon](https://driveme.fi/auton-vienti-renkaanvaihtoon/) — from 149 € incl. VAT. Tyres
-- [Auton vienti pesuun](https://driveme.fi/auton-vienti-pesuun/) — from 149 € incl. VAT. Wash
-- [Lasi, kolari ja takaisinkutsu](https://driveme.fi/auton-vienti-korjaukseen/) — from 149 € incl. VAT. Specialist
-- [Auton nouto ja palautus](https://driveme.fi/auton-nouto-ja-palautus/) — from 149 € incl. VAT. Pickup and return
+- [Toimipisteiden välinen siirto](https://driveme.fi/toimipisteiden-valinen-siirto/) — quoted individually. Branch transfer
+- [Kotiintoimitus](https://driveme.fi/kotiintoimitus/) — quoted individually. Home delivery
+- [Ostoauton nouto](https://driveme.fi/ostoauton-nouto/) — quoted individually. Purchase pickup
+- [Huoltosiirto](https://driveme.fi/huoltosiirto/) — from 149 € incl. VAT. Service transfer
 - [Auton siirtopalvelu](https://driveme.fi/auton-siirtopalvelu/) — from 89 € incl. VAT. Relocation
-- [Palautus autoliikkeeseen](https://driveme.fi/auton-palautus-autoliikkeeseen/) — from 99 € incl. VAT. Dealer and lease
-- [Kuljettaja matkallesi](https://driveme.fi/kuljettaja-matkalle/) — quoted individually. Journeys
 - [Oma kuljettaja](https://driveme.fi/oma-kuljettaja/) — quoted individually. Personal driver
-- [Turvallinen kotiinkuljetus](https://driveme.fi/turvallinen-kotiinkuljetus/) — quoted individually. Safe ride home
-- [Kuljettaja lentoasemalle](https://driveme.fi/lentokentta-kuljettajapalvelu/) — quoted individually. Airport
 - [Yrityksille](https://driveme.fi/yrityksille/) — quoted individually. For companies
 
 ## Key pages

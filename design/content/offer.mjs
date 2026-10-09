@@ -67,7 +67,7 @@ export const offer = {
           'Toiseen kaupunkiin tai pidemmälle matkalle',
         ],
         after: 'Saat henkilökohtaisen ja täsmällisen palvelun ilman, että sinun tarvitsee tilata erillistä autoa.',
-        services: ['journey', 'personalDriver'],
+        services: ['personalDriver', 'relocation'],
       },
       {
         title: 'Lentokenttäkuljetukset omalla autollasi',
@@ -77,7 +77,7 @@ export const offer = {
           'Tarvitsetko kuljettajan Helsinki-Vantaan lentoasemalle tai lentoasemalta? DriveMe-kuljettaja saapuu sovittuun osoitteeseen ja ajaa sinut omalla autollasi lentokentälle.',
           'Kuljettaja voi myös noutaa sinut lentoasemalta ja ajaa sinut kotiin tai muuhun määränpäähän.',
         ],
-        services: ['airport'],
+        services: ['personalDriver'],
       },
       {
         title: 'Auton kuljetus puolestasi',
@@ -93,7 +93,7 @@ export const offer = {
           'Toiseen osoitteeseen',
         ],
         after: 'Palautamme auton sovitusti palvelun jälkeen. Katsastus-, huolto-, korjaus-, pesu- ja muut kolmannen osapuolen maksut maksaa asiakas suoraan palveluntarjoajalle.',
-        services: ['inspection', 'workshop', 'tyre', 'wash'],
+        services: ['workshopTransfer', 'relocation'],
       },
       {
         title: 'Yritysten kuljettajapalvelu',
@@ -196,7 +196,7 @@ export const offer = {
           'To another city or a longer journey',
         ],
         after: 'You get a personal, punctual service without having to order a separate car.',
-        services: ['journey', 'personalDriver'],
+        services: ['personalDriver', 'relocation'],
       },
       {
         title: 'Airport transfers in your own car',
@@ -206,7 +206,7 @@ export const offer = {
           'Need a driver to or from Helsinki Airport? A DriveMe driver comes to the agreed address and drives you to the terminal in your own car.',
           'The driver can also collect you at the airport and take you home or anywhere else you need to be.',
         ],
-        services: ['airport'],
+        services: ['personalDriver'],
       },
       {
         title: 'We take the car for you',
@@ -222,7 +222,7 @@ export const offer = {
           'To another address',
         ],
         after: 'We bring the car back as agreed. Inspection, service, repair, wash and other third-party charges are paid by the customer, directly to the provider.',
-        services: ['inspection', 'workshop', 'tyre', 'wash'],
+        services: ['workshopTransfer', 'relocation'],
       },
       {
         title: 'Driver service for companies',

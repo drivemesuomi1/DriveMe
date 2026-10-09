@@ -16,7 +16,7 @@ import { mkdir, writeFile, readFile, rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { ORIGIN, LOCALES, brand, ui, words, nav, howItWorks, trustStrip } from '../content/site.mjs';
+import { ORIGIN, LOCALES, brand, ui, words, nav, menuGroups, howItWorks, trustStrip } from '../content/site.mjs';
 import { services, byKey } from '../content/services.mjs';
 import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
 import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking } from '../content/pages.mjs';
@@ -25,6 +25,7 @@ import { page, esc, serviceSchema, breadcrumbSchema, faqSchema, HREFLANG } from 
 import { url, serviceUrl, allPages, fileFor } from './routes.mjs';
 import {
   crumbs, serviceCards, stepsList, factCard, callout, faqList, tickList, fancy, plain, trustIcon,
+  serviceHeroImages,
   fromPrice, priceValue, typicalRange, isGated, gateNoticeBlock, eligibilityBlock, refusalBlock, trustBar,
   coverageBlock, relatedLinks, ctaBand, renderBlock, statusRail, disclaimerBlock,
 } from './blocks.mjs';
@@ -106,6 +107,15 @@ function renderHome(locale) {
     ${quickStart(locale)}
   </div>
   ${trustBar(locale)}
+</section>
+
+<!-- Block 2 of the brief: what the buyer gets, before the service list. Only
+     claims the operating workflow actually supports. -->
+<section class="sec sec-raised">
+  <div class="wrap">
+    <div class="sec-head"><h2>${fancy(c.benefitsTitle)}</h2></div>
+    ${stepsList(c.benefits, { cols: true })}
+  </div>
 </section>
 
 ${serviceMosaic(locale)}
@@ -196,6 +206,14 @@ ${serviceMosaic(locale)}
     ${faqList(homeFaq(locale))}
     <p style="margin-top:18px"><a href="${url('faq', locale)}">${esc(w.allQuestions)} →</a></p>
     <div style="margin-top:30px">${coverageBlock(locale)}</div>
+    <!-- Block 7: the two secondary services, kept off the main menu but a
+         click away for the visitor who came for one of them. -->
+    <div class="other-needs">
+      <h3>${esc(c.otherTitle)}</h3>
+      <ul class="linkset">${c.otherLinks.map((l) => (
+    `<li><a href="${l.href}">${esc(l.label)}</a></li>`
+  )).join('')}</ul>
+    </div>
   </div>
 </section>
 
@@ -276,15 +294,11 @@ function quickStart(locale) {
  * when the landscape photo is cropped into a tall or narrow tile.
  */
 const MOSAIC = [
-  { key: 'journey', lead: true, focus: '74% 45%' },
-  { key: 'relocation', focus: '40% 60%' },
-  { key: 'inspection', focus: '74% 55%' },
-  { key: 'workshop', focus: '62% 55%' },
-  { key: 'tyre', focus: '56% 55%' },
-  { key: 'wash', focus: '50% 58%' },
-  { key: 'pickupReturn', focus: '50% 55%' },
-  { key: 'glass', focus: '68% 45%' },
-  { key: 'dealer', focus: '36% 50%' },
+  { key: 'branchTransfer', lead: true, focus: '40% 60%' },
+  { key: 'homeDelivery', focus: '36% 50%' },
+  { key: 'purchasedCarPickup', focus: '50% 55%' },
+  { key: 'workshopTransfer', focus: '62% 55%' },
+  { key: 'relocation', focus: '74% 55%' },
   { key: 'business', focus: '58% 45%' },
 ];
 
@@ -386,22 +400,6 @@ ${ctaBand(locale)}`;
 }
 
 /* ==================================================== service pages */
-const serviceHeroImages = {
-  journey: 'journey-driver',
-  personalDriver: 'personal-driver',
-  safeRideHome: 'safe-ride-home',
-  airport: 'airport-driver',
-  inspection: 'vehicle-inspection-run',
-  tyre: 'tyre-service-run',
-  glass: 'glass-body-shop-recall',
-  workshop: 'workshop-run',
-  wash: 'wash-detailing-run',
-  dealer: 'dealer-lease-handover',
-  relocation: 'vehicle-relocation',
-  pickupReturn: 'pickup-return',
-  business: 'business',
-};
-
 function renderService(service, locale) {
   const c = service[locale];
   const t = ui[locale];
@@ -410,13 +408,11 @@ function renderService(service, locale) {
   const withPassengers = SERVICE_PRODUCTS[service.key].type === 'passenger';
   const path = serviceUrl(service.key, locale);
   const heroImage = serviceHeroImages[service.key];
-  const bookHref = service.category === 'business'
-    ? `${t.bookHref}?${words[locale].params.service}=business`
-    : `${t.bookHref}?${words[locale].params.service}=${service.key}`;
+  const bookHref = `${t.bookHref}?${words[locale].params.service}=${service.key}`;
 
   const body = `
 <!-- Operational note (${service.key}): ${esc(service.devNote)} -->
-<section class="page-head${heroImage ? ' service-hero' : ''}${heroImage && service.category === 'driver' ? ' service-hero-passenger' : ''}${['dealer', 'relocation'].includes(service.key) ? ' service-hero-right' : ''}">
+<section class="page-head${heroImage ? ' service-hero' : ''}${heroImage && service.category === 'driver' ? ' service-hero-passenger' : ''}${['homeDelivery', 'relocation'].includes(service.key) ? ' service-hero-right' : ''}">
   ${heroImage ? `<img class="service-hero-photo" src="/assets/service-heroes/${heroImage}.jpg" alt="${esc(c.nav)}" fetchpriority="high" decoding="async">\n  ` : ''}<div class="wrap page-head-inner">
     ${heroImage ? '<div class="service-hero-copy">\n    ' : ''}${crumbs([
     { label: t.breadcrumbHome, href: url('home', locale) },
@@ -447,6 +443,16 @@ ${heroImage ? '    </div>\n' : ''}  </div>
       <div class="sec-head"><h2>${esc(t.steps)}</h2></div>
       ${stepsList(c.steps, { rows: true })}
     </div>
+
+    ${c.destinations ? `<div>
+      <div class="sec-head"><h2>${esc(menuGroups[locale].destinations)}</h2></div>
+      <!-- The five destination pages were consolidated into this one, so each
+           destination keeps a line of its own and an id the menu links to. -->
+      <ul class="dest-list">${c.destinations.map((d) => `<li id="${d.id}">
+        <h3>${esc(d.label)}</h3>
+        <p>${esc(d.body)}</p>
+      </li>`).join('')}</ul>
+    </div>` : ''}
 
     <div class="facts">
       ${factCard(t.included, c.included, 'check')}
@@ -487,7 +493,9 @@ ${ctaBand(locale, gated ? {
 `;
 
   return page({
-    id: `service:${service.key}`, locale, navKey: 'services',
+    id: `service:${service.key}`, locale,
+    navKey: SERVICE_PRODUCTS[service.key].type === 'appointment_run' ? 'serviceTransfers'
+      : service.key === 'business' ? 'business' : 'services',
     // Not sold yet: an interest page only, kept out of the index (Driver First plan).
     noindex: gated,
     title: c.title, description: c.description, body,
@@ -783,7 +791,7 @@ function render404() {
 </section>
 <section class="sec">
   <div class="wrap stack">
-    ${serviceCards(['inspection', 'workshop', 'tyre', 'relocation'], locale)}
+    ${serviceCards(['branchTransfer', 'homeDelivery', 'purchasedCarPickup', 'workshopTransfer'], locale)}
     <ul class="linkset">
       <li><a href="${url('home', locale)}">Etusivu</a></li>
       <li><a href="${url('services', locale)}">${esc(t.allServices)}</a></li>

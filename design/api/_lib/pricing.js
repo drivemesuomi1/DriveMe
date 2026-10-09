@@ -51,6 +51,11 @@ export const PRODUCTS = {
   // A journey with the customer in the car: route, duration and driver
   // logistics differ too much for a list price, so every one is quoted.
   journey: { from: null, quote: true, unit: 'job' },
+  // The business transfers (branch to branch, home delivery, purchased-car
+  // collection). Route, schedule, volume and the driver's return leg decide
+  // the price, so each one is quoted: "Yrityssiirrot hinnoitellaan reitin,
+  // aikataulun ja siirtomaaran mukaan."
+  transfer: { from: null, quote: true, unit: 'job' },
   longDistance: { from: null, quote: true, unit: 'job' },
   corporate: { from: null, quote: true, unit: 'contract' },
 };
@@ -217,42 +222,24 @@ function round2(n) {
  * cheaper product than the shape it asked for.
  */
 const SERVICES = {
-  inspection: {
-    type: 'appointment_run', defaultShape: 'waitReturn',
-    shapes: { waitReturn: 'inspection', pickupReturn: 'pickupReturn', oneWay: 'oneWay' },
-  },
-  workshop: {
+  // --- the four primary business transfers (brief, 8 Oct 2026) ----------
+  branchTransfer: { type: 'general_move', defaultShape: null, shapes: {}, product: 'transfer' },
+  homeDelivery: { type: 'general_move', defaultShape: null, shapes: {}, product: 'transfer' },
+  purchasedCarPickup: { type: 'general_move', defaultShape: null, shapes: {}, product: 'transfer' },
+  // A booked service trip: outbound, the provider's own work, then the return
+  // leg or a driver who waits. Priced from the published list.
+  workshopTransfer: {
     type: 'appointment_run', defaultShape: 'pickupReturn',
     shapes: { pickupReturn: 'serviceRun', waitReturn: 'waitReturn', oneWay: 'oneWay' },
   },
-  tyre: {
-    type: 'appointment_run', defaultShape: 'pickupReturn',
-    shapes: { pickupReturn: 'serviceRun', waitReturn: 'waitReturn', oneWay: 'oneWay' },
-  },
-  wash: {
-    type: 'appointment_run', defaultShape: 'pickupReturn',
-    shapes: { pickupReturn: 'serviceRun', waitReturn: 'waitReturn', oneWay: 'oneWay' },
-  },
-  glass: {
-    type: 'appointment_run', defaultShape: 'pickupReturn',
-    shapes: { pickupReturn: 'serviceRun', oneWay: 'oneWay' },
-  },
-  dealer: {
-    type: 'appointment_run', defaultShape: 'oneWay',
-    shapes: { oneWay: 'handover', pickupReturn: 'pickupReturn' },
-  },
+
+  // The general transfer absorbed pickup-and-return and the dealer handover,
+  // so it still answers for a move that comes back later.
   relocation: {
     type: 'general_move', defaultShape: 'oneWay',
-    shapes: { oneWay: 'oneWay' },
+    shapes: { oneWay: 'oneWay', pickupReturn: 'pickupReturn' },
   },
-  pickupReturn: {
-    type: 'general_move', defaultShape: 'pickupReturn',
-    shapes: { pickupReturn: 'pickupReturn' },
-  },
-  journey: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
   personalDriver: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
-  safeRideHome: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
-  airport: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
   business: { type: 'business', defaultShape: null, shapes: {}, product: 'corporate' },
 };
 
@@ -279,6 +266,28 @@ export const SERVICE_PRODUCTS = Object.fromEntries(Object.entries(SERVICES).map(
     allowed: [...new Set([def, ...Object.values(s.shapes)])],
   }];
 }));
+
+/**
+ * Service keys that were retired when the catalogue was consolidated into the
+ * six offers (developer brief, 8 October 2026), and the service that answers
+ * for them now. Old deep links - a bookmarked ?palvelu=inspection, a mail
+ * campaign, a page Google still has - keep working instead of 400ing.
+ */
+export const SERVICE_ALIASES = {
+  inspection: 'workshopTransfer',
+  workshop: 'workshopTransfer',
+  tyre: 'workshopTransfer',
+  wash: 'workshopTransfer',
+  glass: 'workshopTransfer',
+  pickupReturn: 'relocation',
+  dealer: 'relocation',
+  journey: 'personalDriver',
+  safeRideHome: 'personalDriver',
+  airport: 'personalDriver',
+};
+
+/** The live service key for whatever the caller asked for. */
+export const resolveService = (key) => SERVICE_ALIASES[key] || key;
 
 /** Service keys by type, in catalogue order. */
 export function servicesOfType(type) {

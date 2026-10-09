@@ -6,9 +6,9 @@ Allow: /
 Disallow: /admin
 Disallow: /track
 Disallow: /driver
-Disallow: /varaus/
-Disallow: /en/booking/
-Disallow: /sv/offert/
+Disallow: /pyyda-tarjous/
+Disallow: /en/request-a-quote/
+Disallow: /sv/begar-offert/
 
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy
@@ -22,9 +22,9 @@ Allow: /
 Disallow: /admin
 Disallow: /track
 Disallow: /driver
-Disallow: /varaus/
-Disallow: /en/booking/
-Disallow: /sv/offert/
+Disallow: /pyyda-tarjous/
+Disallow: /en/request-a-quote/
+Disallow: /sv/begar-offert/
 
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy
@@ -38,9 +38,9 @@ Allow: /
 Disallow: /admin
 Disallow: /track
 Disallow: /driver
-Disallow: /varaus/
-Disallow: /en/booking/
-Disallow: /sv/offert/
+Disallow: /pyyda-tarjous/
+Disallow: /en/request-a-quote/
+Disallow: /sv/begar-offert/
 
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy
@@ -54,9 +54,9 @@ Allow: /
 Disallow: /admin
 Disallow: /track
 Disallow: /driver
-Disallow: /varaus/
-Disallow: /en/booking/
-Disallow: /sv/offert/
+Disallow: /pyyda-tarjous/
+Disallow: /en/request-a-quote/
+Disallow: /sv/begar-offert/
 
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy
@@ -70,9 +70,9 @@ Allow: /
 Disallow: /admin
 Disallow: /track
 Disallow: /driver
-Disallow: /varaus/
-Disallow: /en/booking/
-Disallow: /sv/offert/
+Disallow: /pyyda-tarjous/
+Disallow: /en/request-a-quote/
+Disallow: /sv/begar-offert/
 
 # Legacy concept pages kept for internal reference only (see /legacy).
 Disallow: /legacy

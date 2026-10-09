@@ -31,35 +31,44 @@ test('journeys are quoted per route; car moves have a starting price', () => {
     assert.equal(PRODUCTS.journey.quote, true, 'a journey is never auto-priced');
     assert.equal(PRODUCTS.journey.from, null, 'a journey carries no list price');
   }
-  for (const key of servicesOfType('general_move').concat(servicesOfType('appointment_run'))) {
-    assert.equal(PRODUCTS[SERVICE_PRODUCTS[key].default].quote, false, `${key} is sold from a price`);
+  // The business transfers are quoted by route, schedule and volume; the
+  // general move and the service transfer keep their published prices.
+  for (const key of ['relocation', 'workshopTransfer']) {
+    assert.equal(PRODUCTS[SERVICE_PRODUCTS[key].default].quote, false, `${key} should have a list price`);
+  }
+  for (const key of ['branchTransfer', 'homeDelivery', 'purchasedCarPickup']) {
+    assert.equal(PRODUCTS[SERVICE_PRODUCTS[key].default].quote, true, `${key} must be quoted, not priced`);
+    assert.equal(PRODUCTS[SERVICE_PRODUCTS[key].default].from, null, `${key} carries no list price`);
   }
 });
 
 test('a standard run is priced from the published starting price', () => {
-  const q = quote({ product: 'inspection', when: TUE_10, now: WEEK_EARLIER });
+  const q = quote({ product: 'waitReturn', when: TUE_10, now: WEEK_EARLIER });
   assert.equal(q.quoteOnly, false);
-  assert.equal(q.from, PRODUCTS.inspection.from);
+  assert.equal(q.from, PRODUCTS.waitReturn.from);
   assert.equal(q.total, 169);
   assert.equal(q.indicative, true);
 });
 
 test('the catalogue splits into what is sold', () => {
-  assert.deepEqual(servicesOfType('general_move'), ['relocation', 'pickupReturn']);
-  assert.deepEqual(servicesOfType('appointment_run'), ['inspection', 'workshop', 'tyre', 'wash', 'glass', 'dealer']);
-  assert.deepEqual(servicesOfType('passenger'), ['journey', 'personalDriver', 'safeRideHome', 'airport']);
+  // The six offers of the 8 October 2026 brief: four primary transfers, the
+  // general transfer, and the private driver as the one passenger service.
+  assert.deepEqual(servicesOfType('general_move'),
+    ['branchTransfer', 'homeDelivery', 'purchasedCarPickup', 'relocation']);
+  assert.deepEqual(servicesOfType('appointment_run'), ['workshopTransfer']);
+  assert.deepEqual(servicesOfType('passenger'), ['personalDriver']);
+  assert.deepEqual(servicesOfType('business'), ['business']);
 });
 
 test('the product follows the service and shape, never a free choice', () => {
-  assert.equal(productFor('inspection', 'waitReturn'), 'inspection');
-  assert.equal(productFor('inspection', 'pickupReturn'), 'pickupReturn');
-  assert.equal(productFor('inspection', 'oneWay'), 'oneWay');
-  assert.equal(productFor('workshop', 'pickupReturn'), 'serviceRun');
-  assert.equal(productFor('dealer', 'oneWay'), 'handover');
+  assert.equal(productFor('workshopTransfer', 'waitReturn'), 'waitReturn');
+  assert.equal(productFor('workshopTransfer', 'pickupReturn'), 'serviceRun');
+  assert.equal(productFor('workshopTransfer', 'oneWay'), 'oneWay');
   assert.equal(productFor('relocation', 'oneWay'), 'oneWay');
-  assert.equal(productFor('pickupReturn', 'pickupReturn'), 'pickupReturn');
+  assert.equal(productFor('relocation', 'pickupReturn'), 'pickupReturn');
+  assert.equal(productFor('branchTransfer', 'oneWay'), 'transfer');
   // An unknown or unsupported shape falls back to the service's own default.
-  assert.equal(productFor('workshop', 'bogus'), 'serviceRun');
+  assert.equal(productFor('workshopTransfer', 'bogus'), 'serviceRun');
   assert.equal(productFor('relocation', 'waitReturn'), 'oneWay');
   assert.equal(productFor('nope', 'oneWay'), null);
 });

@@ -294,11 +294,49 @@ export function ctaBand(locale, { title, body, primaryHref, primaryLabel, second
 </section>`;
 }
 
+/** The photograph each service page and card uses. */
+export const serviceHeroImages = {
+  branchTransfer: 'vehicle-relocation',
+  homeDelivery: 'dealer-lease-handover',
+  purchasedCarPickup: 'pickup-return',
+  workshopTransfer: 'workshop-run',
+  relocation: 'vehicle-inspection-run',
+  personalDriver: 'personal-driver',
+  business: 'business',
+};
+
+/**
+ * Related services as photo cards rather than a row of pills: at the foot of
+ * a long page a picture of the next service is what makes someone take it,
+ * and the name alone reads like a footnote. Same photographs as the service
+ * pages themselves, so a card is a preview of where it goes - and the price
+ * rides along, which a bare link could never carry.
+ */
 export function relatedLinks(keys, locale) {
   const t = ui[locale];
-  return `<div><h2>${esc(t.related)}</h2><ul class="linkset">${keys.map((k) => (
-    `<li><a href="${serviceUrl(k, locale)}">${esc(byKey[k][locale].nav)}</a></li>`
-  )).join('')}<li><a href="${url('services', locale)}">${esc(t.allServices)}</a></li></ul></div>`;
+  const cards = keys.map((k) => {
+    const photo = `/assets/service-heroes/card/${serviceHeroImages[k]}`;
+    const product = PRODUCTS[SERVICE_PRODUCTS[k]?.default];
+    const price = !product || product.quote || product.hidden
+      ? words[locale].fixedQuote
+      : fromPrice(k, locale);
+    return `<li><a class="rel-card" href="${serviceUrl(k, locale)}">
+      <img src="${photo}-720.jpg" srcset="${photo}-720.jpg 720w, ${photo}-1280.jpg 1280w"
+           sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 340px"
+           alt="" width="720" height="480" loading="lazy" decoding="async">
+      <span class="rel-body">
+        <span class="rel-name">${esc(byKey[k][locale].nav)}</span>
+        <span class="rel-price">${esc(price)}</span>
+      </span>
+      <span class="rel-arrow" aria-hidden="true">→</span>
+    </a></li>`;
+  }).join('');
+
+  return `<div>
+    <div class="sec-head"><h2>${esc(t.related)}</h2></div>
+    <ul class="rel-grid">${cards}</ul>
+    <p class="rel-all"><a href="${url('services', locale)}">${esc(t.allServices)} →</a></p>
+  </div>`;
 }
 
 /** Render one content block from pages.mjs. */

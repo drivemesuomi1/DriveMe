@@ -257,19 +257,224 @@
 
 # The request form collects personal data and has no search value.
 [[headers]]
-  for = "/varaus/*"
+  for = "/pyyda-tarjous/*"
   [headers.values]
     X-Robots-Tag = "noindex, follow"
 
 [[headers]]
-  for = "/en/booking/*"
+  for = "/en/request-a-quote/*"
   [headers.values]
     X-Robots-Tag = "noindex, follow"
 
 [[headers]]
-  for = "/sv/offert/*"
+  for = "/sv/begar-offert/*"
   [headers.values]
     X-Robots-Tag = "noindex, follow"
+
+# ---------------------------------------------------------------------------
+# Catalogue consolidation (developer brief, 8 October 2026). Each old page
+# goes to the page that answers the same need, in the same language, in one
+# hop. Query strings are carried over, so a campaign link still arrives with
+# its source. Keep these for at least a year.
+# ---------------------------------------------------------------------------
+
+[[redirects]]
+  from = "/auton-vienti-katsastukseen/"
+  to = "/huoltosiirto/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/auton-vienti-huoltoon/"
+  to = "/huoltosiirto/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/auton-vienti-renkaanvaihtoon/"
+  to = "/huoltosiirto/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/auton-vienti-pesuun/"
+  to = "/huoltosiirto/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/auton-vienti-korjaukseen/"
+  to = "/huoltosiirto/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/car-to-inspection/"
+  to = "/en/service-transfer/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/car-to-workshop/"
+  to = "/en/service-transfer/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/car-to-tyre-service/"
+  to = "/en/service-transfer/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/car-to-wash/"
+  to = "/en/service-transfer/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/car-to-body-shop/"
+  to = "/en/service-transfer/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/bil-till-besiktning/"
+  to = "/sv/serviceflytt/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/bil-till-verkstad/"
+  to = "/sv/serviceflytt/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/bil-till-dackbyte/"
+  to = "/sv/serviceflytt/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/bil-till-biltvatt/"
+  to = "/sv/serviceflytt/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/glas-plat-och-aterkallelse/"
+  to = "/sv/serviceflytt/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/auton-nouto-ja-palautus/"
+  to = "/auton-siirtopalvelu/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/auton-palautus-autoliikkeeseen/"
+  to = "/auton-siirtopalvelu/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/vehicle-pickup-and-return/"
+  to = "/en/vehicle-relocation/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/dealer-and-lease-handover/"
+  to = "/en/vehicle-relocation/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/upphamtning-och-retur/"
+  to = "/sv/bilflytt/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/aterlamning-till-bilhandel/"
+  to = "/sv/bilflytt/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/kuljettaja-matkalle/"
+  to = "/oma-kuljettaja/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/lentokentta-kuljettajapalvelu/"
+  to = "/oma-kuljettaja/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/turvallinen-kotiinkuljetus/"
+  to = "/oma-kuljettaja/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/driver-for-your-journey/"
+  to = "/en/personal-driver/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/airport-driver/"
+  to = "/en/personal-driver/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/safe-ride-home/"
+  to = "/en/personal-driver/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/forare-for-din-resa/"
+  to = "/sv/personlig-forare/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/forare-till-flygplatsen/"
+  to = "/sv/personlig-forare/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/trygg-hemresa/"
+  to = "/sv/personlig-forare/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/varaus/"
+  to = "/pyyda-tarjous/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/booking/"
+  to = "/en/request-a-quote/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sv/offert/"
+  to = "/sv/begar-offert/"
+  status = 301
+  force = true
 
 # Operational surfaces: never cache, never index.
 [[headers]]
