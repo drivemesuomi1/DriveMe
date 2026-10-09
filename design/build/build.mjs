@@ -239,7 +239,7 @@ ${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody, primaryHref: src('home_c
  *
  * It is deliberately NOT a second booking interface - the §12 audit found two
  * of those on the old site. Nothing here submits: it collects the three fields
- * a customer already knows, then hands them to /varaus/ as query parameters,
+ * a customer already knows, then hands them to the quote form as query parameters,
  * where booking.js prefills them and the real request continues.
  *
  * Only what is sold is listed - a move to another address, then the provider
@@ -255,10 +255,18 @@ function quickStart(locale) {
   const q = home[locale].quick;
   const t = ui[locale];
   const w = words[locale];
-  const appointment = servicesOfType('appointment_run').filter((k) => !isGated(byKey[k]));
-  const options = [`<option value="relocation" data-from="${esc(bareFrom('relocation'))}">${esc(q.moveOption)}</option>`]
-    .concat(appointment.map((k) => `<option value="${k}" data-from="${esc(bareFrom(k))}">${esc(byKey[k][locale].nav)}</option>`))
-    .join('');
+  // Every transfer that is sold, so a dealer can pick a branch move here
+  // rather than discovering it two clicks later. The general move leads,
+  // because it is the one a private customer recognises.
+  const sold = (type) => servicesOfType(type).filter((k) => !isGated(byKey[k]));
+  const keys = ['relocation'].concat(
+    sold('general_move').filter((k) => k !== 'relocation'),
+    sold('appointment_run'),
+  );
+  const options = keys.map((k) => {
+    const label = k === 'relocation' ? q.moveOption : byKey[k][locale].nav;
+    return `<option value="${k}" data-from="${esc(bareFrom(k))}">${esc(label)}</option>`;
+  }).join('');
 
   return `<form class="quick-start reveal" id="quick-start" action="${t.bookHref}" method="get">
     <h2>${fancy(q.title)}</h2>
