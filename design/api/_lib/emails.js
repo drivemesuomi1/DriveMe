@@ -14,7 +14,7 @@ const PAY = { card: 'Card', mobilepay: 'MobilePay', invoice: 'Corporate invoice'
  */
 const SERVICE_LABEL = {
   fi: {
-    branchTransfer: 'Toimipisteiden välinen siirto', homeDelivery: 'Kotiintoimitus asiakkaalle',
+    branchTransfer: 'Toimipisteiden välinen siirto', homeDelivery: 'Kotiintoimitus',
     purchasedCarPickup: 'Ostoauton nouto', workshopTransfer: 'Huoltosiirto',
     other: 'Muu palvelu (tarkennetaan puhelimessa)',
     inspection: 'Auton vienti katsastukseen', workshop: 'Auton nouto huoltoon',
@@ -74,7 +74,9 @@ function serviceLabel(booking, lang) {
 
 /** Bookings are stored UTC; ops read them in Helsinki time. */
 function whenLocal(iso) {
-  if (!iso) return 'Not specified';
+  // Null rather than "Not specified": an enquiry carries no time yet, and both
+  // tables drop empty rows, so the line simply does not appear.
+  if (!iso) return null;
   try {
     return new Intl.DateTimeFormat('en-GB', {
       dateStyle: 'full', timeStyle: 'short', timeZone: 'Europe/Helsinki',
@@ -173,7 +175,7 @@ export function customerConfirmation(booking, base, lang) {
     [L.rows.ref, ref],
     [L.rows.when, whenLocal(booking.scheduled_for)],
     [L.rows.pickup, booking.pickup_location],
-    [L.rows.dest, booking.destination || L.open],
+    [L.rows.dest, booking.destination],
     [L.rows.type, type],
     [L.rows.price, price],
     [L.rows.pay, booking.payment_method ? (PAY_LABEL[lang] || PAY_LABEL.fi)[booking.payment_method] : null],
@@ -248,11 +250,12 @@ export function bookingAlert(booking, base) {
     ['Phone', booking.customer_phone],
     ['Email', booking.customer_email || 'Not given - call the customer'],
     ['Company', company],
-    ['When', whenLocal(booking.scheduled_for) +
-      (booking.collection_window ? ' · window ' + booking.collection_window : '')],
+    ['When', whenLocal(booking.scheduled_for)
+      ? whenLocal(booking.scheduled_for) + (booking.collection_window ? ' · window ' + booking.collection_window : '')
+      : null],
     ['Deliver by', booking.delivery_by],
     ['Pickup', booking.pickup_location],
-    ['Destination', booking.destination || 'Open-ended (driver stays)'],
+    ['Destination', booking.destination],
     ['Passengers', booking.passenger_count ? String(booking.passenger_count) : null],
     ['Return needed', booking.return_needed == null ? null : (booking.return_needed ? 'Yes' : 'No')],
     ['Return to', booking.return_location],
