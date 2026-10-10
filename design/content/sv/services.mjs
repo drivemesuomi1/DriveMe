@@ -46,7 +46,7 @@ export const relocation = {
   excluded: [
     'Transport på flak eller släp',
     'Flytt av avställda bilar eller bilar med körförbud',
-    'Internationella flyttar utan separat offert',
+    'Flyttar utanför Finlands gränser',
     'Förvaring',
   ],
   boundary: 'DriveMe ansvarar för den körda flytten och den dokumenterade överlämningen. Kunden ansvarar för bilens skick och för de uppgifter som lämnats.',

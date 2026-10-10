@@ -72,7 +72,7 @@ export const services = [
       excluded: [
         'Kuljetus lavetilla tai perävaunulla',
         'Liikennekäytöstä poistetun tai ajokiellossa olevan auton siirto',
-        'Kansainväliset siirrot, ellei niistä ole erikseen tarjottu',
+        'Siirrot Suomen rajojen ulkopuolelle',
         'Säilytys',
       ],
       boundary: 'DriveMe vastaa ajetusta siirrosta ja dokumentoidusta luovutuksesta. Auton kelpoisuudesta ja tiedoista vastaa asiakas.',
@@ -115,7 +115,7 @@ export const services = [
       excluded: [
         'Transport by truck or trailer',
         'Moving deregistered or driving-banned vehicles',
-        'International movement unless expressly quoted',
+        'Transfers outside Finland',
         'Storage',
       ],
       boundary: 'DriveMe is responsible for the driven move and the documented handover. Vehicle eligibility and disclosure are the customer’s responsibility.',

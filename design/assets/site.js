@@ -168,29 +168,12 @@
   }
 
   /* --------------------------------------------- hero quick start ---
-     Three fields, no submit of its own: it hands the service, address and
-     date to the request flow as query parameters. The starting price comes
-     from the option's data-from, which the build wrote from pricing.js, so
-     this cannot quote a number the price list does not carry. */
+     One question, no submit of its own: it hands the chosen service to the
+     enquiry form as a query parameter, where the dropdown opens on it. There
+     is no price here to keep in step - the quote is written by a person. */
   var quick = document.getElementById('quick-start');
   if (quick) {
-    var service = document.getElementById('qs-service');
-    var priceOut = document.getElementById('qs-from-price');
-    var date = document.getElementById('qs-date');
-
-    if (service && priceOut) {
-      var showPrice = function () {
-        var opt = service.options[service.selectedIndex];
-        if (opt && opt.dataset.from) priceOut.textContent = opt.dataset.from;
-      };
-      service.addEventListener('change', showPrice);
-      showPrice();
-    }
-
-    // Today is the earliest sensible collection date.
-    if (date && !date.min) date.min = new Date().toISOString().slice(0, 10);
-
-    // Drop empty fields so the handover URL carries only what was filled in.
+    // Drop empty fields so the handover URL carries only what was chosen.
     quick.addEventListener('submit', function () {
       var fields = quick.querySelectorAll('input, select');
       for (var i = 0; i < fields.length; i++) {

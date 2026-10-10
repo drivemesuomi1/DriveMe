@@ -151,21 +151,24 @@ export default async function handler(req, res) {
   const name = optionalString(body.customer_name, 200);
   if (!name) return fail(res, 400, 'Tell us your name.', 'customer_name');
 
-  // Optional since the Driver First plan: a phone number is enough to call
-  // back with a price. When one is given it still has to be deliverable.
+  // Required again since the enquiry form (client feedback, 10 Oct 2026):
+  // every enquiry is answered with the written 24-hour confirmation, and that
+  // needs somewhere to go.
   const rawEmail = typeof body.customer_email === 'string' ? body.customer_email.trim() : '';
-  if (rawEmail && !isEmail(rawEmail)) {
-    return fail(res, 400, 'That email address does not look right. You can also leave it empty.', 'customer_email');
+  if (!rawEmail) return fail(res, 400, 'Tell us your email address.', 'customer_email');
+  if (!isEmail(rawEmail)) {
+    return fail(res, 400, 'That email address does not look right.', 'customer_email');
   }
-  const email = rawEmail || null;
+  const email = rawEmail;
 
   const phone = optionalString(body.customer_phone, 40);
   if (!phone || phone.replace(/\D/g, '').length < 6) {
     return fail(res, 400, 'We need a phone number to call you back on.', 'customer_phone');
   }
 
+  // Optional since the enquiry form: the exact collection address is agreed
+  // on the call back, together with the vehicle details and the handover.
   const pickup = optionalString(body.pickup_location, 300);
-  if (!pickup) return fail(res, 400, 'Tell us where the car is.', 'pickup_location');
 
   const destination = optionalString(body.destination, 300);
 
@@ -195,9 +198,14 @@ export default async function handler(req, res) {
 
   if (isConcierge) {
     /* ================================================= the price request */
-    if (!SERVICES.has(service)) return fail(res, 400, 'Choose a service.', 'service');
+    // "Muu palvelu" - someone whose need does not fit the six. It is a
+    // legitimate enquiry, quoted by hand like every business transfer.
+    const isOther = service === 'other';
+    if (!isOther && !SERVICES.has(service)) return fail(res, 400, 'Choose a service.', 'service');
 
-    const catalogue = SERVICE_PRODUCTS[service];
+    const catalogue = isOther
+      ? { type: 'general_move', default: 'transfer', defaultShape: null, shapes: {}, allowed: ['transfer'] }
+      : SERVICE_PRODUCTS[service];
     const isJourney = catalogue.type === 'passenger';
 
     // Who is in the car decides which service this is, so the two can never be
@@ -212,14 +220,14 @@ export default async function handler(req, res) {
         'A vehicle move is driven with nobody in the car. Choose the journey service if you are travelling too.',
         'passenger_count');
     }
-    if (isJourney && !(passengers >= 1)) {
-      return fail(res, 400, 'Tell us how many people are travelling.', 'passenger_count');
-    }
+    // How many travel is asked on the call back; the enquiry form no longer
+    // collects it. A journey still records at least one passenger.
+    const journeyPassengers = isJourney ? Math.max(1, passengers ?? 1) : 0;
 
     // A gated service must be refused by the API as firmly as the page
     // refuses to advertise it. Without this, a crafted POST could create a
     // job DriveMe is not licensed or insured to perform.
-    if (isServiceGated(service)) {
+    if (!isOther && isServiceGated(service)) {
       return fail(res, 409,
         'That service is awaiting regulatory and insurance confirmation and cannot be booked yet. Email info@driveme.fi to register interest.',
         'service');
@@ -244,7 +252,7 @@ export default async function handler(req, res) {
     const shape = askedShape && catalogue.shapes[askedShape] ? askedShape : catalogue.defaultShape;
     // Derived here, never taken from the browser: a customer cannot ask for a
     // wait-and-return and be priced as a one-way move.
-    const product = productFor(service, shape);
+    const product = isOther ? null : productFor(service, shape);
 
     // A move's shape says whether the car comes back; a journey is asked
     // outright, because there is no shape to read it from.
@@ -257,32 +265,21 @@ export default async function handler(req, res) {
     const waitMinutes = optionalNumber(body.wait_minutes, { min: 0, max: 480 });
     if (waitMinutes === null) return fail(res, 400, 'That waiting time is out of range.', 'wait_minutes');
 
+    // The route, the provider and the appointment are settled on the call
+    // back. The enquiry only has to say who is asking and what they want.
     const provider = optionalString(body.provider, 200);
-    if (requestType === 'appointment_run' && !provider) {
-      return fail(res, 400, 'Tell us which provider the car goes to.', 'provider');
-    }
-    if (requestType === 'general_move' && !destination) {
-      return fail(res, 400, 'Tell us where the car needs to go.', 'destination');
-    }
-    if (requestType === 'passenger_journey' && !destination) {
-      return fail(res, 400, 'Tell us where the journey goes.', 'destination');
-    }
     const finalDestination = destination ?? provider ?? null;
 
-    // The one statement collected up front: the person asking may hand the car
-    // over. The full booking statements are confirmed before the job is.
-    // `acknowledged` is the previous form's eight-box confirmation, which
-    // included this authorisation.
+    // The declarations - that the person may hand the car over, and the
+    // booking terms - are taken on the call back, with the addresses and the
+    // vehicle details, rather than from a checkbox under an enquiry. Nothing
+    // is driven on the strength of this form alone.
     const authorised = body.vehicle_owner_authorization === true || body.acknowledged === true;
-    if (!authorised) {
-      return fail(res, 400, 'Please confirm that you may hand the car over to our driver.', 'ack-0');
-    }
 
-    const priced = quote({
-      product,
-      waitMinutes: waitMinutes ?? 0,
-      when: scheduledDate ?? undefined,
-    });
+    // The form promises a quote after review, so the server does not compute
+    // one. Publishing a figure here that nobody has checked is exactly the
+    // "Espoo to Rovaniemi still showed 89 EUR" the client reported.
+    const priced = { quoteOnly: true, from: null, lines: [], total: null, indicative: true };
 
     // A campaign code the customer typed, or brought from the offer page. It
     // is kept on the first line of the notes rather than in a column of its
@@ -301,7 +298,11 @@ export default async function handler(req, res) {
       ['Destination', finalDestination], ['Provider', provider],
     ]);
 
-    const customerType = enumOf(CUSTOMER_TYPES, body.customer_type, 20) ?? 'person';
+    const companyName = optionalString(body.company_name, 200);
+    // The enquiry form asks for a company name rather than a customer type, so
+    // filling it in is what makes this a company enquiry.
+    const customerType = enumOf(CUSTOMER_TYPES, body.customer_type, 20)
+      ?? (companyName ? 'company' : 'person');
 
     row = {
       id,
@@ -310,8 +311,8 @@ export default async function handler(req, res) {
       service_type: requestType,
       product,
       shape,
-      passenger_count: isJourney ? passengers : 0,
-      pickup_location: pickup,
+      passenger_count: journeyPassengers,
+      pickup_location: pickup ?? null,
       destination: finalDestination,
       return_needed: returnNeeded,
       return_location: optionalString(body.return_location, 300) ?? null,
@@ -334,10 +335,10 @@ export default async function handler(req, res) {
       customer_phone: phone,
       customer_type: customerType,
       is_corporate: customerType === 'company',
-      company_name: optionalString(body.company_name, 200) ?? null,
+      company_name: companyName ?? null,
       business_id: optionalString(body.business_id, 20) ?? null,
       invoice_email: optionalString(body.invoice_email, 200) ?? null,
-      vehicle_owner_authorization: true,
+      vehicle_owner_authorization: authorised ? true : null,
       vehicle_plate: optionalString(body.vehicle_plate, 20) ?? null,
       vehicle_details: optionalString(body.vehicle_details, 300) ?? null,
       vehicle_gearbox: enumOf(GEARBOXES, body.vehicle_gearbox, 20) ?? null,

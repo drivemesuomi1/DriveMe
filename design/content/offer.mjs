@@ -35,12 +35,12 @@ export const offer = {
 
     eyebrow: 'Uuden asiakkaan etu',
     h1: '10 % alennusta *ensimmäisestä varauksesta*',
-    lead: 'Tarvitsetko luotettavan ja ammattitaitoisen kuljettajan omaan autoosi? Varaa ensimmäinen DriveMe-palvelusi 31.10.2026 mennessä ja saat 10 % alennuksen DriveMen palvelumaksusta.',
+    lead: 'Tarvitsetko luotettavan ja ammattitaitoisen kuljettajan omaan autoosi? Etu on uusille yksityisasiakkaille: pyydä ensimmäinen tarjouksesi 31.10.2026 mennessä, niin vähennämme 10 % DriveMen palvelumaksusta.',
     codeLabel: 'Etukoodi',
-    codeHint: 'Käytä koodia varauksen yhteydessä.',
+    codeHint: 'Lisää koodi tarjouspyyntöön. Tämän sivun painikkeet täyttävät sen valmiiksi.',
     validUntil: 'Voimassa 31.10.2026 asti',
     areaLine: 'Tarjous on saatavilla Helsingissä, Espoossa, Vantaalla ja Kauniaisissa.',
-    cta: 'Varaa kuljettaja',
+    cta: 'Pyydä tarjous',
     ctaSecondary: 'Katso hinnasto',
     expired: 'Tämä tarjous on päättynyt. Palvelumme ja hinnastomme ovat ennallaan – pyydä hinta, niin vahvistamme sen ennen ajoa.',
 
@@ -127,20 +127,20 @@ export const offer = {
       {
         icon: 'price',
         title: 'Selkeä hinnoittelu',
-        body: 'Näet ohjeellisen hinnan heti lomakkeella ja vahvistamme kiinteän hinnan ennen ajoa. Polttoaine-, pysäköinti- ja kolmannen osapuolen maksut veloitetaan erikseen.',
+        body: 'Luemme tarjouspyyntösi ja lähetämme kiinteän hinnan 24 tunnin kuluessa. Hinta on voimassa sellaisenaan: polttoaine-, pysäköinti- ja kolmannen osapuolen maksut eritellään erikseen.',
       },
     ],
 
     stepsTitle: 'Näin hyödynnät *10 % edun*',
     steps: [
       { title: 'Valitse tarvitsemasi palvelu', body: 'Kerro meille, milloin, mistä ja mihin tarvitset kuljettajan.' },
-      { title: 'Käytä koodia DRIVEME10', body: 'Kirjoita koodi lomakkeen Tarjouskoodi-kenttään. Tämän sivun painikkeista se tulee kenttään valmiiksi.' },
-      { title: 'Saat 10 % alennuksen', body: 'Alennamme ensimmäisen varauksesi DriveMe-palvelumaksua 10 % vahvistaessamme hinnan.' },
+      { title: 'Käytä koodia DRIVEME10', body: 'Tämän sivun painikkeet täyttävät koodin valmiiksi. Voit myös avata lomakkeelta kohdan "Minulla on etukoodi" ja kirjoittaa sen itse.' },
+      { title: 'Saat 10 % alennuksen', body: 'Vähennämme uuden yksityisasiakkaan ensimmäisestä tilauksesta 10 % DriveMen palvelumaksusta, kun vahvistamme hinnan.' },
     ],
 
-    bandTitle: 'Varaa nyt ja säästä 10 %',
-    bandBody: 'Pyyntö vie alle minuutin. Se ei ole vielä vahvistus – soitamme ja vahvistamme kuljettajan, ajan ja kiinteän hinnan.',
-    bandCta: 'Varaa nyt ja säästä 10 %',
+    bandTitle: 'Pyydä tarjous ja säästä 10 %',
+    bandBody: 'Tarjouspyyntö vie alle minuutin, eikä se vielä vahvista varausta. Otamme yhteyttä 24 tunnin kuluessa ja vahvistamme kuljettajan, ajan ja kiinteän hinnan.',
+    bandCta: 'Pyydä tarjous',
 
     termsTitle: 'Tarjouksen ehdot',
     terms: [
@@ -151,7 +151,7 @@ export const offer = {
 
     bar: {
       lead: 'Uuden asiakkaan etu',
-      text: '10 % alennus ensimmäisestä varauksesta',
+      text: 'Uusille yksityisasiakkaille 10 % ensimmäisestä tilauksesta',
       more: 'Lue lisää',
     },
   },
@@ -166,10 +166,10 @@ export const offer = {
     h1: '10 % off *your first booking*',
     lead: 'Need a reliable, professional driver for your own car? Book your first DriveMe service by 31 October 2026 and get 10 % off the DriveMe service fee.',
     codeLabel: 'Offer code',
-    codeHint: 'Use the code when you send your request.',
+    codeHint: 'Add the code to your enquiry. The buttons on this page fill it in for you.',
     validUntil: 'Valid until 31 October 2026',
     areaLine: 'The offer is available in Helsinki, Espoo, Vantaa and Kauniainen.',
-    cta: 'Request a driver',
+    cta: 'Request a quote',
     ctaSecondary: 'See the price list',
     expired: 'This offer has ended. The service and the price list are unchanged - ask for a price and we will confirm it before the drive.',
 
@@ -256,20 +256,20 @@ export const offer = {
       {
         icon: 'price',
         title: 'A price you can see',
-        body: 'You see an indicative price on the form immediately and we confirm a fixed fee before the drive. Fuel, parking and third-party charges are billed separately.',
+        body: 'We read your enquiry and send a fixed price within 24 hours. That price stands as sent: fuel, parking and third-party charges are itemised separately.',
       },
     ],
 
     stepsTitle: 'How to use the *10 % offer*',
     steps: [
       { title: 'Choose the service you need', body: 'Tell us when, from where and to where you need a driver.' },
-      { title: 'Use the code DRIVEME10', body: 'Type it into the Offer code field on the request form. The buttons on this page fill it in for you.' },
-      { title: 'Get 10 % off', body: 'We take 10 % off the DriveMe service fee on your first booking when we confirm the price.' },
+      { title: 'Use the code DRIVEME10', body: 'The buttons on this page fill it in for you. You can also open "I have an offer code" on the form and type it yourself.' },
+      { title: 'Get 10 % off', body: 'We take 10 % off the DriveMe service fee on a new private customer\u2019s first order when we confirm the price.' },
     ],
 
-    bandTitle: 'Book now and save 10 %',
-    bandBody: 'The request takes under a minute. It is not a confirmation yet - we call you and confirm the driver, the time and a fixed price.',
-    bandCta: 'Book now and save 10 %',
+    bandTitle: 'Ask for a quote and save 10 %',
+    bandBody: 'The enquiry takes under a minute, and it does not confirm a booking. We get back to you within 24 hours and confirm the driver, the time and a fixed price.',
+    bandCta: 'Request a quote',
 
     termsTitle: 'Offer terms',
     terms: [
@@ -280,7 +280,7 @@ export const offer = {
 
     bar: {
       lead: 'New customer offer',
-      text: '10 % off your first booking',
+      text: 'New private customers: 10 % off your first order',
       more: 'Read more',
     },
   },

@@ -256,20 +256,15 @@ function langSwitch(locale, per, variant) {
  * cleared.
  */
 function servicesMenu(locale, navItem) {
-  const g = menuGroups[locale];
-  const t = ui[locale];
 
-  const item = (key) => {
-    const svc = byKey[key];
-    const product = PRODUCTS[SERVICE_PRODUCTS[key].default];
-    const price = !product || product.quote || product.hidden
-      ? ''
-      : `<span class="mi-price">${t.priceFrom} ${product.from} €</span>`;
-    return `<li><a href="${serviceUrl(key, locale)}">
-      <span class="mi-name">${esc(svc[locale].nav)}</span>
-      ${price}
+  // No price in the menu. A starting figure next to a service name, before
+  // anyone has said where the car is going, is the "Espoo to Rovaniemi, still
+  // 89 EUR" problem in a smaller box: the prices live on the price list and
+  // the service pages, where the route can be described (client feedback,
+  // 10 Oct 2026).
+  const item = (key) => `<li><a href="${serviceUrl(key, locale)}">
+      <span class="mi-name">${esc(byKey[key][locale].nav)}</span>
     </a></li>`;
-  };
 
   const sold = (type) => servicesOfType(type).filter((k) => !isServiceGated(k));
   const keys = sold('general_move').concat(sold('appointment_run'));

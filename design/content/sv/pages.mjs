@@ -73,16 +73,22 @@ export const home = {
     },
   ],
 
+  trust: {
+    title: 'Vem kör *din bil*',
+    lead: 'DriveMe är en tjänst från Mansio Group Oy. Varje flytt lämnar en dokumenterad spårbarhet, och en riktig människa svarar när du hör av dig.',
+    providerTitle: 'Tjänsteleverantör',
+    areaTitle: 'Serviceområde',
+    contactTitle: 'Kontakt',
+    contactBody: 'Vi svarar på offertförfrågningar inom 24 timmar. Är det brådskande, ring oss.',
+  },
+
   quick: {
     title: 'Begär *offert på flytt*',
+    lead: 'Välj tjänst och lämna dina kontaktuppgifter. Vi hör av oss inom 24 timmar.',
     service: 'Vilken flytt gäller det?',
     moveOption: 'Flytt av bil till en annan adress',
-    pickup: 'Upphämtningsadress eller postnummer',
-    pickupPlaceholder: 'T.ex. 00100 eller Mannerheimvägen 1',
-    date: 'Önskad dag',
-    from: 'från',
-    submit: 'Fortsätt, tar under en minut',
-    note: 'En offertförfrågan bekräftar ännu inte flytten. Vi bekräftar pris, tidtabell och förarens tillgänglighet separat.',
+    submit: 'Begär offert',
+    note: 'En offertförfrågan bekräftar inte flytten. Vi bekräftar pris, tidtabell och förare separat.',
   },
 
   mosaic: {
@@ -161,7 +167,7 @@ export const pricing = {
   title: 'DriveMes priser | Förartjänster i Helsingfors',
   description: `DriveMes priser: bilflytt från ${PRODUCTS.oneWay.from} €, service-, däck- eller tvättkörning från ${PRODUCTS.serviceRun.from} €, besiktningskörning från ${PRODUCTS.inspection.from} €. Leverantörens avgifter ingår inte.`,
   h1: 'DriveMes *priser*',
-  lead: 'Priserna inkluderar moms. Du ser ett riktpris direkt i formuläret och vi bekräftar ett fast DriveMe-pris innan föraren åker. Resor där du själv åker med prissätts utifrån rutten.',
+  lead: 'Priserna inkluderar moms och är från-priser. Begär offert, så får du ett fast pris inom 24 timmar. Resor där du själv åker med prissätts utifrån rutten.',
   blocks: [
     { type: 'priceTable', head: ['Tjänst', 'Pris', 'Innehåller', 'Att notera'], rows: priceRows },
     {
@@ -200,7 +206,7 @@ export const pricing = {
     { type: 'cancellation', title: 'Avbokningsvillkor', id: 'avbokning' },
     {
       type: 'callout', tone: 'warn', title: 'Varför vi inte visar en färdig slutsumma',
-      body: 'Rutten, överlämningstiden och väntetiden påverkar den verkliga kostnaden. Därför visar vi ett riktgivande från-pris och bekräftar ett fast pris före körningen. Vi debiterar aldrig mer än det bekräftade priset utan en separat överenskommen ändring.',
+      body: 'Rutten, överlämningstiden och väntetiden påverkar den verkliga kostnaden, och ett formulär kan inte känna till dem åt dig. Därför publicerar vi från-priser på den här sidan och skickar ett fast pris i offerten. Vi debiterar aldrig mer än det bekräftade priset utan en separat överenskommen ändring.',
     },
   ],
 };
@@ -210,16 +216,15 @@ export const howPage = {
   title: 'Så fungerar DriveMe | Från prisförfrågan till slutfört uppdrag',
   description: 'Från prisförfrågan till bekräftelse, från upphämtning till dokumenterad överlämning. Så flyttar DriveMe din bil utan att du behöver åka med.',
   h1: 'Så *fungerar DriveMe*',
-  lead: 'En prisförfrågan tar under en minut, och varje uppdrag bekräftas av en människa. Därför har varje bekräftat uppdrag en riktig förare, en riktig tid och ett riktigt pris.',
+  lead: 'En offertförfrågan tar under en minut, och varje offert skrivs av en människa. Därför har varje bekräftat uppdrag en riktig förare, en riktig tid och ett riktigt pris.',
   blocks: [
     {
       type: 'steps', title: 'Kundens väg', rows: true, two: true,
       items: [
-        { t: 'Välj flytt eller servicekörning', d: 'Kör min bil till en annan adress, eller ta bilen till besiktning, service, däckbyte, tvätt eller bilhandel.' },
-        { t: 'Ange upphämtning, destination och önskad tid', d: 'Upphämtningsadress eller postnummer, destinationsadress eller leverantör, och dagen.' },
-        { t: 'Lämna namn och telefonnummer', d: 'Att skicka förfrågan tar under en minut. E-post är frivilligt.' },
-        { t: 'Du ser ett riktpris', d: 'Förfrågan binder ännu ingendera parten.' },
-        { t: 'Vi ringer och går igenom uppgifterna', d: 'Registernummer, nyckelöverlämning, fullmakt, bilens skick och bokningsvillkoren.' },
+        { t: 'Välj den tjänst du behöver', d: 'Flytt mellan verksamhetsställen, hemleverans, hämtning av inköpt bil, serviceflytt, en enskild flytt, personlig förare - eller en annan tjänst.' },
+        { t: 'Lämna namn, telefon och e-post', d: 'Att skicka offertförfrågan tar under en minut. Övrigt berättar du i fritextfältet.' },
+        { t: 'Du får en bekräftelse per e-post', d: 'Vi bekräftar att förfrågan har kommit fram. Den bekräftar ännu ingen bokning.' },
+        { t: 'Vi hör av oss inom 24 timmar', d: 'Upphämtnings- och leveransadresser, bilens uppgifter, nyckelöverlämning, fullmakt och bokningsvillkoren.' },
         { t: 'DriveMe bekräftar förare, tid och pris', d: 'Först bekräftelsen gör bokningen bindande.' },
         { t: 'Upphämtningen dokumenteras', d: 'Nycklar, skick, mätarställning och bränsle- eller laddningsnivå i tidsstämplade bilder. Du behöver inte åka med.' },
         { t: 'Du får statusuppdateringar', d: 'Varje överlämning meddelas.' },
@@ -229,14 +234,14 @@ export const howPage = {
     },
     { type: 'statusRail', title: 'Uppdragets status' },
     {
-      type: 'list', title: 'Det här frågar prisförfrågan', variant: 'check', two: true,
+      type: 'list', title: 'Det här frågar offertförfrågan', variant: 'check', two: true,
       items: [
-        'Tjänsten: bilflytt till en annan adress eller körning till en tjänst.',
-        'Upphämtningsadress eller postnummer.',
-        'Destinationsadress, eller leverantören och den bokade tiden.',
-        'Önskad dag och tid.',
-        'Namn och telefonnummer. E-post är frivilligt.',
-        'Bekräftelse på att du får överlämna bilen till vår förare.',
+        'Namn.',
+        'Telefonnummer.',
+        'E-post, dit vi skickar bekräftelsen och offerten.',
+        'Vilken tjänst du behöver.',
+        'Företagets namn, om du begär offert för ett företag. Frivilligt.',
+        'Mer information: rutt, önskad tidpunkt och övriga önskemål. Frivilligt.',
       ],
     },
     {
@@ -251,8 +256,8 @@ export const howPage = {
       ],
     },
     {
-      type: 'callout', tone: 'info', title: 'En förfrågan är ingen bekräftelse',
-      body: 'Att skicka formuläret skapar en prisförfrågan. Uppdraget är bekräftat först när du får vår bekräftelse på förare, tid och fast pris.',
+      type: 'callout', tone: 'info', title: 'En offertförfrågan är ingen bekräftelse',
+      body: 'Att skicka formuläret skapar en offertförfrågan. Uppdraget är bekräftat först när du godkänner offerten och får vår bekräftelse på förare, tid och fast pris.',
     },
   ],
 };
@@ -357,7 +362,7 @@ export const terms = {
         'Transport av barn utan medföljande vuxen.',
         'Vårdande eller assisterande transport.',
         'Flytt av avställda, körförbjudna eller trafikfarliga bilar.',
-        'Internationella flyttar utan separat offert.',
+        'Flyttar utanför Finlands gränser.',
         'Förvaring av bilen.',
         'Köp, värdering eller förhandling om bilaffärer.',
         'Att lägga ut för tredje parts kostnader utan förskottsbetalning.',
@@ -402,8 +407,8 @@ export const contact = {
 
 export const booking = {
   slug: 'sv/begar-offert',
-  title: 'Begär pris för en bilflytt | DriveMe',
-  description: 'Skicka en prisförfrågan på under en minut: var bilen hämtas, vart den ska och när. Vi ringer och bekräftar ett fast pris.',
-  h1: 'Begär pris *för en bilflytt*',
-  lead: 'Berätta var bilen hämtas, vart den ska och när. Att skicka tar under en minut. Vi ringer, bekräftar ett fast pris, och först då är uppdraget bindande.',
+  title: 'Begär offert på en bilflytt | DriveMe',
+  description: 'Skicka en offertförfrågan på under en minut: namn, telefon, e-post och den tjänst du behöver. Vi hör av oss inom 24 timmar.',
+  h1: 'Begär offert *på en bilflytt*',
+  lead: 'Lämna dina kontaktuppgifter och berätta vilken tjänst du behöver. Vi hör av oss inom 24 timmar, kommer överens om detaljerna och skickar ett fast pris. En offertförfrågan bekräftar ännu ingen bokning.',
 };

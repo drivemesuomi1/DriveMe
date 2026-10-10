@@ -27,7 +27,7 @@ import {
   crumbs, serviceCards, stepsList, factCard, callout, faqList, tickList, fancy, plain, trustIcon,
   serviceHeroImages,
   fromPrice, priceValue, typicalRange, isGated, gateNoticeBlock, eligibilityBlock, refusalBlock, trustBar,
-  coverageBlock, relatedLinks, ctaBand, renderBlock, statusRail, disclaimerBlock,
+  coverageBlock, companyBlock, relatedLinks, ctaBand, renderBlock, statusRail, disclaimerBlock,
 } from './blocks.mjs';
 import { serviceUrl as _serviceUrl } from './routes.mjs';
 import { bookingForm, bookingScript } from './booking-form.mjs';
@@ -124,12 +124,17 @@ ${serviceMosaic(locale)}
   <div class="wrap">
     <div class="sec-head"><h2>${fancy(c.offerTitle)}</h2></div>
     <div class="paths">
+      <!-- The service is named once, in the heading. The price line and the
+           two actions are the same shape in every card, so the four of them
+           line up across the row rather than each ending where its text does. -->
       ${c.paths.map((p) => `<article class="path">
         <h3>${esc(p.label)}</h3>
         <p>${esc(p.body)}</p>
-        <p class="path-price">${esc(byKey[p.priceService][locale].nav)}: ${esc(fromPrice(p.priceService, locale))}</p>
-        <p class="more"><a href="${p.linkHref}">${esc(p.linkLabel)} →</a></p>
-        <a class="btn btn-primary" href="${p.href}">${esc(p.cta)}</a>
+        <p class="path-price">${esc(fromPrice(p.priceService, locale))}</p>
+        <div class="path-actions">
+          <a class="btn btn-primary btn-sm" href="${p.href}">${esc(t.requestPrice)}</a>
+          <a class="more" href="${p.linkHref}">${esc(t.readMore)} →</a>
+        </div>
       </article>`).join('')}
     </div>
   </div>
@@ -200,16 +205,44 @@ ${serviceMosaic(locale)}
   </div>
 </section>
 
+<!-- Block 8 of the client feedback: who the provider is, where we drive and
+     how to reach a person - stated once, in one place. -->
 <section class="sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>${fancy(c.trust.title)}</h2>
+      <p>${esc(c.trust.lead)}</p>
+    </div>
+    <div class="trust-cards">
+      <article class="trust-card">
+        <h3>${esc(c.trust.providerTitle)}</h3>
+        <!-- The area and the phone number have their own cards beside this
+             one, so the provider card carries only who we are. -->
+        ${companyBlock(locale, { only: ['name', 'businessId', 'domicile'] })}
+      </article>
+      <article class="trust-card">
+        <h3>${esc(c.trust.areaTitle)}</h3>
+        <p>${esc(w.coverageBody(w.cities.join(', ')))}</p>
+      </article>
+      <article class="trust-card">
+        <h3>${esc(c.trust.contactTitle)}</h3>
+        <p>${esc(c.trust.contactBody)}</p>
+        <p class="trust-contact"><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></p>
+        <p class="trust-contact"><a href="mailto:${brand.email}">${esc(brand.email)}</a></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-raised">
   <div class="wrap">
     <div class="sec-head"><h2>${esc(t.faq)}</h2></div>
     ${faqList(homeFaq(locale))}
     <p style="margin-top:18px"><a href="${url('faq', locale)}">${esc(w.allQuestions)} →</a></p>
-    <div style="margin-top:30px">${coverageBlock(locale)}</div>
     <!-- Block 7: the two secondary services, kept off the main menu but a
          click away for the visitor who came for one of them. -->
     <div class="other-needs">
-      <h3>${esc(c.otherTitle)}</h3>
+      <h3>${fancy(c.otherTitle)}</h3>
       <ul class="linkset">${c.otherLinks.map((l) => (
     `<li><a href="${l.href}">${esc(l.label)}</a></li>`
   )).join('')}</ul>
@@ -235,22 +268,16 @@ ${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody, primaryHref: src('home_c
 }
 
 /**
- * Hero quick start: the first fields of the price request.
+ * Hero quick start: the one question the enquiry starts from.
  *
  * It is deliberately NOT a second booking interface - the §12 audit found two
- * of those on the old site. Nothing here submits: it collects the three fields
- * a customer already knows, then hands them to the quote form as query parameters,
- * where booking.js prefills them and the real request continues.
+ * of those on the old site. Nothing here submits: the visitor says which
+ * service they need and the enquiry form opens with it already selected.
  *
- * Only what is sold is listed - a move to another address, then the provider
- * services. Passenger services are absent, as they are from the whole page.
+ * No price. A figure here could only be a starting price for a route nobody
+ * has described yet, which is exactly how "Espoo to Rovaniemi" came to read
+ * 89 EUR (client feedback, 10 Oct 2026). The quote is written by a person.
  */
-/** Just the amount - the card renders its own "alkaen" / "from" label. */
-function bareFrom(key) {
-  const v = priceValue(key);
-  return v == null ? '—' : `${v} €`;
-}
-
 function quickStart(locale) {
   const q = home[locale].quick;
   const t = ui[locale];
@@ -265,25 +292,16 @@ function quickStart(locale) {
   );
   const options = keys.map((k) => {
     const label = k === 'relocation' ? q.moveOption : byKey[k][locale].nav;
-    return `<option value="${k}" data-from="${esc(bareFrom(k))}">${esc(label)}</option>`;
+    return `<option value="${k}">${esc(label)}</option>`;
   }).join('');
 
   return `<form class="quick-start reveal" id="quick-start" action="${t.bookHref}" method="get">
     <h2>${fancy(q.title)}</h2>
-    <p class="qs-from">${esc(q.from)} <b id="qs-from-price">${esc(bareFrom('relocation'))}</b></p>
+    <p class="qs-lead">${esc(q.lead)}</p>
     <input type="hidden" name="${w.params.source}" value="home_quick">
     <div class="qs-field">
       <label for="qs-service">${esc(q.service)}</label>
       <select id="qs-service" name="${w.params.service}">${options}</select>
-    </div>
-    <div class="qs-field">
-      <label for="qs-pickup">${esc(q.pickup)}</label>
-      <input type="text" id="qs-pickup" name="${w.params.pickup}"
-             autocomplete="street-address" placeholder="${esc(q.pickupPlaceholder)}">
-    </div>
-    <div class="qs-field">
-      <label for="qs-date">${esc(q.date)}</label>
-      <input type="date" id="qs-date" name="${w.params.date}">
     </div>
     <button class="btn btn-accent" type="submit">${esc(q.submit)} <span class="arrow" aria-hidden="true">→</span></button>
     <div class="qs-foot">

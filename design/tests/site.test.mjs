@@ -20,6 +20,8 @@ import { ui, words, nav, LOCALES } from '../content/site.mjs';
 import { offer, OFFER, offerExpired } from '../content/offer.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
 import { PRODUCTS, SERVICE_PRODUCTS } from '../api/_lib/pricing.js';
+import { bookingCopy } from '../build/booking-form.mjs';
+import { customerConfirmation } from '../api/_lib/emails.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFile(join(ROOT, rel), 'utf8');
@@ -147,36 +149,77 @@ test('the private driver is reachable but stays out of the header menu', async (
   }
 });
 
-test('the quote form routes every one of the six offers', async () => {
+test('the enquiry form asks six things and quotes nothing', async () => {
   for (const locale of LOCALES) {
     const html = await read(fileFor(url('booking', locale)));
 
-    // The three request types the API understands.
-    assert.match(html, /name="service_type" value="general_move"/);
-    assert.match(html, /name="service_type" value="appointment_run"/);
-    assert.match(html, /name="service_type" value="passenger_journey"/);
+    // The six fields the client specified, and no seventh: the addresses, the
+    // vehicle, the access notes and the declarations are taken on the callback.
+    for (const id of ['customer_name', 'customer_phone', 'customer_email', 'service', 'company_name', 'notes']) {
+      assert.match(html, new RegExp(`id="${id}"`), `${locale}: the form has no ${id} field`);
+    }
+    for (const gone of ['pickup_location', 'destination', 'provider', 'date', 'window', 'plate',
+      'access_notes', 'business_id', 'invoice_email', 'passengers', 'appointment_time']) {
+      assert.equal(html.includes(`id="${gone}"`), false, `${locale}: ${gone} is back on the enquiry form`);
+    }
+    assert.equal(html.includes('name="ack"'), false, `${locale}: the declaration belongs on the callback`);
+    assert.equal(html.includes('name="service_type"'), false, `${locale}: the type radios are back`);
 
-    // A move says which of the four transfers it is.
-    const moveSelect = /<select id="move_service"[^>]*>([\s\S]*?)<\/select>/.exec(html);
-    assert.ok(moveSelect, `${locale}: the form does not ask which transfer it is`);
-    for (const key of ['branchTransfer', 'homeDelivery', 'purchasedCarPickup', 'relocation']) {
-      assert.ok(moveSelect[1].includes(`value="${key}"`), `${locale}: the move picker omits ${key}`);
-      assert.equal(SERVICE_PRODUCTS[key].type, 'general_move', `${key} is not a move`);
+    // Name, phone, email and the service are required; the rest is optional.
+    for (const id of ['customer_name', 'customer_phone', 'customer_email']) {
+      assert.match(html, new RegExp(`id="${id}"[^>]* required`), `${locale}: ${id} must be required`);
+    }
+    assert.match(html, /<select id="service" name="service" required>/, `${locale}: the service is not required`);
+    assert.equal(/id="company_name"[^>]* required/.test(html), false, `${locale}: the company name must stay optional`);
+
+    // Every sold service is offered, plus "Muu palvelu", and the first option
+    // is an empty prompt so nothing is ever preselected by accident.
+    const select = /<select id="service" name="service" required>([\s\S]*?)<\/select>/.exec(html)[1];
+    const values = [...select.matchAll(/value="([^"]*)"/g)].map((m) => m[1]);
+    assert.equal(values[0], '', `${locale}: the service dropdown preselects an option`);
+    assert.deepEqual(values.slice(1), soldKeys.concat('other'),
+      `${locale}: the service dropdown is out of step with the catalogue`);
+
+    // No price: not a figure, not a calculator, not a sidebar.
+    const form = /<form class="enquiry-card"[\s\S]*?<\/form>/.exec(html)[0];
+    assert.equal(/\d+\s*€/.test(form), false, `${locale}: the enquiry form shows a price`);
+    for (const gone of ['quote-amount', 'quote-lines', 'quote-note', 'class="quote"']) {
+      assert.equal(html.includes(gone), false, `${locale}: ${gone} is back on the form page`);
     }
 
-    // The appointment selector carries the service transfer.
-    const select = /<select id="service" name="service"[^>]*>([\s\S]*?)<\/select>/.exec(html)[1];
-    const values = [...select.matchAll(/value="([^"]+)"/g)].map((m) => m[1]);
-    assert.deepEqual(values, ['workshopTransfer'], `${locale}: the appointment selector is out of step`);
+    // And it says what it is: an enquiry, not a booking.
+    assert.ok(html.includes(escapeHtml(bookingCopy[locale].enquiryNote)),
+      `${locale}: the form does not say an enquiry is not a booking`);
+    assert.ok(html.includes(escapeHtml(bookingCopy[locale].submit)),
+      `${locale}: the send button is not the one the client asked for`);
+  }
+});
 
-    // A delivery and a collection need the person at the other end.
-    assert.match(html, /id="counterparty_contact"/, `${locale}: no counterparty field`);
-    assert.match(html, /id="key_instructions"/, `${locale}: no key instruction field`);
+test('the confirmation the client specified is on the page and in the email', async () => {
+  // Shown only after the API confirms the enquiry arrived - booking.js reveals
+  // the panel in its success branch and nowhere else.
+  const script = await read('assets/booking.js');
+  assert.match(script, /finish\(res\.data\.reference\)/, 'the confirmation is not tied to a successful send');
 
-    // Still short, and still a request rather than a booking.
-    assert.equal(/id="customer_email"[^>]* required/.test(html), false, 'email must be optional');
-    assert.equal(/id="plate"[^>]* required/.test(html), false, 'the registration waits for the callback');
-    assert.equal((html.match(/name="ack"/g) || []).length, 1, 'one up-front statement, not eight');
+  const expected = {
+    fi: ['Kiitos tarjouspyynnöstäsi!', 'DriveMe-tiimi ottaa sinuun yhteyttä 24 tunnin kuluessa. Tarjouspyyntö ei vielä vahvista varausta.'],
+    en: ['Thank you for your enquiry!', 'The DriveMe team will contact you within 24 hours. An enquiry does not confirm a booking yet.'],
+    sv: ['Tack för din offertförfrågan!', 'DriveMe-teamet kontaktar dig inom 24 timmar. En offertförfrågan bekräftar ännu ingen bokning.'],
+  };
+  for (const locale of LOCALES) {
+    const html = await read(fileFor(url('booking', locale)));
+    const panel = /<div class="done" id="done-panel"[\s\S]*?<\/div>/.exec(html);
+    assert.ok(panel, `${locale}: there is no confirmation panel`);
+    assert.ok(panel[0].includes('hidden'), `${locale}: the confirmation is visible before anything was sent`);
+    for (const line of expected[locale]) {
+      assert.ok(panel[0].includes(escapeHtml(line)), `${locale}: the confirmation does not say "${line}"`);
+      // The same words in the email, so the two cannot drift apart.
+      const mail = customerConfirmation(
+        { id: '0123456789abcdef', service: 'relocation', quote_status: 'quote_required', notes: null },
+        'https://driveme.fi', locale,
+      );
+      assert.ok(mail.text.includes(line), `${locale}: the confirmation email does not say "${line}"`);
+    }
   }
 });
 
@@ -444,9 +487,9 @@ test('the request form takes an offer code, optionally, in every language', asyn
     assert.ok(input, `${locale} form has no offer code field`);
     assert.equal(/required/.test(input[0]), false, `${locale} offer code must stay optional`);
     assert.ok(html.includes('id="offer_code-help"'), `${locale} offer code field has no help text`);
-    // Out in the open, not inside the collapsed optional details.
-    assert.ok(html.indexOf('id="offer_code"') < html.indexOf('<details class="more-details"'),
-      `${locale} offer code field is buried in the optional section`);
+    // Out of the way until someone has a code, but reachable without one.
+    assert.match(html, /id="offer-toggle" aria-expanded="false" aria-controls="offer-field"/,
+      `${locale} offer code field cannot be opened`);
   }
 });
 

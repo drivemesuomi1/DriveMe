@@ -43,7 +43,7 @@ export const menuGroups = {
 export const ui = {
   lang: 'sv-FI',
   skip: 'Hoppa till innehållet',
-  bookCta: 'Begär pris',
+  bookCta: 'Begär offert',
   bookHref: '/sv/begar-offert/',
   callUs: 'Ring',
   menu: 'Meny',
@@ -60,7 +60,7 @@ export const ui = {
   coverage: 'Serviceområde',
   related: 'Relaterade tjänster',
   boundary: 'Ansvarsfördelning',
-  requestPrice: 'Begär pris',
+  requestPrice: 'Begär offert',
   finalCta: 'En förare för din bil, *när du inte hinner själv*',
   priceFrom: 'från',
   vatNote: 'Priserna inkluderar moms.',
@@ -68,7 +68,7 @@ export const ui = {
   onThisPage: 'På den här sidan',
   allServices: 'Alla tjänster',
   readMore: 'Läs mer',
-  requestMove: 'Begär pris för bilflytt',
+  requestMove: 'Begär offert på en bilflytt',
   noPassenger: 'Du behöver inte åka med. Föraren kör bilen till destinationen, och inga passagerare åker med.',
   passengers: 'Passagerare',
   noPassengerShort: 'Inga passagerare, du åker inte med',
@@ -111,8 +111,8 @@ export const trustStrip = [
 ];
 
 export const howItWorks = [
-  { t: 'Berätta vart bilen ska', d: 'Upphämtningsadress, destination eller verkstad och önskad dag. Du ser ett riktpris direkt.' },
-  { t: 'Vi ringer och bekräftar', d: 'Vi går igenom bilens uppgifter och bekräftar förare, tid och fast pris. En förfrågan är ännu ingen bekräftelse.' },
+  { t: 'Begär offert', d: 'Berätta ditt namn, dina kontaktuppgifter och vilken tjänst du behöver. Formuläret tar under en minut.' },
+  { t: 'Vi hör av oss inom 24 timmar', d: 'Vi går igenom adresserna, bilens uppgifter och tidtabellen och bekräftar ett fast pris. En offertförfrågan bekräftar ännu ingen bokning.' },
   { t: 'Föraren hämtar bilen', d: 'Vi fotograferar skick, mätarställning och bränsle- eller laddningsnivå. Du behöver inte åka med.' },
   { t: 'Framme, eller hemma igen', d: 'Varje överlämning dokumenteras och du får besked när bilen är levererad eller tillbaka.' },
 ];
@@ -197,7 +197,7 @@ export const words = {
     journey: (name) => `${name}: fast offert. Priset bildas av rutten, resans längd, antalet passagerare och förarens returresa, och vi bekräftar det före resan. Bränsle, laddning, vägavgifter och parkering anges separat i offerten.`,
     intro: (name, from) => `${name}: ${from}. Priset inkluderar moms.`,
     typical: (a, b) => `Ett typiskt uppdrag i huvudstadsregionen kostar ${a}–${b} € beroende på rutt, tidpunkt och väntetid.`,
-    indicative: 'Du ser ett riktpris direkt i formuläret och vi bekräftar ett fast DriveMe-pris innan föraren åker.',
+    indicative: 'Det slutliga priset beror på rutten, tidpunkten och eventuell väntetid, så vi bekräftar ett fast DriveMe-pris i offerten före körningen.',
     toProvider: 'Leverantörens egen avgift, till exempel besiktningen eller servicen, betalar du direkt till leverantören.',
     ownCosts: 'Eventuella kostnader för bränsle, parkering och vägavgifter anges separat i offerten.',
   },

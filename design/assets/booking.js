@@ -1,13 +1,10 @@
 /* DriveMe — booking.js
-   The two-stage price request: a short first stage, optional details, an
-   indicative estimate, an accessible error summary and the POST to
-   /api/bookings. Three things can be asked for: a car move to an address, a
-   run to a provider, or a journey with the customer in the car (quoted).
+   The enquiry form: six fields, no price, and a POST to /api/bookings.
 
-   The estimate mirrors api/_lib/pricing.js, whose constants are injected into
-   the page as JSON at build time. The server derives the product from the
-   service and trip shape itself and recomputes the figure before storing it,
-   and the fee is not final until DriveMe confirms it. */
+   What it does is validate what the API validates, keep the service the
+   visitor arrived for selected, say plainly when a send fails, and show the
+   confirmation when it succeeds. There is no estimate on this page: a quote
+   is written by a person who has read the enquiry. */
 (function () {
   'use strict';
 
@@ -22,94 +19,39 @@
      never present on a real deploy, so production always posts for real. */
   var DEMO = !!document.querySelector('meta[name="driveme-demo"]');
   var C = CFG.copy;
-  /* Finnish and Swedish both write 1 234,50; English writes 1,234.50. */
-  var NUM_LOCALE = { fi: 'fi-FI', en: 'en-GB', sv: 'sv-FI' }[CFG.locale] || 'en-GB';
 
   var $ = function (id) { return document.getElementById(id); };
+  var shell = document.getElementById('enquiry-shell');
   var serviceSel = $('service');
-  // Which of the four transfers a vehicle move is. The three request types the
-  // API understands are unchanged; this says which product the move is for.
-  var moveServiceSel = $('move_service');
-  // A delivery or a purchase collection has a counterparty at the other end.
-  var COUNTERPARTY = { homeDelivery: 1, purchasedCarPickup: 1 };
-  var quoteAmount = $('quote-amount');
-  var quoteLines = $('quote-lines');
-  var quoteNote = $('quote-note');
   var errorSummary = $('error-summary');
   var submitBtn = $('submit-btn');
-  var submitHint = $('submit-hint');
+  var submitLabel = submitBtn.innerHTML;
   var donePanel = $('done-panel');
 
-  // Set when a link asks for a service that is not sold (a passenger ride).
+  // Set when a link asks for a service that is not sold yet.
   var gatedKey = null;
   // Which part of the site sent the visitor here, for lead_source.
   var entry = null;
+  // What a deep link brought along that this form no longer asks for.
+  var carried = { pickup: '' };
+  var touched = {};
 
   /* ---------------------------------------------------------- helpers */
-  function money(n) {
-    return (Math.round(n * 100) / 100).toLocaleString(NUM_LOCALE, {
-      minimumFractionDigits: 0, maximumFractionDigits: 2,
-    }) + ' €';
-  }
   function show(el, on) { if (el) el.hidden = !on; }
   function val(id) { var e = $(id); return e ? String(e.value || '').trim() : ''; }
-  function checked(name) {
-    var e = form.querySelector('input[name="' + name + '"]:checked');
-    return e ? e.value : '';
-  }
-  function tick(name, value) {
-    var r = form.querySelector('input[name="' + name + '"][value="' + value + '"]');
-    if (r) r.checked = true;
-  }
 
   /**
-   * The owner's permission is a booking condition, not fine print. Until it is
-   * ticked the request cannot be accepted, so the button stays inert rather
-   * than letting the visitor submit into an error summary.
+   * A service that is not sold cannot be enquired about, so the fields are put
+   * away and a notice explains why. Done with a class rather than by hiding
+   * each node, so nothing has to be put back one by one.
    */
-  var ackBoxes = Array.prototype.slice.call(
-    form.querySelectorAll('input[name="ack"]')
-  );
-  function acksComplete() {
-    return ackBoxes.every(function (a) { return a.checked; });
-  }
-  function syncSubmitGate() {
-    submitBtn.disabled = !!gatedKey || !acksComplete();
-    if (!submitHint) return;
-    // Naming what is outstanding, next to the button that will not fire yet,
-    // so a disabled button reads as waiting rather than as broken.
-    var problems = gatedKey ? [] : collectProblems('touched');
-    if (!problems.length) {
-      submitHint.innerHTML = '';
-      show(submitHint, false);
-      return;
-    }
-    submitHint.innerHTML = '<strong>' + C.submitLocked + '</strong><ul>' +
-      problemList(problems) + '</ul>';
-    show(submitHint, true);
-  }
-
-  /**
-   * A service that is not sold cannot be requested, so collecting the request
-   * is pointless and an indicative price would quote something we refuse to
-   * sell. Strip the form back to the first choice plus the notice explaining
-   * why. Done with a class rather than by toggling each element's `hidden`, so
-   * the per-type visibility below survives switching back.
-   */
-  function gatedLayout(on) {
-    form.classList.toggle('is-gated', !!on);
-  }
-
   function enterGated(key) {
     gatedKey = key;
     var warn = $('gate-warning');
     warn.innerHTML = '<div class="callout warn"><h3>' + C.gatedTitle + '</h3><p>' + C.gatedBody + '</p></div>';
     show(warn, true);
-    gatedLayout(true);
-    // Clear the type choice: with "move" still pre-ticked, clicking it would
-    // fire no change event and the visitor could never leave this notice.
-    form.querySelectorAll('input[name="service_type"]').forEach(function (r) { r.checked = false; });
-    syncSubmitGate();
+    form.classList.add('is-gated');
+    submitBtn.disabled = true;
   }
 
   function leaveGated() {
@@ -117,143 +59,8 @@
     gatedKey = null;
     $('gate-warning').innerHTML = '';
     show($('gate-warning'), false);
-    gatedLayout(false);
-  }
-
-  /* ------------------------------------------------ what is being asked */
-  function currentType() {
-    var t = checked('service_type');
-    return t === 'appointment_run' || t === 'passenger_journey' ? t : 'general_move';
-  }
-
-  // Which passenger service a link asked for; the journey page is the default.
-  var passengerKey = 'personalDriver';
-
-  // A general move is a relocation, or a pickup-and-return when the car has
-  // to come back. An appointment run is whichever provider service was picked.
-  function currentServiceKey() {
-    var type = currentType();
-    if (type === 'appointment_run') return serviceSel.value;
-    if (type === 'passenger_journey') return passengerKey;
-    // A move is one of the four transfers; the general one is the default.
-    return (moveServiceSel && moveServiceSel.value) || 'relocation';
-  }
-
-  /* A delivery to a customer and a collection from a seller both have someone
-     at the other end who hands over or receives the car. Nothing else does. */
-  function syncCounterparty() {
-    var field = $('counterparty-field');
-    if (!field) return;
-    var show = currentType() === 'general_move' && !!COUNTERPARTY[currentServiceKey()];
-    field.hidden = !show;
-  }
-
-  function currentService() {
-    return CFG.services[currentServiceKey()] || {};
-  }
-
-  function currentShape() {
-    var s = currentService();
-    if (currentType() === 'general_move') return s.defaultShape;
-    var shape = checked('shape');
-    return s.shapes && s.shapes[shape] ? shape : s.defaultShape;
-  }
-
-  function productKey() {
-    var s = currentService();
-    return (s.shapes && s.shapes[currentShape()]) || s.product;
-  }
-
-  function syncSections() {
-    var type = currentType();
-    var appt = type === 'appointment_run';
-    var journey = type === 'passenger_journey';
-    show($('appointment-set'), appt);
-    show($('move-set'), !appt);
-    show($('move-service-field'), type === 'general_move');
-    syncCounterparty();
-    show($('passengers-field'), journey);
-    $('route-legend').textContent = journey ? C.journeyLegend : C.moveLegend;
-    // Where it goes is never optional: an address for a move or a journey,
-    // the provider for a service run.
-    $('provider').required = appt;
-    $('destination').required = !appt;
-    $('passengers').required = journey;
-
-    // Offer only the return shapes this service can actually be priced as.
-    var s = CFG.services[serviceSel.value] || {};
-    form.querySelectorAll('input[name="shape"]').forEach(function (r) {
-      var ok = !!(s.shapes && s.shapes[r.value]);
-      r.closest('.choice').hidden = !ok;
-      r.disabled = !ok;
-    });
-    var picked = form.querySelector('input[name="shape"]:checked');
-    if (!picked || picked.disabled) tick('shape', s.defaultShape);
-
-    syncRequiredMarks();
-    estimate();
-    syncSubmitGate();
-  }
-
-  function onServicePick() {
-    // A new service starts from its own usual shape: an inspection is normally
-    // a wait-and-return, a workshop visit a later return.
-    var s = CFG.services[serviceSel.value] || {};
-    tick('shape', s.defaultShape);
-    syncSections();
-  }
-
-  /* ------------------------------------------------------- the quote */
-  function scheduledDate() {
-    var d = val('date');
-    if (!d) return null;
-    var w = val('window');
-    var hour = w && w !== 'flex' ? parseInt(w.split('-')[0], 10) : 9;
-    // Interpreted as Helsinki wall-clock. The browser may sit in another
-    // zone, so the premium decision is only indicative; the server re-derives
-    // it in Europe/Helsinki before the fee is confirmed.
-    var parts = d.split('-');
-    return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), hour, 0, 0);
-  }
-
-  function premiumFor(when) {
-    if (!when) return null;
-    var out = [];
-    var p = CFG.premiums;
-    var h = when.getHours();
-    if (h >= p.night.fromHour || h < p.night.toHour) out.push({ key: 'night', pct: p.night.pct });
-    var day = when.getDay();
-    if (day === 0 || day === 6) out.push({ key: 'weekend', pct: p.weekend.pct });
-    var md = String(when.getMonth() + 1).padStart(2, '0') + '-' + String(when.getDate()).padStart(2, '0');
-    if (['01-01', '05-01', '12-06', '12-24', '12-25', '12-26'].indexOf(md) >= 0) {
-      out.push({ key: 'publicHoliday', pct: p.publicHoliday.pct });
-    }
-    var lead = (when.getTime() - Date.now()) / 3600000;
-    if (lead >= 0 && lead < p.urgent.withinHours) out.push({ key: 'urgent', pct: p.urgent.pct });
-    if (!out.length) return null;
-    return out.reduce(function (a, b) { return b.pct > a.pct ? b : a; });
-  }
-
-  function estimate() {
-    var product = CFG.products[productKey()];
-
-    if (!product || product.quote) {
-      quoteAmount.innerHTML = '<small>&nbsp;</small>' + C.quoteManual;
-      quoteLines.innerHTML = '';
-      quoteNote.textContent = C.quoteManualNote;
-      return;
-    }
-
-    var lines = [{ label: C.lines.base, amount: product.from }];
-    var pr = premiumFor(scheduledDate());
-    if (pr) lines.push({ label: C.lines[pr.key] + ' · +' + pr.pct + ' %', amount: product.from * pr.pct / 100 });
-
-    var total = lines.reduce(function (sum, l) { return sum + l.amount; }, 0);
-    quoteAmount.innerHTML = '<small>' + C.quoteFrom + '</small>' + money(total);
-    quoteLines.innerHTML = lines.map(function (l) {
-      return '<li><span>' + l.label + '</span><b>' + money(l.amount) + '</b></li>';
-    }).join('');
-    quoteNote.textContent = C.quoteNote;
+    form.classList.remove('is-gated');
+    submitBtn.disabled = false;
   }
 
   /* ------------------------------------------------------- validation */
@@ -271,88 +78,48 @@
     }
   }
 
-  function visible(el) {
-    return !!(el && el.offsetParent !== null && !el.disabled);
-  }
-
-  var touched = {};
-
-  /* The asterisks follow the live requirement, not the markup: the provider is
-     only demanded for a service run, the destination only for a move. */
-  function syncRequiredMarks() {
-    form.querySelectorAll('.req').forEach(function (m) {
-      var el = $(m.getAttribute('data-for'));
-      m.hidden = !(el && el.required);
-    });
-  }
-
-  /**
-   * Collects everything still standing between the visitor and a request.
-   * `mark` decides whether the fields are painted red as well: the live hint
-   * calls this on every keystroke and must not accuse a field the visitor has
-   * not reached yet, while the submit attempt does mark them.
-   */
-  function collectProblems(mark) {
-    var problems = [];
-    // 'touched' marks only the fields the visitor has already left, so the page
-    // never opens accusing someone of not filling in a form they just arrived at.
-    var marks = function (id) {
-      return mark === true || (mark === 'touched' && touched[id]);
-    };
-    var note = function (id, label, msg) {
-      if (marks(id)) setError(id, msg);
-      problems.push({ id: id, label: label });
-    };
-
-    // Wipe the slate first. Errors also arrive from the API, on fields this
-    // pass never looks at, and without this they would stick for good.
-    if (mark) clearAllErrors();
-
-    form.querySelectorAll('input[required], select[required]').forEach(function (el) {
-      if (el.type === 'checkbox') return;
-      if (!visible(el)) return;
-      if (!String(el.value || '').trim()) note(el.id, labelFor(el), C.required);
-    });
-
-    // Email is optional, but a mistyped one would lose the receipt.
-    var email = val('customer_email');
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      note('customer_email', labelFor($('customer_email')), C.badEmail);
-    }
-    // The phone number is how we reach the customer; catch an obvious typo.
-    var phone = val('customer_phone');
-    if (phone && phone.replace(/\D/g, '').length < 6) {
-      note('customer_phone', labelFor($('customer_phone')), C.badPhone);
-    }
-
-    // Keep the numbers inside the bounds the API enforces.
-    form.querySelectorAll('input[type="number"]').forEach(function (el) {
-      if (!visible(el) || !String(el.value || '').trim()) return;
-      var n = parseFloat(el.value);
-      var min = el.getAttribute('min');
-      var max = el.getAttribute('max');
-      if (isNaN(n) || (min !== null && n < parseFloat(min)) || (max !== null && n > parseFloat(max))) {
-        note(el.id, labelFor(el), C.badRange);
-      }
-    });
-
-    var unticked = ackBoxes.filter(function (a) { return !a.checked; });
-    if (mark) $('ack-err').textContent = unticked.length ? C.mustAccept : '';
-    if (unticked.length) problems.push({ id: unticked[0].id, label: C.authLabel });
-
-    return problems;
-  }
-
   function clearAllErrors() {
     form.querySelectorAll('.err').forEach(function (el) {
       setError(el.id.replace(/-err$/, ''), '');
     });
   }
 
-  function touchedAll() {
-    form.querySelectorAll('input[id], select[id], textarea[id]').forEach(function (el) {
-      touched[el.id] = true;
+  function labelFor(el) {
+    if (!el) return '';
+    var lab = form.querySelector('label[for="' + el.id + '"]');
+    // The label carries the required asterisk; the checklist does not need it.
+    return lab ? lab.textContent.replace(/\*\s*$/, '').trim() : el.id;
+  }
+
+  /**
+   * Everything still standing between the visitor and a sent enquiry. `mark`
+   * decides whether the fields are painted red as well: 'touched' marks only
+   * the ones the visitor has already left, so the page never opens accusing
+   * someone of not filling in a form they have just arrived at.
+   */
+  function collectProblems(mark) {
+    var problems = [];
+    var note = function (el, msg) {
+      if (mark === true || (mark === 'touched' && touched[el.id])) setError(el.id, msg);
+      problems.push({ id: el.id, label: labelFor(el) });
+    };
+
+    // Errors also arrive from the API, on fields this pass never looks at, so
+    // the slate is wiped first or they would stick for good.
+    if (mark) clearAllErrors();
+
+    form.querySelectorAll('input[required], select[required]').forEach(function (el) {
+      if (!String(el.value || '').trim()) note(el, C.required);
     });
+
+    if (val('customer_email') && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val('customer_email'))) {
+      note($('customer_email'), C.badEmail);
+    }
+    if (val('customer_phone') && val('customer_phone').replace(/\D/g, '').length < 6) {
+      note($('customer_phone'), C.badPhone);
+    }
+
+    return problems;
   }
 
   function problemList(problems) {
@@ -363,7 +130,9 @@
 
   function validate() {
     var problems = collectProblems(true);
-    touchedAll();
+    form.querySelectorAll('input[id], select[id], textarea[id]').forEach(function (el) {
+      touched[el.id] = true;
+    });
     if (problems.length) {
       errorSummary.querySelector('ul').innerHTML = problemList(problems);
       show(errorSummary, true);
@@ -374,18 +143,11 @@
     return problems.length === 0;
   }
 
-  function labelFor(el) {
-    if (!el) return '';
-    var lab = form.querySelector('label[for="' + el.id + '"]');
-    // The label carries the required asterisk; the checklist does not need it.
-    return lab ? lab.textContent.replace(/\*\s*$/, '').trim() : el.id;
-  }
-
   /* ------------------------------------------------------ lead source */
   /* site.js records how the visit started (campaign tags, referring site,
      landing page) in sessionStorage; this page adds which button sent the
      visitor to the form. Blocked storage costs the attribution, never the
-     request. */
+     enquiry. */
   function leadSource() {
     var parts = [];
     try {
@@ -403,54 +165,30 @@
 
   /* ----------------------------------------------------------- submit */
   function payload() {
-    var type = currentType();
-    var appt = type === 'appointment_run';
-    var shape = currentShape();
-    var win = val('window');
-    var hour = win && win !== 'flex' ? win.split('-')[0] : '09';
-    // A move's shape says whether the car comes back; a journey is asked outright.
-    var returning = shape ? shape !== 'oneWay' : checked('return_needed') === 'yes';
-
+    var company = val('company_name');
     return {
       language: CFG.locale,
-      service: currentServiceKey(),
-      service_type: type,
-      shape: shape,
-      product: productKey(),
-      // A move carries nobody; a journey carries the people who asked for it.
-      passenger_count: type === 'passenger_journey' ? (parseInt(val('passengers'), 10) || 1) : 0,
-      pickup_location: val('pickup_location'),
-      destination: appt ? val('provider') : val('destination'),
-      return_needed: returning,
-      return_location: returning ? val('pickup_location') : null,
-      provider: appt ? val('provider') : null,
-      appointment_time: appt ? (val('appointment_time') || null) : null,
-      appointment_ref: appt ? (val('appointment_ref') || null) : null,
-      scheduled_for: val('date') ? val('date') + 'T' + hour.padStart(2, '0') + ':00' : null,
-      collection_window: win || null,
-      access_notes: [val('key_instructions'), val('access_notes')].filter(Boolean).join(' | ') || null,
-      pickup_contact: currentServiceKey() === 'purchasedCarPickup' ? (val('counterparty_contact') || null) : null,
-      delivery_contact: currentServiceKey() === 'homeDelivery' ? (val('counterparty_contact') || null) : null,
-      vehicle_plate: val('plate') || null,
-      vehicle_details: val('vehicle_model') || null,
-      vehicle_gearbox: val('gearbox') || null,
-      vehicle_fuel: val('fuel') || null,
+      service: serviceSel.value,
+      // The enquiry says who is asking and what they want. The route, the
+      // vehicle, the handover and the declarations are settled on the call
+      // back, so nothing here pretends to know them.
+      passenger_count: 0,
       customer_name: val('customer_name'),
       customer_phone: val('customer_phone'),
-      customer_email: val('customer_email') || null,
-      customer_type: val('customer_type') || 'person',
-      company_name: val('company_name') || null,
-      business_id: val('business_id') || null,
-      invoice_email: val('invoice_email') || null,
+      customer_email: val('customer_email'),
+      customer_type: company ? 'company' : 'person',
+      company_name: company || null,
       notes: val('notes') || null,
       offer_code: val('offer_code').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20) || null,
-      vehicle_owner_authorization: !!($('ack-0') && $('ack-0').checked),
+      // Carried through when a homepage or campaign link brought one along, so
+      // the detail is not lost between the two pages.
+      pickup_location: carried.pickup || null,
       lead_source: leadSource(),
     };
   }
 
   function finish(reference) {
-    form.hidden = true;
+    show(shell, false);
     // Labelled, in the page's language: a bare code on its own line reads
     // like an error, and the customer quotes this on the phone.
     $('done-ref').textContent = C.doneRef + ': ' + reference;
@@ -459,18 +197,22 @@
     donePanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
+  function sending(on) {
+    submitBtn.disabled = on;
+    submitBtn.innerHTML = on ? C.submitting : submitLabel;
+    submitBtn.classList.toggle('is-busy', on);
+  }
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (gatedKey) return;
     if (!validate()) return;
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = C.submitting;
+    sending(true);
 
     if (DEMO) {
       finish('DEMO-' + String(Date.now()).slice(-6));
-      submitBtn.disabled = false;
-      submitBtn.textContent = C.submit;
+      sending(false);
       return;
     }
 
@@ -490,16 +232,14 @@
         finish(res.data.reference);
       })
       .catch(function (err) {
+        // Everything the visitor typed stays exactly where it is: an error
+        // must never cost somebody the form they have just filled in.
         var ul = errorSummary.querySelector('ul');
         ul.innerHTML = '<li>' + (err.message || C.failed) + '</li>';
         show(errorSummary, true);
         errorSummary.focus();
       })
-      .finally(function () {
-        submitBtn.disabled = false;
-        submitBtn.textContent = C.submit;
-        syncSubmitGate();
-      });
+      .finally(function () { sending(false); });
   });
 
   var again = $('again-btn');
@@ -507,54 +247,45 @@
     again.addEventListener('click', function () {
       form.reset();
       touched = {};
+      clearAllErrors();
       leaveGated();
-      form.hidden = false;
+      show(errorSummary, false);
+      show(shell, true);
       show(donePanel, false);
-      show($('company-fields'), false);
-      syncSections();
       form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
   /* ------------------------------------------------------------ wiring */
-  form.querySelectorAll('input[name="service_type"]').forEach(function (r) {
-    r.addEventListener('change', function () { leaveGated(); syncSections(); });
-  });
-  form.querySelectorAll('input[name="return_needed"], input[name="shape"]').forEach(function (r) {
-    r.addEventListener('change', estimate);
-  });
-  serviceSel.addEventListener('change', onServicePick);
-  if (moveServiceSel) {
-    moveServiceSel.addEventListener('change', function () { syncCounterparty(); estimate(); });
-  }
-  ['date', 'window'].forEach(function (id) {
-    var el = $(id);
-    if (el) el.addEventListener('change', estimate);
-    if (el) el.addEventListener('input', estimate);
-  });
-  var type = $('customer_type');
-  if (type) {
-    type.addEventListener('change', function () {
-      show($('company-fields'), type.value === 'company');
-    });
-  }
-  // Any edit can complete or reopen an item on the outstanding list.
-  form.addEventListener('change', syncSubmitGate);
-  form.addEventListener('input', syncSubmitGate);
   // Leaving a field is the moment its emptiness becomes a fact worth flagging.
   form.addEventListener('focusout', function (e) {
-    if (e.target && e.target.id) {
-      touched[e.target.id] = true;
-      syncSubmitGate();
-    }
+    if (!e.target || !e.target.id) return;
+    touched[e.target.id] = true;
+    collectProblems('touched');
+  });
+  // And typing in it is the moment it stops being one.
+  form.addEventListener('input', function (e) {
+    if (!e.target || !e.target.id) return;
+    var err = $(e.target.id + '-err');
+    if (err && err.textContent) collectProblems('touched');
   });
 
-  /* Deep links from the homepage and the service pages. Each language links
-     in its own words, and every language's spelling is accepted here so a
-     shared or edited link keeps working:
-     /varaus/?palvelu=inspection&nouto=00100&pvm=2026-09-15&lahde=home_hero
-     /en/booking/?service=inspection&type=service
-     /sv/offert/?tjanst=inspection&hamtning=00100&datum=2026-09-15&kalla=home_hero */
+  var offerToggle = $('offer-toggle');
+  if (offerToggle) {
+    offerToggle.addEventListener('click', function () {
+      var opening = $('offer-field').hidden;
+      show($('offer-field'), opening);
+      offerToggle.setAttribute('aria-expanded', String(opening));
+      if (opening) $('offer_code').focus();
+    });
+  }
+
+  /* Deep links from the homepage, the service pages and the campaign. Each
+     language links in its own words, and every language's spelling is accepted
+     here so a shared or edited link keeps working:
+     /pyyda-tarjous/?palvelu=homeDelivery&lahde=home_hero
+     /en/request-a-quote/?service=homeDelivery
+     /sv/begar-offert/?tjanst=homeDelivery&kalla=home_hero */
   var params = new URLSearchParams(location.search);
   var param = function () {
     for (var i = 0; i < arguments.length; i++) {
@@ -563,59 +294,35 @@
     }
     return null;
   };
+  carried.pickup = (param('nouto', 'pickup', 'hamtning') || '').slice(0, 300);
   var wanted = param('palvelu', 'service', 'tjanst');
   if (wanted && CFG.aliases && CFG.aliases[wanted]) wanted = CFG.aliases[wanted];
-  var wantedType = param('tyyppi', 'type', 'typ');
-  var wantedPath = param('polku', 'path');
-  var wantedPickup = param('nouto', 'pickup', 'hamtning');
-  var wantedDate = param('pvm', 'date', 'datum');
   var source = (param('lahde', 'source', 'kalla') || '').replace(/[^\w:-]/g, '').slice(0, 40);
   entry = source || (wanted ? 'service:' + String(wanted).replace(/[^\w-]/g, '').slice(0, 30) : null);
 
   /* A campaign code carried over from the offer page fills in the field the
-     customer could also have typed themselves. The discount is applied when
-     we confirm the price, so nothing here touches the estimate - a number on
-     screen that the confirmation does not repeat is an argument later. */
+     customer could also have typed themselves, and opens it so they can see
+     it is there. The discount is applied when we quote. */
   var offerCode = (param('etu', 'offer', 'erbjudande') || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20);
-  if (offerCode && $('offer_code')) $('offer_code').value = offerCode;
+  if (offerCode && $('offer_code')) {
+    $('offer_code').value = offerCode;
+    show($('offer-field'), true);
+    if (offerToggle) offerToggle.setAttribute('aria-expanded', 'true');
+  }
 
-  if (wantedPickup && $('pickup_location')) $('pickup_location').value = wantedPickup.slice(0, 300);
-  if (wantedDate && /^\d{4}-\d{2}-\d{2}$/.test(wantedDate) && $('date')) $('date').value = wantedDate;
-  if (wantedType === 'palvelu' || wantedType === 'service' || wantedType === 'tjanst') tick('service_type', 'appointment_run');
-  if (wantedType === 'siirto' || wantedType === 'move' || wantedType === 'flytt') tick('service_type', 'general_move');
-  if (wantedType === 'matka' || wantedType === 'journey' || wantedType === 'resa') tick('service_type', 'passenger_journey');
-
-  var ws = wanted && Object.prototype.hasOwnProperty.call(CFG.services, wanted) ? CFG.services[wanted] : null;
-  if (ws && !ws.gated) {
-    if (ws.type === 'appointment_run') {
-      tick('service_type', 'appointment_run');
+  /* The service the visitor pressed. Every button on the site names its own
+     service and the dropdown holds exactly those values, so "Kotiintoimitus"
+     can no longer open as "Yksittäinen siirto". A retired key resolves through
+     the alias table above; anything still unrecognised becomes "Muu palvelu"
+     rather than silently selecting the first option. */
+  if (wanted) {
+    var known = CFG.services[wanted];
+    if (known && known.gated) {
+      enterGated(wanted);
+    } else if ([].some.call(serviceSel.options, function (o) { return o.value === wanted; })) {
       serviceSel.value = wanted;
-      tick('shape', ws.defaultShape);
-    } else if (ws.type === 'general_move') {
-      tick('service_type', 'general_move');
-      tick('return_needed', wanted === 'pickupReturn' ? 'yes' : 'no');
-    } else if (ws.type === 'passenger') {
-      passengerKey = wanted;
-      tick('service_type', 'passenger_journey');
-    } else if (ws.type === 'business') {
-      // Company leads start as a move with the company details already open;
-      // contract pricing is agreed on the call.
-      tick('service_type', 'general_move');
-      $('customer_type').value = 'company';
-      show($('company-fields'), true);
-      $('more-details').open = true;
-      show($('business-note'), true);
+    } else {
+      serviceSel.value = 'other';
     }
-  }
-
-  syncSections();
-  if ((ws && ws.gated) || wantedPath === 'kuljettaja' || wantedPath === 'driver') {
-    enterGated(wanted || 'personalDriver');
-  }
-
-  // Today is the earliest sensible pickup date.
-  var dateInput = $('date');
-  if (dateInput && !dateInput.min) {
-    dateInput.min = new Date().toISOString().slice(0, 10);
   }
 }());

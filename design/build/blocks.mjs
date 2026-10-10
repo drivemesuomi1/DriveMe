@@ -222,24 +222,79 @@ export function screeningBlock(locale) {
   return `<p class="prose">${esc(open ? screening[locale].open : screening[locale].closed)}</p>`;
 }
 
+/* Each gate has two bodies: `open` while the evidence is outstanding, and
+   `cleared` once it is on file. Without the second one the page printed the
+   "we do not market this yet" wording under a Cleared badge - which is what
+   made /turvallisuus/ contradict /oma-kuljettaja/.
+
+   The cleared wording says no more than the evidence on file in
+   api/_lib/gates.js supports. Anything beyond that waits for the document. */
 const GATE_COPY = {
   fi: {
-    passengerTransport: ['Matkustajakuljetus asiakkaan omalla autolla', 'Traficomin mukaan kaupallinen henkilöiden kuljettaminen henkilöautolla edellyttää taksiliikennelupaa, kuljettajalta taksinkuljettajan ajolupaa ja ajoneuvolta rekisteröintiä luvanvaraiseen käyttöön. Emme markkinoi kuljettajapalvelua käytettävissä olevana ennen kirjallista vahvistusta siitä, miten tämä koskee ajoa asiakkaan omalla autolla.'],
-    custodyInsurance: ['Vakuutus asiakkaan autolle DriveMen hallussa', 'Liikennevakuutus ei korvaa vahinkoa vakuutetulle ajoneuvolle itselleen. Hankimme erillisen vakuutuksen ajettavana tai hallussa olevalle autolle, avainten katoamiselle, varkaudelle ja pysäköintivahingoille. Julkaisemme sanan "vakuutettu" vasta, kun sanamuoto vastaa vakuutusehtoja.'],
-    driverScreening: ['Kuljettajien taustatarkistukset', 'Kerromme vain ne tarkistukset, jotka voimme laillisesti tehdä ja dokumentoida. Emme julkaise yleisluontoisia rikos- tai ajotaustaväitteitä ennen kuin lakimies ja tietosuojaohjeistus ovat hyväksyneet tarkistusten sisällön.'],
-    consumerTerms: ['Kuluttajaehdot ja peruutusoikeus', 'Suomalainen lakimies tarkastaa etämyynnin tiedot, peruuttamisoikeuden, vastuun, reklamaatiot ja hinnanmuutokset. Ehdot eivät voi poistaa pakottavia kuluttajan oikeuksia.'],
+    passengerTransport: {
+      title: 'Matkustajakuljetus asiakkaan omalla autolla',
+      open: 'Traficomin mukaan kaupallinen henkilöiden kuljettaminen henkilöautolla edellyttää taksiliikennelupaa, kuljettajalta taksinkuljettajan ajolupaa ja ajoneuvolta rekisteröintiä luvanvaraiseen käyttöön. Emme markkinoi kuljettajapalvelua käytettävissä olevana ennen kirjallista vahvistusta siitä, miten tämä koskee ajoa asiakkaan omalla autolla.',
+      cleared: 'Saimme syyskuussa 2026 kirjallisen vahvistuksen siitä, miten matkustajakuljetus asiakkaan omalla autolla on järjestettävä, ja oma kuljettaja -palvelu on sen jälkeen ollut tilattavissa. Jokainen matka sovitaan ja hinnoitellaan erikseen.',
+    },
+    custodyInsurance: {
+      title: 'Vakuutus asiakkaan autolle DriveMen hallussa',
+      open: 'Liikennevakuutus ei korvaa vahinkoa vakuutetulle ajoneuvolle itselleen. Hankimme erillisen vakuutuksen ajettavana tai hallussa olevalle autolle, avainten katoamiselle, varkaudelle ja pysäköintivahingoille. Julkaisemme sanan "vakuutettu" vasta, kun sanamuoto vastaa vakuutusehtoja.',
+      cleared: 'Asiakkaan autolle DriveMen hallussa on voimassa oleva vakuutus. Kerromme kattavuuden ja omavastuun pyynnöstä, ja sanamuoto vastaa vakuutusehtoja.',
+    },
+    driverScreening: {
+      title: 'Kuljettajien taustatarkistukset',
+      open: 'Kerromme vain ne tarkistukset, jotka voimme laillisesti tehdä ja dokumentoida. Emme julkaise yleisluontoisia rikos- tai ajotaustaväitteitä ennen kuin lakimies ja tietosuojaohjeistus ovat hyväksyneet tarkistusten sisällön.',
+      cleared: 'Tarkistusten sisältö on lakimiehen ja tietosuojaohjeistuksen hyväksymä, ja teemme jokaiselle kuljettajalle juuri ne tarkistukset, jotka kerromme.',
+    },
+    consumerTerms: {
+      title: 'Kuluttajaehdot ja peruutusoikeus',
+      open: 'Suomalainen lakimies tarkastaa etämyynnin tiedot, peruuttamisoikeuden, vastuun, reklamaatiot ja hinnanmuutokset. Ehdot eivät voi poistaa pakottavia kuluttajan oikeuksia.',
+      cleared: 'Palveluehdot ovat suomalaisen lakimiehen tarkastamat etämyynnin tietojen, peruuttamisoikeuden, vastuun ja reklamaatioiden osalta. Ehdot eivät poista pakottavia kuluttajan oikeuksia.',
+    },
   },
   en: {
-    passengerTransport: ['Passenger transport in the customer’s own car', 'Traficom states that commercial passenger transport by passenger car requires a taxi transport licence, a taxi driving licence for the driver, and a vehicle registered for licensed operation. We do not market the driver service as available before written confirmation of how this applies to driving the customer’s own car.'],
-    custodyInsurance: ['Insurance for customers’ vehicles in DriveMe custody', 'The statutory motor liability policy does not compensate damage to the insured vehicle itself. We are obtaining explicit cover for vehicles being driven or held, lost keys, theft and parking incidents. We publish the word "insured" only with wording that matches the policy.'],
-    driverScreening: ['Driver screening', 'We state only the checks we can lawfully carry out and document. We do not publish broad criminal or driving-record claims before counsel and data-protection guidance approve the exact checks.'],
-    consumerTerms: ['Consumer terms and cancellation', 'Finnish counsel reviews distance-selling information, cancellation rights, liability, complaints and price changes. Terms cannot remove mandatory consumer rights.'],
+    passengerTransport: {
+      title: 'Passenger transport in the customer\u2019s own car',
+      open: 'Traficom states that commercial passenger transport by passenger car requires a taxi transport licence, a taxi driving licence for the driver, and a vehicle registered for licensed operation. We do not market the driver service as available before written confirmation of how this applies to driving the customer\u2019s own car.',
+      cleared: 'In September 2026 we received written confirmation of how passenger transport in the customer\u2019s own car has to be arranged, and the personal driver service has been available since. Every journey is agreed and quoted individually.',
+    },
+    custodyInsurance: {
+      title: 'Insurance for customers\u2019 vehicles in DriveMe custody',
+      open: 'The statutory motor liability policy does not compensate damage to the insured vehicle itself. We are obtaining explicit cover for vehicles being driven or held, lost keys, theft and parking incidents. We publish the word "insured" only with wording that matches the policy.',
+      cleared: 'Customers\u2019 vehicles in DriveMe custody are covered by a policy of our own. We state the cover and the deductible on request, in wording that matches the policy.',
+    },
+    driverScreening: {
+      title: 'Driver screening',
+      open: 'We state only the checks we can lawfully carry out and document. We do not publish broad criminal or driving-record claims before counsel and data-protection guidance approve the exact checks.',
+      cleared: 'The checks have been approved by counsel and data-protection guidance, and every driver goes through exactly the checks we describe.',
+    },
+    consumerTerms: {
+      title: 'Consumer terms and cancellation',
+      open: 'Finnish counsel reviews distance-selling information, cancellation rights, liability, complaints and price changes. Terms cannot remove mandatory consumer rights.',
+      cleared: 'Our terms of service have been reviewed by Finnish counsel on distance-selling information, cancellation rights, liability and complaints. They do not remove mandatory consumer rights.',
+    },
   },
   sv: {
-    passengerTransport: ['Persontransport i kundens egen bil', 'Enligt Traficom kräver kommersiell persontransport med personbil taxitrafiktillstånd, taxiförarlegitimation för föraren och att fordonet är registrerat för tillståndspliktig användning. Vi marknadsför inte förartjänsten som tillgänglig innan vi skriftligt har bekräftat hur detta gäller körning i kundens egen bil.'],
-    custodyInsurance: ['Försäkring för kundens bil i DriveMes vård', 'Trafikförsäkringen ersätter inte skador på det försäkrade fordonet självt. Vi skaffar ett separat skydd för bilar som körs eller förvaras av oss, för förlorade nycklar, stöld och parkeringsskador. Vi använder ordet "försäkrad" först när formuleringen motsvarar försäkringsvillkoren.'],
-    driverScreening: ['Bakgrundskontroll av förare', 'Vi berättar bara om de kontroller vi lagligt kan göra och dokumentera. Vi publicerar inga allmänt hållna påståenden om brotts- eller körhistorik innan jurist och dataskyddsanvisningar har godkänt kontrollernas innehåll.'],
-    consumerTerms: ['Konsumentvillkor och ångerrätt', 'En finsk jurist granskar informationen om distansförsäljning, ångerrätten, ansvaret, reklamationerna och prisförändringarna. Villkoren kan inte ta bort tvingande konsumenträttigheter.'],
+    passengerTransport: {
+      title: 'Persontransport i kundens egen bil',
+      open: 'Enligt Traficom kräver kommersiell persontransport med personbil taxitrafiktillstånd, taxiförarlegitimation för föraren och att fordonet är registrerat för tillståndspliktig användning. Vi marknadsför inte förartjänsten som tillgänglig innan vi skriftligt har bekräftat hur detta gäller körning i kundens egen bil.',
+      cleared: 'I september 2026 fick vi en skriftlig bekräftelse på hur persontransport i kundens egen bil ska ordnas, och tjänsten personlig förare har varit bokningsbar sedan dess. Varje resa avtalas och prissätts separat.',
+    },
+    custodyInsurance: {
+      title: 'Försäkring för kundens bil i DriveMes vård',
+      open: 'Trafikförsäkringen ersätter inte skador på det försäkrade fordonet självt. Vi skaffar ett separat skydd för bilar som körs eller förvaras av oss, för förlorade nycklar, stöld och parkeringsskador. Vi använder ordet "försäkrad" först när formuleringen motsvarar försäkringsvillkoren.',
+      cleared: 'Kundens bil i DriveMes vård omfattas av en egen försäkring. Vi berättar om omfattningen och självrisken på begäran, med en formulering som motsvarar försäkringsvillkoren.',
+    },
+    driverScreening: {
+      title: 'Bakgrundskontroll av förare',
+      open: 'Vi berättar bara om de kontroller vi lagligt kan göra och dokumentera. Vi publicerar inga allmänt hållna påståenden om brotts- eller körhistorik innan jurist och dataskyddsanvisningar har godkänt kontrollernas innehåll.',
+      cleared: 'Kontrollernas innehåll är godkänt av jurist och dataskyddsanvisningar, och varje förare genomgår exakt de kontroller vi beskriver.',
+    },
+    consumerTerms: {
+      title: 'Konsumentvillkor och ångerrätt',
+      open: 'En finsk jurist granskar informationen om distansförsäljning, ångerrätten, ansvaret, reklamationerna och prisförändringarna. Villkoren kan inte ta bort tvingande konsumenträttigheter.',
+      cleared: 'Våra servicevillkor är granskade av en finsk jurist när det gäller information om distansförsäljning, ångerrätt, ansvar och reklamationer. De tar inte bort tvingande konsumenträttigheter.',
+    },
   },
 };
 
@@ -247,10 +302,12 @@ export function gateList(locale) {
   const cleared = words[locale].gateCleared;
   const waiting = words[locale].gateWaiting;
   return `<div class="gates">${Object.entries(launchGates).map(([key, gate]) => {
-    const [title, body] = GATE_COPY[locale][key];
+    const copy = GATE_COPY[locale][key];
+    // The badge and the paragraph come from the same flag, so a gate cannot
+    // say "cleared" and "we do not promise this yet" in the same breath.
     return `<div class="gate ${gate.live ? 'cleared' : 'open'}">
-      <h3>${esc(title)} <span class="badge${gate.live ? ' ok' : ''}">${esc(gate.live ? cleared : waiting)}</span></h3>
-      <p>${esc(body)}</p>
+      <h3>${esc(copy.title)} <span class="badge${gate.live ? ' ok' : ''}">${esc(gate.live ? cleared : waiting)}</span></h3>
+      <p>${esc(gate.live ? copy.cleared : copy.open)}</p>
     </div>`;
   }).join('')}</div>`;
 }
@@ -259,17 +316,22 @@ export function gateNoticeBlock(locale) {
   return `<div class="callout warn"><h3>${esc(words[locale].gateNoticeTitle)}</h3><p>${esc(gateNotice[locale])}</p></div>`;
 }
 
-export function companyBlock(locale) {
+export function companyBlock(locale, { only } = {}) {
   const w = words[locale];
-  const lines = [
-    w.companyProvider + brand.legalName + ' (DriveMe)',
-    ...(brand.businessId ? [w.companyBusinessId + brand.businessId] : []),
-    w.companyDomicile,
-    w.companyPhone + brand.phone,
-    w.companyEmail + brand.email,
-    w.companyArea + w.cities.join(', '),
-  ];
-  return tickList(lines, 'plain');
+  const all = {
+    provider: w.companyProvider + brand.legalName + ' (DriveMe)',
+    // The same fact without the label, for a card already headed "provider".
+    name: brand.legalName + ' (DriveMe)',
+    // Printed only once the owner has supplied it: an empty label or a
+    // placeholder would be worse than saying nothing.
+    businessId: brand.businessId ? w.companyBusinessId + brand.businessId : null,
+    domicile: w.companyDomicile,
+    phone: w.companyPhone + brand.phone,
+    email: w.companyEmail + brand.email,
+    area: w.companyArea + w.cities.join(', '),
+  };
+  const keys = only || Object.keys(all);
+  return tickList(keys.map((k) => all[k]).filter(Boolean), 'plain');
 }
 
 export function coverageBlock(locale) {

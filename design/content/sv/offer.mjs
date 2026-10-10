@@ -14,9 +14,9 @@ export const offer = {
 
   eyebrow: 'Nykundserbjudande',
   h1: '10 % rabatt på *din första bokning*',
-  lead: 'Behöver du en pålitlig och yrkeskunnig förare till din egen bil? Boka din första DriveMe-tjänst senast 31.10.2026 så får du 10 % rabatt på DriveMes serviceavgift.',
+  lead: 'Behöver du en pålitlig och yrkeskunnig förare till din egen bil? Erbjudandet gäller nya privatkunder: begär din första offert senast 31.10.2026, så drar vi av 10 % på DriveMes serviceavgift.',
   codeLabel: 'Förmånskod',
-  codeHint: 'Använd koden när du skickar din förfrågan.',
+  codeHint: 'Lägg till koden i din offertförfrågan. Knapparna på den här sidan fyller i den åt dig.',
   validUntil: 'Gäller till 31.10.2026',
   areaLine: 'Erbjudandet gäller i Helsingfors, Esbo, Vanda och Grankulla.',
   cta: 'Begär en förare',
@@ -106,20 +106,20 @@ export const offer = {
     {
       icon: 'price',
       title: 'Tydligt pris',
-      body: 'Du ser ett riktpris direkt i formuläret och vi bekräftar ett fast pris före körningen. Bränsle, parkering och avgifter till tredje part debiteras separat.',
+      body: 'Vi läser din förfrågan och skickar ett fast pris inom 24 timmar. Priset gäller som det skickas: bränsle, parkering och avgifter till tredje part specificeras separat.',
     },
   ],
 
   stepsTitle: 'Så använder du *10 %-erbjudandet*',
   steps: [
     { title: 'Välj den tjänst du behöver', body: 'Berätta när, varifrån och vart du behöver en förare.' },
-    { title: 'Använd koden DRIVEME10', body: 'Skriv in den i fältet Förmånskod på formuläret. Knapparna på den här sidan fyller i den åt dig.' },
-    { title: 'Du får 10 % rabatt', body: 'Vi drar av 10 % på DriveMes serviceavgift för din första bokning när vi bekräftar priset.' },
+    { title: 'Använd koden DRIVEME10', body: 'Knapparna på den här sidan fyller i koden åt dig. Du kan också öppna "Jag har en förmånskod" i formuläret och skriva in den själv.' },
+    { title: 'Du får 10 % rabatt', body: 'Vi drar av 10 % på DriveMes serviceavgift för en ny privatkunds första beställning när vi bekräftar priset.' },
   ],
 
-  bandTitle: 'Boka nu och spara 10 %',
-  bandBody: 'Förfrågan tar under en minut. Den är ännu ingen bekräftelse - vi ringer och bekräftar förare, tid och ett fast pris.',
-  bandCta: 'Boka nu och spara 10 %',
+  bandTitle: 'Begär offert och spara 10 %',
+  bandBody: 'Offertförfrågan tar under en minut och bekräftar ingen bokning. Vi hör av oss inom 24 timmar och bekräftar förare, tid och ett fast pris.',
+  bandCta: 'Begär offert',
 
   termsTitle: 'Villkor för erbjudandet',
   terms: [
@@ -130,7 +130,7 @@ export const offer = {
 
   bar: {
     lead: 'Nykundserbjudande',
-    text: '10 % rabatt på din första bokning',
+    text: 'Nya privatkunder: 10 % på första beställningen',
     more: 'Läs mer',
   },
 };

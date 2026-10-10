@@ -45,7 +45,7 @@
   <span class="wrap promo-inner">
     <span class="promo-lead">New customer offer</span>
     <span class="promo-dot" aria-hidden="true"></span>
-    <span class="promo-text">10 % off your first booking</span>
+    <span class="promo-text">New private customers: 10 % off your first order</span>
     <span class="promo-more"><span class="promo-more-label">Read more</span><span class="arrow" aria-hidden="true">→</span></span>
   </span>
   <span class="promo-sheen" aria-hidden="true"></span>
@@ -80,25 +80,20 @@
     <div class="nav-menu-inner">
       <ul class="menu-list"><li><a href="/en/branch-to-branch-transfer/">
       <span class="mi-name">Branch-to-branch transfer</span>
-      
     </a></li><li><a href="/en/home-delivery/">
       <span class="mi-name">Delivery to the customer</span>
-      
     </a></li><li><a href="/en/purchased-vehicle-collection/">
       <span class="mi-name">Purchased vehicle collection</span>
-      
     </a></li><li><a href="/en/vehicle-relocation/">
       <span class="mi-name">Vehicle relocation</span>
-      <span class="mi-price">from 89 €</span>
     </a></li><li><a href="/en/service-transfer/">
       <span class="mi-name">Service transfer</span>
-      <span class="mi-price">from 149 €</span>
     </a></li></ul>
     </div>
   </div>
     </li><li><a href="/en/service-transfer/">Service transfers</a></li><li><a href="/en/pricing/">Pricing</a></li><li><a href="/en/for-companies/">For companies</a></li><li><a href="/en/contact/">Contact</a></li></ul>
       <div class="nav-sheet-actions">
-        <a class="btn btn-primary" href="/en/request-a-quote/">Get a price to move my car <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="btn btn-primary" href="/en/request-a-quote/">Request a quote for a transfer <span class="arrow" aria-hidden="true">→</span></a>
         <a class="btn btn-ghost" href="tel:+358503572836">Call +358 50 357 2836</a>
         <div class="lang-sheet-row">
           <span class="lang-sheet-label">Language</span>
@@ -125,7 +120,7 @@
         <svg viewBox="0 0 20 14" aria-hidden="true" focusable="false"><rect width="20" height="14" fill="#006AA7"/><path d="M0 5h20v4H0z" fill="#FECC02"/><path d="M5.6 0h4v14h-4z" fill="#FECC02"/></svg><span class="lang-name">Svenska</span>
       </a></li></ul>
     </nav>
-      <a class="btn btn-primary btn-sm btn-cta" href="/en/request-a-quote/">Get a price <span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn-primary btn-sm btn-cta" href="/en/request-a-quote/">Request a quote <span class="arrow" aria-hidden="true">→</span></a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
         <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
         Menu
@@ -158,24 +153,15 @@
     </div>
     <form class="quick-start reveal" id="quick-start" action="/en/request-a-quote/" method="get">
     <h2>Request a <em class="serif">transfer quote</em></h2>
-    <p class="qs-from">from <b id="qs-from-price">89 €</b></p>
+    <p class="qs-lead">Choose a service and leave your details. We get back to you within 24 hours.</p>
     <input type="hidden" name="source" value="home_quick">
     <div class="qs-field">
       <label for="qs-service">Which transfer is it?</label>
-      <select id="qs-service" name="service"><option value="relocation" data-from="89 €">Move a car to another address</option><option value="branchTransfer" data-from="—">Branch-to-branch transfer</option><option value="homeDelivery" data-from="—">Delivery to the customer</option><option value="purchasedCarPickup" data-from="—">Purchased vehicle collection</option><option value="workshopTransfer" data-from="149 €">Service transfer</option></select>
+      <select id="qs-service" name="service"><option value="relocation">Move a car to another address</option><option value="branchTransfer">Branch-to-branch transfer</option><option value="homeDelivery">Delivery to the customer</option><option value="purchasedCarPickup">Purchased vehicle collection</option><option value="workshopTransfer">Service transfer</option></select>
     </div>
-    <div class="qs-field">
-      <label for="qs-pickup">Collection address or postcode</label>
-      <input type="text" id="qs-pickup" name="pickup"
-             autocomplete="street-address" placeholder="e.g. 00100 or Mannerheimintie 1">
-    </div>
-    <div class="qs-field">
-      <label for="qs-date">Preferred day</label>
-      <input type="date" id="qs-date" name="date">
-    </div>
-    <button class="btn btn-accent" type="submit">Continue, under a minute <span class="arrow" aria-hidden="true">→</span></button>
+    <button class="btn btn-accent" type="submit">Request a quote <span class="arrow" aria-hidden="true">→</span></button>
     <div class="qs-foot">
-      <p class="qs-note">A quote request does not confirm the transfer yet. We confirm the price, the schedule and driver availability separately.</p>
+      <p class="qs-note">An enquiry does not confirm the transfer. We confirm the price, the schedule and the driver separately.</p>
     </div>
   </form>
   </div>
@@ -219,7 +205,7 @@
       <h2>DriveMe <em class="serif">transfer services</em></h2>
       <div>
         <p>One partner for motor-trade logistics: branch moves, deliveries to customers, purchased-car collections and service transfers. Single transfers for private customers too.</p>
-        <p class="svc-mosaic-link"><a href="/en/request-a-quote/?source=home_services">Get a price to move my car →</a></p>
+        <p class="svc-mosaic-link"><a href="/en/request-a-quote/?source=home_services">Request a quote for a transfer →</a></p>
       </div>
     </div>
     <ul class="svc-mosaic">
@@ -308,30 +294,41 @@
   <div class="wrap">
     <div class="sec-head"><h2>Four ways we <em class="serif">move your vehicles</em></h2></div>
     <div class="paths">
+      <!-- The service is named once, in the heading. The price line and the
+           two actions are the same shape in every card, so the four of them
+           line up across the row rather than each ending where its text does. -->
       <article class="path">
         <h3>Branch-to-branch transfer</h3>
         <p>We move roadworthy vehicles between your sites on an agreed schedule: stock moves, test-drive cars, rental and company vehicles.</p>
-        <p class="path-price">Branch-to-branch transfer: Fixed quote</p>
-        <p class="more"><a href="/en/branch-to-branch-transfer/">Branch-to-branch transfer →</a></p>
-        <a class="btn btn-primary" href="/en/request-a-quote/?service=branchTransfer&source=home_branch">Quote a branch transfer</a>
+        <p class="path-price">Fixed quote</p>
+        <div class="path-actions">
+          <a class="btn btn-primary btn-sm" href="/en/request-a-quote/?service=branchTransfer&source=home_branch">Request a quote</a>
+          <a class="more" href="/en/branch-to-branch-transfer/">Read more →</a>
+        </div>
       </article><article class="path">
         <h3>Delivery to the customer</h3>
         <p>We deliver a sold car from your showroom to the customer’s agreed address. Collection, delivery time and handover practice are agreed in advance.</p>
-        <p class="path-price">Delivery to the customer: Fixed quote</p>
-        <p class="more"><a href="/en/home-delivery/">Delivery to the customer →</a></p>
-        <a class="btn btn-primary" href="/en/request-a-quote/?service=homeDelivery&source=home_delivery">Quote a delivery</a>
+        <p class="path-price">Fixed quote</p>
+        <div class="path-actions">
+          <a class="btn btn-primary btn-sm" href="/en/request-a-quote/?service=homeDelivery&source=home_delivery">Request a quote</a>
+          <a class="more" href="/en/home-delivery/">Read more →</a>
+        </div>
       </article><article class="path">
         <h3>Purchased vehicle collection</h3>
         <p>When your business buys a car from a private seller, another dealer or an auction, we collect it and bring it to the address you give.</p>
-        <p class="path-price">Purchased vehicle collection: Fixed quote</p>
-        <p class="more"><a href="/en/purchased-vehicle-collection/">Purchased vehicle collection →</a></p>
-        <a class="btn btn-primary" href="/en/request-a-quote/?service=purchasedCarPickup&source=home_purchase">Quote a collection</a>
+        <p class="path-price">Fixed quote</p>
+        <div class="path-actions">
+          <a class="btn btn-primary btn-sm" href="/en/request-a-quote/?service=purchasedCarPickup&source=home_purchase">Request a quote</a>
+          <a class="more" href="/en/purchased-vehicle-collection/">Read more →</a>
+        </div>
       </article><article class="path">
         <h3>Service transfer</h3>
         <p>We collect the car, take it to the service point you choose and return it as agreed. The work itself stays between you and the provider.</p>
-        <p class="path-price">Service transfer: from 149 €</p>
-        <p class="more"><a href="/en/service-transfer/">Service transfer →</a></p>
-        <a class="btn btn-primary" href="/en/request-a-quote/?service=workshopTransfer&source=home_workshop">Quote a service transfer</a>
+        <p class="path-price">from 149 €</p>
+        <div class="path-actions">
+          <a class="btn btn-primary btn-sm" href="/en/request-a-quote/?service=workshopTransfer&source=home_workshop">Request a quote</a>
+          <a class="more" href="/en/service-transfer/">Read more →</a>
+        </div>
       </article>
     </div>
   </div>
@@ -340,7 +337,7 @@
 <section class="sec sec-navy">
   <div class="wrap">
     <div class="sec-head"><h2>How a <em class="serif">transfer runs</em></h2></div>
-    <ol class="steps cols"><li><div class="step-body"><h3>Tell us where the car goes</h3><p>Collection address, destination or provider, and the preferred day. You see an indicative price immediately.</p></div></li><li><div class="step-body"><h3>We call you and confirm</h3><p>We go through the vehicle details and confirm the driver, the time and a fixed price. A request is not yet a confirmation.</p></div></li><li><div class="step-body"><h3>The driver collects your car</h3><p>We photograph condition, mileage and fuel or charge level. You do not need to travel with it.</p></div></li><li><div class="step-body"><h3>Delivered, or back home</h3><p>Every handover is recorded, and you hear when the car is delivered or returned.</p></div></li></ol>
+    <ol class="steps cols"><li><div class="step-body"><h3>Ask for a quote</h3><p>Tell us your name, your details and which service you need. The form takes under a minute.</p></div></li><li><div class="step-body"><h3>We contact you within 24 hours</h3><p>We go through the addresses, the vehicle details and the schedule, and confirm a fixed price. An enquiry does not confirm a booking yet.</p></div></li><li><div class="step-body"><h3>The driver collects your car</h3><p>We photograph condition, mileage and fuel or charge level. You do not need to travel with it.</p></div></li><li><div class="step-body"><h3>Delivered, or back home</h3><p>Every handover is recorded, and you hear when the car is delivered or returned.</p></div></li></ol>
   </div>
 </section>
 
@@ -375,7 +372,7 @@
       <h2>You hand over the keys, <em class="serif">we do the driving</em></h2>
       <p class="lead">Your staff stay at work. The driver collects the car at the agreed place, takes it where it needs to go and records every handover.</p>
       <ul class="ticks check"><li>Collection from your site, a customer or a seller</li><li>Condition, odometer and fuel or charge level recorded at collection</li><li>The driver approves no extra work on your behalf</li><li>A transfer drive carries no passengers</li></ul>
-      <p><a class="btn btn-primary" href="/en/request-a-quote/?source=home_handover">Get a price to move my car <span class="arrow" aria-hidden="true">→</span></a></p>
+      <p><a class="btn btn-primary" href="/en/request-a-quote/?source=home_handover">Request a quote for a transfer <span class="arrow" aria-hidden="true">→</span></a></p>
     </div>
     <figure class="split-media reveal">
     <img src="/assets/l-svc-rental.jpg" alt="A driver alone at the wheel of a customer’s car" width="1600" height="1200" loading="lazy" decoding="async">
@@ -411,7 +408,36 @@
   </div>
 </section>
 
+<!-- Block 8 of the client feedback: who the provider is, where we drive and
+     how to reach a person - stated once, in one place. -->
 <section class="sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Who drives <em class="serif">your car</em></h2>
+      <p>DriveMe is a service of Mansio Group Oy. Every transfer leaves a documented record, and a real person answers when you get in touch.</p>
+    </div>
+    <div class="trust-cards">
+      <article class="trust-card">
+        <h3>Service provider</h3>
+        <!-- The area and the phone number have their own cards beside this
+             one, so the provider card carries only who we are. -->
+        <ul class="ticks plain"><li>Mansio Group Oy (DriveMe)</li><li>Domicile: Helsinki, Finland</li></ul>
+      </article>
+      <article class="trust-card">
+        <h3>Service area</h3>
+        <p>We currently serve Helsinki, Espoo, Vantaa, Kauniainen. Longer moves are priced individually.</p>
+      </article>
+      <article class="trust-card">
+        <h3>Contact</h3>
+        <p>We answer enquiries within 24 hours. If it is urgent, call us.</p>
+        <p class="trust-contact"><a href="tel:+358503572836">+358 50 357 2836</a></p>
+        <p class="trust-contact"><a href="mailto:info@driveme.fi">info@driveme.fi</a></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-raised">
   <div class="wrap">
     <div class="sec-head"><h2>Frequently asked</h2></div>
     <div class="faq"><details>
@@ -431,11 +457,10 @@
     <div class="answer"><p>Timestamped pickup and delivery photos plus mileage and fuel or charge level.</p></div>
   </details></div>
     <p style="margin-top:18px"><a href="/en/faq/">All questions →</a></p>
-    <div style="margin-top:30px"><div><h2>Service area</h2><p class="prose" style="margin-top:10px">We currently serve Helsinki, Espoo, Vantaa, Kauniainen. Longer moves are priced individually.</p></div></div>
     <!-- Block 7: the two secondary services, kept off the main menu but a
          click away for the visitor who came for one of them. -->
     <div class="other-needs">
-      <h3>Other *needs*</h3>
+      <h3>Other <em class="serif">needs</em></h3>
       <ul class="linkset"><li><a href="/en/vehicle-relocation/">Vehicle relocation for private customers</a></li><li><a href="/en/personal-driver/">A personal driver in the customer’s own car</a></li></ul>
     </div>
   </div>
@@ -448,7 +473,7 @@
       <p>Tell us the route, the vehicle and the schedule you need. We confirm driver availability and a fixed price before the drive.</p>
     </div>
     <div class="cta-actions">
-      <a class="btn btn-light" href="/en/request-a-quote/?source=home_cta">Get a price to move my car <span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn-light" href="/en/request-a-quote/?source=home_cta">Request a quote for a transfer <span class="arrow" aria-hidden="true">→</span></a>
       <a class="btn btn-outline-light" href="tel:+358503572836">Call +358 50 357 2836</a>
     </div>
   </div>
@@ -499,7 +524,7 @@
     </div>
   </div>
 </footer>
-<a class="btn btn-accent float-cta" id="float-cta" href="/en/request-a-quote/">Request a price <span class="arrow" aria-hidden="true">→</span></a>
+<a class="btn btn-accent float-cta" id="float-cta" href="/en/request-a-quote/">Request a quote <span class="arrow" aria-hidden="true">→</span></a>
 <script src="/assets/site.js?v=5" defer></script>
 
 </body>
