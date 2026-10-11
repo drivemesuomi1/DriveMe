@@ -296,6 +296,13 @@ function footer(locale) {
       <div class="foot-brand">
         <img src="/assets/brand/driveme-logo-v2-on-navy.png" alt="DriveMe" width="454" height="108" loading="lazy" decoding="async">
         <p>${esc(f.tagline)}</p>
+        <!-- Who the visitor is actually dealing with. The business ID comes
+             from brand.businessId, the same constant the terms page and the
+             schema read, and the block only appears once it is set. -->
+        ${brand.businessId ? `<p class="foot-legal">
+          <span>${esc(f.groupLine)}</span>
+          <span>${esc(words[locale].companyBusinessId)}${esc(brand.businessId)}</span>
+        </p>` : ''}
         <dl class="foot-contact">
           <div><dt>${esc(t.phoneLabel)}</dt><dd><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></dd></div>
           <div><dt>${esc(t.generalEmailLabel)}</dt><dd><a href="mailto:${brand.email}">${esc(brand.email)}</a></dd></div>

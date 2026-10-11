@@ -139,6 +139,7 @@ export const screening = {
 
 export const footer = {
   tagline: 'En förare för din bil i huvudstadsregionen. Du behöver inte åka med.',
+  groupLine: 'En del av Mansio Group',
   columns: [
     { title: 'Bilflyttar för företag', keys: ['branchTransfer', 'homeDelivery', 'purchasedCarPickup'] },
     { title: 'Flyttar och servicekörningar', keys: ['workshopTransfer', 'relocation'] },

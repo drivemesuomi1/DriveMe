@@ -31,10 +31,12 @@ export const brand = {
   country: 'FI',
   // §12 audit, "Coverage differs": one launch area, used everywhere.
   coverage: ['Helsinki', 'Espoo', 'Vantaa', 'Kauniainen'],
-  // OWNER DECISION PENDING: the Y-tunnus. Published on the terms page and in
-  // the LocalBusiness schema as soon as it is filled in; until then nothing
-  // placeholder-shaped is shown in its place.
-  businessId: null,
+  // Supplied by the owner, 11 October 2026. Read by the footer, the homepage
+  // company card, the terms page and the LocalBusiness schema, so the number
+  // is published in one form everywhere.
+  businessId: '3631044-9',
+  // The parent company, as the footer names it.
+  group: 'Mansio Group',
 };
 
 /**
@@ -324,6 +326,7 @@ export const screening = {
 export const footer = {
   fi: {
     tagline: 'Kuljettaja autollesi pääkaupunkiseudulla. Sinun ei tarvitse lähteä mukaan.',
+    groupLine: 'Osa Mansio Groupia',
     columns: [
       { title: 'Autonsiirrot yrityksille', keys: ['branchTransfer', 'homeDelivery', 'purchasedCarPickup'] },
       { title: 'Siirrot ja huoltoajot', keys: ['workshopTransfer', 'relocation'] },
@@ -340,6 +343,7 @@ export const footer = {
   },
   en: {
     tagline: 'A driver for your car in the Helsinki capital region. You do not need to travel with it.',
+    groupLine: 'Part of Mansio Group',
     columns: [
       { title: 'Transfers for businesses', keys: ['branchTransfer', 'homeDelivery', 'purchasedCarPickup'] },
       { title: 'Transfers and service runs', keys: ['workshopTransfer', 'relocation'] },

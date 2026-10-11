@@ -1057,6 +1057,13 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
 .foot-contact dt{color:var(--on-navy-2);opacity:.8}
 .foot-contact dd,.contact-list dd{margin:2px 0 0}
 .foot-contact a{color:#fff;font-weight:600;overflow-wrap:anywhere}
+/* Who the company is, under the logo: quiet, but legible - it is what a
+   visitor checks before handing over a car. */
+.foot-legal{
+  margin-top:var(--s-4);padding-top:var(--s-4);border-top:1px solid rgba(255,255,255,.12);
+  display:grid;gap:3px;font-size:var(--t-caption);line-height:1.5;color:var(--on-navy-2);
+}
+.foot-legal span:first-child{font-weight:600;color:#fff;letter-spacing:.01em}
 .foot-area{margin-top:var(--s-6)}
 .foot-bottom{
   margin-top:var(--s-12);padding-top:var(--s-6);border-top:1px solid var(--navy-line);
