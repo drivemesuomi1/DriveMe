@@ -111,9 +111,9 @@ export const business = {
   short: 'För företag',
   title: 'Företagens bilflytt i Helsingfors | DriveMe',
   description: 'Upphämtningar, serviceflyttar, överlämningar till anställda och andra flyttar av företagsbilar från en och samma pålitliga partner. I Helsingforsregionen.',
-  h1: 'Flytt av fordon för företag',
-  lead: 'En pålitlig kontaktperson för återkommande fordonsflyttar, servicetider och överlämningar till anställda.',
-  keywords: ['flytt av företagsbilar', 'fordonsflytt för företag', 'fleet concierge Finland'],
+  h1: 'Bilflyttjänster för bilbranschen och företag',
+  lead: 'DriveMe erbjuder professionella bilflyttjänster för bilbranschen. Vi sköter bilhandelns flyttar, leasing- och vagnparksbolagens flyttar samt hyrbilsföretagens fordonsflyttar utan att er egen personal behöver köra. Vi gör också flytt mellan verksamhetsställen och enskilda flyttar enligt överenskommen tidtabell. Begär offert på en enskild flytt eller diskutera återkommande körningar och avtalad fakturering.',
+  keywords: ['bilflyttjänster bilbranschen', 'bilhandelns bilflyttar', 'flytt mellan verksamhetsställen', 'flytt av företagsbilar'],
   steps: [
     'Du berättar bilparkens storlek, de vanligaste rutterna och antalet flyttar per månad.',
     'Vi kommer överens om servicenivå, behöriga beställare och godkännandegränser.',
