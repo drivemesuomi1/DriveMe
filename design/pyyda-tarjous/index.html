@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pyydä tarjous auton siirrosta | DriveMe</title>
-<meta name="description" content="Jätä tarjouspyyntö alle minuutissa: nimi, puhelin, sähköposti ja tarvitsemasi palvelu. Otamme yhteyttä 24 tunnin kuluessa.">
+<meta name="description" content="Jätä tarjouspyyntö noin minuutissa: reitti, ajankohta, auto ja yhteystiedot. Lähetämme kiinteän hinnan 24 tunnin kuluessa.">
 <link rel="canonical" href="https://driveme.fi/pyyda-tarjous/">
 <link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/pyyda-tarjous/">
 <link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/request-a-quote/">
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="DriveMe">
 <meta property="og:locale" content="fi_FI">
 <meta property="og:title" content="Pyydä tarjous auton siirrosta | DriveMe">
-<meta property="og:description" content="Jätä tarjouspyyntö alle minuutissa: nimi, puhelin, sähköposti ja tarvitsemasi palvelu. Otamme yhteyttä 24 tunnin kuluessa.">
+<meta property="og:description" content="Jätä tarjouspyyntö noin minuutissa: reitti, ajankohta, auto ja yhteystiedot. Lähetämme kiinteän hinnan 24 tunnin kuluessa.">
 <meta property="og:url" content="https://driveme.fi/pyyda-tarjous/">
 <meta property="og:image" content="https://driveme.fi/assets/icons-v2/social-1200x630.png">
 <meta property="og:image:width" content="1200">
@@ -23,7 +23,7 @@
 <meta property="og:image:alt" content="DriveMe">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Pyydä tarjous auton siirrosta | DriveMe">
-<meta name="twitter:description" content="Jätä tarjouspyyntö alle minuutissa: nimi, puhelin, sähköposti ja tarvitsemasi palvelu. Otamme yhteyttä 24 tunnin kuluessa.">
+<meta name="twitter:description" content="Jätä tarjouspyyntö noin minuutissa: reitti, ajankohta, auto ja yhteystiedot. Lähetämme kiinteän hinnan 24 tunnin kuluessa.">
 <meta name="twitter:image" content="https://driveme.fi/assets/icons-v2/social-1200x630.png">
 <link rel="icon" href="/favicon.ico?v=2" sizes="any">
 <link rel="icon" href="/assets/icons-v2/favicon-32.png" type="image/png" sizes="32x32">
@@ -136,7 +136,7 @@
   <div class="wrap page-head-inner">
     <nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/">Etusivu</a></li><li><span aria-current="page">Pyydä tarjous auton siirrosta</span></li></ol></nav>
     <h1>Pyydä tarjous <em class="serif">auton siirrosta</em></h1>
-    <p class="lead">Jätä yhteystietosi ja kerro, mitä palvelua tarvitset. Otamme yhteyttä 24 tunnin kuluessa, sovimme yksityiskohdat ja lähetämme kiinteän hinnan. Tarjouspyyntö ei vielä vahvista varausta.</p>
+    <p class="lead">Kerro reitti, toivottu ajankohta ja auto, niin lähetämme kiinteän hinnan 24 tunnin kuluessa. Tarjouspyyntö ei vielä vahvista varausta.</p>
   </div>
 </section>
 
@@ -144,7 +144,7 @@
   <div class="wrap">
     <div class="enquiry-shell" id="enquiry-shell">
       <form class="enquiry-card" id="request-form" novalidate>
-        <p class="enquiry-intro">Kerro lyhyesti, mitä tarvitset. Luemme pyyntösi ja otamme yhteyttä 24 tunnin kuluessa.</p>
+        <p class="enquiry-intro">Kerro reitti, ajankohta ja auto, niin lähetämme kiinteän hinnan. Lomakkeen täyttäminen vie noin minuutin.</p>
 
         <div class="summary-box" id="error-summary" hidden tabindex="-1">
           <h2>Tarkista nämä kohdat</h2>
@@ -154,74 +154,209 @@
 
         <div class="enquiry-fields">
           
-          <div class="field">
-            <label for="customer_name">Nimi<span class="req" data-for="customer_name">*</span></label>
-            <input type="text" id="customer_name" name="customer_name" required autocomplete="name">
-            
-            <span class="err" id="customer_name-err" role="alert"></span>
-          </div>
-          <div class="grid-2">
-            
-          <div class="field">
-            <label for="customer_phone">Puhelinnumero<span class="req" data-for="customer_phone">*</span></label>
-            <input type="tel" id="customer_phone" name="customer_phone" required autocomplete="tel" inputmode="tel">
-            
-            <span class="err" id="customer_phone-err" role="alert"></span>
-          </div>
-            
-          <div class="field">
-            <label for="customer_email">Sähköposti<span class="req" data-for="customer_email">*</span></label>
-            <input type="email" id="customer_email" name="customer_email" required autocomplete="email" aria-describedby="customer_email-help">
-            <span class="help" id="customer_email-help">Lähetämme tarjouspyynnöstä kirjallisen kuittauksen tähän osoitteeseen.</span>
-            <span class="err" id="customer_email-err" role="alert"></span>
-          </div>
-          </div>
+        <fieldset class="enq-step">
+          <legend id="step-1-legend"><span class="enq-num" aria-hidden="true">1</span>Palvelu</legend>
           
-          <div class="field">
-            <label for="service">Mitä palvelua tarvitset?<span class="req" data-for="service">*</span></label>
-            <select id="service" name="service" required><option value="">Valitse palvelu</option><option value="branchTransfer">Toimipisteiden välinen siirto</option><option value="homeDelivery">Kotiintoimitus</option><option value="purchasedCarPickup">Ostoauton nouto</option><option value="workshopTransfer">Huoltosiirto (huolto, katsastus, renkaat, pesu)</option><option value="relocation">Auton siirtopalvelu (yksittäinen siirto)</option><option value="personalDriver">Oma kuljettaja</option><option value="business">Yrityksille (sopimus tai useita siirtoja)</option><option value="other">Muu palvelu</option></select>
-            
-            <span class="err" id="service-err" role="alert"></span>
-          </div>
-          
-          <div class="field">
-            <label for="company_name">Yrityksen nimi<span class="req" data-for="company_name" hidden>*</span></label>
-            <input type="text" id="company_name" name="company_name" autocomplete="organization" aria-describedby="company_name-help">
-            <span class="help" id="company_name-help">Vapaaehtoinen. Täytä, jos pyydät tarjousta yrityksen puolesta.</span>
-            <span class="err" id="company_name-err" role="alert"></span>
-          </div>
-          
-          <div class="field">
-            <label for="notes">Lisätiedot / mitä haluaisit meidän tekevän?<span class="req" data-for="notes" hidden>*</span></label>
-            <textarea id="notes" name="notes" rows="4" aria-describedby="notes-help"></textarea>
-            <span class="help" id="notes-help">Kerro vapaasti esimerkiksi reitti, toivottu ajankohta ja siirtojen määrä. Tarkat osoitteet, auton tiedot ja avainten luovutus sovitaan, kun otamme yhteyttä.</span>
-            <span class="err" id="notes-err" role="alert"></span>
-          </div>
-
-          <!-- Progressive disclosure: the campaign code is real but rare, so it
-               is one line until someone needs it. Arriving from the offer page
-               opens it with the code already in place. -->
-          <div class="offer-reveal">
-            <button class="link-btn" type="button" id="offer-toggle" aria-expanded="false" aria-controls="offer-field">
-              <span class="plus" aria-hidden="true">+</span> Minulla on etukoodi
-            </button>
-            <div id="offer-field" hidden>
+            <div class="field">
+              <label for="service">Mitä palvelua tarvitset?<span class="req" data-for="service">*</span></label>
+              <select id="service" name="service" required><option value="">Valitse palvelu</option><option value="branchTransfer">Toimipisteiden välinen siirto</option><option value="homeDelivery">Kotiintoimitus</option><option value="purchasedCarPickup">Ostoauton nouto</option><option value="workshopTransfer">Huoltosiirto (huolto, katsastus, renkaat, pesu)</option><option value="relocation">Auton siirtopalvelu (yksittäinen siirto)</option><option value="personalDriver">Oma kuljettaja</option><option value="business">Yrityksille (sopimus tai useita siirtoja)</option><option value="other">Muu palvelu</option></select>
               
-          <div class="field">
-            <label for="offer_code">Etukoodi<span class="req" data-for="offer_code" hidden>*</span></label>
-            <input type="text" id="offer_code" name="offer_code" maxlength="20" autocapitalize="characters" aria-describedby="offer_code-help">
-            <span class="help" id="offer_code-help">Vapaaehtoinen. Kampanjakoodi kirjoitetaan tähän, ja huomioimme sen tarjouksessa.</span>
-            <span class="err" id="offer_code-err" role="alert"></span>
-          </div>
+              <span class="err" id="service-err" role="alert"></span>
             </div>
-          </div>
+        </fieldset>
+
+          
+        <fieldset class="enq-step">
+          <legend id="step-2-legend"><span class="enq-num" aria-hidden="true">2</span>Siirron tiedot</legend>
+          
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="pickup_location">Noutopaikka<span class="req" data-for="pickup_location">*</span></label>
+              <input type="text" id="pickup_location" name="pickup_location" required autocomplete="street-address" aria-describedby="pickup_location-help">
+              <span class="help" id="pickup_location-help">Katuosoite tai postinumero.</span>
+              <span class="err" id="pickup_location-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="destination">Kohdeosoite<span class="req" data-for="destination">*</span></label>
+              <input type="text" id="destination" name="destination" required autocomplete="street-address" aria-describedby="destination-help">
+              <span class="help" id="destination-help">Katuosoite, postinumero tai kohteen nimi.</span>
+              <span class="err" id="destination-err" role="alert"></span>
+            </div>
+            </div>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="date">Toivottu päivä<span class="req" data-for="date">*</span></label>
+              <input type="date" id="date" name="date" required>
+              
+              <span class="err" id="date-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="time">Toivottu kellonaika<span class="req" data-for="time" hidden>*</span></label>
+              <input type="time" id="time" name="time" aria-describedby="time-help">
+              <span class="help" id="time-help">Vapaaehtoinen. Jos aika on joustava, jätä tyhjäksi.</span>
+              <span class="err" id="time-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="vehicle_details">Ajoneuvon tiedot<span class="req" data-for="vehicle_details">*</span></label>
+              <input type="text" id="vehicle_details" name="vehicle_details" required maxlength="120" aria-describedby="vehicle_details-help">
+              <span class="help" id="vehicle_details-help">Merkki, malli, vuosimalli ja vaihteisto samaan kenttään. Esimerkiksi &quot;Ford Focus 2018, manuaali&quot;.</span>
+              <span class="err" id="vehicle_details-err" role="alert"></span>
+            </div>
+
+            <!-- One service's questions at a time: booking.js shows the group
+                 that belongs to the chosen service and hides the rest, so
+                 nobody is asked about passengers and a registration both. -->
+            <div id="journey-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="passengers">Matkustajien määrä<span class="req" data-for="passengers" hidden>*</span></label>
+              <input type="number" id="passengers" name="passengers" min="1" max="8" value="1" aria-describedby="passengers-help">
+              <span class="help" id="passengers-help">Kuljettaja ei vie paikkaa: kerro, montako teitä matkustaa.</span>
+              <span class="err" id="passengers-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="extra_stops">Välipysähdykset<span class="req" data-for="extra_stops" hidden>*</span></label>
+              <input type="text" id="extra_stops" name="extra_stops" aria-describedby="extra_stops-help">
+              <span class="help" id="extra_stops-help">Vapaaehtoinen. Esimerkiksi nouto matkan varrelta tai odotus kohteessa.</span>
+              <span class="err" id="extra_stops-err" role="alert"></span>
+            </div>
+            </div></div>
+            <div id="move-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="vehicle_plate">Rekisteritunnus<span class="req" data-for="vehicle_plate" hidden>*</span></label>
+              <input type="text" id="vehicle_plate" name="vehicle_plate" maxlength="20" autocapitalize="characters" aria-describedby="vehicle_plate-help">
+              <span class="help" id="vehicle_plate-help">Vapaaehtoinen. Nopeuttaa tarjouksen tekemistä.</span>
+              <span class="err" id="vehicle_plate-err" role="alert"></span>
+            </div>
+            </div>
+            <label class="form-check" for="roadworthy">
+              <input type="checkbox" name="roadworthy" id="roadworthy" checked>
+              <span>Auto on ajokuntoinen ja liikennekäytössä</span>
+            </label>
+            <span class="help help-indent" id="roadworthy-help">Emme aja autoa, joka ei ole ajokuntoinen tai on ajokiellossa. Kerro siitä alla, niin ohjaamme sinut hinauskumppanille.</span></div>
+            <div id="appointment-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="appointment_time">Varattu aika palveluntarjoajalla<span class="req" data-for="appointment_time" hidden>*</span></label>
+              <input type="time" id="appointment_time" name="appointment_time" aria-describedby="appointment_time-help">
+              <span class="help" id="appointment_time-help">Vapaaehtoinen. Ajanvarauksen teet ja palvelun maksat itse.</span>
+              <span class="err" id="appointment_time-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="return_needed">Tarvitaanko paluukuljetus?<span class="req" data-for="return_needed" hidden>*</span></label>
+              <select id="return_needed" name="return_needed"><option value="yes" selected>Kyllä, auto tuodaan takaisin</option><option value="no">Ei, vain vienti</option></select>
+              
+              <span class="err" id="return_needed-err" role="alert"></span>
+            </div>
+            </div></div>
+        </fieldset>
+
+          
+        <fieldset class="enq-step">
+          <legend id="step-3-legend"><span class="enq-num" aria-hidden="true">3</span>Yhteystiedot</legend>
+          
+            
+            <div class="field">
+              <label for="customer_name">Nimi<span class="req" data-for="customer_name">*</span></label>
+              <input type="text" id="customer_name" name="customer_name" required autocomplete="name">
+              
+              <span class="err" id="customer_name-err" role="alert"></span>
+            </div>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="customer_phone">Puhelinnumero<span class="req" data-for="customer_phone">*</span></label>
+              <input type="tel" id="customer_phone" name="customer_phone" required autocomplete="tel" inputmode="tel">
+              
+              <span class="err" id="customer_phone-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="customer_email">Sähköposti<span class="req" data-for="customer_email">*</span></label>
+              <input type="email" id="customer_email" name="customer_email" required autocomplete="email" aria-describedby="customer_email-help">
+              <span class="help" id="customer_email-help">Lähetämme tarjouksen ja kuittauksen tähän osoitteeseen.</span>
+              <span class="err" id="customer_email-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="company_name">Yrityksen nimi<span class="req" data-for="company_name" hidden>*</span></label>
+              <input type="text" id="company_name" name="company_name" autocomplete="organization" aria-describedby="company_name-help">
+              <span class="help" id="company_name-help">Vapaaehtoinen. Täytä, jos pyydät tarjousta yrityksen puolesta.</span>
+              <span class="err" id="company_name-err" role="alert"></span>
+            </div>
+            
+            <div id="business-fields" hidden>
+              <div class="grid-2">
+                
+            <div class="field">
+              <label for="business_id">Y-tunnus<span class="req" data-for="business_id" hidden>*</span></label>
+              <input type="text" id="business_id" name="business_id" maxlength="20" aria-describedby="business_id-help">
+              <span class="help" id="business_id-help">Vapaaehtoinen.</span>
+              <span class="err" id="business_id-err" role="alert"></span>
+            </div>
+                
+            <div class="field">
+              <label for="volume">Ajoneuvojen tai siirtojen määrä<span class="req" data-for="volume" hidden>*</span></label>
+              <input type="text" id="volume" name="volume" maxlength="100" aria-describedby="volume-help">
+              <span class="help" id="volume-help">Esimerkiksi &quot;3 autoa&quot; tai &quot;noin 10 siirtoa kuukaudessa&quot;.</span>
+              <span class="err" id="volume-err" role="alert"></span>
+            </div>
+              </div>
+              
+            <div class="field">
+              <label for="recurrence">Kertaluonteinen vai toistuva?<span class="req" data-for="recurrence" hidden>*</span></label>
+              <select id="recurrence" name="recurrence"><option value="once" selected>Kertaluonteinen siirto</option><option value="recurring">Toistuvaa yhteistyötä</option></select>
+              
+              <span class="err" id="recurrence-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="notes">Lisätiedot<span class="req" data-for="notes" hidden>*</span></label>
+              <textarea id="notes" name="notes" rows="3" aria-describedby="notes-help"></textarea>
+              <span class="help" id="notes-help">Vapaaehtoinen. Kerro, jos jokin poikkeaa tavallisesta - esimerkiksi avainten luovutus, portti- tai parkkihallikoodi tai tiedossa oleva vika.</span>
+              <span class="err" id="notes-err" role="alert"></span>
+            </div>
+
+            <!-- Progressive disclosure: the campaign code is real but rare, so
+                 it is one line until someone needs it. Arriving from the offer
+                 page opens it with the code already in place. -->
+            <div class="offer-reveal">
+              <button class="link-btn" type="button" id="offer-toggle" aria-expanded="false" aria-controls="offer-field">
+                <span class="plus" aria-hidden="true">+</span> Minulla on etukoodi
+              </button>
+              <div id="offer-field" hidden>
+                
+            <div class="field">
+              <label for="offer_code">Etukoodi<span class="req" data-for="offer_code" hidden>*</span></label>
+              <input type="text" id="offer_code" name="offer_code" maxlength="20" autocapitalize="characters" aria-describedby="offer_code-help">
+              <span class="help" id="offer_code-help">Vapaaehtoinen. Huomioimme kampanjakoodin tarjouksessa.</span>
+              <span class="err" id="offer_code-err" role="alert"></span>
+            </div>
+              </div>
+            </div>
+        </fieldset>
         </div>
 
         <p class="hint form-required-note">Tähdellä * merkityt kentät ovat pakollisia.</p>
 
         <div class="enquiry-send">
-          <button class="btn btn-primary btn-lg" type="submit" id="submit-btn">Pyydä tarjous <span class="arrow" aria-hidden="true">→</span></button>
-          <p class="enquiry-note" id="submit-hint">Tarjouspyyntö ei vahvista varausta. Vahvistamme hinnan, aikataulun ja kuljettajan erikseen, ja siirto sovitaan vasta kun hyväksyt tarjouksen.</p>
+          <button class="btn btn-primary btn-lg" type="submit" id="submit-btn">Pyydä kiinteä tarjous <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="enquiry-trust">Maksuton tarjous · Ei sitoumusta · Läpinäkyvä hinnoittelu</p>
+          <p class="enquiry-note" id="submit-hint">Tarjouspyyntö ei vahvista varausta. Siirto sovitaan vasta, kun hyväksyt tarjouksen.</p>
         </div>
       </form>
 
@@ -230,7 +365,7 @@
       <aside class="enquiry-side">
         <h2>Näin etenemme</h2>
         <ol class="enquiry-steps">
-          <li>Luemme tarjouspyyntösi ja otamme yhteyttä 24 tunnin kuluessa.</li><li>Käymme yhdessä läpi osoitteet, auton tiedot, avainten luovutuksen ja aikataulun.</li><li>Saat kiinteän hinnan. Siirto vahvistetaan vasta, kun hyväksyt tarjouksen.</li>
+          <li>Luemme tarjouspyyntösi ja lähetämme kiinteän hinnan 24 tunnin kuluessa.</li><li>Jos jokin yksityiskohta puuttuu, kysymme sen ennen tarjousta.</li><li>Siirto vahvistetaan vasta, kun hyväksyt tarjouksen. Silloin sovimme avainten luovutuksen ja laskutuksen.</li>
         </ol>
         <div class="enquiry-contact">
           <h3>Tarvitsetko vastauksen heti?</h3>
@@ -249,7 +384,7 @@
       <p style="margin-top:18px"><button class="btn btn-ghost" type="button" id="again-btn">Lähetä uusi tarjouspyyntö</button></p>
     </div>
 
-    <script id="booking-config" type="application/json">{"locale":"fi","services":{"branchTransfer":{"gated":false},"homeDelivery":{"gated":false},"purchasedCarPickup":{"gated":false},"workshopTransfer":{"gated":false},"relocation":{"gated":false},"personalDriver":{"gated":false},"business":{"gated":false}},"aliases":{"inspection":"workshopTransfer","workshop":"workshopTransfer","tyre":"workshopTransfer","wash":"workshopTransfer","glass":"workshopTransfer","pickupReturn":"relocation","dealer":"relocation","journey":"personalDriver","safeRideHome":"personalDriver","airport":"personalDriver"},"copy":{"required":"Tämä tieto tarvitaan.","badEmail":"Tarkista sähköpostiosoite.","badPhone":"Tarkista puhelinnumero.","errorTitle":"Tarkista nämä kohdat","submitting":"Lähetetään…","submit":"Pyydä tarjous","failed":"Tarjouspyyntöä ei saatu lähetettyä. Yritä uudelleen tai soita numeroon +358 50 357 2836.","doneRef":"Viitteesi","gatedTitle":"Tätä palvelua ei voi vielä varata","gatedBody":"Tämä palvelu ei ole vielä varattavissa. Kerromme heti, kun se avautuu - jätä yhteystietosi puhelimitse tai sähköpostilla."},"endpoint":"/api/bookings"}</script>
+    <script id="booking-config" type="application/json">{"locale":"fi","services":{"branchTransfer":{"gated":false,"type":"general_move"},"homeDelivery":{"gated":false,"type":"general_move"},"purchasedCarPickup":{"gated":false,"type":"general_move"},"workshopTransfer":{"gated":false,"type":"appointment_run"},"relocation":{"gated":false,"type":"general_move"},"personalDriver":{"gated":false,"type":"passenger"},"business":{"gated":false,"type":"business"}},"aliases":{"inspection":"workshopTransfer","workshop":"workshopTransfer","tyre":"workshopTransfer","wash":"workshopTransfer","glass":"workshopTransfer","pickupReturn":"relocation","dealer":"relocation","journey":"personalDriver","safeRideHome":"personalDriver","airport":"personalDriver"},"copy":{"required":"Tämä tieto tarvitaan.","badEmail":"Tarkista sähköpostiosoite.","badPhone":"Tarkista puhelinnumero.","badDate":"Valitse tämä päivä tai myöhempi.","badRange":"Arvo ei ole sallitulla välillä.","errorTitle":"Tarkista nämä kohdat","submitting":"Lähetetään…","submit":"Pyydä kiinteä tarjous","failed":"Tarjouspyyntöä ei saatu lähetettyä. Yritä uudelleen tai soita numeroon +358 50 357 2836.","doneRef":"Viitteesi","gatedTitle":"Tätä palvelua ei voi vielä varata","gatedBody":"Tämä palvelu ei ole vielä varattavissa. Kerromme heti, kun se avautuu - jätä yhteystietosi puhelimitse tai sähköpostilla.","step2":"Siirron tiedot","step2Journey":"Matkan tiedot","destination":"Kohdeosoite","destinationJourney":"Määränpää"},"endpoint":"/api/bookings"}</script>
   </div>
 </section>
 </main>
@@ -306,6 +441,6 @@
 </footer>
 
 <script src="/assets/site.js?v=5" defer></script>
-<script src="/assets/booking.js?v=4" defer></script>
+<script src="/assets/booking.js?v=5" defer></script>
 </body>
 </html>

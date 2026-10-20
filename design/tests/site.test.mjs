@@ -149,28 +149,40 @@ test('the private driver is reachable but stays out of the header menu', async (
   }
 });
 
-test('the enquiry form asks six things and quotes nothing', async () => {
+test('the quote form asks for the job, in three steps, and quotes nothing', async () => {
   for (const locale of LOCALES) {
     const html = await read(fileFor(url('booking', locale)));
 
-    // The six fields the client specified, and no seventh: the addresses, the
-    // vehicle, the access notes and the declarations are taken on the callback.
-    for (const id of ['customer_name', 'customer_phone', 'customer_email', 'service', 'company_name', 'notes']) {
+    // Three steps, in order: which service, the job, who is asking.
+    const legends = [...html.matchAll(/<legend id="step-(\d)-legend">/g)].map((m) => m[1]);
+    assert.deepEqual(legends, ['1', '2', '3'], `${locale}: the form is not three steps`);
+
+    // Everything the brief asks for, by id.
+    for (const id of ['service', 'pickup_location', 'destination', 'date', 'time', 'vehicle_details',
+      'passengers', 'extra_stops', 'vehicle_plate', 'roadworthy', 'appointment_time', 'return_needed',
+      'customer_name', 'customer_phone', 'customer_email', 'company_name', 'business_id',
+      'volume', 'recurrence', 'notes', 'offer_code']) {
       assert.match(html, new RegExp(`id="${id}"`), `${locale}: the form has no ${id} field`);
     }
-    for (const gone of ['pickup_location', 'destination', 'provider', 'date', 'window', 'plate',
-      'access_notes', 'business_id', 'invoice_email', 'passengers', 'appointment_time']) {
-      assert.equal(html.includes(`id="${gone}"`), false, `${locale}: ${gone} is back on the enquiry form`);
-    }
-    assert.equal(html.includes('name="ack"'), false, `${locale}: the declaration belongs on the callback`);
-    assert.equal(html.includes('name="service_type"'), false, `${locale}: the type radios are back`);
 
-    // Name, phone, email and the service are required; the rest is optional.
-    for (const id of ['customer_name', 'customer_phone', 'customer_email']) {
+    // The route, the date, the car and the contact details are required; every
+    // conditional answer and every optional extra is not.
+    for (const id of ['pickup_location', 'destination', 'date', 'vehicle_details',
+      'customer_name', 'customer_phone', 'customer_email']) {
       assert.match(html, new RegExp(`id="${id}"[^>]* required`), `${locale}: ${id} must be required`);
     }
+    for (const id of ['time', 'vehicle_plate', 'appointment_time', 'extra_stops',
+      'company_name', 'business_id', 'volume', 'notes', 'offer_code']) {
+      assert.equal(new RegExp(`id="${id}"[^>]* required`).test(html), false,
+        `${locale}: ${id} must stay optional`);
+    }
     assert.match(html, /<select id="service" name="service" required>/, `${locale}: the service is not required`);
-    assert.equal(/id="company_name"[^>]* required/.test(html), false, `${locale}: the company name must stay optional`);
+
+    // A service's own questions start hidden: nobody is asked about passengers
+    // and a registration at the same time.
+    for (const group of ['journey-fields', 'move-fields', 'appointment-fields', 'business-fields']) {
+      assert.match(html, new RegExp(`id="${group}" hidden`), `${locale}: ${group} is open before it is needed`);
+    }
 
     // Every sold service is offered, plus "Muu palvelu", and the first option
     // is an empty prompt so nothing is ever preselected by accident.
@@ -182,7 +194,7 @@ test('the enquiry form asks six things and quotes nothing', async () => {
 
     // No price: not a figure, not a calculator, not a sidebar.
     const form = /<form class="enquiry-card"[\s\S]*?<\/form>/.exec(html)[0];
-    assert.equal(/\d+\s*€/.test(form), false, `${locale}: the enquiry form shows a price`);
+    assert.equal(/\d+\s*€/.test(form), false, `${locale}: the quote form shows a price`);
     for (const gone of ['quote-amount', 'quote-lines', 'quote-note', 'class="quote"']) {
       assert.equal(html.includes(gone), false, `${locale}: ${gone} is back on the form page`);
     }
@@ -192,6 +204,8 @@ test('the enquiry form asks six things and quotes nothing', async () => {
       `${locale}: the form does not say an enquiry is not a booking`);
     assert.ok(html.includes(escapeHtml(bookingCopy[locale].submit)),
       `${locale}: the send button is not the one the client asked for`);
+    assert.ok(html.includes(escapeHtml(bookingCopy[locale].trustLine)),
+      `${locale}: the free-quote line under the button is missing`);
   }
 });
 

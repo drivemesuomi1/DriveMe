@@ -57,6 +57,8 @@ const TYPE_LABEL = {
   passenger_journey: 'A driver for the journey, customer in the car',
 };
 
+const RECURRENCE_LABEL = { once: 'one-time', recurring: 'recurring work' };
+
 const SHAPE_LABEL = {
   fi: { oneWay: 'Yhteen suuntaan', pickupReturn: 'Nouto ja palautus', waitReturn: 'Odota ja palauta' },
   sv: { oneWay: 'Enkel riktning', pickupReturn: 'Upphämtning och retur', waitReturn: 'Föraren väntar och kör tillbaka' },
@@ -102,7 +104,7 @@ const COPY = {
     // The same three sentences the page shows after a successful send.
     title: 'Kiitos tarjouspyynnöstäsi!',
     lede: 'DriveMe-tiimi ottaa sinuun yhteyttä 24 tunnin kuluessa. Tarjouspyyntö ei vielä vahvista varausta.',
-    next: 'Yhteydenotossa käymme läpi nouto- ja toimitusosoitteet, auton tiedot, avainten luovutuksen ja aikataulun. Sen jälkeen saat kiinteän hinnan, ja siirto vahvistetaan vasta kun hyväksyt sen.',
+    next: 'Luemme pyyntösi ja lähetämme kiinteän hinnan. Jos jokin yksityiskohta puuttuu, kysymme sen ensin. Siirto vahvistetaan vasta kun hyväksyt tarjouksen - silloin sovimme avainten luovutuksen ja laskutuksen.',
     third: 'Kolmannen osapuolen palvelut — katsastus, huolto, renkaat, pesu tai muu vastaava — maksat suoraan valitsemallesi palveluntarjoajalle. Ne eivät sisälly DriveMe-hintaan.',
     detailsHead: 'Tarjouspyyntösi',
     rows: { ref:'Viite', when:'Ajankohta', pickup:'Noutopaikka', dest:'Määränpää', type:'Palvelu', price:'Hinta', pay:'Maksutapa', offer:'Etukoodi' },
@@ -118,7 +120,7 @@ const COPY = {
     eyebrow: 'Offertförfrågan mottagen',
     title: 'Tack för din offertförfrågan!',
     lede: 'DriveMe-teamet kontaktar dig inom 24 timmar. En offertförfrågan bekräftar ännu ingen bokning.',
-    next: 'När vi hörs går vi igenom upphämtnings- och leveransadresser, bilens uppgifter, nyckelöverlämningen och tidtabellen. Därefter får du ett fast pris, och flytten bekräftas först när du godkänner det.',
+    next: 'Vi läser din förfrågan och skickar ett fast pris. Om någon uppgift saknas frågar vi efter den först. Flytten bekräftas när du godkänner offerten - då kommer vi överens om nyckelöverlämning och fakturering.',
     third: 'Tredjepartstjänster — besiktning, service, däck eller tvätt — betalar du direkt till leverantören. De ingår inte i DriveMe-priset.',
     detailsHead: 'Din offertförfrågan',
     rows: { ref:'Referens', when:'Tidpunkt', pickup:'Upphämtning', dest:'Destination', type:'Tjänst', price:'Pris', pay:'Betalning', offer:'Förmånskod' },
@@ -134,7 +136,7 @@ const COPY = {
     eyebrow: 'Enquiry received',
     title: 'Thank you for your enquiry!',
     lede: 'The DriveMe team will contact you within 24 hours. An enquiry does not confirm a booking yet.',
-    next: 'When we get in touch we go through the collection and delivery addresses, the vehicle details, the key handover and the schedule. You then get a fixed price, and the transfer is confirmed only once you accept it.',
+    next: 'We read your enquiry and send a fixed price. If a detail is missing we ask for it first. The transfer is confirmed once you accept the quote - that is when we agree the key handover and the invoicing.',
     third: 'Third-party services — inspection, maintenance, tyres, wash or similar — are paid directly to the provider you choose. They are not part of the DriveMe fee.',
     detailsHead: 'Your enquiry',
     rows: { ref:'Reference', when:'When', pickup:'Pickup', dest:'Drop-off', type:'Service', price:'Price', pay:'Payment', offer:'Offer code' },
@@ -236,7 +238,8 @@ export function bookingAlert(booking, base) {
   const appointment = [booking.provider, booking.appointment_time, booking.appointment_ref]
     .filter(Boolean).join(' · ');
   const company = booking.is_corporate
-    ? [booking.company_name, booking.business_id, booking.invoice_email].filter(Boolean).join(' · ')
+    ? [booking.company_name, booking.business_id, booking.invoice_email,
+      booking.volume, RECURRENCE_LABEL[booking.recurrence]].filter(Boolean).join(' · ')
     : null;
 
   // Only rows with something in them: an ops alert that lists a dozen dashes
@@ -257,6 +260,11 @@ export function bookingAlert(booking, base) {
     ['Pickup', booking.pickup_location],
     ['Destination', booking.destination],
     ['Passengers', booking.passenger_count ? String(booking.passenger_count) : null],
+    ['Stops', booking.extra_stops],
+    // Operationally the first thing to read: a car that is not roadworthy gets
+    // a towing partner, not a driver.
+    ['⚠ Roadworthy', booking.roadworthy === false ? 'NO — customer says the car cannot be driven' : null],
+    ['Roadworthy', booking.roadworthy === true ? 'Yes' : null],
     ['Return needed', booking.return_needed == null ? null : (booking.return_needed ? 'Yes' : 'No')],
     ['Return to', booking.return_location],
     ['Access notes', booking.access_notes],

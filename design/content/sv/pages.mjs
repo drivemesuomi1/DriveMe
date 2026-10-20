@@ -222,9 +222,9 @@ export const howPage = {
       type: 'steps', title: 'Kundens väg', rows: true, two: true,
       items: [
         { t: 'Välj den tjänst du behöver', d: 'Flytt mellan verksamhetsställen, hemleverans, hämtning av inköpt bil, serviceflytt, en enskild flytt, personlig förare - eller en annan tjänst.' },
-        { t: 'Lämna namn, telefon och e-post', d: 'Att skicka offertförfrågan tar under en minut. Övrigt berättar du i fritextfältet.' },
-        { t: 'Du får en bekräftelse per e-post', d: 'Vi bekräftar att förfrågan har kommit fram. Den bekräftar ännu ingen bokning.' },
-        { t: 'Vi hör av oss inom 24 timmar', d: 'Upphämtnings- och leveransadresser, bilens uppgifter, nyckelöverlämning, fullmakt och bokningsvillkoren.' },
+        { t: 'Ange rutt, tidpunkt och bil', d: 'Upphämtnings- och destinationsadress, önskad dag och bilens uppgifter i ett fält.' },
+        { t: 'Lämna namn, telefon och e-post', d: 'Du får en bekräftelse per e-post. Förfrågan bekräftar ännu ingen bokning.' },
+        { t: 'Du får ett fast pris inom 24 timmar', d: 'Om någon uppgift saknas frågar vi efter den före offerten.' },
         { t: 'DriveMe bekräftar förare, tid och pris', d: 'Först bekräftelsen gör bokningen bindande.' },
         { t: 'Upphämtningen dokumenteras', d: 'Nycklar, skick, mätarställning och bränsle- eller laddningsnivå i tidsstämplade bilder. Du behöver inte åka med.' },
         { t: 'Du får statusuppdateringar', d: 'Varje överlämning meddelas.' },
@@ -236,12 +236,12 @@ export const howPage = {
     {
       type: 'list', title: 'Det här frågar offertförfrågan', variant: 'check', two: true,
       items: [
-        'Namn.',
-        'Telefonnummer.',
-        'E-post, dit vi skickar bekräftelsen och offerten.',
         'Vilken tjänst du behöver.',
-        'Företagets namn, om du begär offert för ett företag. Frivilligt.',
-        'Mer information: rutt, önskad tidpunkt och övriga önskemål. Frivilligt.',
+        'Upphämtnings- och destinationsadress samt önskad dag.',
+        'Bilens uppgifter: märke, modell, årsmodell och växellåda i samma fält.',
+        'Beroende på tjänsten: antal passagerare, registernummer och kördugligheten, eller bokad servicetid och returtransport.',
+        'Namn, telefonnummer och e-post.',
+        'Företagets namn, FO-nummer och antal flyttar om du begär offert för ett företag. Frivilliga.',
       ],
     },
     {
@@ -408,7 +408,7 @@ export const contact = {
 export const booking = {
   slug: 'sv/begar-offert',
   title: 'Begär offert på en bilflytt | DriveMe',
-  description: 'Skicka en offertförfrågan på under en minut: namn, telefon, e-post och den tjänst du behöver. Vi hör av oss inom 24 timmar.',
+  description: 'Skicka en offertförfrågan på ungefär en minut: rutt, tidpunkt, bil och dina kontaktuppgifter. Vi skickar ett fast pris inom 24 timmar.',
   h1: 'Begär offert *på en bilflytt*',
-  lead: 'Lämna dina kontaktuppgifter och berätta vilken tjänst du behöver. Vi hör av oss inom 24 timmar, kommer överens om detaljerna och skickar ett fast pris. En offertförfrågan bekräftar ännu ingen bokning.',
+  lead: 'Berätta rutten, önskad tidpunkt och bilen, så skickar vi ett fast pris inom 24 timmar. En offertförfrågan bekräftar ännu ingen bokning.',
 };

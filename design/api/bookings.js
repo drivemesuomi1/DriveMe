@@ -46,6 +46,7 @@ const KEY_METHODS = new Set(['named', 'drop', 'other']);
 const GEARBOXES = new Set(['manual', 'automatic']);
 const FUELS = new Set(['petrol', 'diesel', 'hybrid', 'ev']);
 const CUSTOMER_TYPES = new Set(['person', 'company']);
+const RECURRENCES = new Set(['once', 'recurring']);
 
 /**
  * Free text that suggests someone means to travel in the car. A match does
@@ -126,6 +127,9 @@ const LATER_COLUMNS = [
   'acknowledged_at',
   'service_type', 'passenger_count', 'vehicle_owner_authorization', 'return_needed',
   'lead_source', 'manual_review', 'review_reason',
+  // Migration 0012. Until it is applied the insert is retried without them
+  // and the answers survive in the ops email.
+  'roadworthy', 'extra_stops', 'volume', 'recurrence',
 ];
 
 // Before migration 0009 the database refuses a passenger count above zero and
@@ -290,12 +294,17 @@ export default async function handler(req, res) {
       .toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20) || null;
     const ownNotes = optionalString(body.notes, 2000);
     const notes = offerCode ? [`Offer code: ${offerCode}`, ownNotes].filter(Boolean).join('\n') : ownNotes;
+    // Whether the car can be driven at all. Only a transfer is asked, so only
+    // a transfer answers; false is a real answer, not a missing one.
+    const roadworthy = typeof body.roadworthy === 'boolean' ? body.roadworthy : null;
+    const extraStops = optionalString(body.extra_stops, 500);
+    const recurrence = enumOf(RECURRENCES, body.recurrence, 20) ?? null;
     const accessNotes = optionalString(body.access_notes, 1000);
     const vehicleNotes = optionalString(body.vehicle_notes, 1000);
     // Only for a vehicle move: on a journey, passengers are the point.
     const review = isJourney ? null : passengerReason([
       ['Notes', notes], ['Access notes', accessNotes], ['Vehicle notes', vehicleNotes],
-      ['Destination', finalDestination], ['Provider', provider],
+      ['Destination', finalDestination], ['Provider', provider], ['Stops', extraStops],
     ]);
 
     const companyName = optionalString(body.company_name, 200);
@@ -336,6 +345,10 @@ export default async function handler(req, res) {
       customer_type: customerType,
       is_corporate: customerType === 'company',
       company_name: companyName ?? null,
+      roadworthy,
+      extra_stops: extraStops ?? null,
+      volume: companyName ? (optionalString(body.volume, 100) ?? null) : null,
+      recurrence: companyName ? recurrence : null,
       business_id: optionalString(body.business_id, 20) ?? null,
       invoice_email: optionalString(body.invoice_email, 200) ?? null,
       vehicle_owner_authorization: authorised ? true : null,

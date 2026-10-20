@@ -1,5 +1,5 @@
 /**
- * The enquiry form in Swedish: every field, help text, error message and the
+ * The quote form in Swedish: every field, help text, error message and the
  * confirmation the customer sees after sending.
  *
  * Keyed exactly like the Finnish and English blocks in build/booking-form.mjs
@@ -9,11 +9,9 @@
 import { brand } from '../site.mjs';
 
 export const form = {
-  intro: 'Berätta kort vad du behöver. Vi läser din förfrågan och kontaktar dig inom 24 timmar.',
-  name: 'Namn',
-  phone: 'Telefonnummer',
-  email: 'E-post',
-  emailHelp: 'Vi skickar en skriftlig bekräftelse på din förfrågan till den här adressen.',
+  intro: 'Berätta rutten, tidpunkten och bilen, så skickar vi ett fast pris. Formuläret tar ungefär en minut.',
+
+  step1: 'Tjänst',
   service: 'Vilken tjänst behöver du?',
   servicePlaceholder: 'Välj tjänst',
   serviceNames: {
@@ -26,31 +24,81 @@ export const form = {
     business: 'För företag (avtal eller flera flyttar)',
     other: 'Annan tjänst',
   },
+
+  step2: 'Uppgifter om flytten',
+  step2Journey: 'Uppgifter om resan',
+  pickup: 'Upphämtningsadress',
+  pickupHelp: 'Gatuadress eller postnummer.',
+  destination: 'Destinationsadress',
+  destinationJourney: 'Destination',
+  destinationHelp: 'Gatuadress, postnummer eller platsens namn.',
+  date: 'Önskad dag',
+  time: 'Önskad tid',
+  timeHelp: 'Frivilligt. Lämna tomt om tiden är flexibel.',
+  vehicle: 'Bilens uppgifter',
+  vehicleHelp: 'Märke, modell, årsmodell och växellåda i ett och samma fält. Till exempel "Ford Focus 2018, manuell".',
+
+  passengers: 'Antal passagerare',
+  passengersHelp: 'Föraren tar ingen plats: berätta hur många ni är som reser.',
+  stops: 'Stopp under resan',
+  stopsHelp: 'Frivilligt. Till exempel en upphämtning på vägen eller väntetid på plats.',
+
+  plate: 'Registernummer',
+  plateHelp: 'Frivilligt. Det gör offerten snabbare att göra.',
+  roadworthy: 'Bilen är körduglig och i trafik',
+  roadworthyHelp: 'Vi kör inte en bil som inte är körduglig eller har körförbud. Berätta om det nedan, så hänvisar vi dig till en bogseringspartner.',
+
+  apptTime: 'Bokad tid hos leverantören',
+  apptTimeHelp: 'Frivilligt. Tiden bokar du och tjänsten betalar du själv.',
+  returnLabel: 'Behövs en returtransport?',
+  returnYes: 'Ja, bilen körs tillbaka',
+  returnNo: 'Nej, bara dit',
+
+  step3: 'Kontaktuppgifter',
+  name: 'Namn',
+  phone: 'Telefonnummer',
+  email: 'E-post',
+  emailHelp: 'Vi skickar offerten och en bekräftelse till den här adressen.',
   company: 'Företagets namn',
   companyHelp: 'Frivilligt. Fyll i om du begär offert för ett företag.',
-  notes: 'Mer information / vad vill du att vi gör?',
-  notesHelp: 'Berätta fritt om rutten, önskad tidpunkt och antalet flyttar. Exakta adresser, bilens uppgifter och nyckelöverlämningen kommer vi överens om när vi kontaktar dig.',
+  businessId: 'FO-nummer',
+  businessIdHelp: 'Frivilligt.',
+  volume: 'Antal bilar eller uppdrag',
+  volumeHelp: 'Till exempel "3 bilar" eller "cirka 10 flyttar i månaden".',
+  recurrence: 'Engångsuppdrag eller återkommande?',
+  recurrenceOnce: 'En enskild flytt',
+  recurrenceRecurring: 'Återkommande samarbete',
+
+  notes: 'Mer information',
+  notesHelp: 'Frivilligt. Berätta om något avviker från det vanliga - nyckelöverlämning, port- eller garagekod eller ett känt fel.',
   offerToggle: 'Jag har en förmånskod',
   offerCode: 'Förmånskod',
-  offerCodeHelp: 'Frivillig. Skriv in kampanjkoden här, vi beaktar den i offerten.',
-  submit: 'Begär offert',
+  offerCodeHelp: 'Frivillig. Vi beaktar kampanjkoden i offerten.',
+
+  submit: 'Begär fast offert',
   submitting: 'Skickar…',
+  trustLine: 'Kostnadsfri offert · Utan förbindelse · Transparent prissättning',
   requiredNote: 'Fält märkta med * är obligatoriska.',
-  enquiryNote: 'En offertförfrågan bekräftar ingen bokning. Vi bekräftar pris, tidtabell och förare separat, och flytten avtalas först när du godkänner offerten.',
+  enquiryNote: 'En offertförfrågan bekräftar ingen bokning. Flytten avtalas först när du godkänner offerten.',
+
   errorTitle: 'Kontrollera de här punkterna',
   required: 'Den här uppgiften behövs.',
   badEmail: 'Kontrollera e-postadressen.',
   badPhone: 'Kontrollera telefonnumret.',
+  badDate: 'Välj i dag eller ett senare datum.',
+  badRange: 'Värdet ligger utanför det tillåtna intervallet.',
   failed: 'Förfrågan kunde inte skickas. Försök igen eller ring ' + brand.phone + '.',
+
   sideTitle: 'Så går vi vidare',
   sideSteps: [
-    'Vi läser din offertförfrågan och kontaktar dig inom 24 timmar.',
-    'Vi går tillsammans igenom adresserna, bilens uppgifter, nyckelöverlämningen och tidtabellen.',
-    'Du får ett fast pris. Flytten bekräftas först när du godkänner offerten.',
+    'Vi läser din förfrågan och skickar ett fast pris inom 24 timmar.',
+    'Om någon uppgift saknas frågar vi efter den före offerten.',
+    'Flytten bekräftas först när du godkänner offerten. Då kommer vi överens om nyckelöverlämning och fakturering.',
   ],
   sideCallTitle: 'Behöver du svar genast?',
   terms: 'Servicevillkor',
   termsNote: 'Bokningsvillkoren och rätten att överlämna bilen går vi igenom före bekräftelsen.',
+
   doneTitle: 'Tack för din offertförfrågan!',
   doneBody: 'DriveMe-teamet kontaktar dig inom 24 timmar. En offertförfrågan bekräftar ännu ingen bokning.',
   doneRef: 'Din referens',

@@ -265,6 +265,85 @@ test('a company name and a free-text note are optional, as the form says', async
   assert.equal(rows[0].notes, null);
 });
 
+test('a transfer carries the route, the car and whether it can be driven', async () => {
+  const res = await post(enquiry({
+    service: 'homeDelivery',
+    pickup_location: 'Mannerheimintie 1, Helsinki',
+    destination: 'Tapiolantie 1, Espoo',
+    scheduled_for: '2026-11-03T08:30',
+    vehicle_details: 'Ford Focus 2018, manuaali',
+    vehicle_plate: 'ABC-123',
+    roadworthy: true,
+  }));
+  assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+  const row = rows[0];
+  assert.equal(row.pickup_location, 'Mannerheimintie 1, Helsinki');
+  assert.equal(row.destination, 'Tapiolantie 1, Espoo');
+  assert.equal(row.vehicle_details, 'Ford Focus 2018, manuaali');
+  assert.equal(row.vehicle_plate, 'ABC-123');
+  assert.equal(row.roadworthy, true);
+  // 08:30 Helsinki in November is UTC+2.
+  assert.equal(row.scheduled_for, '2026-11-03T06:30:00.000Z');
+  // Still no price: the figure is written by a person who read all of this.
+  assert.equal(row.estimated_price, null);
+});
+
+test('a car that cannot be driven is recorded as such, not quietly accepted', async () => {
+  await post(enquiry({ service: 'relocation', roadworthy: false }));
+  assert.equal(rows[0].roadworthy, false);
+  // Ops sees it in the alert, because it decides whether a driver goes at all.
+  assert.match(mails[0].text + mails[0].html, /[Rr]oadworthy/);
+});
+
+test('a journey carries its passengers and its stops', async () => {
+  const res = await post(enquiry({
+    service: 'personalDriver', passenger_count: 3,
+    destination: 'Helsinki-Vantaan lentoasema',
+    extra_stops: 'Nouto Espoosta matkan varrelta',
+  }));
+  assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+  assert.equal(rows[0].passenger_count, 3);
+  assert.equal(rows[0].extra_stops, 'Nouto Espoosta matkan varrelta');
+  assert.equal(rows[0].mode, 'personal_driver');
+});
+
+test('a service transfer says when the appointment is and whether the car comes back', async () => {
+  await post(enquiry({
+    service: 'workshopTransfer', appointment_time: '10:15',
+    shape: 'pickupReturn', return_needed: true,
+  }));
+  assert.equal(rows[0].appointment_time, '10:15');
+  assert.equal(rows[0].return_needed, true);
+  assert.equal(rows[0].product, 'serviceRun');
+
+  await post(enquiry({ service: 'workshopTransfer', shape: 'oneWay', return_needed: false }));
+  assert.equal(rows[1].return_needed, false);
+  assert.equal(rows[1].product, 'oneWay');
+});
+
+test('a company enquiry carries the volume and whether the work recurs', async () => {
+  await post(enquiry({
+    service: 'branchTransfer', company_name: 'Autotalo Oy', business_id: '1234567-8',
+    volume: 'noin 10 siirtoa kuukaudessa', recurrence: 'recurring',
+  }));
+  const row = rows[0];
+  assert.equal(row.customer_type, 'company');
+  assert.equal(row.business_id, '1234567-8');
+  assert.equal(row.volume, 'noin 10 siirtoa kuukaudessa');
+  assert.equal(row.recurrence, 'recurring');
+
+  // A private enquiry carries none of it, whatever the browser sends.
+  await post(enquiry({ volume: 'x', recurrence: 'recurring' }));
+  assert.equal(rows[1].volume, null);
+  assert.equal(rows[1].recurrence, null);
+});
+
+test('an unknown recurrence is dropped rather than stored', async () => {
+  const res = await post(enquiry({ company_name: 'Autotalo Oy', recurrence: 'sometimes' }));
+  assert.equal(res.statusCode, 201, JSON.stringify(res.body));
+  assert.equal(rows[0].recurrence, null);
+});
+
 test('when the database refuses an enquiry, ops get it in full and the lead survives', async () => {
   dbMode = 'fail';
   const res = await post(enquiry({ notes: 'Tapiolantie 1, Espoo' }));

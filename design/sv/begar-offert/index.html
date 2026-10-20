@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Begär offert på en bilflytt | DriveMe</title>
-<meta name="description" content="Skicka en offertförfrågan på under en minut: namn, telefon, e-post och den tjänst du behöver. Vi hör av oss inom 24 timmar.">
+<meta name="description" content="Skicka en offertförfrågan på ungefär en minut: rutt, tidpunkt, bil och dina kontaktuppgifter. Vi skickar ett fast pris inom 24 timmar.">
 <link rel="canonical" href="https://driveme.fi/sv/begar-offert/">
 <link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/pyyda-tarjous/">
 <link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/request-a-quote/">
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="DriveMe">
 <meta property="og:locale" content="sv_FI">
 <meta property="og:title" content="Begär offert på en bilflytt | DriveMe">
-<meta property="og:description" content="Skicka en offertförfrågan på under en minut: namn, telefon, e-post och den tjänst du behöver. Vi hör av oss inom 24 timmar.">
+<meta property="og:description" content="Skicka en offertförfrågan på ungefär en minut: rutt, tidpunkt, bil och dina kontaktuppgifter. Vi skickar ett fast pris inom 24 timmar.">
 <meta property="og:url" content="https://driveme.fi/sv/begar-offert/">
 <meta property="og:image" content="https://driveme.fi/assets/icons-v2/social-1200x630.png">
 <meta property="og:image:width" content="1200">
@@ -23,7 +23,7 @@
 <meta property="og:image:alt" content="DriveMe">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Begär offert på en bilflytt | DriveMe">
-<meta name="twitter:description" content="Skicka en offertförfrågan på under en minut: namn, telefon, e-post och den tjänst du behöver. Vi hör av oss inom 24 timmar.">
+<meta name="twitter:description" content="Skicka en offertförfrågan på ungefär en minut: rutt, tidpunkt, bil och dina kontaktuppgifter. Vi skickar ett fast pris inom 24 timmar.">
 <meta name="twitter:image" content="https://driveme.fi/assets/icons-v2/social-1200x630.png">
 <link rel="icon" href="/favicon.ico?v=2" sizes="any">
 <link rel="icon" href="/assets/icons-v2/favicon-32.png" type="image/png" sizes="32x32">
@@ -136,7 +136,7 @@
   <div class="wrap page-head-inner">
     <nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/sv/">Startsida</a></li><li><span aria-current="page">Begär offert på en bilflytt</span></li></ol></nav>
     <h1>Begär offert <em class="serif">på en bilflytt</em></h1>
-    <p class="lead">Lämna dina kontaktuppgifter och berätta vilken tjänst du behöver. Vi hör av oss inom 24 timmar, kommer överens om detaljerna och skickar ett fast pris. En offertförfrågan bekräftar ännu ingen bokning.</p>
+    <p class="lead">Berätta rutten, önskad tidpunkt och bilen, så skickar vi ett fast pris inom 24 timmar. En offertförfrågan bekräftar ännu ingen bokning.</p>
   </div>
 </section>
 
@@ -144,7 +144,7 @@
   <div class="wrap">
     <div class="enquiry-shell" id="enquiry-shell">
       <form class="enquiry-card" id="request-form" novalidate>
-        <p class="enquiry-intro">Berätta kort vad du behöver. Vi läser din förfrågan och kontaktar dig inom 24 timmar.</p>
+        <p class="enquiry-intro">Berätta rutten, tidpunkten och bilen, så skickar vi ett fast pris. Formuläret tar ungefär en minut.</p>
 
         <div class="summary-box" id="error-summary" hidden tabindex="-1">
           <h2>Kontrollera de här punkterna</h2>
@@ -154,74 +154,209 @@
 
         <div class="enquiry-fields">
           
-          <div class="field">
-            <label for="customer_name">Namn<span class="req" data-for="customer_name">*</span></label>
-            <input type="text" id="customer_name" name="customer_name" required autocomplete="name">
-            
-            <span class="err" id="customer_name-err" role="alert"></span>
-          </div>
-          <div class="grid-2">
-            
-          <div class="field">
-            <label for="customer_phone">Telefonnummer<span class="req" data-for="customer_phone">*</span></label>
-            <input type="tel" id="customer_phone" name="customer_phone" required autocomplete="tel" inputmode="tel">
-            
-            <span class="err" id="customer_phone-err" role="alert"></span>
-          </div>
-            
-          <div class="field">
-            <label for="customer_email">E-post<span class="req" data-for="customer_email">*</span></label>
-            <input type="email" id="customer_email" name="customer_email" required autocomplete="email" aria-describedby="customer_email-help">
-            <span class="help" id="customer_email-help">Vi skickar en skriftlig bekräftelse på din förfrågan till den här adressen.</span>
-            <span class="err" id="customer_email-err" role="alert"></span>
-          </div>
-          </div>
+        <fieldset class="enq-step">
+          <legend id="step-1-legend"><span class="enq-num" aria-hidden="true">1</span>Tjänst</legend>
           
-          <div class="field">
-            <label for="service">Vilken tjänst behöver du?<span class="req" data-for="service">*</span></label>
-            <select id="service" name="service" required><option value="">Välj tjänst</option><option value="branchTransfer">Flytt mellan verksamhetsställen</option><option value="homeDelivery">Hemleverans till kunden</option><option value="purchasedCarPickup">Hämtning av inköpt bil</option><option value="workshopTransfer">Serviceflytt (verkstad, besiktning, däck, tvätt)</option><option value="relocation">Bilflytt (en enskild flytt)</option><option value="personalDriver">Personlig förare</option><option value="business">För företag (avtal eller flera flyttar)</option><option value="other">Annan tjänst</option></select>
-            
-            <span class="err" id="service-err" role="alert"></span>
-          </div>
-          
-          <div class="field">
-            <label for="company_name">Företagets namn<span class="req" data-for="company_name" hidden>*</span></label>
-            <input type="text" id="company_name" name="company_name" autocomplete="organization" aria-describedby="company_name-help">
-            <span class="help" id="company_name-help">Frivilligt. Fyll i om du begär offert för ett företag.</span>
-            <span class="err" id="company_name-err" role="alert"></span>
-          </div>
-          
-          <div class="field">
-            <label for="notes">Mer information / vad vill du att vi gör?<span class="req" data-for="notes" hidden>*</span></label>
-            <textarea id="notes" name="notes" rows="4" aria-describedby="notes-help"></textarea>
-            <span class="help" id="notes-help">Berätta fritt om rutten, önskad tidpunkt och antalet flyttar. Exakta adresser, bilens uppgifter och nyckelöverlämningen kommer vi överens om när vi kontaktar dig.</span>
-            <span class="err" id="notes-err" role="alert"></span>
-          </div>
-
-          <!-- Progressive disclosure: the campaign code is real but rare, so it
-               is one line until someone needs it. Arriving from the offer page
-               opens it with the code already in place. -->
-          <div class="offer-reveal">
-            <button class="link-btn" type="button" id="offer-toggle" aria-expanded="false" aria-controls="offer-field">
-              <span class="plus" aria-hidden="true">+</span> Jag har en förmånskod
-            </button>
-            <div id="offer-field" hidden>
+            <div class="field">
+              <label for="service">Vilken tjänst behöver du?<span class="req" data-for="service">*</span></label>
+              <select id="service" name="service" required><option value="">Välj tjänst</option><option value="branchTransfer">Flytt mellan verksamhetsställen</option><option value="homeDelivery">Hemleverans till kunden</option><option value="purchasedCarPickup">Hämtning av inköpt bil</option><option value="workshopTransfer">Serviceflytt (verkstad, besiktning, däck, tvätt)</option><option value="relocation">Bilflytt (en enskild flytt)</option><option value="personalDriver">Personlig förare</option><option value="business">För företag (avtal eller flera flyttar)</option><option value="other">Annan tjänst</option></select>
               
-          <div class="field">
-            <label for="offer_code">Förmånskod<span class="req" data-for="offer_code" hidden>*</span></label>
-            <input type="text" id="offer_code" name="offer_code" maxlength="20" autocapitalize="characters" aria-describedby="offer_code-help">
-            <span class="help" id="offer_code-help">Frivillig. Skriv in kampanjkoden här, vi beaktar den i offerten.</span>
-            <span class="err" id="offer_code-err" role="alert"></span>
-          </div>
+              <span class="err" id="service-err" role="alert"></span>
             </div>
-          </div>
+        </fieldset>
+
+          
+        <fieldset class="enq-step">
+          <legend id="step-2-legend"><span class="enq-num" aria-hidden="true">2</span>Uppgifter om flytten</legend>
+          
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="pickup_location">Upphämtningsadress<span class="req" data-for="pickup_location">*</span></label>
+              <input type="text" id="pickup_location" name="pickup_location" required autocomplete="street-address" aria-describedby="pickup_location-help">
+              <span class="help" id="pickup_location-help">Gatuadress eller postnummer.</span>
+              <span class="err" id="pickup_location-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="destination">Destinationsadress<span class="req" data-for="destination">*</span></label>
+              <input type="text" id="destination" name="destination" required autocomplete="street-address" aria-describedby="destination-help">
+              <span class="help" id="destination-help">Gatuadress, postnummer eller platsens namn.</span>
+              <span class="err" id="destination-err" role="alert"></span>
+            </div>
+            </div>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="date">Önskad dag<span class="req" data-for="date">*</span></label>
+              <input type="date" id="date" name="date" required>
+              
+              <span class="err" id="date-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="time">Önskad tid<span class="req" data-for="time" hidden>*</span></label>
+              <input type="time" id="time" name="time" aria-describedby="time-help">
+              <span class="help" id="time-help">Frivilligt. Lämna tomt om tiden är flexibel.</span>
+              <span class="err" id="time-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="vehicle_details">Bilens uppgifter<span class="req" data-for="vehicle_details">*</span></label>
+              <input type="text" id="vehicle_details" name="vehicle_details" required maxlength="120" aria-describedby="vehicle_details-help">
+              <span class="help" id="vehicle_details-help">Märke, modell, årsmodell och växellåda i ett och samma fält. Till exempel &quot;Ford Focus 2018, manuell&quot;.</span>
+              <span class="err" id="vehicle_details-err" role="alert"></span>
+            </div>
+
+            <!-- One service's questions at a time: booking.js shows the group
+                 that belongs to the chosen service and hides the rest, so
+                 nobody is asked about passengers and a registration both. -->
+            <div id="journey-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="passengers">Antal passagerare<span class="req" data-for="passengers" hidden>*</span></label>
+              <input type="number" id="passengers" name="passengers" min="1" max="8" value="1" aria-describedby="passengers-help">
+              <span class="help" id="passengers-help">Föraren tar ingen plats: berätta hur många ni är som reser.</span>
+              <span class="err" id="passengers-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="extra_stops">Stopp under resan<span class="req" data-for="extra_stops" hidden>*</span></label>
+              <input type="text" id="extra_stops" name="extra_stops" aria-describedby="extra_stops-help">
+              <span class="help" id="extra_stops-help">Frivilligt. Till exempel en upphämtning på vägen eller väntetid på plats.</span>
+              <span class="err" id="extra_stops-err" role="alert"></span>
+            </div>
+            </div></div>
+            <div id="move-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="vehicle_plate">Registernummer<span class="req" data-for="vehicle_plate" hidden>*</span></label>
+              <input type="text" id="vehicle_plate" name="vehicle_plate" maxlength="20" autocapitalize="characters" aria-describedby="vehicle_plate-help">
+              <span class="help" id="vehicle_plate-help">Frivilligt. Det gör offerten snabbare att göra.</span>
+              <span class="err" id="vehicle_plate-err" role="alert"></span>
+            </div>
+            </div>
+            <label class="form-check" for="roadworthy">
+              <input type="checkbox" name="roadworthy" id="roadworthy" checked>
+              <span>Bilen är körduglig och i trafik</span>
+            </label>
+            <span class="help help-indent" id="roadworthy-help">Vi kör inte en bil som inte är körduglig eller har körförbud. Berätta om det nedan, så hänvisar vi dig till en bogseringspartner.</span></div>
+            <div id="appointment-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="appointment_time">Bokad tid hos leverantören<span class="req" data-for="appointment_time" hidden>*</span></label>
+              <input type="time" id="appointment_time" name="appointment_time" aria-describedby="appointment_time-help">
+              <span class="help" id="appointment_time-help">Frivilligt. Tiden bokar du och tjänsten betalar du själv.</span>
+              <span class="err" id="appointment_time-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="return_needed">Behövs en returtransport?<span class="req" data-for="return_needed" hidden>*</span></label>
+              <select id="return_needed" name="return_needed"><option value="yes" selected>Ja, bilen körs tillbaka</option><option value="no">Nej, bara dit</option></select>
+              
+              <span class="err" id="return_needed-err" role="alert"></span>
+            </div>
+            </div></div>
+        </fieldset>
+
+          
+        <fieldset class="enq-step">
+          <legend id="step-3-legend"><span class="enq-num" aria-hidden="true">3</span>Kontaktuppgifter</legend>
+          
+            
+            <div class="field">
+              <label for="customer_name">Namn<span class="req" data-for="customer_name">*</span></label>
+              <input type="text" id="customer_name" name="customer_name" required autocomplete="name">
+              
+              <span class="err" id="customer_name-err" role="alert"></span>
+            </div>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="customer_phone">Telefonnummer<span class="req" data-for="customer_phone">*</span></label>
+              <input type="tel" id="customer_phone" name="customer_phone" required autocomplete="tel" inputmode="tel">
+              
+              <span class="err" id="customer_phone-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="customer_email">E-post<span class="req" data-for="customer_email">*</span></label>
+              <input type="email" id="customer_email" name="customer_email" required autocomplete="email" aria-describedby="customer_email-help">
+              <span class="help" id="customer_email-help">Vi skickar offerten och en bekräftelse till den här adressen.</span>
+              <span class="err" id="customer_email-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="company_name">Företagets namn<span class="req" data-for="company_name" hidden>*</span></label>
+              <input type="text" id="company_name" name="company_name" autocomplete="organization" aria-describedby="company_name-help">
+              <span class="help" id="company_name-help">Frivilligt. Fyll i om du begär offert för ett företag.</span>
+              <span class="err" id="company_name-err" role="alert"></span>
+            </div>
+            
+            <div id="business-fields" hidden>
+              <div class="grid-2">
+                
+            <div class="field">
+              <label for="business_id">FO-nummer<span class="req" data-for="business_id" hidden>*</span></label>
+              <input type="text" id="business_id" name="business_id" maxlength="20" aria-describedby="business_id-help">
+              <span class="help" id="business_id-help">Frivilligt.</span>
+              <span class="err" id="business_id-err" role="alert"></span>
+            </div>
+                
+            <div class="field">
+              <label for="volume">Antal bilar eller uppdrag<span class="req" data-for="volume" hidden>*</span></label>
+              <input type="text" id="volume" name="volume" maxlength="100" aria-describedby="volume-help">
+              <span class="help" id="volume-help">Till exempel &quot;3 bilar&quot; eller &quot;cirka 10 flyttar i månaden&quot;.</span>
+              <span class="err" id="volume-err" role="alert"></span>
+            </div>
+              </div>
+              
+            <div class="field">
+              <label for="recurrence">Engångsuppdrag eller återkommande?<span class="req" data-for="recurrence" hidden>*</span></label>
+              <select id="recurrence" name="recurrence"><option value="once" selected>En enskild flytt</option><option value="recurring">Återkommande samarbete</option></select>
+              
+              <span class="err" id="recurrence-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="notes">Mer information<span class="req" data-for="notes" hidden>*</span></label>
+              <textarea id="notes" name="notes" rows="3" aria-describedby="notes-help"></textarea>
+              <span class="help" id="notes-help">Frivilligt. Berätta om något avviker från det vanliga - nyckelöverlämning, port- eller garagekod eller ett känt fel.</span>
+              <span class="err" id="notes-err" role="alert"></span>
+            </div>
+
+            <!-- Progressive disclosure: the campaign code is real but rare, so
+                 it is one line until someone needs it. Arriving from the offer
+                 page opens it with the code already in place. -->
+            <div class="offer-reveal">
+              <button class="link-btn" type="button" id="offer-toggle" aria-expanded="false" aria-controls="offer-field">
+                <span class="plus" aria-hidden="true">+</span> Jag har en förmånskod
+              </button>
+              <div id="offer-field" hidden>
+                
+            <div class="field">
+              <label for="offer_code">Förmånskod<span class="req" data-for="offer_code" hidden>*</span></label>
+              <input type="text" id="offer_code" name="offer_code" maxlength="20" autocapitalize="characters" aria-describedby="offer_code-help">
+              <span class="help" id="offer_code-help">Frivillig. Vi beaktar kampanjkoden i offerten.</span>
+              <span class="err" id="offer_code-err" role="alert"></span>
+            </div>
+              </div>
+            </div>
+        </fieldset>
         </div>
 
         <p class="hint form-required-note">Fält märkta med * är obligatoriska.</p>
 
         <div class="enquiry-send">
-          <button class="btn btn-primary btn-lg" type="submit" id="submit-btn">Begär offert <span class="arrow" aria-hidden="true">→</span></button>
-          <p class="enquiry-note" id="submit-hint">En offertförfrågan bekräftar ingen bokning. Vi bekräftar pris, tidtabell och förare separat, och flytten avtalas först när du godkänner offerten.</p>
+          <button class="btn btn-primary btn-lg" type="submit" id="submit-btn">Begär fast offert <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="enquiry-trust">Kostnadsfri offert · Utan förbindelse · Transparent prissättning</p>
+          <p class="enquiry-note" id="submit-hint">En offertförfrågan bekräftar ingen bokning. Flytten avtalas först när du godkänner offerten.</p>
         </div>
       </form>
 
@@ -230,7 +365,7 @@
       <aside class="enquiry-side">
         <h2>Så går vi vidare</h2>
         <ol class="enquiry-steps">
-          <li>Vi läser din offertförfrågan och kontaktar dig inom 24 timmar.</li><li>Vi går tillsammans igenom adresserna, bilens uppgifter, nyckelöverlämningen och tidtabellen.</li><li>Du får ett fast pris. Flytten bekräftas först när du godkänner offerten.</li>
+          <li>Vi läser din förfrågan och skickar ett fast pris inom 24 timmar.</li><li>Om någon uppgift saknas frågar vi efter den före offerten.</li><li>Flytten bekräftas först när du godkänner offerten. Då kommer vi överens om nyckelöverlämning och fakturering.</li>
         </ol>
         <div class="enquiry-contact">
           <h3>Behöver du svar genast?</h3>
@@ -249,7 +384,7 @@
       <p style="margin-top:18px"><button class="btn btn-ghost" type="button" id="again-btn">Skicka en ny offertförfrågan</button></p>
     </div>
 
-    <script id="booking-config" type="application/json">{"locale":"sv","services":{"branchTransfer":{"gated":false},"homeDelivery":{"gated":false},"purchasedCarPickup":{"gated":false},"workshopTransfer":{"gated":false},"relocation":{"gated":false},"personalDriver":{"gated":false},"business":{"gated":false}},"aliases":{"inspection":"workshopTransfer","workshop":"workshopTransfer","tyre":"workshopTransfer","wash":"workshopTransfer","glass":"workshopTransfer","pickupReturn":"relocation","dealer":"relocation","journey":"personalDriver","safeRideHome":"personalDriver","airport":"personalDriver"},"copy":{"required":"Den här uppgiften behövs.","badEmail":"Kontrollera e-postadressen.","badPhone":"Kontrollera telefonnumret.","errorTitle":"Kontrollera de här punkterna","submitting":"Skickar…","submit":"Begär offert","failed":"Förfrågan kunde inte skickas. Försök igen eller ring +358 50 357 2836.","doneRef":"Din referens","gatedTitle":"Den här tjänsten går inte att boka ännu","gatedBody":"Tjänsten är inte bokningsbar ännu. Vi berättar så snart den öppnar - lämna dina uppgifter per telefon eller e-post."},"endpoint":"/api/bookings"}</script>
+    <script id="booking-config" type="application/json">{"locale":"sv","services":{"branchTransfer":{"gated":false,"type":"general_move"},"homeDelivery":{"gated":false,"type":"general_move"},"purchasedCarPickup":{"gated":false,"type":"general_move"},"workshopTransfer":{"gated":false,"type":"appointment_run"},"relocation":{"gated":false,"type":"general_move"},"personalDriver":{"gated":false,"type":"passenger"},"business":{"gated":false,"type":"business"}},"aliases":{"inspection":"workshopTransfer","workshop":"workshopTransfer","tyre":"workshopTransfer","wash":"workshopTransfer","glass":"workshopTransfer","pickupReturn":"relocation","dealer":"relocation","journey":"personalDriver","safeRideHome":"personalDriver","airport":"personalDriver"},"copy":{"required":"Den här uppgiften behövs.","badEmail":"Kontrollera e-postadressen.","badPhone":"Kontrollera telefonnumret.","badDate":"Välj i dag eller ett senare datum.","badRange":"Värdet ligger utanför det tillåtna intervallet.","errorTitle":"Kontrollera de här punkterna","submitting":"Skickar…","submit":"Begär fast offert","failed":"Förfrågan kunde inte skickas. Försök igen eller ring +358 50 357 2836.","doneRef":"Din referens","gatedTitle":"Den här tjänsten går inte att boka ännu","gatedBody":"Tjänsten är inte bokningsbar ännu. Vi berättar så snart den öppnar - lämna dina uppgifter per telefon eller e-post.","step2":"Uppgifter om flytten","step2Journey":"Uppgifter om resan","destination":"Destinationsadress","destinationJourney":"Destination"},"endpoint":"/api/bookings"}</script>
   </div>
 </section>
 </main>
@@ -306,6 +441,6 @@
 </footer>
 
 <script src="/assets/site.js?v=5" defer></script>
-<script src="/assets/booking.js?v=4" defer></script>
+<script src="/assets/booking.js?v=5" defer></script>
 </body>
 </html>

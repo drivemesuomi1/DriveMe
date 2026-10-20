@@ -264,14 +264,14 @@ export const trustStrip = {
 /** The customer journey, condensed to the four steps on the homepage. */
 export const howItWorks = {
   fi: [
-    { t: 'Pyydä tarjous', d: 'Kerro nimesi, yhteystietosi ja mitä palvelua tarvitset. Lomakkeen täyttäminen vie alle minuutin.' },
-    { t: 'Otamme yhteyttä 24 tunnin kuluessa', d: 'Käymme läpi osoitteet, auton tiedot ja aikataulun ja vahvistamme kiinteän hinnan. Tarjouspyyntö ei vielä vahvista varausta.' },
+    { t: 'Pyydä tarjous', d: 'Kerro reitti, toivottu ajankohta ja auto. Lomakkeen täyttäminen vie noin minuutin.' },
+    { t: 'Saat kiinteän hinnan 24 tunnin kuluessa', d: 'Luemme pyyntösi ja lähetämme hinnan sähköpostiisi. Tarjouspyyntö ei vielä vahvista varausta.' },
     { t: 'Kuljettaja noutaa autosi', d: 'Kuvaamme kunnon, mittarilukeman sekä polttoaine- tai lataustason. Sinun ei tarvitse lähteä mukaan.' },
     { t: 'Auto perille tai takaisin', d: 'Jokainen luovutus kirjataan, ja saat tiedon toimituksesta tai palautuksesta.' },
   ],
   en: [
-    { t: 'Ask for a quote', d: 'Tell us your name, your details and which service you need. The form takes under a minute.' },
-    { t: 'We contact you within 24 hours', d: 'We go through the addresses, the vehicle details and the schedule, and confirm a fixed price. An enquiry does not confirm a booking yet.' },
+    { t: 'Ask for a quote', d: 'Tell us the route, the timing you want and the car. The form takes about a minute.' },
+    { t: 'You get a fixed price within 24 hours', d: 'We read your enquiry and send the price by email. An enquiry does not confirm a booking yet.' },
     { t: 'The driver collects your car', d: 'We photograph condition, mileage and fuel or charge level. You do not need to travel with it.' },
     { t: 'Delivered, or back home', d: 'Every handover is recorded, and you hear when the car is delivered or returned.' },
   ],

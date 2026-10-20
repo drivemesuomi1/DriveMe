@@ -439,9 +439,9 @@ export const howPage = {
         type: 'steps', title: 'Asiakkaan polku', rows: true, two: true,
         items: [
           { t: 'Valitse tarvitsemasi palvelu', d: 'Toimipisteiden välinen siirto, kotiintoimitus, ostoauton nouto, huoltosiirto, yksittäinen siirto, oma kuljettaja - tai muu palvelu.' },
-          { t: 'Jätä nimi, puhelin ja sähköposti', d: 'Tarjouspyynnön lähettäminen vie alle minuutin. Lisätiedot voit kertoa vapaassa kentässä.' },
-          { t: 'Saat kuittauksen sähköpostiin', d: 'Vahvistamme, että pyyntö on vastaanotettu. Tarjouspyyntö ei vielä vahvista varausta.' },
-          { t: 'Otamme yhteyttä 24 tunnin kuluessa', d: 'Nouto- ja toimitusosoitteet, auton tiedot, avainten luovutus, valtuutus ja varauksen ehdot.' },
+          { t: 'Kerro reitti, ajankohta ja auto', d: 'Nouto- ja kohdeosoite, toivottu päivä ja ajoneuvon tiedot yhdessä kentässä.' },
+          { t: 'Jätä nimi, puhelin ja sähköposti', d: 'Saat sähköpostiisi kuittauksen. Tarjouspyyntö ei vielä vahvista varausta.' },
+          { t: 'Saat kiinteän hinnan 24 tunnin kuluessa', d: 'Jos jokin yksityiskohta puuttuu, kysymme sen ennen tarjousta.' },
           { t: 'DriveMe vahvistaa kuljettajan, ajan ja hinnan', d: 'Vasta vahvistus tekee varauksesta sitovan.' },
           { t: 'Nouto dokumentoidaan', d: 'Avaimet, kunto, mittarilukema ja polttoaine- tai lataustaso aikaleimatuin kuvin. Sinun ei tarvitse lähteä mukaan.' },
           { t: 'Saat tilapäivitykset', d: 'Jokaisesta luovutuksesta ilmoitetaan.' },
@@ -453,12 +453,12 @@ export const howPage = {
       {
         type: 'list', title: 'Tarjouspyynnössä kysymme', variant: 'check', two: true,
         items: [
-          'Nimi.',
-          'Puhelinnumero.',
-          'Sähköposti, johon lähetämme kuittauksen ja tarjouksen.',
           'Mitä palvelua tarvitset.',
-          'Yrityksen nimi, jos pyydät tarjousta yrityksen puolesta. Vapaaehtoinen.',
-          'Lisätiedot: reitti, toivottu ajankohta ja muut toiveet. Vapaaehtoinen.',
+          'Nouto- ja kohdeosoite sekä toivottu päivä.',
+          'Ajoneuvon tiedot: merkki, malli, vuosimalli ja vaihteisto samassa kentässä.',
+          'Palvelun mukaan: matkustajamäärä, rekisteritunnus ja ajokuntoisuus, tai varattu huoltoaika ja paluukuljetus.',
+          'Nimi, puhelinnumero ja sähköposti.',
+          'Yrityksen nimi, Y-tunnus ja siirtojen määrä, jos pyydät tarjousta yrityksen puolesta. Vapaaehtoisia.',
         ],
       },
       {
@@ -489,9 +489,9 @@ export const howPage = {
         type: 'steps', title: 'The customer journey', rows: true, two: true,
         items: [
           { t: 'Choose the service you need', d: 'A branch transfer, a delivery to a customer, a purchased-car collection, a service transfer, a single transfer, a personal driver - or something else.' },
-          { t: 'Leave your name, phone and email', d: 'Sending the enquiry takes under a minute. Anything else goes in the free-text field.' },
-          { t: 'You get a receipt by email', d: 'Confirming we have your enquiry. It does not confirm a booking yet.' },
-          { t: 'We contact you within 24 hours', d: 'Collection and delivery addresses, vehicle details, key handover, authorisation and the booking terms.' },
+          { t: 'Give the route, the timing and the car', d: 'Collection and destination address, the day you want and the vehicle details in one field.' },
+          { t: 'Leave your name, phone and email', d: 'You get a receipt by email. An enquiry does not confirm a booking yet.' },
+          { t: 'You get a fixed price within 24 hours', d: 'If a detail is missing, we ask for it before quoting.' },
           { t: 'DriveMe confirms driver, time and fee', d: 'Only the confirmation makes the booking binding.' },
           { t: 'Collection is documented', d: 'Keys, condition, mileage and fuel or charge level in timestamped photos. You do not need to travel with the car.' },
           { t: 'You receive status updates', d: 'Every handover is notified.' },
@@ -844,16 +844,16 @@ export const booking = {
   fi: {
     slug: 'pyyda-tarjous',
     title: 'Pyydä tarjous auton siirrosta | DriveMe',
-    description: 'Jätä tarjouspyyntö alle minuutissa: nimi, puhelin, sähköposti ja tarvitsemasi palvelu. Otamme yhteyttä 24 tunnin kuluessa.',
+    description: 'Jätä tarjouspyyntö noin minuutissa: reitti, ajankohta, auto ja yhteystiedot. Lähetämme kiinteän hinnan 24 tunnin kuluessa.',
     h1: 'Pyydä tarjous *auton siirrosta*',
-    lead: 'Jätä yhteystietosi ja kerro, mitä palvelua tarvitset. Otamme yhteyttä 24 tunnin kuluessa, sovimme yksityiskohdat ja lähetämme kiinteän hinnan. Tarjouspyyntö ei vielä vahvista varausta.',
+    lead: 'Kerro reitti, toivottu ajankohta ja auto, niin lähetämme kiinteän hinnan 24 tunnin kuluessa. Tarjouspyyntö ei vielä vahvista varausta.',
   },
   en: {
     slug: 'en/request-a-quote',
     title: 'Request a quote for a car transfer | DriveMe',
-    description: 'Send an enquiry in under a minute: your name, phone, email and the service you need. We get back to you within 24 hours.',
+    description: 'Send a quote request in about a minute: route, timing, vehicle and your details. We send a fixed price within 24 hours.',
     h1: 'Request a quote *for a car transfer*',
-    lead: 'Leave your details and tell us which service you need. We get back to you within 24 hours, agree the details and send a fixed price. An enquiry does not confirm a booking yet.',
+    lead: 'Tell us the route, the timing you want and the car, and we send a fixed price within 24 hours. An enquiry does not confirm a booking yet.',
   },
 };
 

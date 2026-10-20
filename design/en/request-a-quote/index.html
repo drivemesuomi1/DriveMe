@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Request a quote for a car transfer | DriveMe</title>
-<meta name="description" content="Send an enquiry in under a minute: your name, phone, email and the service you need. We get back to you within 24 hours.">
+<meta name="description" content="Send a quote request in about a minute: route, timing, vehicle and your details. We send a fixed price within 24 hours.">
 <link rel="canonical" href="https://driveme.fi/en/request-a-quote/">
 <link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/pyyda-tarjous/">
 <link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/request-a-quote/">
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="DriveMe">
 <meta property="og:locale" content="en_FI">
 <meta property="og:title" content="Request a quote for a car transfer | DriveMe">
-<meta property="og:description" content="Send an enquiry in under a minute: your name, phone, email and the service you need. We get back to you within 24 hours.">
+<meta property="og:description" content="Send a quote request in about a minute: route, timing, vehicle and your details. We send a fixed price within 24 hours.">
 <meta property="og:url" content="https://driveme.fi/en/request-a-quote/">
 <meta property="og:image" content="https://driveme.fi/assets/icons-v2/social-1200x630.png">
 <meta property="og:image:width" content="1200">
@@ -23,7 +23,7 @@
 <meta property="og:image:alt" content="DriveMe">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Request a quote for a car transfer | DriveMe">
-<meta name="twitter:description" content="Send an enquiry in under a minute: your name, phone, email and the service you need. We get back to you within 24 hours.">
+<meta name="twitter:description" content="Send a quote request in about a minute: route, timing, vehicle and your details. We send a fixed price within 24 hours.">
 <meta name="twitter:image" content="https://driveme.fi/assets/icons-v2/social-1200x630.png">
 <link rel="icon" href="/favicon.ico?v=2" sizes="any">
 <link rel="icon" href="/assets/icons-v2/favicon-32.png" type="image/png" sizes="32x32">
@@ -136,7 +136,7 @@
   <div class="wrap page-head-inner">
     <nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/en/">Home</a></li><li><span aria-current="page">Request a quote for a car transfer</span></li></ol></nav>
     <h1>Request a quote <em class="serif">for a car transfer</em></h1>
-    <p class="lead">Leave your details and tell us which service you need. We get back to you within 24 hours, agree the details and send a fixed price. An enquiry does not confirm a booking yet.</p>
+    <p class="lead">Tell us the route, the timing you want and the car, and we send a fixed price within 24 hours. An enquiry does not confirm a booking yet.</p>
   </div>
 </section>
 
@@ -144,7 +144,7 @@
   <div class="wrap">
     <div class="enquiry-shell" id="enquiry-shell">
       <form class="enquiry-card" id="request-form" novalidate>
-        <p class="enquiry-intro">Tell us briefly what you need. We read your enquiry and get back to you within 24 hours.</p>
+        <p class="enquiry-intro">Tell us the route, the timing and the car, and we send a fixed price. The form takes about a minute.</p>
 
         <div class="summary-box" id="error-summary" hidden tabindex="-1">
           <h2>Please check these fields</h2>
@@ -154,74 +154,209 @@
 
         <div class="enquiry-fields">
           
-          <div class="field">
-            <label for="customer_name">Name<span class="req" data-for="customer_name">*</span></label>
-            <input type="text" id="customer_name" name="customer_name" required autocomplete="name">
-            
-            <span class="err" id="customer_name-err" role="alert"></span>
-          </div>
-          <div class="grid-2">
-            
-          <div class="field">
-            <label for="customer_phone">Phone number<span class="req" data-for="customer_phone">*</span></label>
-            <input type="tel" id="customer_phone" name="customer_phone" required autocomplete="tel" inputmode="tel">
-            
-            <span class="err" id="customer_phone-err" role="alert"></span>
-          </div>
-            
-          <div class="field">
-            <label for="customer_email">Email<span class="req" data-for="customer_email">*</span></label>
-            <input type="email" id="customer_email" name="customer_email" required autocomplete="email" aria-describedby="customer_email-help">
-            <span class="help" id="customer_email-help">We send a written receipt of your enquiry to this address.</span>
-            <span class="err" id="customer_email-err" role="alert"></span>
-          </div>
-          </div>
+        <fieldset class="enq-step">
+          <legend id="step-1-legend"><span class="enq-num" aria-hidden="true">1</span>Service</legend>
           
-          <div class="field">
-            <label for="service">Which service do you need?<span class="req" data-for="service">*</span></label>
-            <select id="service" name="service" required><option value="">Choose a service</option><option value="branchTransfer">Branch-to-branch transfer</option><option value="homeDelivery">Delivery to the customer</option><option value="purchasedCarPickup">Purchased vehicle collection</option><option value="workshopTransfer">Service transfer (workshop, inspection, tyres, wash)</option><option value="relocation">Vehicle relocation (a single transfer)</option><option value="personalDriver">Personal driver</option><option value="business">For companies (agreement or several transfers)</option><option value="other">Something else</option></select>
-            
-            <span class="err" id="service-err" role="alert"></span>
-          </div>
-          
-          <div class="field">
-            <label for="company_name">Company name<span class="req" data-for="company_name" hidden>*</span></label>
-            <input type="text" id="company_name" name="company_name" autocomplete="organization" aria-describedby="company_name-help">
-            <span class="help" id="company_name-help">Optional. Fill this in if you are asking on behalf of a company.</span>
-            <span class="err" id="company_name-err" role="alert"></span>
-          </div>
-          
-          <div class="field">
-            <label for="notes">Anything else / what would you like us to do?<span class="req" data-for="notes" hidden>*</span></label>
-            <textarea id="notes" name="notes" rows="4" aria-describedby="notes-help"></textarea>
-            <span class="help" id="notes-help">Describe the route, the timing you have in mind and how many transfers you need. Exact addresses, vehicle details and the key handover are agreed when we contact you.</span>
-            <span class="err" id="notes-err" role="alert"></span>
-          </div>
-
-          <!-- Progressive disclosure: the campaign code is real but rare, so it
-               is one line until someone needs it. Arriving from the offer page
-               opens it with the code already in place. -->
-          <div class="offer-reveal">
-            <button class="link-btn" type="button" id="offer-toggle" aria-expanded="false" aria-controls="offer-field">
-              <span class="plus" aria-hidden="true">+</span> I have an offer code
-            </button>
-            <div id="offer-field" hidden>
+            <div class="field">
+              <label for="service">Which service do you need?<span class="req" data-for="service">*</span></label>
+              <select id="service" name="service" required><option value="">Choose a service</option><option value="branchTransfer">Branch-to-branch transfer</option><option value="homeDelivery">Delivery to the customer</option><option value="purchasedCarPickup">Purchased vehicle collection</option><option value="workshopTransfer">Service transfer (workshop, inspection, tyres, wash)</option><option value="relocation">Vehicle relocation (a single transfer)</option><option value="personalDriver">Personal driver</option><option value="business">For companies (agreement or several transfers)</option><option value="other">Something else</option></select>
               
-          <div class="field">
-            <label for="offer_code">Offer code<span class="req" data-for="offer_code" hidden>*</span></label>
-            <input type="text" id="offer_code" name="offer_code" maxlength="20" autocapitalize="characters" aria-describedby="offer_code-help">
-            <span class="help" id="offer_code-help">Optional. Enter a campaign code here and we apply it to the quote.</span>
-            <span class="err" id="offer_code-err" role="alert"></span>
-          </div>
+              <span class="err" id="service-err" role="alert"></span>
             </div>
-          </div>
+        </fieldset>
+
+          
+        <fieldset class="enq-step">
+          <legend id="step-2-legend"><span class="enq-num" aria-hidden="true">2</span>Transfer details</legend>
+          
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="pickup_location">Collection address<span class="req" data-for="pickup_location">*</span></label>
+              <input type="text" id="pickup_location" name="pickup_location" required autocomplete="street-address" aria-describedby="pickup_location-help">
+              <span class="help" id="pickup_location-help">Street address or postcode.</span>
+              <span class="err" id="pickup_location-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="destination">Destination address<span class="req" data-for="destination">*</span></label>
+              <input type="text" id="destination" name="destination" required autocomplete="street-address" aria-describedby="destination-help">
+              <span class="help" id="destination-help">Street address, postcode or the name of the place.</span>
+              <span class="err" id="destination-err" role="alert"></span>
+            </div>
+            </div>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="date">Preferred date<span class="req" data-for="date">*</span></label>
+              <input type="date" id="date" name="date" required>
+              
+              <span class="err" id="date-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="time">Preferred time<span class="req" data-for="time" hidden>*</span></label>
+              <input type="time" id="time" name="time" aria-describedby="time-help">
+              <span class="help" id="time-help">Optional. Leave empty if the time is flexible.</span>
+              <span class="err" id="time-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="vehicle_details">Vehicle details<span class="req" data-for="vehicle_details">*</span></label>
+              <input type="text" id="vehicle_details" name="vehicle_details" required maxlength="120" aria-describedby="vehicle_details-help">
+              <span class="help" id="vehicle_details-help">Make, model, year and transmission in one field. For example &quot;Ford Focus 2018, manual&quot;.</span>
+              <span class="err" id="vehicle_details-err" role="alert"></span>
+            </div>
+
+            <!-- One service's questions at a time: booking.js shows the group
+                 that belongs to the chosen service and hides the rest, so
+                 nobody is asked about passengers and a registration both. -->
+            <div id="journey-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="passengers">Number of passengers<span class="req" data-for="passengers" hidden>*</span></label>
+              <input type="number" id="passengers" name="passengers" min="1" max="8" value="1" aria-describedby="passengers-help">
+              <span class="help" id="passengers-help">The driver does not take a seat: tell us how many of you are travelling.</span>
+              <span class="err" id="passengers-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="extra_stops">Additional stops<span class="req" data-for="extra_stops" hidden>*</span></label>
+              <input type="text" id="extra_stops" name="extra_stops" aria-describedby="extra_stops-help">
+              <span class="help" id="extra_stops-help">Optional. For example a pickup on the way or waiting at the destination.</span>
+              <span class="err" id="extra_stops-err" role="alert"></span>
+            </div>
+            </div></div>
+            <div id="move-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="vehicle_plate">Registration number<span class="req" data-for="vehicle_plate" hidden>*</span></label>
+              <input type="text" id="vehicle_plate" name="vehicle_plate" maxlength="20" autocapitalize="characters" aria-describedby="vehicle_plate-help">
+              <span class="help" id="vehicle_plate-help">Optional. It makes the quote quicker to prepare.</span>
+              <span class="err" id="vehicle_plate-err" role="alert"></span>
+            </div>
+            </div>
+            <label class="form-check" for="roadworthy">
+              <input type="checkbox" name="roadworthy" id="roadworthy" checked>
+              <span>The car is roadworthy and registered for road use</span>
+            </label>
+            <span class="help help-indent" id="roadworthy-help">We do not drive a car that is not roadworthy or is under a driving ban. Tell us below and we will point you to a towing partner.</span></div>
+            <div id="appointment-fields" hidden>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="appointment_time">Booked time at the provider<span class="req" data-for="appointment_time" hidden>*</span></label>
+              <input type="time" id="appointment_time" name="appointment_time" aria-describedby="appointment_time-help">
+              <span class="help" id="appointment_time-help">Optional. You book the appointment and pay the provider yourself.</span>
+              <span class="err" id="appointment_time-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="return_needed">Is a return trip needed?<span class="req" data-for="return_needed" hidden>*</span></label>
+              <select id="return_needed" name="return_needed"><option value="yes" selected>Yes, bring the car back</option><option value="no">No, delivery only</option></select>
+              
+              <span class="err" id="return_needed-err" role="alert"></span>
+            </div>
+            </div></div>
+        </fieldset>
+
+          
+        <fieldset class="enq-step">
+          <legend id="step-3-legend"><span class="enq-num" aria-hidden="true">3</span>Contact details</legend>
+          
+            
+            <div class="field">
+              <label for="customer_name">Name<span class="req" data-for="customer_name">*</span></label>
+              <input type="text" id="customer_name" name="customer_name" required autocomplete="name">
+              
+              <span class="err" id="customer_name-err" role="alert"></span>
+            </div>
+            <div class="grid-2">
+              
+            <div class="field">
+              <label for="customer_phone">Phone number<span class="req" data-for="customer_phone">*</span></label>
+              <input type="tel" id="customer_phone" name="customer_phone" required autocomplete="tel" inputmode="tel">
+              
+              <span class="err" id="customer_phone-err" role="alert"></span>
+            </div>
+              
+            <div class="field">
+              <label for="customer_email">Email<span class="req" data-for="customer_email">*</span></label>
+              <input type="email" id="customer_email" name="customer_email" required autocomplete="email" aria-describedby="customer_email-help">
+              <span class="help" id="customer_email-help">We send the quote and a receipt to this address.</span>
+              <span class="err" id="customer_email-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="company_name">Company name<span class="req" data-for="company_name" hidden>*</span></label>
+              <input type="text" id="company_name" name="company_name" autocomplete="organization" aria-describedby="company_name-help">
+              <span class="help" id="company_name-help">Optional. Fill this in if you are asking on behalf of a company.</span>
+              <span class="err" id="company_name-err" role="alert"></span>
+            </div>
+            
+            <div id="business-fields" hidden>
+              <div class="grid-2">
+                
+            <div class="field">
+              <label for="business_id">Business ID<span class="req" data-for="business_id" hidden>*</span></label>
+              <input type="text" id="business_id" name="business_id" maxlength="20" aria-describedby="business_id-help">
+              <span class="help" id="business_id-help">Optional.</span>
+              <span class="err" id="business_id-err" role="alert"></span>
+            </div>
+                
+            <div class="field">
+              <label for="volume">Number of vehicles or assignments<span class="req" data-for="volume" hidden>*</span></label>
+              <input type="text" id="volume" name="volume" maxlength="100" aria-describedby="volume-help">
+              <span class="help" id="volume-help">For example &quot;3 cars&quot; or &quot;around 10 transfers a month&quot;.</span>
+              <span class="err" id="volume-err" role="alert"></span>
+            </div>
+              </div>
+              
+            <div class="field">
+              <label for="recurrence">One-time or recurring?<span class="req" data-for="recurrence" hidden>*</span></label>
+              <select id="recurrence" name="recurrence"><option value="once" selected>A one-time transfer</option><option value="recurring">Recurring work</option></select>
+              
+              <span class="err" id="recurrence-err" role="alert"></span>
+            </div>
+            </div>
+            
+            <div class="field">
+              <label for="notes">Anything else<span class="req" data-for="notes" hidden>*</span></label>
+              <textarea id="notes" name="notes" rows="3" aria-describedby="notes-help"></textarea>
+              <span class="help" id="notes-help">Optional. Tell us if something is out of the ordinary - key handover, a gate or garage code, or a known fault.</span>
+              <span class="err" id="notes-err" role="alert"></span>
+            </div>
+
+            <!-- Progressive disclosure: the campaign code is real but rare, so
+                 it is one line until someone needs it. Arriving from the offer
+                 page opens it with the code already in place. -->
+            <div class="offer-reveal">
+              <button class="link-btn" type="button" id="offer-toggle" aria-expanded="false" aria-controls="offer-field">
+                <span class="plus" aria-hidden="true">+</span> I have an offer code
+              </button>
+              <div id="offer-field" hidden>
+                
+            <div class="field">
+              <label for="offer_code">Offer code<span class="req" data-for="offer_code" hidden>*</span></label>
+              <input type="text" id="offer_code" name="offer_code" maxlength="20" autocapitalize="characters" aria-describedby="offer_code-help">
+              <span class="help" id="offer_code-help">Optional. We apply a campaign code to the quote.</span>
+              <span class="err" id="offer_code-err" role="alert"></span>
+            </div>
+              </div>
+            </div>
+        </fieldset>
         </div>
 
         <p class="hint form-required-note">Fields marked * are required.</p>
 
         <div class="enquiry-send">
-          <button class="btn btn-primary btn-lg" type="submit" id="submit-btn">Request a quote <span class="arrow" aria-hidden="true">→</span></button>
-          <p class="enquiry-note" id="submit-hint">An enquiry does not confirm a booking. We confirm the price, the schedule and the driver separately, and the transfer is agreed once you accept the quote.</p>
+          <button class="btn btn-primary btn-lg" type="submit" id="submit-btn">Get my fixed-price quote <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="enquiry-trust">Free quotation · No obligation · Transparent pricing</p>
+          <p class="enquiry-note" id="submit-hint">An enquiry does not confirm a booking. The transfer is agreed once you accept the quote.</p>
         </div>
       </form>
 
@@ -230,7 +365,7 @@
       <aside class="enquiry-side">
         <h2>How we proceed</h2>
         <ol class="enquiry-steps">
-          <li>We read your enquiry and contact you within 24 hours.</li><li>Together we go through the addresses, the vehicle details, the key handover and the schedule.</li><li>You get a fixed price. The transfer is confirmed only once you accept the quote.</li>
+          <li>We read your enquiry and send a fixed price within 24 hours.</li><li>If a detail is missing, we ask for it before quoting.</li><li>The transfer is confirmed once you accept the quote. That is when we agree the key handover and the invoicing.</li>
         </ol>
         <div class="enquiry-contact">
           <h3>Need an answer right away?</h3>
@@ -249,7 +384,7 @@
       <p style="margin-top:18px"><button class="btn btn-ghost" type="button" id="again-btn">Send another enquiry</button></p>
     </div>
 
-    <script id="booking-config" type="application/json">{"locale":"en","services":{"branchTransfer":{"gated":false},"homeDelivery":{"gated":false},"purchasedCarPickup":{"gated":false},"workshopTransfer":{"gated":false},"relocation":{"gated":false},"personalDriver":{"gated":false},"business":{"gated":false}},"aliases":{"inspection":"workshopTransfer","workshop":"workshopTransfer","tyre":"workshopTransfer","wash":"workshopTransfer","glass":"workshopTransfer","pickupReturn":"relocation","dealer":"relocation","journey":"personalDriver","safeRideHome":"personalDriver","airport":"personalDriver"},"copy":{"required":"This field is required.","badEmail":"Please check the email address.","badPhone":"Please check the phone number.","errorTitle":"Please check these fields","submitting":"Sending…","submit":"Request a quote","failed":"We could not send your enquiry. Please try again or call +358 50 357 2836.","doneRef":"Your reference","gatedTitle":"This service cannot be booked yet","gatedBody":"This service is not bookable yet. We will tell you as soon as it opens - leave your details by phone or email."},"endpoint":"/api/bookings"}</script>
+    <script id="booking-config" type="application/json">{"locale":"en","services":{"branchTransfer":{"gated":false,"type":"general_move"},"homeDelivery":{"gated":false,"type":"general_move"},"purchasedCarPickup":{"gated":false,"type":"general_move"},"workshopTransfer":{"gated":false,"type":"appointment_run"},"relocation":{"gated":false,"type":"general_move"},"personalDriver":{"gated":false,"type":"passenger"},"business":{"gated":false,"type":"business"}},"aliases":{"inspection":"workshopTransfer","workshop":"workshopTransfer","tyre":"workshopTransfer","wash":"workshopTransfer","glass":"workshopTransfer","pickupReturn":"relocation","dealer":"relocation","journey":"personalDriver","safeRideHome":"personalDriver","airport":"personalDriver"},"copy":{"required":"This field is required.","badEmail":"Please check the email address.","badPhone":"Please check the phone number.","badDate":"Choose today or a later date.","badRange":"That value is out of range.","errorTitle":"Please check these fields","submitting":"Sending…","submit":"Get my fixed-price quote","failed":"We could not send your enquiry. Please try again or call +358 50 357 2836.","doneRef":"Your reference","gatedTitle":"This service cannot be booked yet","gatedBody":"This service is not bookable yet. We will tell you as soon as it opens - leave your details by phone or email.","step2":"Transfer details","step2Journey":"Journey details","destination":"Destination address","destinationJourney":"Destination"},"endpoint":"/api/bookings"}</script>
   </div>
 </section>
 </main>
@@ -306,6 +441,6 @@
 </footer>
 
 <script src="/assets/site.js?v=5" defer></script>
-<script src="/assets/booking.js?v=4" defer></script>
+<script src="/assets/booking.js?v=5" defer></script>
 </body>
 </html>

@@ -1106,6 +1106,30 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
 }
 .enquiry-intro{font-size:var(--t-lead);line-height:1.55;color:var(--ink-700);max-width:52ch}
 .enquiry-fields{margin-top:var(--s-6)}
+/* A step is a section of the one form, not a page of three: a rule and a
+   numeral, no nested boxes. */
+.enq-step{border:0;padding:0;margin:0}
+.enq-step + .enq-step{margin-top:var(--s-8);padding-top:var(--s-8);border-top:1px solid var(--ink-300)}
+.enq-step > legend{
+  display:flex;align-items:center;gap:var(--s-3);padding:0;float:left;width:100%;
+  font-size:var(--t-h4);font-weight:600;letter-spacing:-.01em;margin-bottom:var(--s-2);
+}
+.enq-num{
+  display:grid;place-items:center;width:26px;height:26px;border-radius:50%;flex:none;
+  background:var(--navy-900);color:#fff;font-size:var(--t-caption);font-weight:600;
+}
+/* A floated legend leaves the fields to clear it. */
+.enq-step > legend + *{clear:both}
+/* Help text that belongs to a checkbox, lined up with its label rather than
+   with the box. */
+.help-indent{display:block;margin-top:6px;padding-left:34px;font-size:var(--t-caption);color:var(--ink-500);line-height:1.5}
+.enq-step .form-check{margin-top:var(--s-4)}
+
+.enquiry-trust{
+  margin-top:var(--s-4);text-align:center;font-size:var(--t-caption);font-weight:600;
+  letter-spacing:.02em;color:var(--ink-700);
+}
+
 .enquiry-send{margin-top:var(--s-8);padding-top:var(--s-6);border-top:1px solid var(--ink-300)}
 .enquiry-send .btn{width:100%}
 .enquiry-note{margin-top:var(--s-4);font-size:var(--t-small);color:var(--ink-500);line-height:1.6}
@@ -1202,8 +1226,11 @@ input[aria-invalid="true"],select[aria-invalid="true"],textarea[aria-invalid="tr
 .choice input:checked+span{border-color:var(--brand);background:var(--brand-soft);box-shadow:inset 0 0 0 1px var(--brand)}
 .choice input:focus-visible+span{outline:2px solid var(--brand);outline-offset:3px}
 .checks{display:grid;gap:var(--s-3);margin-top:var(--s-4)}
-.form-check{display:grid;grid-template-columns:22px 1fr;gap:var(--s-3);align-items:start;font-size:var(--t-small);color:var(--ink-700);line-height:1.55;cursor:pointer}
-.form-check input{width:20px;height:20px;margin-top:2px;accent-color:var(--brand);cursor:pointer}
+/* The whole label is the target, and it is at least 44px tall, so the box is
+   comfortable to hit on a phone without being an oversized square. */
+.form-check{display:grid;grid-template-columns:24px 1fr;gap:var(--s-3);align-items:center;min-height:44px;
+  font-size:var(--t-small);color:var(--ink-700);line-height:1.55;cursor:pointer}
+.form-check input{width:24px;height:24px;accent-color:var(--brand);cursor:pointer}
 
 /* Who the provider is, where we drive, how to reach a person. */
 .trust-cards{display:grid;gap:var(--s-6);grid-template-columns:repeat(3,minmax(0,1fr))}

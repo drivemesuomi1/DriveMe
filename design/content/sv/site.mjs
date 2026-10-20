@@ -111,8 +111,8 @@ export const trustStrip = [
 ];
 
 export const howItWorks = [
-  { t: 'Begär offert', d: 'Berätta ditt namn, dina kontaktuppgifter och vilken tjänst du behöver. Formuläret tar under en minut.' },
-  { t: 'Vi hör av oss inom 24 timmar', d: 'Vi går igenom adresserna, bilens uppgifter och tidtabellen och bekräftar ett fast pris. En offertförfrågan bekräftar ännu ingen bokning.' },
+  { t: 'Begär offert', d: 'Berätta rutten, önskad tidpunkt och bilen. Formuläret tar ungefär en minut.' },
+  { t: 'Du får ett fast pris inom 24 timmar', d: 'Vi läser din förfrågan och skickar priset per e-post. En offertförfrågan bekräftar ännu ingen bokning.' },
   { t: 'Föraren hämtar bilen', d: 'Vi fotograferar skick, mätarställning och bränsle- eller laddningsnivå. Du behöver inte åka med.' },
   { t: 'Framme, eller hemma igen', d: 'Varje överlämning dokumenteras och du får besked när bilen är levererad eller tillbaka.' },
 ];

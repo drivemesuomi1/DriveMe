@@ -1,10 +1,13 @@
 /* DriveMe — booking.js
-   The enquiry form: six fields, no price, and a POST to /api/bookings.
+   The quote form: three steps, and a step 2 that changes with the service.
 
-   What it does is validate what the API validates, keep the service the
-   visitor arrived for selected, say plainly when a send fails, and show the
-   confirmation when it succeeds. There is no estimate on this page: a quote
-   is written by a person who has read the enquiry. */
+   A journey is asked how many are travelling; a transfer is asked for the
+   registration and whether the car is roadworthy; a service transfer is asked
+   for the appointment and whether the car comes back. Nobody is asked all
+   three, and nothing hidden is ever validated or sent.
+
+   No price is calculated here. The quote is written by a person who has read
+   the enquiry, which is why the form collects enough to write one. */
 (function () {
   'use strict';
 
@@ -21,7 +24,7 @@
   var C = CFG.copy;
 
   var $ = function (id) { return document.getElementById(id); };
-  var shell = document.getElementById('enquiry-shell');
+  var shell = $('enquiry-shell');
   var serviceSel = $('service');
   var errorSummary = $('error-summary');
   var submitBtn = $('submit-btn');
@@ -32,13 +35,12 @@
   var gatedKey = null;
   // Which part of the site sent the visitor here, for lead_source.
   var entry = null;
-  // What a deep link brought along that this form no longer asks for.
-  var carried = { pickup: '' };
   var touched = {};
 
   /* ---------------------------------------------------------- helpers */
   function show(el, on) { if (el) el.hidden = !on; }
   function val(id) { var e = $(id); return e ? String(e.value || '').trim() : ''; }
+  function checked(id) { var e = $(id); return !!(e && e.checked); }
 
   /**
    * A service that is not sold cannot be enquired about, so the fields are put
@@ -61,6 +63,68 @@
     show($('gate-warning'), false);
     form.classList.remove('is-gated');
     submitBtn.disabled = false;
+  }
+
+  /* ------------------------------------------- what this service needs */
+  function serviceType() {
+    var s = CFG.services[serviceSel.value];
+    return s ? s.type : null;                 // null for "" and for "other"
+  }
+
+  /* A company name is what turns this into a company enquiry, so the rest of
+     the company questions appear the moment one is typed - and stay open for
+     the corporate service, which is nothing but a company enquiry. */
+  function companyWanted() {
+    return serviceSel.value === 'business' || !!val('company_name');
+  }
+
+  /**
+   * Shows the one group of questions this service needs and hides the others.
+   * Required-ness follows visibility: a hidden field is never demanded, never
+   * marked with an asterisk and never sent.
+   */
+  function syncService() {
+    var type = serviceType();
+    var journey = type === 'passenger';
+    var move = type === 'general_move';
+    var appointment = type === 'appointment_run';
+    // A corporate enquiry or "something else" has no single route to describe,
+    // so step 2 stays available but stops insisting on one.
+    var routed = journey || move || appointment;
+
+    show($('journey-fields'), journey);
+    show($('move-fields'), move);
+    show($('appointment-fields'), appointment);
+    show($('business-fields'), companyWanted());
+
+    $('pickup_location').required = routed;
+    $('destination').required = routed;
+    $('date').required = routed;
+    // The car is the job in every one of these services, including a journey:
+    // the driver drives that car, so its transmission decides who is sent.
+    $('vehicle_details').required = routed;
+    $('passengers').required = journey;
+
+    // A journey ends somewhere rather than delivering a car to an address.
+    var destLabel = form.querySelector('label[for="destination"]');
+    if (destLabel) {
+      destLabel.firstChild.nodeValue = journey ? C.destinationJourney : C.destination;
+    }
+    var legend = form.querySelector('#step-2-legend');
+    if (legend) legend.lastChild.nodeValue = journey ? C.step2Journey : C.step2;
+
+    syncRequiredMarks();
+    // Re-check what is on screen now: a field that has just been hidden must
+    // stop being an error, and one just revealed must not be marked yet.
+    collectProblems('touched');
+  }
+
+  /* The asterisks follow the live requirement, not the markup. */
+  function syncRequiredMarks() {
+    form.querySelectorAll('.req').forEach(function (m) {
+      var el = $(m.getAttribute('data-for'));
+      m.hidden = !(el && el.required);
+    });
   }
 
   /* ------------------------------------------------------- validation */
@@ -91,6 +155,16 @@
     return lab ? lab.textContent.replace(/\*\s*$/, '').trim() : el.id;
   }
 
+  /** On screen, and therefore the visitor's problem to fix. */
+  function visible(el) {
+    return !!(el && el.offsetParent !== null && !el.disabled);
+  }
+
+  function today() {
+    var d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
   /**
    * Everything still standing between the visitor and a sent enquiry. `mark`
    * decides whether the fields are painted red as well: 'touched' marks only
@@ -109,6 +183,7 @@
     if (mark) clearAllErrors();
 
     form.querySelectorAll('input[required], select[required]').forEach(function (el) {
+      if (!visible(el)) return;
       if (!String(el.value || '').trim()) note(el, C.required);
     });
 
@@ -118,6 +193,19 @@
     if (val('customer_phone') && val('customer_phone').replace(/\D/g, '').length < 6) {
       note($('customer_phone'), C.badPhone);
     }
+    // A date in the past is a typo, not a booking.
+    if (val('date') && visible($('date'))) {
+      var parts = val('date').split('-');
+      var picked = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      if (picked < today()) note($('date'), C.badDate);
+    }
+    form.querySelectorAll('input[type="number"]').forEach(function (el) {
+      if (!visible(el) || !String(el.value || '').trim()) return;
+      var n = parseFloat(el.value);
+      var min = el.getAttribute('min');
+      var max = el.getAttribute('max');
+      if (isNaN(n) || (min !== null && n < +min) || (max !== null && n > +max)) note(el, C.badRange);
+    });
 
     return problems;
   }
@@ -165,24 +253,48 @@
 
   /* ----------------------------------------------------------- submit */
   function payload() {
+    var type = serviceType();
+    var journey = type === 'passenger';
+    var move = type === 'general_move';
+    var appointment = type === 'appointment_run';
     var company = val('company_name');
+    var date = val('date');
+    var time = val('time');
+
+    // Only what this service actually asked. A hidden field keeps whatever it
+    // happened to hold, and sending that would describe a job nobody ordered.
     return {
       language: CFG.locale,
       service: serviceSel.value,
-      // The enquiry says who is asking and what they want. The route, the
-      // vehicle, the handover and the declarations are settled on the call
-      // back, so nothing here pretends to know them.
-      passenger_count: 0,
+      pickup_location: val('pickup_location') || null,
+      destination: val('destination') || null,
+      // A naive local datetime; the server reads it as Helsinki wall-clock.
+      scheduled_for: date ? date + 'T' + (time || '09:00') : null,
+      vehicle_details: val('vehicle_details') || null,
+      vehicle_plate: move ? (val('vehicle_plate') || null) : null,
+      // Only a move asks, so only a move can answer. Unchecked is a real
+      // answer - it is how ops knows to offer a towing partner instead of a
+      // driver. The sentence is sent as well as the flag, so the fact still
+      // reaches ops on a database that has not had migration 0012 yet.
+      roadworthy: move ? checked('roadworthy') : null,
+      vehicle_notes: move && !checked('roadworthy')
+        ? 'Customer says the car is NOT roadworthy or is off the road' : null,
+      appointment_time: appointment ? (val('appointment_time') || null) : null,
+      return_needed: appointment ? val('return_needed') === 'yes' : null,
+      shape: appointment ? (val('return_needed') === 'yes' ? 'pickupReturn' : 'oneWay') : null,
+      // A move carries nobody; a journey carries the people who asked for it.
+      passenger_count: journey ? (parseInt(val('passengers'), 10) || 1) : 0,
+      extra_stops: journey ? (val('extra_stops') || null) : null,
       customer_name: val('customer_name'),
       customer_phone: val('customer_phone'),
       customer_email: val('customer_email'),
       customer_type: company ? 'company' : 'person',
       company_name: company || null,
+      business_id: company ? (val('business_id') || null) : null,
+      volume: company ? (val('volume') || null) : null,
+      recurrence: company ? (val('recurrence') || null) : null,
       notes: val('notes') || null,
       offer_code: val('offer_code').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 20) || null,
-      // Carried through when a homepage or campaign link brought one along, so
-      // the detail is not lost between the two pages.
-      pickup_location: carried.pickup || null,
       lead_source: leadSource(),
     };
   }
@@ -224,9 +336,7 @@
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
       .then(function (res) {
         if (!res.ok || !res.data.success) {
-          if (res.data && res.data.field) {
-            setError(res.data.field, res.data.error || C.failed);
-          }
+          if (res.data && res.data.field) setError(res.data.field, res.data.error || C.failed);
           throw new Error((res.data && res.data.error) || C.failed);
         }
         finish(res.data.reference);
@@ -234,8 +344,7 @@
       .catch(function (err) {
         // Everything the visitor typed stays exactly where it is: an error
         // must never cost somebody the form they have just filled in.
-        var ul = errorSummary.querySelector('ul');
-        ul.innerHTML = '<li>' + (err.message || C.failed) + '</li>';
+        errorSummary.querySelector('ul').innerHTML = '<li>' + (err.message || C.failed) + '</li>';
         show(errorSummary, true);
         errorSummary.focus();
       })
@@ -252,11 +361,17 @@
       show(errorSummary, false);
       show(shell, true);
       show(donePanel, false);
+      syncService();
       form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
 
   /* ------------------------------------------------------------ wiring */
+  serviceSel.addEventListener('change', function () { leaveGated(); syncService(); });
+  var companyField = $('company_name');
+  if (companyField) {
+    companyField.addEventListener('input', function () { show($('business-fields'), companyWanted()); });
+  }
   // Leaving a field is the moment its emptiness becomes a fact worth flagging.
   form.addEventListener('focusout', function (e) {
     if (!e.target || !e.target.id) return;
@@ -280,10 +395,14 @@
     });
   }
 
+  // Today is the earliest sensible collection date.
+  var dateInput = $('date');
+  if (dateInput && !dateInput.min) dateInput.min = new Date().toISOString().slice(0, 10);
+
   /* Deep links from the homepage, the service pages and the campaign. Each
      language links in its own words, and every language's spelling is accepted
      here so a shared or edited link keeps working:
-     /pyyda-tarjous/?palvelu=homeDelivery&lahde=home_hero
+     /pyyda-tarjous/?palvelu=homeDelivery&nouto=00100&lahde=home_hero
      /en/request-a-quote/?service=homeDelivery
      /sv/begar-offert/?tjanst=homeDelivery&kalla=home_hero */
   var params = new URLSearchParams(location.search);
@@ -294,7 +413,11 @@
     }
     return null;
   };
-  carried.pickup = (param('nouto', 'pickup', 'hamtning') || '').slice(0, 300);
+  var wantedPickup = param('nouto', 'pickup', 'hamtning');
+  var wantedDate = param('pvm', 'date', 'datum');
+  if (wantedPickup) $('pickup_location').value = wantedPickup.slice(0, 300);
+  if (wantedDate && /^\d{4}-\d{2}-\d{2}$/.test(wantedDate)) $('date').value = wantedDate;
+
   var wanted = param('palvelu', 'service', 'tjanst');
   if (wanted && CFG.aliases && CFG.aliases[wanted]) wanted = CFG.aliases[wanted];
   var source = (param('lahde', 'source', 'kalla') || '').replace(/[^\w:-]/g, '').slice(0, 40);
@@ -325,4 +448,6 @@
       serviceSel.value = 'other';
     }
   }
+
+  syncService();
 }());
