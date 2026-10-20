@@ -69,14 +69,15 @@ export const form = {
   recurrenceOnce: 'En enskild flytt',
   recurrenceRecurring: 'Återkommande samarbete',
 
-  notes: 'Mer information',
-  notesHelp: 'Frivilligt. Berätta om något avviker från det vanliga - nyckelöverlämning, port- eller garagekod eller ett känt fel.',
+  notes: 'Mer information / vad vill du att vi gör?',
+  notesHelp: 'Frivilligt. Berätta fritt om något avviker från det vanliga - nyckelöverlämning, port- eller garagekod, ett känt fel eller något annat önskemål.',
   offerToggle: 'Jag har en förmånskod',
   offerCode: 'Förmånskod',
   offerCodeHelp: 'Frivillig. Vi beaktar kampanjkoden i offerten.',
 
   submit: 'Begär fast offert',
   submitting: 'Skickar…',
+  promise: 'Vi återkommer med en offert inom 24 timmar.',
   trustLine: 'Kostnadsfri offert · Utan förbindelse · Transparent prissättning',
   requiredNote: 'Fält märkta med * är obligatoriska.',
   enquiryNote: 'En offertförfrågan bekräftar ingen bokning. Flytten avtalas först när du godkänner offerten.',

@@ -96,14 +96,15 @@ const COPY = {
     recurrenceOnce: 'Kertaluonteinen siirto',
     recurrenceRecurring: 'Toistuvaa yhteistyötä',
 
-    notes: 'Lisätiedot',
-    notesHelp: 'Vapaaehtoinen. Kerro, jos jokin poikkeaa tavallisesta - esimerkiksi avainten luovutus, portti- tai parkkihallikoodi tai tiedossa oleva vika.',
+    notes: 'Lisätiedot / mitä haluaisit meidän tekevän?',
+    notesHelp: 'Vapaaehtoinen. Kerro vapaasti, jos jokin poikkeaa tavallisesta - avainten luovutus, portti- tai parkkihallikoodi, tiedossa oleva vika tai muu toive.',
     offerToggle: 'Minulla on etukoodi',
     offerCode: 'Etukoodi',
     offerCodeHelp: 'Vapaaehtoinen. Huomioimme kampanjakoodin tarjouksessa.',
 
     submit: 'Pyydä kiinteä tarjous',
     submitting: 'Lähetetään…',
+    promise: 'Vastaamme tarjouksella 24 tunnin kuluessa.',
     trustLine: 'Maksuton tarjous · Ei sitoumusta · Läpinäkyvä hinnoittelu',
     requiredNote: 'Tähdellä * merkityt kentät ovat pakollisia.',
     enquiryNote: 'Tarjouspyyntö ei vahvista varausta. Siirto sovitaan vasta, kun hyväksyt tarjouksen.',
@@ -195,14 +196,15 @@ const COPY = {
     recurrenceOnce: 'A one-time transfer',
     recurrenceRecurring: 'Recurring work',
 
-    notes: 'Anything else',
-    notesHelp: 'Optional. Tell us if something is out of the ordinary - key handover, a gate or garage code, or a known fault.',
+    notes: 'Anything else / what would you like us to do?',
+    notesHelp: 'Optional. Tell us if anything is out of the ordinary - key handover, a gate or garage code, a known fault or any other wish.',
     offerToggle: 'I have an offer code',
     offerCode: 'Offer code',
     offerCodeHelp: 'Optional. We apply a campaign code to the quote.',
 
     submit: 'Get my fixed-price quote',
     submitting: 'Sending…',
+    promise: 'We will get back to you with an offer within 24 hours.',
     trustLine: 'Free quotation · No obligation · Transparent pricing',
     requiredNote: 'Fields marked * are required.',
     enquiryNote: 'An enquiry does not confirm a booking. The transfer is agreed once you accept the quote.',
@@ -407,6 +409,7 @@ export function bookingForm(locale) {
 
         <div class="enquiry-send">
           <button class="btn btn-primary btn-lg" type="submit" id="submit-btn">${esc(c.submit)} <span class="arrow" aria-hidden="true">→</span></button>
+          <p class="enquiry-promise">${esc(c.promise)}</p>
           <p class="enquiry-trust">${esc(c.trustLine)}</p>
           <p class="enquiry-note" id="submit-hint">${esc(c.enquiryNote)}</p>
         </div>

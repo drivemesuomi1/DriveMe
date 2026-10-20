@@ -206,6 +206,13 @@ test('the quote form asks for the job, in three steps, and quotes nothing', asyn
       `${locale}: the send button is not the one the client asked for`);
     assert.ok(html.includes(escapeHtml(bookingCopy[locale].trustLine)),
       `${locale}: the free-quote line under the button is missing`);
+    // The 24-hour promise, at the moment of decision rather than only in the
+    // side panel (client, 20 Oct 2026).
+    assert.ok(html.includes(escapeHtml(bookingCopy[locale].promise)),
+      `${locale}: the 24-hour promise is not under the button`);
+    assert.match(html, /<p class="enquiry-promise">/, `${locale}: the promise is not where it belongs`);
+    // And the free-text note the customer can always fall back on.
+    assert.match(html, /<textarea id="notes"/, `${locale}: there is no note field`);
   }
 });
 
