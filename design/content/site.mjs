@@ -37,6 +37,13 @@ export const brand = {
   businessId: '3631044-9',
   // The parent company, as the footer names it.
   group: 'Mansio Group',
+  /* The profiles DriveMe actually posts on. One list: the footer renders it
+     and the LocalBusiness schema declares it as sameAs, so a new channel is
+     added in one place. */
+  social: [
+    { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61595698043597' },
+    { key: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/drivemefinland/' },
+  ],
 };
 
 /**

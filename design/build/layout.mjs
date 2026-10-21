@@ -278,6 +278,22 @@ function servicesMenu(locale, navItem) {
   </div>`;
 }
 
+/* Brand glyphs, drawn solid rather than in the site's outline style: a
+   half-remembered outline of someone else's logo is harder to recognise than
+   the mark itself, and these two are only recognisable as marks. */
+const SOCIAL_ICONS = {
+  facebook: '<path d="M14 21v-8h2.7l.4-3.1H14V7.9c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.2H8v3.1h2.7V21H14Z"/>',
+  instagram: '<path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.3 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .3-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.3-1-.4-2.2-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.3-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.3 2.2-.4 1.3-.1 1.7-.1 4.9-.1Zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.2.8-.4.3-.6.7-.8 1.2-.2.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.2.3.4.7.6 1.2.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.2-.8.4-.3.6-.7.8-1.2.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.7-.4-2.1a3.2 3.2 0 0 0-.8-1.2 3.2 3.2 0 0 0-1.2-.8c-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4Zm5.2-3.2a1.2 1.2 0 1 1 0 2.3 1.2 1.2 0 0 1 0-2.3Z"/>',
+};
+
+function socialLinks() {
+  if (!brand.social || !brand.social.length) return '';
+  return `<ul class="foot-social">${brand.social.map((s) => `<li><a href="${s.href}"
+          aria-label="DriveMe ${esc(s.label)}" title="${esc(s.label)}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true">${SOCIAL_ICONS[s.key]}</svg>
+        </a></li>`).join('')}</ul>`;
+}
+
 function footer(locale) {
   const f = footerContent[locale];
   const t = ui[locale];
@@ -308,6 +324,7 @@ function footer(locale) {
           <div><dt>${esc(t.generalEmailLabel)}</dt><dd><a href="mailto:${brand.email}">${esc(brand.email)}</a></dd></div>
           <div><dt>${esc(t.serviceEmailLabel)}</dt><dd><a href="mailto:${brand.serviceEmail}">${esc(brand.serviceEmail)}</a></dd></div>
         </dl>
+        ${socialLinks()}
         <p class="foot-area">${esc(words[locale].cities.join(' · '))}</p>
       </div>
       ${cols}
@@ -353,6 +370,8 @@ export function organizationSchema() {
     description: 'DriveMe noutaa asiakkaan ajokuntoisen auton ja ajaa sen sovittuun osoitteeseen, katsastukseen, huoltoon, renkaanvaihtoon tai pesuun pääkaupunkiseudulla. Asiakas ei matkusta autossa.',
     priceRange: '€€',
     ...(brand.businessId ? { taxID: brand.businessId } : {}),
+    // The profiles are the same organisation, not three namesakes.
+    ...(brand.social && brand.social.length ? { sameAs: brand.social.map((s) => s.href) } : {}),
     knowsLanguage: LOCALES,
     contactPoint: [{
       '@type': 'ContactPoint',

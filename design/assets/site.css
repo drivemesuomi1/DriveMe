@@ -1064,6 +1064,19 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
   display:grid;gap:3px;font-size:var(--t-caption);line-height:1.5;color:var(--on-navy-2);
 }
 .foot-legal span:first-child{font-weight:600;color:#fff;letter-spacing:.01em}
+/* Social: quiet circular buttons, the same size as a comfortable touch
+   target, lit by the brand colour on hover. */
+/* Specific enough to beat `.foot-grid ul`, which lays the link columns out
+   as a grid and would otherwise stack these two on top of each other. */
+.foot-grid .foot-social{list-style:none;display:flex;gap:var(--s-3);margin-top:var(--s-6)}
+.foot-social a{
+  display:grid;place-items:center;width:44px;height:44px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.18);color:var(--on-navy-2);
+  transition:background var(--swift),border-color var(--swift),color var(--swift);
+}
+.foot-social a:hover{background:var(--brand);border-color:var(--brand);color:#fff}
+.foot-social a:focus-visible{outline:2px solid var(--brand-on-navy,#fff);outline-offset:3px}
+.foot-social svg{width:20px;height:20px;fill:currentColor;stroke:none}
 .foot-area{margin-top:var(--s-6)}
 .foot-bottom{
   margin-top:var(--s-12);padding-top:var(--s-6);border-top:1px solid var(--navy-line);

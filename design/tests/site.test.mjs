@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 
 import { allPages, fileFor, url, serviceUrl, routes } from '../build/routes.mjs';
 import { services } from '../content/services.mjs';
-import { ui, words, nav, LOCALES } from '../content/site.mjs';
+import { brand, ui, words, nav, LOCALES } from '../content/site.mjs';
 import { offer, OFFER, offerExpired } from '../content/offer.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
 import { PRODUCTS, SERVICE_PRODUCTS } from '../api/_lib/pricing.js';
@@ -512,6 +512,26 @@ test('the request form takes an offer code, optionally, in every language', asyn
     assert.match(html, /id="offer-toggle" aria-expanded="false" aria-controls="offer-field"/,
       `${locale} offer code field cannot be opened`);
   }
+});
+
+test('every page footer links the social profiles, and the schema claims them', async () => {
+  for (const p of pages) {
+    const html = await read(fileFor(p.path));
+    for (const s of brand.social) {
+      assert.ok(html.includes(`href="${s.href}"`), `${p.path} footer does not link ${s.label}`);
+    }
+    // Opened in a new tab, and never handed the opener window.
+    assert.match(html, /class="foot-social"/, `${p.path} has no social row`);
+    assert.equal(/foot-social[\s\S]{0,400}target="_blank"(?![^>]*rel="noopener")/.test(html), false,
+      `${p.path} opens a social profile without rel="noopener"`);
+  }
+  // The same two addresses, told to search engines as one organisation.
+  const home = await read(fileFor(url('home', 'fi')));
+  const json = JSON.parse(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/.exec(home)[1]);
+  const biz = [].concat(json).find((n) => n['@type'] === 'LocalBusiness');
+  assert.deepEqual(biz.sameAs, brand.social.map((s) => s.href), 'the schema does not claim the profiles');
+  // Nothing plain-http on an https page.
+  for (const s of brand.social) assert.match(s.href, /^https:\/\//, `${s.label} is not an https link`);
 });
 
 test('the header marks the section the page actually belongs to', async () => {
