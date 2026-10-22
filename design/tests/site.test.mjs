@@ -550,6 +550,10 @@ test('the blog page carries the widget, and the policy lets it run', async () =>
       assert.ok((directives[directive] || []).includes(blogEmbed.origin),
         `${cfg}: ${directive} does not allow ${blogEmbed.origin}`);
     }
+    // The articles' featured images come from Soro's storage bucket, not from
+    // its own domain. Without this the post renders with a broken image.
+    assert.ok((directives['img-src'] || []).includes('https://*.supabase.co'),
+      `${cfg}: img-src does not allow the article images`);
   }
 });
 
