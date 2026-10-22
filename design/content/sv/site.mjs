@@ -146,6 +146,7 @@ export const footer = {
     { title: 'Andra tjänster', keys: ['business', 'personalDriver'] },
   ],
   legalLinks: [
+    { label: 'Blogg', href: '/sv/blogg/' },
     { label: 'Servicevillkor', href: '/sv/villkor/' },
     { label: 'Avbokningsvillkor', href: '/sv/villkor/#avbokning' },
     { label: 'Dataskydd', href: '/sv/villkor/#dataskydd' },

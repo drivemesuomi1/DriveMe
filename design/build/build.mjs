@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { ORIGIN, LOCALES, brand, ui, words, nav, menuGroups, howItWorks, trustStrip } from '../content/site.mjs';
 import { services, byKey } from '../content/services.mjs';
 import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
-import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking } from '../content/pages.mjs';
+import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking, blog } from '../content/pages.mjs';
 import { offer, OFFER, offerExpired } from '../content/offer.mjs';
 import { page, esc, serviceSchema, breadcrumbSchema, faqSchema, HREFLANG } from './layout.mjs';
 import { url, serviceUrl, allPages, fileFor } from './routes.mjs';
@@ -772,6 +772,44 @@ ${ctaBand(locale)}`;
 }
 
 /* ========================================================== booking */
+/* ============================================================= the blog
+   Soro publishes the articles into #soro-blog with a script of its own, so
+   this page is a frame around someone else's widget: heading, a line saying
+   what the blog is for, the container, and a way back to the quote form.
+
+   The container is not left empty. A widget that is disabled, blocked or
+   still empty would otherwise leave a blank page under a heading, and the
+   visitor would read that as a broken site rather than as "no posts yet". */
+function renderBlog(locale) {
+  const c = blog[locale];
+  const t = ui[locale];
+  const body = `
+<section class="page-head">
+  <div class="wrap page-head-inner">
+    ${crumbs([{ label: t.breadcrumbHome, href: url('home', locale) }, { label: plain(c.h1) }])}
+    <h1>${fancy(c.h1)}</h1>
+    <p class="lead">${esc(c.lead)}</p>
+    ${c.note ? `<p class="hint page-head-note">${esc(c.note)}</p>` : ''}
+  </div>
+</section>
+<section class="sec">
+  <div class="wrap">
+    <div id="soro-blog" class="blog-feed"><p class="blog-pending">${esc(c.pending)}</p></div>
+    <script src="${brand.blogEmbed.origin}/api/embed/${brand.blogEmbed.id}" defer></script>
+  </div>
+</section>
+${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody })}`;
+
+  return page({
+    id: 'blog', locale, navKey: null,
+    title: c.title, description: c.description, body,
+    schema: [breadcrumbSchema([
+      { label: t.breadcrumbHome, href: url('home', locale) },
+      { label: plain(c.h1), href: url('blog', locale) },
+    ])],
+  });
+}
+
 function renderBooking(locale) {
   const c = booking[locale];
   const t = ui[locale];
@@ -976,6 +1014,7 @@ async function main() {
     await emit(url('contact', locale), renderContact(locale));
     await emit(url('booking', locale), renderBooking(locale));
     await emit(url('offer', locale), renderOffer(locale));
+    await emit(url('blog', locale), renderBlog(locale));
     for (const s of services) {
       await emit(serviceUrl(s.key, locale), renderService(s, locale));
     }

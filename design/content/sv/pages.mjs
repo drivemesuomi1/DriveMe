@@ -405,6 +405,18 @@ export const contact = {
   areaNote: 'Längre flyttar prissätter vi från fall till fall.',
 };
 
+export const blog = {
+  slug: 'sv/blogg',
+  title: 'Blogg: bilflyttar och logistik i bilbranschen | DriveMe',
+  description: 'Artiklar om bilflyttar, serviceflyttar och logistiken i bilbranschen i huvudstadsregionen. DriveMes blogg.',
+  h1: 'DriveMes *blogg*',
+  lead: 'Vi skriver om bilflyttar, serviceflyttar och vardagen i bilbranschen i huvudstadsregionen - vad det innebär att beställa en flytt och vad som är värt att veta på förhand.',
+  pending: 'Artiklarna dyker upp här. Syns ingen lista, uppdatera sidan om en stund.',
+  note: 'Artiklarna publiceras på finska.',
+  ctaTitle: 'Behöver du en flytt *nu*?',
+  ctaBody: 'Berätta rutten, tidpunkten och bilen, så skickar vi ett fast pris inom 24 timmar.',
+};
+
 export const booking = {
   slug: 'sv/begar-offert',
   title: 'Begär offert på en bilflytt | DriveMe',

@@ -514,6 +514,45 @@ test('the request form takes an offer code, optionally, in every language', asyn
   }
 });
 
+test('the blog page carries the widget, and the policy lets it run', async () => {
+  const { blogEmbed } = brand;
+  for (const locale of LOCALES) {
+    const html = await read(fileFor(url('blog', locale)));
+    // The container the widget fills, and the script that fills it.
+    assert.match(html, /<div id="soro-blog"/, `${locale}: no widget container`);
+    assert.ok(html.includes(`${blogEmbed.origin}/api/embed/${blogEmbed.id}`),
+      `${locale}: the embed script is missing or points elsewhere`);
+    // Never an empty page under a heading: the container says so itself.
+    assert.match(html, /<p class="blog-pending">/, `${locale}: nothing stands in for an empty feed`);
+    // An ordinary indexable page, linked from the footer.
+    assert.ok(html.includes(`<link rel="canonical" href="https://driveme.fi${url('blog', locale)}">`),
+      `${locale}: the blog has no canonical`);
+    assert.equal(/<meta name="robots"[^>]*noindex/.test(html), false, `${locale}: the blog is noindexed`);
+  }
+  const xml = await read('sitemap.xml');
+  for (const locale of LOCALES) {
+    assert.ok(xml.includes(`<loc>https://driveme.fi${url('blog', locale)}</loc>`), `${locale} blog is missing from the sitemap`);
+  }
+  // A strict CSP silently blocks a third-party script, and the page would look
+  // fine in the editor and empty on the web. Both hosts must allow it.
+  for (const cfg of ['netlify.toml', 'vercel.json']) {
+    const text = await read(cfg);
+    // netlify.toml writes `Content-Security-Policy = "…"`, vercel.json writes
+    // it as a key/value pair, so the policy is found by its own first
+    // directive rather than by whatever precedes it.
+    const policy = /"(default-src [^"]+)"/.exec(text);
+    assert.ok(policy, `${cfg} has no policy to check`);
+    const directives = Object.fromEntries(policy[1].split(';').map((d) => {
+      const parts = d.trim().split(/\s+/);
+      return [parts[0], parts.slice(1)];
+    }));
+    for (const directive of ['script-src', 'connect-src', 'style-src', 'img-src']) {
+      assert.ok((directives[directive] || []).includes(blogEmbed.origin),
+        `${cfg}: ${directive} does not allow ${blogEmbed.origin}`);
+    }
+  }
+});
+
 test('every page footer links the social profiles, and the schema claims them', async () => {
   for (const p of pages) {
     const html = await read(fileFor(p.path));

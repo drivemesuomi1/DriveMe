@@ -37,6 +37,12 @@ export const brand = {
   businessId: '3631044-9',
   // The parent company, as the footer names it.
   group: 'Mansio Group',
+  /* The Soro blog widget: one feed, embedded on the blog page in every
+     language. Changing the id here changes every page at once. */
+  blogEmbed: {
+    id: '6b051979-2cf5-4d49-972c-2efc869762e0',
+    origin: 'https://app.trysoro.com',
+  },
   /* The profiles DriveMe actually posts on. One list: the footer renders it
      and the LocalBusiness schema declares it as sameAs, so a new channel is
      added in one place. */
@@ -340,6 +346,7 @@ export const footer = {
       { title: 'Muut palvelut', keys: ['business', 'personalDriver'] },
     ],
     legalLinks: [
+      { label: 'Blogi', href: '/blogi/' },
       { label: 'Palveluehdot', href: '/ehdot/' },
       { label: 'Peruutusehdot', href: '/ehdot/#peruutus' },
       { label: 'Tietosuoja', href: '/ehdot/#tietosuoja' },
@@ -357,6 +364,7 @@ export const footer = {
       { title: 'Other services', keys: ['business', 'personalDriver'] },
     ],
     legalLinks: [
+      { label: 'Blog', href: '/en/blog/' },
       { label: 'Terms of service', href: '/en/terms/' },
       { label: 'Cancellation', href: '/en/terms/#cancellation' },
       { label: 'Privacy', href: '/en/terms/#privacy' },

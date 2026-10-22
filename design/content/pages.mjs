@@ -838,6 +838,34 @@ export const contact = {
 };
 
 /* -------------------------------------------------------------------------
+ * Blog - articles published through the Soro widget
+ * ---------------------------------------------------------------------- */
+export const blog = {
+  fi: {
+    slug: 'blogi',
+    title: 'Blogi: autonsiirrot ja autoalan logistiikka | DriveMe',
+    description: 'Artikkeleita autonsiirroista, huoltosiirroista ja autoalan logistiikasta pääkaupunkiseudulla. DriveMen blogi.',
+    h1: 'DriveMen *blogi*',
+    lead: 'Kirjoitamme autonsiirroista, huoltosiirroista ja autoalan arjesta pääkaupunkiseudulla - siitä, mitä siirron tilaaminen käytännössä vaatii ja mitä kannattaa tietää etukäteen.',
+    // Shown until the widget has articles to put in its place.
+    pending: 'Artikkelit ilmestyvät tähän. Jos lista ei näy, päivitä sivu hetken kuluttua.',
+    ctaTitle: 'Tarvitsetko siirron *nyt*?',
+    ctaBody: 'Kerro reitti, ajankohta ja auto, niin lähetämme kiinteän hinnan 24 tunnin kuluessa.',
+  },
+  en: {
+    slug: 'en/blog',
+    title: 'Blog: vehicle transfers and motor-trade logistics | DriveMe',
+    description: 'Articles on vehicle transfers, service transfers and motor-trade logistics in the Helsinki capital region. The DriveMe blog.',
+    h1: 'The DriveMe *blog*',
+    lead: 'We write about vehicle transfers, service transfers and the day-to-day of the motor trade in the capital region - what ordering a transfer actually involves, and what is worth knowing in advance.',
+    pending: 'Articles appear here. If the list is empty, refresh the page in a moment.',
+    note: 'Articles are published in Finnish.',
+    ctaTitle: 'Need a transfer *now*?',
+    ctaBody: 'Tell us the route, the timing and the car, and we send a fixed price within 24 hours.',
+  },
+};
+
+/* -------------------------------------------------------------------------
  * Booking request flow (§7)
  * ---------------------------------------------------------------------- */
 export const booking = {
@@ -868,5 +896,6 @@ Object.assign(faqPage, { sv: SV.faqPage });
 Object.assign(terms, { sv: SV.terms });
 Object.assign(contact, { sv: SV.contact });
 Object.assign(booking, { sv: SV.booking });
+Object.assign(blog, { sv: SV.blog });
 
 export { CANCELLATION };

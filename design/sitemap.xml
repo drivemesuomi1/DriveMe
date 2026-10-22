@@ -244,6 +244,33 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://driveme.fi/blogi/</loc>
+    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/blogi/"/>
+    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/blog/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/blogg/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/blogi/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://driveme.fi/en/blog/</loc>
+    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/blogi/"/>
+    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/blog/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/blogg/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/blogi/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://driveme.fi/sv/blogg/</loc>
+    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/blogi/"/>
+    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/blog/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/blogg/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/blogi/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://driveme.fi/toimipisteiden-valinen-siirto/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/toimipisteiden-valinen-siirto/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/branch-to-branch-transfer/"/>

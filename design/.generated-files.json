@@ -1,7 +1,9 @@
 [
   "404.html",
   "auton-siirtopalvelu/index.html",
+  "blogi/index.html",
   "ehdot/index.html",
+  "en/blog/index.html",
   "en/branch-to-branch-transfer/index.html",
   "en/contact/index.html",
   "en/faq/index.html",
@@ -34,6 +36,7 @@
   "sv/begar-offert/index.html",
   "sv/bilflytt-mellan-verksamhetsstallen/index.html",
   "sv/bilflytt/index.html",
+  "sv/blogg/index.html",
   "sv/for-foretag/index.html",
   "sv/hamtning-av-inkopt-bil/index.html",
   "sv/hemleverans/index.html",

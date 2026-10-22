@@ -1068,6 +1068,12 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
    target, lit by the brand colour on hover. */
 /* Specific enough to beat `.foot-grid ul`, which lays the link columns out
    as a grid and would otherwise stack these two on top of each other. */
+/* The blog feed is rendered by Soro, so this styles the frame around it and
+   the line that stands in until there is something to show. */
+.blog-feed{min-height:220px}
+.blog-pending{color:var(--ink-500);font-size:var(--t-small);line-height:1.6}
+.page-head-note{margin-top:var(--s-4);color:var(--on-navy-2)}
+
 .foot-grid .foot-social{list-style:none;display:flex;gap:var(--s-3);margin-top:var(--s-6)}
 .foot-social a{
   display:grid;place-items:center;width:44px;height:44px;border-radius:50%;
