@@ -73,6 +73,7 @@ export const ui = {
   passengers: 'Passagerare',
   noPassengerShort: 'Inga passagerare, du åker inte med',
   withPassengers: 'Du och ditt sällskap',
+  officeLabel: 'Kontor',
   phoneLabel: 'Telefon',
   serviceEmailLabel: 'Kundtjänst',
   generalEmailLabel: 'Allmänna ärenden',

@@ -37,6 +37,16 @@ export const brand = {
   businessId: '3631044-9',
   // The parent company, as the footer names it.
   group: 'Mansio Group',
+  /* The office. One definition: the footer prints it, and the
+     LocalBusiness schema publishes it as a real postal address. `maps` uses
+     Google's documented universal URL, which opens the app on a phone and
+     the website on a desktop. */
+  office: {
+    street: 'Kuunsäde 3 A, liiketila T1',
+    postalCode: '02210',
+    city: 'Espoo',
+    maps: 'https://www.google.com/maps/search/?api=1&query=Kuuns%C3%A4de%203%20A%2C%2002210%20Espoo',
+  },
   /* The Soro blog widget: one feed, embedded on the blog page in every
      language. Changing the id here changes every page at once. */
   blogEmbed: {
@@ -149,6 +159,7 @@ export const ui = {
     allServices: 'Kaikki palvelut',
     readMore: 'Lue lisää',
     requestMove: 'Pyydä tarjous auton siirrosta',
+    officeLabel: 'Toimisto',
     phoneLabel: 'Puhelin',
     serviceEmailLabel: 'Asiakaspalvelu',
     generalEmailLabel: 'Yleiset asiat',
@@ -186,6 +197,7 @@ export const ui = {
     allServices: 'All services',
     readMore: 'Read more',
     requestMove: 'Request a quote for a transfer',
+    officeLabel: 'Office',
     phoneLabel: 'Phone',
     serviceEmailLabel: 'Customer service',
     generalEmailLabel: 'General enquiries',

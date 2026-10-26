@@ -320,6 +320,14 @@ function footer(locale) {
           <span>${esc(words[locale].companyBusinessId)}${esc(brand.businessId)}</span>
         </p>` : ''}
         <dl class="foot-contact">
+          <!-- The office first: it is the one line a visitor reads to decide
+               whether this is a real company near them. -->
+          <div><dt>${esc(t.officeLabel)}</dt><dd>
+            <a class="foot-address" href="${esc(brand.office.maps)}" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
+              <span>${esc(brand.office.street)}<br>${esc(brand.office.postalCode)} ${esc(brand.office.city)}</span>
+            </a>
+          </dd></div>
           <div><dt>${esc(t.phoneLabel)}</dt><dd><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></dd></div>
           <div><dt>${esc(t.generalEmailLabel)}</dt><dd><a href="mailto:${brand.email}">${esc(brand.email)}</a></dd></div>
           <div><dt>${esc(t.serviceEmailLabel)}</dt><dd><a href="mailto:${brand.serviceEmail}">${esc(brand.serviceEmail)}</a></dd></div>
@@ -381,7 +389,14 @@ export function organizationSchema() {
       areaServed: 'FI',
       availableLanguage: LOCALES,
     }],
-    address: { '@type': 'PostalAddress', addressLocality: brand.city, addressCountry: brand.country },
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: brand.office.street,
+      postalCode: brand.office.postalCode,
+      addressLocality: brand.office.city,
+      addressCountry: brand.country,
+    },
+    hasMap: brand.office.maps,
     areaServed: brand.coverage.map((c) => ({ '@type': 'City', name: c })),
     // What we actually sell, with the prices the pricing file computes. A
     // search engine - or an assistant answering "who drives my car to the

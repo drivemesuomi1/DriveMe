@@ -557,6 +557,29 @@ test('the blog page carries the widget, and the policy lets it run', async () =>
   }
 });
 
+test('every page footer carries the office address, linked to the map', async () => {
+  const { office } = brand;
+  for (const p of pages) {
+    const html = await read(fileFor(p.path));
+    const foot = /<footer class="site-foot">([\s\S]*?)<\/footer>/.exec(html)[1];
+    assert.ok(foot.includes(escapeHtml(office.street)), `${p.path} footer has no street address`);
+    assert.ok(foot.includes(`${office.postalCode} ${office.city}`), `${p.path} footer has no postcode and town`);
+    // One link, to the map, opened without handing over the opener window.
+    assert.ok(foot.includes(`href="${escapeHtml(office.maps)}" target="_blank" rel="noopener"`),
+      `${p.path} address is not a safe link to the map`);
+    assert.ok(foot.includes(`<dt>${escapeHtml(ui[p.locale].officeLabel)}</dt>`),
+      `${p.path} address is not labelled in ${p.locale}`);
+  }
+  // And the same address as a real postal address in the schema.
+  const home = await read(fileFor(url('home', 'fi')));
+  const json = JSON.parse(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/.exec(home)[1]);
+  const biz = [].concat(json).find((n) => n['@type'] === 'LocalBusiness');
+  assert.equal(biz.address.streetAddress, office.street, 'the schema has no street address');
+  assert.equal(biz.address.postalCode, office.postalCode, 'the schema has no postcode');
+  assert.equal(biz.address.addressLocality, office.city, 'the schema names the wrong town');
+  assert.equal(biz.hasMap, office.maps, 'the schema has no map link');
+});
+
 test('every page footer links the social profiles, and the schema claims them', async () => {
   for (const p of pages) {
     const html = await read(fileFor(p.path));

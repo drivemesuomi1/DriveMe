@@ -1057,6 +1057,19 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
 .foot-contact dt{color:var(--on-navy-2);opacity:.8}
 .foot-contact dd,.contact-list dd{margin:2px 0 0}
 .foot-contact a{color:#fff;font-weight:600;overflow-wrap:anywhere}
+/* The office address: the pin sits on the first line of the address rather
+   than centred against both, and the block is a 44px target on a phone. The
+   two lines are deliberately kept as two. */
+.foot-address{display:grid;grid-template-columns:16px 1fr;gap:var(--s-2);align-items:start;
+  padding:2px 0;min-height:44px;line-height:1.5;overflow-wrap:normal}
+.foot-address svg{width:16px;height:16px;margin-top:4px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round;color:var(--brand-on-navy,#7FB6F2);transition:color var(--swift)}
+.foot-address:hover svg{color:#fff}
+.foot-address span{font-weight:600}
+@media (max-width:860px){
+  .foot-address{min-height:48px}
+}
+
 /* Who the company is, under the logo: quiet, but legible - it is what a
    visitor checks before handing over a car. */
 .foot-legal{
