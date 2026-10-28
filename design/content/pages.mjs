@@ -19,17 +19,75 @@ const fmt = (n) => `${n} €`;
 export const home = {
   fi: {
     slug: '',
-    title: 'Autonsiirrot yrityksille ja yksityisille | DriveMe',
-    description: 'DriveMe siirtää autot toimipisteiden välillä, toimittaa myydyt autot asiakkaille ja noutaa ostoautot. Pyydä tarjous reitillesi.',
-    eyebrow: 'Ajoneuvosiirrot yrityksille ja yksityisasiakkaille',
-    h1: 'Autonsiirrot autoalan yrityksille.',
-    h1Accent: 'Autonsiirrot',
-    h1Rest: 'autoalan yrityksille.',
-    lead: 'DriveMe siirtää ajokuntoiset autot toimipisteiden välillä, toimittaa myydyt autot asiakkaille ja noutaa ostoautot myyjiltä. Hoidamme myös sovitut huoltosiirrot. Kerro reitti ja aikataulu - vahvistamme kuljettajan saatavuuden ja kiinteän hinnan ennen ajoa.',
-    primary: { label: 'Pyydä siirtotarjous', href: '/pyyda-tarjous/?lahde=home_hero' },
-    secondary: { label: 'Keskustele yrityssiirroista', href: '/yrityksille/' },
+    title: 'Kuljettajapalvelut ja autonsiirrot | DriveMe',
+    description: 'Oma kuljettaja autoosi, auto kuljettajalla tai auton siirto sovittuun osoitteeseen. Kerro tarpeesi, niin saat selkeän tarjouksen ennen varausta.',
+    eyebrow: 'Kuljettajapalvelut ja autonsiirrot',
+    h1: 'Kuljettajapalvelut ja autonsiirrot',
+    h1Accent: 'Kuljettajapalvelut',
+    h1Rest: 'ja autonsiirrot',
+    lead: 'Oma kuljettaja, auto kuljettajalla tai autosi siirto. Kerro tarpeesi - saat selkeän tarjouksen ennen varausta.',
+    primary: { label: 'Pyydä tarjous', href: '/pyyda-tarjous/?lahde=home_hero' },
+    secondary: { label: 'Soita meille', href: 'tel:+358503572836' },
     trustLine: 'Pääkaupunkiseutu ja Uusimaa. Pidemmät siirrot Suomessa sovitaan reittikohtaisesti.',
 
+    choicesTitle: 'Kolme tapaa, joilla *autamme*',
+    choices: [
+      {
+        key: 'relocation',
+        title: 'Auton siirto',
+        body: 'Noudamme autosi ja ajamme sen sovittuun osoitteeseen.',
+        href: '/pyyda-tarjous/?palvelu=relocation&lahde=home_move',
+      },
+      {
+        key: 'personalDriver',
+        title: 'Oma kuljettaja',
+        body: 'Matkusta omassa autossasi ammattikuljettajan kanssa.',
+        href: '/pyyda-tarjous/?palvelu=personalDriver&lahde=home_driver',
+      },
+      {
+        key: 'chauffeur',
+        title: 'Auto kuljettajalla',
+        body: 'Auto ja kuljettaja ryhmällesi, työpäivään tai kaupunkikierrokselle.',
+        href: '/pyyda-tarjous/?palvelu=chauffeur&lahde=home_chauffeur',
+      },
+    ],
+    businessLine: 'Autoliike, leasing- tai kalustoyhtiö? Hoidamme toimipisteiden väliset siirrot, kotiintoimitukset ja ostoautojen noudot sopimuksella.',
+
+    trustTitle: 'Mihin voit *luottaa*',
+    trustPoints: [
+      {
+        t: 'Kiinteä hinta ennen ajoa',
+        d: 'Saat tarjouksen, jossa hinta ja sisältö on eritelty. Emme veloita enempää ilman erikseen sovittua muutosta.',
+      },
+      {
+        t: 'Dokumentoitu nouto ja luovutus',
+        d: 'Aikaleimatut kuvat, mittarilukema ja kuittaus siitä, kuka auton vastaanotti ja milloin.',
+      },
+      {
+        t: 'Tunnistettava suomalainen yritys',
+        d: 'DriveMe on Mansio Group Oy:n palvelu. Y-tunnus 3631044-9, toimisto Espoossa.',
+      },
+    ],
+
+    stepsTitle: 'Näin se *etenee*',
+    bookingSteps: [
+      { t: 'Kerro tarpeesi', d: 'Reitti tai aikataulu, auto ja yhteystiedot. Lomake vie noin minuutin.' },
+      { t: 'Saat tarjouksen', d: 'Luemme pyyntösi ja lähetämme kiinteän hinnan 24 tunnin kuluessa.' },
+      { t: 'Hyväksyt ja vahvistamme', d: 'Varaus syntyy vasta, kun hyväksyt tarjouksen ja saat kirjallisen vahvistuksen.' },
+    ],
+
+    proofTitle: 'Mitä jokaisesta työstä *jää käteen*',
+    proofBody: 'Emme julkaise arvosteluja, joita meillä ei vielä ole. Sen sijaan jokaisesta ajosta jää dokumentaatio, jonka saat pyytäessäsi nähtäväksi.',
+    proofPoints: [
+      'Kuvat auton kunnosta noudossa ja luovutuksessa',
+      'Mittarilukema sekä polttoaine- tai lataustaso molemmissa päissä',
+      'Kirjattu tieto siitä, kuka auton luovutti ja kuka vastaanotti',
+      'Kirjallinen vahvistus kuljettajasta, ajasta ja hinnasta',
+    ],
+
+    faqTitle: 'Usein *kysyttyä*',
+    ctaTitle: 'Pyydä *tarjous*',
+    ctaBody: 'Kerro tarpeesi, niin lähetämme kiinteän hinnan 24 tunnin kuluessa. Tarjouspyyntö ei vielä vahvista varausta.',
     offerTitle: 'Neljä tapaa, joilla *siirrämme autonne*',
     paths: [
       {
@@ -136,22 +194,78 @@ export const home = {
       { label: 'Auton siirtopalvelu yksityisasiakkaalle', href: '/auton-siirtopalvelu/' },
       { label: 'Oma kuljettaja asiakkaan omalla autolla', href: '/oma-kuljettaja/' },
     ],
-    ctaTitle: 'Pyydä *siirtotarjous*',
-    ctaBody: 'Kerro reitti, ajoneuvo ja toivottu aikataulu. Vahvistamme kuljettajan saatavuuden ja kiinteän hinnan ennen ajoa.',
   },
   en: {
     slug: 'en',
-    title: 'Vehicle transfers for dealers and private customers | DriveMe',
-    description: 'DriveMe moves cars between branches, delivers sold cars to customers and collects purchased vehicles. Ask for a quote on your route.',
-    eyebrow: 'Vehicle transfers for businesses and private customers',
-    h1: 'Vehicle transfers for the motor trade.',
-    h1Accent: 'Vehicle transfers',
-    h1Rest: 'for the motor trade.',
-    lead: 'DriveMe moves roadworthy cars between branches, delivers sold cars to customers and collects purchased vehicles from sellers. We also handle booked service transfers. Tell us the route and the schedule - we confirm driver availability and a fixed price before the drive.',
-    primary: { label: 'Request a transfer quote', href: '/en/request-a-quote/?source=home_hero' },
-    secondary: { label: 'Talk about company transfers', href: '/en/for-companies/' },
+    title: 'Chauffeur services and vehicle transfers | DriveMe',
+    description: 'A driver for your own car, a vehicle with a chauffeur, or a car moved where you need it. Tell us your plans for a clear quote before booking.',
+    eyebrow: 'Chauffeur services and vehicle transfers',
+    h1: 'Chauffeur services and vehicle transfers',
+    h1Accent: 'Chauffeur services',
+    h1Rest: 'and vehicle transfers',
+    lead: 'A driver for your car, a vehicle with a chauffeur, or a car moved where you need it. Tell us your plans for a clear quote before booking.',
+    primary: { label: 'Request a quote', href: '/en/request-a-quote/?source=home_hero' },
+    secondary: { label: 'Call us', href: 'tel:+358503572836' },
     trustLine: 'The capital region and Uusimaa. Longer transfers in Finland are agreed per route.',
 
+    choicesTitle: 'Three ways we *can help*',
+    choices: [
+      {
+        key: 'relocation',
+        title: 'Move my car',
+        body: 'We collect your car and drive it to the agreed address.',
+        href: '/en/request-a-quote/?service=relocation&source=home_move',
+      },
+      {
+        key: 'personalDriver',
+        title: 'Driver for my car',
+        body: 'Travel in your own car with a professional driver.',
+        href: '/en/request-a-quote/?service=personalDriver&source=home_driver',
+      },
+      {
+        key: 'chauffeur',
+        title: 'Chauffeur with a vehicle',
+        body: 'A vehicle and driver for your group, business day or sightseeing.',
+        href: '/en/request-a-quote/?service=chauffeur&source=home_chauffeur',
+      },
+    ],
+    businessLine: 'A dealership, a leasing company or a rental fleet? We handle branch transfers, deliveries to customers and purchased-car collections under agreement.',
+
+    trustTitle: 'What you can *rely on*',
+    trustPoints: [
+      {
+        t: 'A fixed price before the drive',
+        d: 'You get a quote that states the price and what it covers. We do not charge more without a separately agreed change.',
+      },
+      {
+        t: 'Documented collection and handover',
+        d: 'Timestamped photos, the mileage, and a record of who received the car and when.',
+      },
+      {
+        t: 'A named Finnish company',
+        d: 'DriveMe is a service of Mansio Group Oy. Business ID 3631044-9, office in Espoo.',
+      },
+    ],
+
+    stepsTitle: 'How it *works*',
+    bookingSteps: [
+      { t: 'Tell us what you need', d: 'The route or the schedule, the car and your details. The form takes about a minute.' },
+      { t: 'You get a quote', d: 'We read your enquiry and send a fixed price within 24 hours.' },
+      { t: 'You accept, we confirm', d: 'A booking exists once you accept the quote and receive our written confirmation.' },
+    ],
+
+    proofTitle: 'What every job *leaves behind*',
+    proofBody: 'We do not publish reviews we do not yet have. What we do have is a record of every drive, which you can ask to see.',
+    proofPoints: [
+      'Photographs of the car at collection and at handover',
+      'Mileage and fuel or charge level at both ends',
+      'A record of who released the car and who received it',
+      'Written confirmation of the driver, the time and the price',
+    ],
+
+    faqTitle: 'Frequently *asked*',
+    ctaTitle: 'Request a *quote*',
+    ctaBody: 'Tell us what you need and we send a fixed price within 24 hours. An enquiry does not confirm a booking yet.',
     offerTitle: 'Four ways we *move your vehicles*',
     paths: [
       {
@@ -256,8 +370,6 @@ export const home = {
       { label: 'Vehicle relocation for private customers', href: '/en/vehicle-relocation/' },
       { label: 'A personal driver in the customer’s own car', href: '/en/personal-driver/' },
     ],
-    ctaTitle: 'Request a *transfer quote*',
-    ctaBody: 'Tell us the route, the vehicle and the schedule you need. We confirm driver availability and a fixed price before the drive.',
   },
 };
 
@@ -838,6 +950,90 @@ export const contact = {
 };
 
 /* -------------------------------------------------------------------------
+ * About - who runs the service (brief, 28 October 2026)
+ * ---------------------------------------------------------------------- */
+export const about = {
+  fi: {
+    slug: 'meista',
+    title: 'Meistä: DriveMe on Mansio Group Oy:n palvelu | DriveMe',
+    description: 'DriveMe on Mansio Group Oy:n kuljettaja- ja autonsiirtopalvelu pääkaupunkiseudulla. Kuka palvelun tuottaa, mitä teemme ja mitä emme tee.',
+    h1: 'DriveMe on *Mansio Group Oy:n* palvelu',
+    lead: 'Olemme suomalainen kuljettajapalvelu pääkaupunkiseudulla. Ajamme asiakkaan omaa autoa, siirrämme autoja sovittuun osoitteeseen ja järjestämme auton kuljettajineen, kun palvelu on avattu.',
+    blocks: [
+      {
+        type: 'prose',
+        title: 'Mitä teemme',
+        body: [
+          'DriveMe tekee kolme asiaa. Ajamme asiakkaan oman auton sovittuun osoitteeseen ilman matkustajia. Ajamme asiakasta hänen omassa autossaan, kun hän haluaa itse matkustaa mukana.',
+          'Hoidamme autoalanyritysten siirrot: toimipisteiden väliset ajot, kotiintoimitukset, ostoautojen noudot ja huoltosiirrot. Jokainen työ hinnoitellaan etukäteen ja vahvistetaan kirjallisesti.',
+        ],
+      },
+      {
+        type: 'company',
+        title: 'Palveluntarjoaja',
+      },
+      {
+        type: 'list', title: 'Miten työskentelemme', variant: 'check',
+        items: [
+          'Kerromme hinnan ennen ajoa, emmekä veloita enempää ilman erikseen sovittua muutosta.',
+          'Dokumentoimme noudon ja luovutuksen kuvin, mittarilukemin ja kuittauksin.',
+          'Nimeämme kuljettajan jokaiseen työhön ja kerromme, kuka auton noutaa.',
+          'Kerromme avoimesti, mitä emme vielä voi luvata - myös silloin kun se maksaa meille työn.',
+        ],
+      },
+      {
+        type: 'list', title: 'Mitä emme tee', variant: 'cross',
+        items: [
+          'Emme hinaa emmekä kuljeta autoa lavetilla.',
+          'Emme ole korjaamo, katsastusasema, rengasliike emmekä autopesula.',
+          'Emme ota kantaa korjauspäätöksiin emmekä hyväksy töitä asiakkaan puolesta.',
+          'Emme aja autoa, joka ei ole ajokuntoinen tai on ajokiellossa.',
+        ],
+      },
+    ],
+  },
+  en: {
+    slug: 'en/about',
+    title: 'About: DriveMe is a service of Mansio Group Oy | DriveMe',
+    description: 'DriveMe is the driver and vehicle transfer service of Mansio Group Oy in the Helsinki capital region. Who provides it, what we do and what we do not do.',
+    h1: 'DriveMe is a service of *Mansio Group Oy*',
+    lead: 'We are a Finnish driver service in the Helsinki capital region. We drive the customer\u2019s own car, move cars to an agreed address, and provide a car with a driver once that service is open.',
+    blocks: [
+      {
+        type: 'prose',
+        title: 'What we do',
+        body: [
+          'DriveMe does three things. We drive a customer\u2019s own car to an agreed address with nobody travelling in it. We drive the customer in their own car when they want to travel too.',
+          'And we handle transfersfor the motor trade: branch moves, deliveries to customers, purchased-car collections and service transfers. Every job is priced in advance and confirmed in writing.',
+        ],
+      },
+      {
+        type: 'company',
+        title: 'Service provider',
+      },
+      {
+        type: 'list', title: 'How we work', variant: 'check',
+        items: [
+          'We state the price before the drive, and do not charge more without a separately agreed change.',
+          'We document collection and handover with photographs, mileage and a signed record.',
+          'We name a driver for every job and tell you who is collecting the car.',
+          'We say plainly what we cannot promise yet - including when that costs us the work.',
+        ],
+      },
+      {
+        type: 'list', title: 'What we do not do', variant: 'cross',
+        items: [
+          'We do not tow, and we do not move cars on a trailer.',
+          'We are not a workshop, inspection station, tyre shop or car wash.',
+          'We do not make repair decisions or approve work on your behalf.',
+          'We do not drive a car that is not roadworthy or is under a driving ban.',
+        ],
+      },
+    ],
+  },
+};
+
+/* -------------------------------------------------------------------------
  * Blog - articles published through the Soro widget
  * ---------------------------------------------------------------------- */
 export const blog = {
@@ -897,5 +1093,6 @@ Object.assign(terms, { sv: SV.terms });
 Object.assign(contact, { sv: SV.contact });
 Object.assign(booking, { sv: SV.booking });
 Object.assign(blog, { sv: SV.blog });
+Object.assign(about, { sv: SV.about });
 
 export { CANCELLATION };

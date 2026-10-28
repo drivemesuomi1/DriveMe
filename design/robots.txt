@@ -15,6 +15,38 @@ Disallow: /legacy
 Disallow: /01-driveme-landing
 Disallow: /02-driveme-light
 
+User-agent: Googlebot
+Allow: /
+
+# Operational surfaces: no public search value, and they carry job tokens.
+Disallow: /admin
+Disallow: /track
+Disallow: /driver
+Disallow: /pyyda-tarjous/
+Disallow: /en/request-a-quote/
+Disallow: /sv/begar-offert/
+
+# Legacy concept pages kept for internal reference only (see /legacy).
+Disallow: /legacy
+Disallow: /01-driveme-landing
+Disallow: /02-driveme-light
+
+User-agent: Bingbot
+Allow: /
+
+# Operational surfaces: no public search value, and they carry job tokens.
+Disallow: /admin
+Disallow: /track
+Disallow: /driver
+Disallow: /pyyda-tarjous/
+Disallow: /en/request-a-quote/
+Disallow: /sv/begar-offert/
+
+# Legacy concept pages kept for internal reference only (see /legacy).
+Disallow: /legacy
+Disallow: /01-driveme-landing
+Disallow: /02-driveme-light
+
 User-agent: OAI-SearchBot
 Allow: /
 

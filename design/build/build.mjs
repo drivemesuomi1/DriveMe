@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { ORIGIN, LOCALES, brand, ui, words, nav, menuGroups, howItWorks, trustStrip } from '../content/site.mjs';
 import { services, byKey } from '../content/services.mjs';
 import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
-import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking, blog } from '../content/pages.mjs';
+import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking, blog, about } from '../content/pages.mjs';
 import { offer, OFFER, offerExpired } from '../content/offer.mjs';
 import { page, esc, serviceSchema, breadcrumbSchema, faqSchema, HREFLANG } from './layout.mjs';
 import { url, serviceUrl, allPages, fileFor } from './routes.mjs';
@@ -111,142 +111,60 @@ function renderHome(locale) {
 
 <!-- Block 2 of the brief: what the buyer gets, before the service list. Only
      claims the operating workflow actually supports. -->
+<!-- Three choices, in the customer's words. The chauffeur card appears only
+     once its gate is open: until the owner has confirmed the vehicle, the
+     capacity, the drivers, the permissions and the insurance, the homepage
+     does not offer it. -->
 <section class="sec sec-raised">
   <div class="wrap">
-    <div class="sec-head"><h2>${fancy(c.benefitsTitle)}</h2></div>
-    ${stepsList(c.benefits, { cols: true })}
+    <div class="sec-head"><h2>${fancy(c.choicesTitle)}</h2></div>
+    <ul class="choices">
+      ${c.choices.filter((ch) => !isGated(byKey[ch.key])).map((ch) => `<li class="choice-card">
+        <h3><a href="${serviceUrl(ch.key, locale)}">${esc(ch.title)}</a></h3>
+        <p>${esc(ch.body)}</p>
+        <a class="btn btn-primary btn-sm" href="${ch.href}">${esc(t.requestPrice)}</a>
+      </li>`).join('')}
+    </ul>
+    <p class="choices-business">${esc(c.businessLine)}
+      <a href="${serviceUrl('business', locale)}">${esc(byKey.business[locale].nav)} →</a></p>
   </div>
 </section>
 
-${serviceMosaic(locale)}
-
+<!-- Three things that can be shown, not three adjectives. -->
 <section class="sec">
   <div class="wrap">
-    <div class="sec-head"><h2>${fancy(c.offerTitle)}</h2></div>
-    <div class="paths">
-      <!-- The service is named once, in the heading. The price line and the
-           two actions are the same shape in every card, so the four of them
-           line up across the row rather than each ending where its text does. -->
-      ${c.paths.map((p) => `<article class="path">
-        <h3>${esc(p.label)}</h3>
-        <p>${esc(p.body)}</p>
-        <p class="path-price">${esc(fromPrice(p.priceService, locale))}</p>
-        <div class="path-actions">
-          <a class="btn btn-primary btn-sm" href="${p.href}">${esc(t.requestPrice)}</a>
-          <a class="more" href="${p.linkHref}">${esc(t.readMore)} →</a>
-        </div>
-      </article>`).join('')}
-    </div>
+    <div class="sec-head"><h2>${fancy(c.trustTitle)}</h2></div>
+    ${stepsList(c.trustPoints, { cols: true })}
   </div>
 </section>
 
 <section class="sec sec-navy">
   <div class="wrap">
-    <div class="sec-head"><h2>${fancy(c.howTitle)}</h2></div>
-    ${stepsList(howItWorks[locale], { cols: true })}
+    <div class="sec-head"><h2>${fancy(c.stepsTitle)}</h2></div>
+    ${stepsList(c.bookingSteps, { cols: true })}
   </div>
 </section>
 
-<section class="sec">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>${fancy(c.priceTitle)}</h2>
-      <p>${esc(c.priceLead)}</p>
-    </div>
-    <ul class="cards">
-      ${c.priceKeys.map((k) => {
-    const range = typicalRange(k);
-    return `<li class="card">
-        <h3><a href="${serviceUrl(k, locale)}">${esc(byKey[k][locale].nav)}</a></h3>
-        <p>${esc(byKey[k][locale].lead)}</p>
-        <span class="from">${esc(fromPrice(k, locale))}</span>
-        ${range ? `<span class="typical">${esc(w.typicalShort(range[0], range[1]))}</span>` : ''}
-      </li>`;
-  }).join('')}
-    </ul>
-    <div style="margin-top:20px">${callout(null, t.thirdParty)}</div>
-    <p style="margin-top:16px"><a href="${url('pricing', locale)}">${esc(w.fullPriceList)} →</a></p>
-  </div>
-</section>
-
+<!-- The proof section the brief asks for. We have no reviews yet, so this is
+     the evidence we do have: what every job records. -->
 <section class="sec sec-raised">
   <div class="wrap split">
     <div class="split-copy">
-      <h2>${fancy(c.handoverTitle)}</h2>
-      <p class="lead">${esc(c.handoverBody)}</p>
-      ${tickList(c.handoverPoints, 'check')}
-      <p><a class="btn btn-primary" href="${src('home_handover')}">${esc(t.requestMove)} <span class="arrow" aria-hidden="true">→</span></a></p>
-    </div>
-    ${figure('/assets/l-svc-rental.jpg', w.alt.handover)}
-  </div>
-</section>
-
-<section class="sec">
-  <div class="wrap split split-flip">
-    <div class="split-copy">
-      <h2>${fancy(c.businessTitle)}</h2>
-      <p class="lead">${esc(c.businessBody)}</p>
-      ${tickList(business.included.slice(0, 4), 'check')}
-      <p><a class="btn btn-ghost" href="${serviceUrl('business', locale)}">${esc(business.nav)}</a></p>
-    </div>
-    ${figure('/assets/service-heroes/business.jpg', w.alt.corporate)}
-  </div>
-</section>
-
-<section class="sec sec-raised">
-  <div class="wrap split">
-    <div class="split-copy">
-      <h2>${fancy(c.safetyTitle)}</h2>
-      <p class="lead">${esc(c.safetyBody)}</p>
-      ${tickList(safetyPoints(locale), 'check')}
+      <h2>${fancy(c.proofTitle)}</h2>
+      <p class="lead">${esc(c.proofBody)}</p>
+      ${tickList(c.proofPoints, 'check')}
       <p><a class="btn btn-ghost" href="${url('safety', locale)}">${esc(w.safetyAndInsurance)}</a></p>
     </div>
     ${figure('/assets/l-fleet-interior.jpg', w.alt.interior)}
   </div>
 </section>
 
-<!-- Block 8 of the client feedback: who the provider is, where we drive and
-     how to reach a person - stated once, in one place. -->
 <section class="sec">
   <div class="wrap">
-    <div class="sec-head">
-      <h2>${fancy(c.trust.title)}</h2>
-      <p>${esc(c.trust.lead)}</p>
-    </div>
-    <div class="trust-cards">
-      <article class="trust-card">
-        <h3>${esc(c.trust.providerTitle)}</h3>
-        <!-- The area and the phone number have their own cards beside this
-             one, so the provider card carries only who we are. -->
-        ${companyBlock(locale, { only: ['name', 'businessId', 'domicile'] })}
-      </article>
-      <article class="trust-card">
-        <h3>${esc(c.trust.areaTitle)}</h3>
-        <p>${esc(w.coverageBody(w.cities.join(', ')))}</p>
-      </article>
-      <article class="trust-card">
-        <h3>${esc(c.trust.contactTitle)}</h3>
-        <p>${esc(c.trust.contactBody)}</p>
-        <p class="trust-contact"><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></p>
-        <p class="trust-contact"><a href="mailto:${brand.email}">${esc(brand.email)}</a></p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="sec sec-raised">
-  <div class="wrap">
-    <div class="sec-head"><h2>${esc(t.faq)}</h2></div>
+    <div class="sec-head"><h2>${fancy(c.faqTitle)}</h2></div>
     ${faqList(homeFaq(locale))}
     <p style="margin-top:18px"><a href="${url('faq', locale)}">${esc(w.allQuestions)} →</a></p>
-    <!-- Block 7: the two secondary services, kept off the main menu but a
-         click away for the visitor who came for one of them. -->
-    <div class="other-needs">
-      <h3>${fancy(c.otherTitle)}</h3>
-      <ul class="linkset">${c.otherLinks.map((l) => (
-    `<li><a href="${l.href}">${esc(l.label)}</a></li>`
-  )).join('')}</ul>
-    </div>
+    <div style="margin-top:30px">${coverageBlock(locale)}</div>
   </div>
 </section>
 
@@ -464,7 +382,7 @@ ${heroImage ? '    </div>\n' : ''}  </div>
 
 <section class="sec">
   <div class="wrap stack">
-    ${gated ? gateNoticeBlock(locale) : withPassengers ? '' : callout(null, t.noPassenger)}
+    ${gated ? gateNoticeBlock(locale, service.key) : withPassengers ? '' : callout(null, t.noPassenger)}
     <div>
       <div class="sec-head"><h2>${esc(t.steps)}</h2></div>
       ${stepsList(c.steps, { rows: true })}
@@ -515,13 +433,22 @@ ${ctaBand(locale, gated ? {
     body: words[locale].interestBody,
     primaryHref: `mailto:${brand.email}?subject=${encodeURIComponent(c.nav)}`,
     primaryLabel: words[locale].sendEmail,
-  } : { primaryHref: bookHref })}
+  } : {
+    primaryHref: bookHref,
+    // A passenger page must not end in transfer language.
+    ...(withPassengers ? {
+      body: words[locale].ctaBodyPassenger,
+      primaryLabel: ui[locale].requestPrice,
+    } : {}),
+  })}
 `;
 
   return page({
     id: `service:${service.key}`, locale,
-    navKey: SERVICE_PRODUCTS[service.key].type === 'appointment_run' ? 'serviceTransfers'
-      : service.key === 'business' ? 'business' : 'services',
+    // Since the 28 October brief the service transfer lives inside the
+    // Services menu rather than beside it, so every service page but the
+    // business hub marks "Palvelut".
+    navKey: service.key === 'business' ? 'business' : 'services',
     // Not sold yet: an interest page only, kept out of the index (Driver First plan).
     noindex: gated,
     title: c.title, description: c.description, body,
@@ -552,9 +479,14 @@ function priceProse(service, locale) {
   if (SERVICE_PRODUCTS[service.key].type === 'passenger') return w.journey(name);
 
   const range = typicalRange(service.key);
+  const priced = PRODUCTS[SERVICE_PRODUCTS[service.key].default]
+    && !PRODUCTS[SERVICE_PRODUCTS[service.key].default].quote;
   return [
     w.intro(name, fromPrice(service.key, locale)),
     range ? w.typical(range[0], range[1]) : '',
+    // A starting price has to say what it is a starting price for (brief,
+    // 28 October 2026, page 5).
+    priced ? ui[locale].fromScope : '',
     w.indicative,
     SERVICE_PRODUCTS[service.key].type === 'appointment_run' ? w.toProvider : w.ownCosts,
   ].filter(Boolean).join(' ');
@@ -929,6 +861,12 @@ Disallow: /02-driveme-light`;
   // model-training ones (GPTBot, ClaudeBot, CCBot) - training access is the
   // owner's call and is left to the catch-all group.
   const AI_SEARCH_BOTS = [
+    // The two search engines, named explicitly because the brief asks for it
+    // (28 October 2026, page 6). The catch-all already allowed them; naming
+    // them makes the intent auditable - and because a crawler follows only
+    // the group that names it, each one repeats the same disallows.
+    'Googlebot',
+    'Bingbot',
     'OAI-SearchBot',      // whether ChatGPT Search can cite us
     'Claude-SearchBot',   // whether Claude's search can cite us
     'PerplexityBot',      // Perplexity's index
@@ -1015,6 +953,7 @@ async function main() {
     await emit(url('booking', locale), renderBooking(locale));
     await emit(url('offer', locale), renderOffer(locale));
     await emit(url('blog', locale), renderBlog(locale));
+    await emit(url('about', locale), renderBlockPage('about', about, locale, 'about'));
     for (const s of services) {
       await emit(serviceUrl(s.key, locale), renderService(s, locale));
     }

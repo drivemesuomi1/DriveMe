@@ -71,13 +71,14 @@ export const brand = {
  */
 // Five items, two of them menus. "How it works" sits inside both menus
 // rather than taking a sixth slot in the bar.
-export const headerNav = ['services', 'serviceTransfers', 'business', 'pricing', 'contact'];
+export const headerNav = ['services', 'business', 'pricing', 'about', 'contact'];
 
 /** §8 recommended navigation — the full set of top-level pages. */
 export const nav = {
   fi: [
-    { key: 'services', label: 'Autonsiirrot', href: '/palvelut/', menu: 'move' },
+    { key: 'services', label: 'Palvelut', href: '/palvelut/', menu: 'move' },
     { key: 'serviceTransfers', label: 'Huoltosiirrot', href: '/huoltosiirto/' },
+    { key: 'about', label: 'Meistä', href: '/meista/' },
     { key: 'how', label: 'Näin se toimii', href: '/nain-se-toimii/' },
     { key: 'pricing', label: 'Hinnasto', href: '/hinnasto/' },
     { key: 'business', label: 'Yrityksille', href: '/yrityksille/' },
@@ -86,8 +87,9 @@ export const nav = {
     { key: 'contact', label: 'Yhteystiedot', href: '/yhteystiedot/' },
   ],
   en: [
-    { key: 'services', label: 'Vehicle transfers', href: '/en/services/', menu: 'move' },
+    { key: 'services', label: 'Services', href: '/en/services/', menu: 'move' },
     { key: 'serviceTransfers', label: 'Service transfers', href: '/en/service-transfer/' },
+    { key: 'about', label: 'About', href: '/en/about/' },
     { key: 'how', label: 'How it works', href: '/en/how-it-works/' },
     { key: 'pricing', label: 'Pricing', href: '/en/pricing/' },
     { key: 'business', label: 'For companies', href: '/en/for-companies/' },
@@ -154,6 +156,9 @@ export const ui = {
     finalCta: 'Kuljettaja autollesi, *kun et ehdi itse*',
     priceFrom: 'alkaen',
     vatNote: 'Hinnat sisältävät arvonlisäveron.',
+    // The brief asks for the scope of the starting price to be stated wherever
+    // the figure appears, so it cannot read as the price of any journey.
+    fromScope: 'Alkaen-hinta koskee yhtä siirtoa pääkaupunkiseudun sisällä arkipäivisin. Pidemmät reitit, ilta- ja viikonloppuajot sekä odotus hinnoitellaan tarjouksessa.',
     thirdParty: 'Kolmannen osapuolen maksut eivät sisälly hintaan, vaan ne maksetaan suoraan palveluntarjoajalle.',
     onThisPage: 'Tällä sivulla',
     allServices: 'Kaikki palvelut',
@@ -192,6 +197,7 @@ export const ui = {
     finalCta: 'A driver for your car, *when you cannot make the trip*',
     priceFrom: 'from',
     vatNote: 'Prices include Finnish VAT.',
+    fromScope: 'The starting price covers one transfer inside the capital region on a weekday. Longer routes, evening and weekend work and waiting are priced in the quote.',
     thirdParty: 'Third-party charges are not included and are paid directly to the provider.',
     onThisPage: 'On this page',
     allServices: 'All services',
@@ -336,6 +342,14 @@ export const gateNotice = {
   en: 'This service is awaiting regulatory and insurance confirmation. We take expressions of interest, but we do not confirm jobs before the licensing and insurance position is confirmed in writing.',
 };
 
+/* A service whose gate is about supply rather than law: the vehicle, the
+   capacity, the drivers and the terms have to be confirmed before anything is
+   promised (developer brief, 28 October 2026, page 4). */
+export const supplyNotice = {
+  fi: 'Tämä palvelu odottaa kaluston ja lupien vahvistusta. Otamme vastaan yhteydenottoja, mutta emme vahvista ajoja ennen kuin auto, kuljettajat, luvat ja vakuutus on varmistettu.',
+  en: 'This service is awaiting confirmation of the vehicle and the permissions. We take expressions of interest, but we do not confirm jobs before the vehicle, the drivers, the permissions and the insurance are in place.',
+};
+
 /** Screening wording while Gate C is open (§6.1 Gate C, §12 audit). */
 export const screening = {
   fi: {
@@ -407,6 +421,7 @@ Object.assign(howItWorks, { sv: SV.howItWorks });
 Object.assign(statusModel, { sv: SV.statusModel });
 Object.assign(cancellation, { sv: SV.cancellation });
 Object.assign(gateNotice, { sv: SV.gateNotice });
+Object.assign(supplyNotice, { sv: SV.supplyNotice });
 Object.assign(screening, { sv: SV.screening });
 Object.assign(footer, { sv: SV.footer });
 
@@ -433,6 +448,7 @@ export const words = {
     companyArea: 'Palvelualue: ',
     coverageBody: (areas) => `Palvelemme tällä hetkellä alueilla ${areas}. Pidemmät siirrot hinnoittelemme tapauskohtaisesti.`,
     ctaBody: 'Kerro, mistä auto noudetaan ja minne se menee. Vahvistamme kiinteän hinnan ennen ajoa.',
+    ctaBodyPassenger: 'Kerro aikataulu, reitti ja matkustajien määrä. Saat kiinteän hinnan ennen varausta.',
     registerInterest: 'Ilmoita kiinnostuksesi',
     interestTitle: 'Kerro kiinnostuksestasi',
     interestBody: 'Ilmoitamme heti, kun lupa- ja vakuutusasiat on vahvistettu ja palvelu on varattavissa.',
@@ -463,7 +479,11 @@ export const words = {
       ownCosts: 'Mahdolliset polttoaine-, pysäköinti- ja tiemaksut kerrotaan tarjouksessa erikseen.',
     },
     appointmentLabels: {
-      required: 'Vaaditaan', recommended: 'Suositeltu', none: 'Ei tarvita',
+      required: 'Vaaditaan', recommended: 'Suositeltu',
+      // "Ei tarvita" alone read as "turn up whenever". It answers whether a
+      // third-party appointment is needed; DriveMe always confirms in advance.
+      none: 'Ei palveluntarjoajan aikaa',
+      advance: 'Vaatii ennakkovahvistuksen',
       flight: 'Lennon tiedot', depends: 'Riippuu työstä',
     },
     alt: {
@@ -488,6 +508,7 @@ export const words = {
     companyArea: 'Service area: ',
     coverageBody: (areas) => `We currently serve ${areas}. Longer moves are priced individually.`,
     ctaBody: 'Tell us where the car is and where it needs to go. We confirm a fixed price before the drive.',
+    ctaBodyPassenger: 'Tell us the schedule, the route and how many are travelling. You get a fixed price before booking.',
     registerInterest: 'Register interest',
     interestTitle: 'Register your interest',
     interestBody: 'We will tell you as soon as the licensing and insurance position is confirmed and the service is bookable.',
@@ -518,7 +539,9 @@ export const words = {
       ownCosts: 'Any fuel, parking or toll costs are stated separately in the quote.',
     },
     appointmentLabels: {
-      required: 'Required', recommended: 'Recommended', none: 'Not needed',
+      required: 'Required', recommended: 'Recommended',
+      none: 'No provider appointment',
+      advance: 'Advance confirmation required',
       flight: 'Flight details', depends: 'Depends on the job',
     },
     alt: {

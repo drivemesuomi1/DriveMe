@@ -9,9 +9,9 @@
 
 import {
   brand, ui, words, disclaimer, acknowledgements, eligibility as eligibilityCopy,
-  refusal, cancellation, statusModel, launchGates, gateNotice, screening, trustStrip,
+  refusal, cancellation, statusModel, launchGates, gateNotice, supplyNotice, screening, trustStrip,
 } from '../content/site.mjs';
-import { isServiceGated } from '../api/_lib/gates.js';
+import { isServiceGated, SERVICE_GATES } from '../api/_lib/gates.js';
 import { byKey } from '../content/services.mjs';
 import { PRODUCTS, SERVICE_PRODUCTS } from '../api/_lib/pricing.js';
 import { esc } from './layout.mjs';
@@ -236,6 +236,11 @@ const GATE_COPY = {
       open: 'Traficomin mukaan kaupallinen henkilöiden kuljettaminen henkilöautolla edellyttää taksiliikennelupaa, kuljettajalta taksinkuljettajan ajolupaa ja ajoneuvolta rekisteröintiä luvanvaraiseen käyttöön. Emme markkinoi kuljettajapalvelua käytettävissä olevana ennen kirjallista vahvistusta siitä, miten tämä koskee ajoa asiakkaan omalla autolla.',
       cleared: 'Saimme syyskuussa 2026 kirjallisen vahvistuksen siitä, miten matkustajakuljetus asiakkaan omalla autolla on järjestettävä, ja oma kuljettaja -palvelu on sen jälkeen ollut tilattavissa. Jokainen matka sovitaan ja hinnoitellaan erikseen.',
     },
+    chauffeurSupply: {
+      title: 'Auto kuljettajalla - kaluston ja luvan varmistus',
+      open: 'Palvelussa auto tulee meiltä, ei asiakkaalta. Ennen kuin avaamme sen, varmistamme auton tai kumppanin, todellisen matkustaja- ja matkatavarakapasiteetin, kuljettajien saatavuuden, palvelua koskevat luvat, vakuutuksen ja matkustajapalvelun ehdot. Emme julkaise kuvia tai esimerkkihintoja ennen kuin ne pitävät paikkansa.',
+      cleared: 'Auto kuljettajalla -palvelu on avattu: auton tai kumppanin saatavuus, kapasiteetti, kuljettajat, luvat, vakuutus ja matkustajapalvelun ehdot on varmistettu. Jokainen matka hinnoitellaan erikseen tuntien, alueen ja kaluston mukaan.',
+    },
     custodyInsurance: {
       title: 'Vakuutus asiakkaan autolle DriveMen hallussa',
       open: 'Liikennevakuutus ei korvaa vahinkoa vakuutetulle ajoneuvolle itselleen. Hankimme erillisen vakuutuksen ajettavana tai hallussa olevalle autolle, avainten katoamiselle, varkaudelle ja pysäköintivahingoille. Julkaisemme sanan "vakuutettu" vasta, kun sanamuoto vastaa vakuutusehtoja.',
@@ -258,6 +263,11 @@ const GATE_COPY = {
       open: 'Traficom states that commercial passenger transport by passenger car requires a taxi transport licence, a taxi driving licence for the driver, and a vehicle registered for licensed operation. We do not market the driver service as available before written confirmation of how this applies to driving the customer\u2019s own car.',
       cleared: 'In September 2026 we received written confirmation of how passenger transport in the customer\u2019s own car has to be arranged, and the personal driver service has been available since. Every journey is agreed and quoted individually.',
     },
+    chauffeurSupply: {
+      title: 'Chauffeur with a vehicle - supply and permissions',
+      open: 'In this service the vehicle comes from us rather than from the customer. Before we open it we confirm the vehicle or the partner supplying it, the real passenger and luggage capacity, driver availability, the permissions that apply, insurance for that service and the passenger terms. We publish no photographs and no example prices until they are true.',
+      cleared: 'The chauffeur service is open: vehicle or partner supply, capacity, drivers, permissions, insurance and passenger terms are confirmed. Every journey is quoted individually from the hours, the area and the vehicle.',
+    },
     custodyInsurance: {
       title: 'Insurance for customers\u2019 vehicles in DriveMe custody',
       open: 'The statutory motor liability policy does not compensate damage to the insured vehicle itself. We are obtaining explicit cover for vehicles being driven or held, lost keys, theft and parking incidents. We publish the word "insured" only with wording that matches the policy.',
@@ -279,6 +289,11 @@ const GATE_COPY = {
       title: 'Persontransport i kundens egen bil',
       open: 'Enligt Traficom kräver kommersiell persontransport med personbil taxitrafiktillstånd, taxiförarlegitimation för föraren och att fordonet är registrerat för tillståndspliktig användning. Vi marknadsför inte förartjänsten som tillgänglig innan vi skriftligt har bekräftat hur detta gäller körning i kundens egen bil.',
       cleared: 'I september 2026 fick vi en skriftlig bekräftelse på hur persontransport i kundens egen bil ska ordnas, och tjänsten personlig förare har varit bokningsbar sedan dess. Varje resa avtalas och prissätts separat.',
+    },
+    chauffeurSupply: {
+      title: 'Bil med chaufför - fordon och tillstånd',
+      open: 'I den här tjänsten kommer bilen från oss, inte från kunden. Innan vi öppnar den säkerställer vi bilen eller partnern, den verkliga passagerar- och bagagekapaciteten, förarnas tillgänglighet, de tillstånd som gäller, försäkringen för tjänsten och villkoren för persontransport. Vi publicerar inga bilder eller exempelpriser förrän de stämmer.',
+      cleared: 'Tjänsten bil med chaufför är öppen: fordon eller partner, kapacitet, förare, tillstånd, försäkring och villkor för persontransport är bekräftade. Varje resa prissätts separat utifrån timmar, område och fordon.',
     },
     custodyInsurance: {
       title: 'Försäkring för kundens bil i DriveMes vård',
@@ -312,8 +327,11 @@ export function gateList(locale) {
   }).join('')}</div>`;
 }
 
-export function gateNoticeBlock(locale) {
-  return `<div class="callout warn"><h3>${esc(words[locale].gateNoticeTitle)}</h3><p>${esc(gateNotice[locale])}</p></div>`;
+/* Which notice a gated service shows depends on what it is waiting for: the
+   licence and insurance position, or the vehicle and the people to drive it. */
+export function gateNoticeBlock(locale, serviceKey) {
+  const body = SERVICE_GATES[serviceKey] === 'chauffeurSupply' ? supplyNotice : gateNotice;
+  return `<div class="callout warn"><h3>${esc(words[locale].gateNoticeTitle)}</h3><p>${esc(body[locale])}</p></div>`;
 }
 
 export function companyBlock(locale, { only } = {}) {

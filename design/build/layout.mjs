@@ -266,8 +266,15 @@ function servicesMenu(locale, navItem) {
       <span class="mi-name">${esc(byKey[key][locale].nav)}</span>
     </a></li>`;
 
+  /* The three customer paths the brief names, then the service transfer, then
+     the business transfers for the visitor who came for one of those. A gated
+     service is never listed. */
   const sold = (type) => servicesOfType(type).filter((k) => !isServiceGated(k));
-  const keys = sold('general_move').concat(sold('appointment_run'));
+  const keys = ['relocation'].concat(
+    sold('passenger'),
+    sold('appointment_run'),
+    sold('general_move').filter((k) => k !== 'relocation'),
+  );
 
   // Nothing but the services: no blurb, no neighbouring column, no links to
   // pages the header already carries. Every entry leads somewhere of its own.
@@ -370,6 +377,13 @@ export function organizationSchema() {
     '@id': `${ORIGIN}/#business`,
     name: 'DriveMe',
     legalName: brand.legalName,
+    // The relationship the brief asks to show: DriveMe is the service, Mansio
+    // Group Oy is the company behind it - one entity, not two namesakes.
+    parentOrganization: {
+      '@type': 'Organization',
+      name: brand.legalName,
+      ...(brand.businessId ? { taxID: brand.businessId } : {}),
+    },
     url: `${ORIGIN}/`,
     telephone: brand.phone,
     email: brand.email,

@@ -38,6 +38,10 @@ export const form = {
   vehicle: 'Bilens uppgifter',
   vehicleHelp: 'Märke, modell, årsmodell och växellåda i ett och samma fält. Till exempel "Ford Focus 2018, manuell".',
 
+  hours: 'Hur många timmar?',
+  hoursHelp: 'En uppskattning räcker. Vi bekräftar timmarna i offerten.',
+  luggage: 'Bagage',
+  luggageHelp: 'Till exempel "4 resväskor och handbagage".',
   passengers: 'Antal passagerare',
   passengersHelp: 'Föraren tar ingen plats: berätta hur många ni är som reser.',
   stops: 'Stopp under resan',
@@ -101,7 +105,7 @@ export const form = {
   termsNote: 'Bokningsvillkoren och rätten att överlämna bilen går vi igenom före bekräftelsen.',
 
   doneTitle: 'Tack för din offertförfrågan!',
-  doneBody: 'DriveMe-teamet kontaktar dig inom 24 timmar. En offertförfrågan bekräftar ännu ingen bokning.',
+  doneBody: 'DriveMe-teamet kontaktar dig inom 24 timmar. Din bokning är bekräftad först när du godkänner vår offert och får vår skriftliga bekräftelse.',
   doneRef: 'Din referens',
   doneAgain: 'Skicka en ny offertförfrågan',
   gatedTitle: 'Den här tjänsten går inte att boka ännu',

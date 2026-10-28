@@ -26,10 +26,13 @@ test('the published starting prices are the Driver First pricing test', () => {
 });
 
 test('journeys are quoted per route; car moves have a starting price', () => {
+  // Carrying people is quoted, never listed: the customer's own car under
+  // `journey`, our car and driver under `chauffeur`.
   for (const key of servicesOfType('passenger')) {
-    assert.equal(SERVICE_PRODUCTS[key].default, 'journey', key);
-    assert.equal(PRODUCTS.journey.quote, true, 'a journey is never auto-priced');
-    assert.equal(PRODUCTS.journey.from, null, 'a journey carries no list price');
+    const product = PRODUCTS[SERVICE_PRODUCTS[key].default];
+    assert.ok(['journey', 'chauffeur'].includes(SERVICE_PRODUCTS[key].default), key);
+    assert.equal(product.quote, true, `${key} is never auto-priced`);
+    assert.equal(product.from, null, `${key} carries no list price`);
   }
   // The business transfers are quoted by route, schedule and volume; the
   // general move and the service transfer keep their published prices.
@@ -56,7 +59,10 @@ test('the catalogue splits into what is sold', () => {
   assert.deepEqual(servicesOfType('general_move'),
     ['branchTransfer', 'homeDelivery', 'purchasedCarPickup', 'relocation']);
   assert.deepEqual(servicesOfType('appointment_run'), ['workshopTransfer']);
-  assert.deepEqual(servicesOfType('passenger'), ['personalDriver']);
+  // Two passenger services since the 28 October brief: the customer's own car
+  // (personalDriver) and ours with a driver (chauffeur, gated until supply is
+  // confirmed). Both are quoted, never listed.
+  assert.deepEqual(servicesOfType('passenger'), ['personalDriver', 'chauffeur']);
   assert.deepEqual(servicesOfType('business'), ['business']);
 });
 

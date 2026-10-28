@@ -57,6 +57,10 @@ export const PRODUCTS = {
   // aikataulun ja siirtomaaran mukaan."
   transfer: { from: null, quote: true, unit: 'job' },
   longDistance: { from: null, quote: true, unit: 'job' },
+  // A vehicle and a driver by the hour: the hours, the area and the vehicle
+  // class decide it, so every one is quoted. Transfer waiting rules do not
+  // apply to it (brief, 28 Oct 2026, page 5).
+  chauffeur: { from: null, quote: true, unit: 'job' },
   corporate: { from: null, quote: true, unit: 'contract' },
 };
 
@@ -240,6 +244,7 @@ const SERVICES = {
     shapes: { oneWay: 'oneWay', pickupReturn: 'pickupReturn' },
   },
   personalDriver: { type: 'passenger', defaultShape: null, shapes: {}, product: 'journey' },
+  chauffeur: { type: 'passenger', defaultShape: null, shapes: {}, product: 'chauffeur' },
   business: { type: 'business', defaultShape: null, shapes: {}, product: 'corporate' },
 };
 

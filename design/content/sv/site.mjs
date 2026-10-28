@@ -15,8 +15,9 @@
  */
 
 export const nav = [
-  { key: 'services', label: 'Bilflyttar', href: '/sv/tjanster/', menu: 'move' },
+  { key: 'services', label: 'Tjänster', href: '/sv/tjanster/', menu: 'move' },
   { key: 'serviceTransfers', label: 'Serviceflyttar', href: '/sv/serviceflytt/' },
+  { key: 'about', label: 'Om oss', href: '/sv/om-oss/' },
   { key: 'how', label: 'Så fungerar det', href: '/sv/sa-fungerar-det/' },
   { key: 'pricing', label: 'Priser', href: '/sv/priser/' },
   { key: 'business', label: 'För företag', href: '/sv/for-foretag/' },
@@ -64,6 +65,7 @@ export const ui = {
   finalCta: 'En förare för din bil, *när du inte hinner själv*',
   priceFrom: 'från',
   vatNote: 'Priserna inkluderar moms.',
+  fromScope: 'Från-priset gäller en flytt inom huvudstadsregionen på en vardag. Längre rutter, kvälls- och helgkörningar samt väntetid prissätts i offerten.',
   thirdParty: 'Tjänsteleverantörens avgifter ingår inte i priset utan betalas direkt till leverantören.',
   onThisPage: 'På den här sidan',
   allServices: 'Alla tjänster',
@@ -130,6 +132,8 @@ export const cancellation = [
   'Efter att föraren åkt, eller om kunden eller leverantören inte är på plats: grundavgiften samt den tid, parkering och resa som uppstått, upp till det tak som anges i villkoren.',
   'Tredje partens avbokningsavgifter regleras alltid av kundens separata avtal med den leverantören.',
 ];
+
+export const supplyNotice = 'Den här tjänsten inväntar bekräftelse på fordon och tillstånd. Vi tar emot kontakter, men bekräftar inga körningar förrän bil, förare, tillstånd och försäkring är på plats.';
 
 export const gateNotice = 'Den här tjänsten inväntar bekräftelse från myndighet och försäkringsbolag. Vi tar emot kontakter, men bekräftar inga uppdrag förrän tillstånds- och försäkringsfrågorna är bekräftade skriftligt.';
 
@@ -207,7 +211,8 @@ export const words = {
   appointmentLabels: {
     required: 'Krävs',
     recommended: 'Rekommenderas',
-    none: 'Behövs inte',
+    none: 'Ingen tid hos leverantör',
+    advance: 'Kräver förhandsbekräftelse',
     flight: 'Flyguppgifter',
     depends: 'Beror på uppdraget',
   },

@@ -128,7 +128,7 @@ test('an enquiry is saved from six fields, and priced by nobody', async () => {
   assert.equal(mails[0].reply_to, 'testi@example.test');
   assert.deepEqual(mails[1].to, ['testi@example.test']);
   assert.match(mails[1].text, /24 tunnin kuluessa/);
-  assert.match(mails[1].text, /ei vielä vahvista varausta/);
+  assert.match(mails[1].text, /hyväksyt tarjouksemme/);
 });
 
 test('every one of the six offers is accepted, under the product that prices it', async () => {

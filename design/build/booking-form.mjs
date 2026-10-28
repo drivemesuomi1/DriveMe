@@ -65,6 +65,10 @@ const COPY = {
     vehicle: 'Ajoneuvon tiedot',
     vehicleHelp: 'Merkki, malli, vuosimalli ja vaihteisto samaan kenttään. Esimerkiksi "Ford Focus 2018, manuaali".',
 
+    hours: 'Kuinka monta tuntia?',
+    hoursHelp: 'Arvio riittää. Tarkennamme tuntimäärän tarjouksessa.',
+    luggage: 'Matkatavarat',
+    luggageHelp: 'Esimerkiksi "4 matkalaukkua ja käsimatkatavarat".',
     passengers: 'Matkustajien määrä',
     passengersHelp: 'Kuljettaja ei vie paikkaa: kerro, montako teitä matkustaa.',
     stops: 'Välipysähdykset',
@@ -128,7 +132,7 @@ const COPY = {
     termsNote: 'Varauksen ehdot ja valtuutus auton luovuttamiseen käydään läpi ennen vahvistusta.',
 
     doneTitle: 'Kiitos tarjouspyynnöstäsi!',
-    doneBody: 'DriveMe-tiimi ottaa sinuun yhteyttä 24 tunnin kuluessa. Tarjouspyyntö ei vielä vahvista varausta.',
+    doneBody: 'DriveMe-tiimi ottaa sinuun yhteyttä 24 tunnin kuluessa. Varauksesi on vahvistettu vasta, kun hyväksyt tarjouksemme ja saat meiltä kirjallisen vahvistuksen.',
     doneRef: 'Viitteesi',
     doneAgain: 'Lähetä uusi tarjouspyyntö',
     gatedTitle: 'Tätä palvelua ei voi vielä varata',
@@ -165,6 +169,10 @@ const COPY = {
     vehicle: 'Vehicle details',
     vehicleHelp: 'Make, model, year and transmission in one field. For example "Ford Focus 2018, manual".',
 
+    hours: 'How many hours?',
+    hoursHelp: 'An estimate is enough. We confirm the hours in the quote.',
+    luggage: 'Luggage',
+    luggageHelp: 'For example "4 suitcases and hand luggage".',
     passengers: 'Number of passengers',
     passengersHelp: 'The driver does not take a seat: tell us how many of you are travelling.',
     stops: 'Additional stops',
@@ -228,7 +236,7 @@ const COPY = {
     termsNote: 'The booking terms and the authorisation to hand the car over are gone through before we confirm.',
 
     doneTitle: 'Thank you for your enquiry!',
-    doneBody: 'The DriveMe team will contact you within 24 hours. An enquiry does not confirm a booking yet.',
+    doneBody: 'The DriveMe team will contact you within 24 hours. Your booking is confirmed only after you accept our quote and receive our written confirmation.',
     doneRef: 'Your reference',
     doneAgain: 'Send another enquiry',
     gatedTitle: 'This service cannot be booked yet',
@@ -306,6 +314,9 @@ export function bookingForm(locale) {
       failed: c.failed, doneRef: c.doneRef,
       gatedTitle: c.gatedTitle, gatedBody: c.gatedBody,
       step2: c.step2, step2Journey: c.step2Journey,
+      // Which of the two passenger services this is: the customer's own car,
+      // or ours with a driver.
+      chauffeurKeys: services.filter((s) => SERVICE_PRODUCTS[s.key].default === 'chauffeur').map((s) => s.key),
       destination: c.destination, destinationJourney: c.destinationJourney,
     },
     endpoint: '/api/bookings',
@@ -315,6 +326,19 @@ export function bookingForm(locale) {
             <div class="grid-2">
               ${field('passengers', c.passengers, text('passengers', { type: 'number', min: 1, max: 8, value: '1', help: true }), c.passengersHelp)}
               ${field('extra_stops', c.stops, text('extra_stops', { help: true }), c.stopsHelp)}
+            </div>`;
+
+  /* The chauffeur path: our vehicle, so the questions are the ones that size
+     the job - how many are travelling, how much they are carrying and for how
+     long (brief, 28 October 2026, page 5). */
+  const chauffeur = `
+            <div class="grid-2">
+              ${field('passengers_chauffeur', c.passengers, text('passengers_chauffeur', { type: 'number', min: 1, max: 16, value: '1', help: true }), c.passengersHelp)}
+              ${field('hours', c.hours, text('hours', { type: 'number', min: 1, max: 24, help: true }), c.hoursHelp)}
+            </div>
+            <div class="grid-2">
+              ${field('luggage', c.luggage, text('luggage', { help: true, maxlength: 120 }), c.luggageHelp)}
+              ${field('chauffeur_stops', c.stops, text('chauffeur_stops', { help: true }), c.stopsHelp)}
             </div>`;
 
   const move = `
@@ -379,6 +403,7 @@ export function bookingForm(locale) {
                  that belongs to the chosen service and hides the rest, so
                  nobody is asked about passengers and a registration both. -->
             <div id="journey-fields" hidden>${journey}</div>
+            <div id="chauffeur-fields" hidden>${chauffeur}</div>
             <div id="move-fields" hidden>${move}</div>
             <div id="appointment-fields" hidden>${appointment}</div>`)}
 

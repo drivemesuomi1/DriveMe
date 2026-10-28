@@ -18,17 +18,75 @@ const range = (p) => `${p.typical[0]}-${p.typical[1]} €`;
 
 export const home = {
   slug: 'sv',
-  title: 'Bilflyttar för företag och privatpersoner | DriveMe',
-  description: 'DriveMe flyttar bilar mellan verksamhetsställen, levererar sålda bilar till kunder och hämtar inköpta bilar. Begär offert på din rutt.',
-  eyebrow: 'Fordonsflyttar för företag och privatkunder',
-  h1: 'Bilflyttar för bilbranschens företag.',
-  h1Accent: 'Bilflyttar',
-  h1Rest: 'för bilbranschens företag.',
-  lead: 'DriveMe flyttar kördugliga bilar mellan verksamhetsställen, levererar sålda bilar till kunderna och hämtar inköpta bilar hos säljarna. Vi sköter också avtalade serviceflyttar. Berätta rutt och tidtabell - vi bekräftar förarens tillgänglighet och ett fast pris före körningen.',
-  primary: { label: 'Begär offert på flytt', href: '/sv/begar-offert/?kalla=home_hero' },
-  secondary: { label: 'Diskutera företagsflyttar', href: '/sv/for-foretag/' },
+  title: 'Förartjänster och bilflyttar | DriveMe',
+  description: 'En förare till din egen bil, bil med chaufför eller en bilflytt till överenskommen adress. Berätta vad du behöver, så får du en tydlig offert före bokningen.',
+  eyebrow: 'Förartjänster och bilflyttar',
+  h1: 'Förartjänster och bilflyttar',
+  h1Accent: 'Förartjänster',
+  h1Rest: 'och bilflyttar',
+  lead: 'En egen förare, bil med chaufför eller en flytt av din bil. Berätta vad du behöver - du får en tydlig offert före bokningen.',
+  primary: { label: 'Begär offert', href: '/sv/begar-offert/?kalla=home_hero' },
+  secondary: { label: 'Ring oss', href: 'tel:+358503572836' },
   trustLine: 'Huvudstadsregionen och Nyland. Längre flyttar i Finland avtalas rutt för rutt.',
 
+  choicesTitle: 'Tre sätt vi *kan hjälpa*',
+  choices: [
+    {
+      key: 'relocation',
+      title: 'Flytta min bil',
+      body: 'Vi hämtar din bil och kör den till den överenskomna adressen.',
+      href: '/sv/begar-offert/?tjanst=relocation&kalla=home_move',
+    },
+    {
+      key: 'personalDriver',
+      title: 'Förare till min bil',
+      body: 'Res i din egen bil med en professionell förare.',
+      href: '/sv/begar-offert/?tjanst=personalDriver&kalla=home_driver',
+    },
+    {
+      key: 'chauffeur',
+      title: 'Bil med chaufför',
+      body: 'Bil och förare för din grupp, arbetsdag eller stadsrundtur.',
+      href: '/sv/begar-offert/?tjanst=chauffeur&kalla=home_chauffeur',
+    },
+  ],
+  businessLine: 'Bilhandel, leasing- eller vagnparksbolag? Vi sköter flyttar mellan verksamhetsställen, hemleveranser och hämtning av inköpta bilar enligt avtal.',
+
+  trustTitle: 'Det här kan du *lita på*',
+  trustPoints: [
+    {
+      t: 'Fast pris före körningen',
+      d: 'Du får en offert som anger priset och vad det omfattar. Vi debiterar inte mer utan en separat överenskommen ändring.',
+    },
+    {
+      t: 'Dokumenterad upphämtning och överlämning',
+      d: 'Tidsstämplade bilder, mätarställning och en notering om vem som tog emot bilen och när.',
+    },
+    {
+      t: 'Ett namngivet finländskt företag',
+      d: 'DriveMe är en tjänst från Mansio Group Oy. FO-nummer 3631044-9, kontor i Esbo.',
+    },
+  ],
+
+  stepsTitle: 'Så *går det till*',
+  bookingSteps: [
+    { t: 'Berätta vad du behöver', d: 'Rutten eller tidtabellen, bilen och dina kontaktuppgifter. Formuläret tar ungefär en minut.' },
+    { t: 'Du får en offert', d: 'Vi läser din förfrågan och skickar ett fast pris inom 24 timmar.' },
+    { t: 'Du godkänner, vi bekräftar', d: 'En bokning finns först när du godkänner offerten och får vår skriftliga bekräftelse.' },
+  ],
+
+  proofTitle: 'Varje uppdrag *dokumenteras*',
+  proofBody: 'Vi publicerar inga omdömen vi ännu inte har. Däremot dokumenteras varje körning, och du kan be att få se dokumentationen.',
+  proofPoints: [
+    'Bilder på bilen vid upphämtning och överlämning',
+    'Mätarställning och bränsle- eller laddningsnivå i båda ändar',
+    'En notering om vem som lämnade över bilen och vem som tog emot den',
+    'Skriftlig bekräftelse på förare, tid och pris',
+  ],
+
+  faqTitle: 'Vanliga *frågor*',
+  ctaTitle: 'Begär *offert*',
+  ctaBody: 'Berätta vad du behöver, så skickar vi ett fast pris inom 24 timmar. En offertförfrågan bekräftar ännu ingen bokning.',
   offerTitle: 'Fyra sätt att *flytta era bilar*',
   paths: [
     {
@@ -133,8 +191,6 @@ export const home = {
     { label: 'Bilflytt för privatkunder', href: '/sv/bilflytt/' },
     { label: 'Personlig förare i kundens egen bil', href: '/sv/personlig-forare/' },
   ],
-  ctaTitle: 'Begär *offert på flytt*',
-  ctaBody: 'Berätta rutt, fordon och önskad tidtabell. Vi bekräftar förarens tillgänglighet och ett fast pris före körningen.',
 };
 
 export const servicesHub = {
@@ -403,6 +459,46 @@ export const contact = {
   ],
   areaTitle: 'Serviceområde',
   areaNote: 'Längre flyttar prissätter vi från fall till fall.',
+};
+
+export const about = {
+  slug: 'sv/om-oss',
+  title: 'Om oss: DriveMe är en tjänst från Mansio Group Oy | DriveMe',
+  description: 'DriveMe är Mansio Group Oy:s förar- och bilflyttjänst i huvudstadsregionen. Vem som står bakom tjänsten, vad vi gör och vad vi inte gör.',
+  h1: 'DriveMe är en tjänst från *Mansio Group Oy*',
+  lead: 'Vi är en finländsk förartjänst i huvudstadsregionen. Vi kör kundens egen bil, flyttar bilar till en överenskommen adress och ordnar bil med förare när den tjänsten är öppen.',
+  blocks: [
+    {
+      type: 'prose',
+      title: 'Vad vi gör',
+      body: [
+        'DriveMe gör tre saker. Vi kör kundens egen bil till en överenskommen adress utan passagerare. Vi kör kunden i hens egen bil när hen vill åka med.',
+        'Och vi sköter bilbranschensflyttar: körningar mellan verksamhetsställen, hemleveranser, hämtning av inköpta bilar och serviceflyttar. Varje uppdrag prissätts på förhand och bekräftas skriftligt.',
+      ],
+    },
+    {
+      type: 'company',
+      title: 'Tjänsteleverantör',
+    },
+    {
+      type: 'list', title: 'Så arbetar vi', variant: 'check',
+      items: [
+        'Vi anger priset före körningen och debiterar inte mer utan en separat överenskommen ändring.',
+        'Vi dokumenterar upphämtning och överlämning med bilder, mätarställning och kvittering.',
+        'Vi utser en förare för varje uppdrag och berättar vem som hämtar bilen.',
+        'Vi säger rakt ut vad vi ännu inte kan lova - också när det kostar oss uppdraget.',
+      ],
+    },
+    {
+      type: 'list', title: 'Vad vi inte gör', variant: 'cross',
+      items: [
+        'Vi bogserar inte och flyttar inte bilar på släp.',
+        'Vi är varken verkstad, besiktningsstation, däckfirma eller biltvätt.',
+        'Vi tar inte ställning till reparationsbeslut och godkänner inga arbeten för din räkning.',
+        'Vi kör inte en bil som inte är körduglig eller har körförbud.',
+      ],
+    },
+  ],
 };
 
 export const blog = {

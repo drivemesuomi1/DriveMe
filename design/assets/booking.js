@@ -85,14 +85,17 @@
    */
   function syncService() {
     var type = serviceType();
-    var journey = type === 'passenger';
+    // Two passenger services: the customer's own car, and ours with a driver.
+    var chauffeur = (C.chauffeurKeys || []).indexOf(serviceSel.value) >= 0;
+    var journey = type === 'passenger' && !chauffeur;
     var move = type === 'general_move';
     var appointment = type === 'appointment_run';
     // A corporate enquiry or "something else" has no single route to describe,
     // so step 2 stays available but stops insisting on one.
-    var routed = journey || move || appointment;
+    var routed = journey || chauffeur || move || appointment;
 
     show($('journey-fields'), journey);
+    show($('chauffeur-fields'), chauffeur);
     show($('move-fields'), move);
     show($('appointment-fields'), appointment);
     show($('business-fields'), companyWanted());
@@ -104,6 +107,8 @@
     // the driver drives that car, so its transmission decides who is sent.
     $('vehicle_details').required = routed;
     $('passengers').required = journey;
+    $('passengers_chauffeur').required = chauffeur;
+    $('hours').required = chauffeur;
 
     // A journey ends somewhere rather than delivering a car to an address.
     var destLabel = form.querySelector('label[for="destination"]');
@@ -254,7 +259,8 @@
   /* ----------------------------------------------------------- submit */
   function payload() {
     var type = serviceType();
-    var journey = type === 'passenger';
+    var chauffeur = (C.chauffeurKeys || []).indexOf(serviceSel.value) >= 0;
+    var journey = type === 'passenger' && !chauffeur;
     var move = type === 'general_move';
     var appointment = type === 'appointment_run';
     var company = val('company_name');
@@ -283,8 +289,13 @@
       return_needed: appointment ? val('return_needed') === 'yes' : null,
       shape: appointment ? (val('return_needed') === 'yes' ? 'pickupReturn' : 'oneWay') : null,
       // A move carries nobody; a journey carries the people who asked for it.
-      passenger_count: journey ? (parseInt(val('passengers'), 10) || 1) : 0,
-      extra_stops: journey ? (val('extra_stops') || null) : null,
+      passenger_count: journey ? (parseInt(val('passengers'), 10) || 1)
+        : chauffeur ? (parseInt(val('passengers_chauffeur'), 10) || 1) : 0,
+      extra_stops: journey ? (val('extra_stops') || null)
+        : chauffeur ? (val('chauffeur_stops') || null) : null,
+      // Our vehicle, so the hours and the luggage size the job.
+      hours: chauffeur ? (parseFloat(val('hours')) || null) : null,
+      luggage: chauffeur ? (val('luggage') || null) : null,
       customer_name: val('customer_name'),
       customer_phone: val('customer_phone'),
       customer_email: val('customer_email'),

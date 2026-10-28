@@ -137,7 +137,9 @@ export const services = [
     key: 'personalDriver',
     category: 'driver',
     launch: 'gated',
-    appointment: 'none',
+    // Not "none": DriveMe confirms every journey in advance, and the old
+    // label read as though a customer could simply turn up (brief, page 2).
+    appointment: 'advance',
     icon: 'driver',
     price: { key: 'personalDriver' },
     related: ['relocation', 'workshopTransfer', 'business'],
@@ -227,6 +229,100 @@ export const services = [
   },
 
 
+
+  /* ------------------------------------------------------------------ */
+  {
+    key: 'chauffeur',
+    category: 'driver',
+    launch: 'gated',
+    appointment: 'advance',
+    icon: 'driver',
+    price: { key: 'chauffeur' },
+    related: ['personalDriver', 'relocation', 'business'],
+    devNote: 'Vehicle AND driver. Gated until the owner confirms vehicle or partner supply, capacity, driver availability, operating permissions, service-specific insurance, payment handling and passenger terms (brief 28 Oct 2026, page 4). Publish no example price and no partner photo until rights and availability are verified.',
+    fi: {
+      slug: 'auto-kuljettajalla',
+      nav: 'Auto kuljettajalla',
+      short: 'Auto kuljettajalla',
+      title: 'Auto kuljettajalla Helsinki | DriveMe',
+      description: 'Auto ja kuljettaja ryhmällesi, työpäivään tai kaupunkikierrokselle Helsingissä. Kerro ryhmän koko, matkatavarat ja aikataulu, niin teemme tarjouksen.',
+      h1: 'Auto kuljettajalla *Helsingissä*',
+      lead: 'Auto ja kuljettaja suunnitelmiesi mukaan - työpäivään tai joustavalle kaupunkikierrokselle. Kerro ryhmän koko, matkatavarat ja aikataulu, niin saat juuri sinulle tehdyn tarjouksen.',
+      keywords: ['auto kuljettajalla Helsinki', 'tilausajo Helsinki', 'yksityinen kuljettaja ja auto'],
+      steps: [
+        'Kerro suunnitelmasi: ryhmän koko, matkatavarat, aikataulu ja toivotut pysähdykset.',
+        'Saat tarjouksen, jossa näkyvät varatut tunnit, alue, kilometrit ja kaikki mitä hintaan sisältyy.',
+        'Hyväksyt tiedot, ja vahvistamme auton, kuljettajan ja aikataulun kirjallisesti.',
+        'Kuljettaja hakee teidät sovitusta paikasta ja ajaa suunnitelman mukaisesti.',
+      ],
+      included: [
+        'Auto ja kuljettaja tarjouksessa kuvatulla tavalla',
+        'Sovitut tunnit, reitti tai alue ja kilometrit',
+        'Sovitut pysähdykset ja odotus matkan aikana',
+        'Kirjallinen vahvistus autosta, kuljettajasta ja aikataulusta',
+      ],
+      customer: [
+        'Kerro ryhmän koko ja matkatavaroiden määrä etukäteen',
+        'Ilmoita nouto-osoite, aloitusaika ja mahdollinen määräaika perillä',
+        'Kerro terminaali- tai laivatiedot, jos matka päättyy satamaan',
+        'Vahvista mahdolliset muutokset aikatauluun ennen ajoa',
+      ],
+      excluded: [
+        'Opastetut kierrokset: kuljettaja ei ole auktorisoitu matkaopas',
+        'Pääsyliput, ateriat ja muut kohteiden maksut',
+        'Rajoittamaton odotus tai vahvistamattomat jatkoajat',
+        'Ilman saattajaa matkustavan lapsen kuljettaminen',
+      ],
+      boundary: 'DriveMe vastaa autosta, kuljettajasta ja sovituista tunneista tarjouksen mukaisesti. Pysäköinti, tiemaksut, pääsyliput ja ateriat eivät sisälly hintaan, ellei tarjouksessa toisin sanota. Varaus on sitova vasta, kun hyväksyt tarjouksen ja saat meiltä kirjallisen vahvistuksen.',
+      faq: [
+        { q: 'Sisältyykö auto hintaan?', a: 'Kyllä. Tässä palvelussa saat sekä auton että kuljettajan, tarjouksessa kuvatulla tavalla.' },
+        { q: 'Voimmeko valita pysähdykset itse?', a: 'Kerro suunnitelmanne, niin vahvistamme reitin ja mahdolliset rajoitukset tarjouksessa.' },
+        { q: 'Mitä hintaan sisältyy?', a: 'Tarjouksessa luetellaan auto, varatut tunnit, kilometrit ja kaikki hintaan sisältyvät maksut. Pysäköinti, tiemaksut ja kohteiden maksut eritellään erikseen.' },
+        { q: 'Milloin varaus on vahvistettu?', a: 'Kun olet hyväksynyt tarjouksen ja saat meiltä kirjallisen vahvistuksen autosta, kuljettajasta ja aikataulusta.' },
+      ],
+    },
+    en: {
+      slug: 'chauffeur-helsinki',
+      nav: 'Chauffeur with a vehicle',
+      short: 'Chauffeur',
+      title: 'Private Chauffeur Helsinki | DriveMe',
+      description: 'Plan a private journey in Helsinki with a vehicle and chauffeur. Tell us your group size, luggage and schedule for a tailored quote.',
+      h1: 'Private chauffeur *in Helsinki*',
+      lead: 'A vehicle and driver for your plans - from a business day to flexible sightseeing. Tell us your group size, luggage and schedule for a tailored quote.',
+      keywords: ['private chauffeur Helsinki', 'chauffeur with vehicle Helsinki', 'car and driver Helsinki'],
+      steps: [
+        'Tell us your plans: group size, luggage, schedule and the stops you have in mind.',
+        'You receive a quote stating the booked hours, the area, the mileage and everything included.',
+        'You approve the details, and we confirm the vehicle, the driver and the schedule in writing.',
+        'The driver collects you at the agreed place and follows the plan.',
+      ],
+      included: [
+        'A vehicle and a driver as described in your quote',
+        'The booked hours, route or area and mileage',
+        'Agreed stops and waiting during the journey',
+        'Written confirmation of the vehicle, driver and schedule',
+      ],
+      customer: [
+        'Tell us the group size and how much luggage there is, in advance',
+        'Give the pickup address, the start time and any required arrival time',
+        'Give the terminal or ship details if the journey ends at a port',
+        'Confirm any change to the schedule before the drive',
+      ],
+      excluded: [
+        'Guided tours: the driver is not a licensed tour guide',
+        'Entry tickets, meals and other charges at the places you visit',
+        'Unlimited waiting or unconfirmed overtime',
+        'Transporting an unaccompanied child',
+      ],
+      boundary: 'DriveMe is responsible for the vehicle, the driver and the booked hours as stated in the quote. Parking, tolls, entry tickets and meals are not included unless the quote says so. A booking is binding only once you accept the quote and receive our written confirmation.',
+      faq: [
+        { q: 'Is the vehicle included?', a: 'Yes. This service includes a vehicle and driver as described in your quote.' },
+        { q: 'Can we choose the stops?', a: 'Tell us your plans; we confirm the itinerary and any limits in your quote.' },
+        { q: 'What is included in the price?', a: 'Your quote lists the vehicle, the hours, the mileage and the included charges. Parking, tolls and charges at the places you visit are itemised separately.' },
+        { q: 'When is the booking confirmed?', a: 'After your acceptance and our written confirmation of the vehicle, driver and schedule.' },
+      ],
+    },
+  },
 
   /* ------------------------------------------------------------------ */
   {

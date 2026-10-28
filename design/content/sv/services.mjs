@@ -105,6 +105,48 @@ export const personalDriver = {
 
 
 
+export const chauffeur = {
+  slug: 'bil-med-chauffor',
+  nav: 'Bil med chaufför',
+  short: 'Chaufför',
+  title: 'Bil med chaufför i Helsingfors | DriveMe',
+  description: 'Bil och förare för din grupp, arbetsdag eller stadsrundtur i Helsingfors. Berätta gruppens storlek, bagaget och tidtabellen, så gör vi en offert.',
+  h1: 'Bil med chaufför *i Helsingfors*',
+  lead: 'Bil och förare enligt dina planer - för en arbetsdag eller en flexibel stadsrundtur. Berätta gruppens storlek, bagaget och tidtabellen, så får du en offert gjord för er.',
+  keywords: ['bil med chaufför Helsingfors', 'privat chaufför Helsingfors', 'beställningstrafik Helsingfors'],
+  steps: [
+    'Berätta era planer: gruppens storlek, bagaget, tidtabellen och önskade stopp.',
+    'Du får en offert med bokade timmar, område, kilometer och allt som ingår.',
+    'Du godkänner uppgifterna och vi bekräftar bil, förare och tidtabell skriftligt.',
+    'Föraren hämtar er på överenskommen plats och kör enligt planen.',
+  ],
+  included: [
+    'Bil och förare så som offerten beskriver',
+    'De bokade timmarna, rutten eller området och kilometrarna',
+    'Överenskomna stopp och väntetid under resan',
+    'Skriftlig bekräftelse på bil, förare och tidtabell',
+  ],
+  customer: [
+    'Berätta gruppens storlek och mängden bagage på förhand',
+    'Ange upphämtningsadress, starttid och eventuell framme-tid',
+    'Ange terminal- eller fartygsuppgifter om resan slutar i hamnen',
+    'Bekräfta eventuella ändringar i tidtabellen före körningen',
+  ],
+  excluded: [
+    'Guidade turer: föraren är inte auktoriserad reseguide',
+    'Inträdesbiljetter, måltider och andra avgifter på plats',
+    'Obegränsad väntetid eller obekräftad övertid',
+    'Transport av barn utan medföljande vuxen',
+  ],
+  boundary: 'DriveMe ansvarar för bilen, föraren och de bokade timmarna enligt offerten. Parkering, vägavgifter, inträden och måltider ingår inte om inte offerten säger annat. En bokning är bindande först när du godkänner offerten och får vår skriftliga bekräftelse.',
+  faq: [
+    { q: 'Ingår bilen i priset?', a: 'Ja. I den här tjänsten ingår både bil och förare, så som offerten beskriver.' },
+    { q: 'Får vi välja stoppen själva?', a: 'Berätta era planer, så bekräftar vi rutten och eventuella begränsningar i offerten.' },
+    { q: 'Vad ingår i priset?', a: 'Offerten listar bilen, de bokade timmarna, kilometrarna och de avgifter som ingår. Parkering, vägavgifter och avgifter på plats specificeras separat.' },
+    { q: 'När är bokningen bekräftad?', a: 'När du har godkänt offerten och fått vår skriftliga bekräftelse på bil, förare och tidtabell.' },
+  ],
+};
+
 export const business = {
   slug: 'for-foretag',
   nav: 'För företag',

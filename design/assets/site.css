@@ -807,6 +807,29 @@ section[id],div[id]{scroll-margin-top:120px}
 /* ==========================================================================
    the two paths
    ========================================================================== */
+/* The three choices the homepage opens with: equal cards, equal height, the
+   action pinned to the foot so the three buttons line up. */
+/* auto-fit rather than a fixed three: while the chauffeur service is gated
+   there are two choices, and two cards should fill the row rather than leave
+   a hole where the third would go. */
+.choices{list-style:none;display:grid;gap:var(--s-6);grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.choice-card{
+  background:var(--surface);border:1px solid var(--ink-300);border-radius:var(--r-card);
+  padding:var(--s-8) var(--s-6);display:flex;flex-direction:column;gap:var(--s-3);
+  transition:transform var(--standard),box-shadow var(--standard),border-color var(--standard);
+}
+.choice-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);border-color:var(--brand)}
+.choice-card h3{font-size:var(--t-h3);line-height:1.2}
+.choice-card h3 a{color:inherit;text-decoration:none}
+.choice-card p{color:var(--ink-700);font-size:var(--t-small);line-height:1.6}
+.choice-card .btn{margin-top:auto;align-self:flex-start}
+.choices-business{
+  margin-top:var(--s-8);padding-top:var(--s-6);border-top:1px solid var(--ink-300);
+  font-size:var(--t-small);color:var(--ink-700);line-height:1.6;max-width:70ch;
+}
+.choices-business a{color:var(--brand);font-weight:600;white-space:nowrap}
+@media (max-width:940px){.choices{grid-template-columns:1fr}}
+
 /* Four primary transfers, four columns. auto-fit with a 320px minimum put
    three on the first row and left the fourth alone underneath. */
 .paths{display:grid;gap:var(--s-6);grid-template-columns:repeat(4,minmax(0,1fr))}

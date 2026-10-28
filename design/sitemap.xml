@@ -271,6 +271,33 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://driveme.fi/meista/</loc>
+    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/meista/"/>
+    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/about/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/om-oss/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/meista/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://driveme.fi/en/about/</loc>
+    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/meista/"/>
+    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/about/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/om-oss/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/meista/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://driveme.fi/sv/om-oss/</loc>
+    <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/meista/"/>
+    <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/about/"/>
+    <xhtml:link rel="alternate" hreflang="sv-FI" href="https://driveme.fi/sv/om-oss/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://driveme.fi/meista/"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://driveme.fi/toimipisteiden-valinen-siirto/</loc>
     <xhtml:link rel="alternate" hreflang="fi-FI" href="https://driveme.fi/toimipisteiden-valinen-siirto/"/>
     <xhtml:link rel="alternate" hreflang="en-FI" href="https://driveme.fi/en/branch-to-branch-transfer/"/>

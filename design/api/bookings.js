@@ -130,6 +130,9 @@ const LATER_COLUMNS = [
   // Migration 0012. Until it is applied the insert is retried without them
   // and the answers survive in the ops email.
   'roadworthy', 'extra_stops', 'volume', 'recurrence',
+  // Migration 0013: the chauffeur service supplies the vehicle, so the hours
+  // and the luggage are what size the job.
+  'hours', 'luggage',
 ];
 
 // Before migration 0009 the database refuses a passenger count above zero and
@@ -298,6 +301,10 @@ export default async function handler(req, res) {
     // a transfer answers; false is a real answer, not a missing one.
     const roadworthy = typeof body.roadworthy === 'boolean' ? body.roadworthy : null;
     const extraStops = optionalString(body.extra_stops, 500);
+    // Only the chauffeur service asks for these; a move sends neither.
+    const hours = optionalNumber(body.hours, { min: 0.5, max: 24 });
+    if (hours === null) return fail(res, 400, 'That number of hours is out of range.', 'hours');
+    const luggage = optionalString(body.luggage, 200);
     const recurrence = enumOf(RECURRENCES, body.recurrence, 20) ?? null;
     const accessNotes = optionalString(body.access_notes, 1000);
     const vehicleNotes = optionalString(body.vehicle_notes, 1000);
@@ -347,6 +354,8 @@ export default async function handler(req, res) {
       company_name: companyName ?? null,
       roadworthy,
       extra_stops: extraStops ?? null,
+      hours: hours ?? null,
+      luggage: luggage ?? null,
       volume: companyName ? (optionalString(body.volume, 100) ?? null) : null,
       recurrence: companyName ? recurrence : null,
       business_id: optionalString(body.business_id, 20) ?? null,

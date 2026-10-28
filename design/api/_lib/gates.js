@@ -34,6 +34,16 @@ export const launchGates = {
     live: false,
     evidence: 'Counsel and data-protection approved list of documented checks',
   },
+  // Gate E — the chauffeur service supplies the vehicle as well as the
+  // driver, which is a different business from driving the customer's own
+  // car: it needs a vehicle (owned or from a named partner), confirmed
+  // capacity, driver availability, the operating permissions that apply,
+  // service-specific insurance, payment handling and passenger terms
+  // (developer brief, 28 October 2026, page 4).
+  chauffeurSupply: {
+    live: false,
+    evidence: 'Owner sign-off on vehicle or partner supply, capacity, driver availability, operating permissions, insurance, payment handling and passenger-service terms',
+  },
   // Gate D — Finnish counsel review of the consumer terms.
   consumerTerms: {
     live: false,
@@ -52,6 +62,7 @@ export const launchGates = {
  * instead of pretending to be insured.
  */
 export const SERVICE_GATES = {
+  chauffeur: 'chauffeurSupply',
   journey: 'passengerTransport',
   personalDriver: 'passengerTransport',
   safeRideHome: 'passengerTransport',

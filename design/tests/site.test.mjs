@@ -18,6 +18,7 @@ import { allPages, fileFor, url, serviceUrl, routes } from '../build/routes.mjs'
 import { services } from '../content/services.mjs';
 import { brand, ui, words, nav, LOCALES } from '../content/site.mjs';
 import { offer, OFFER, offerExpired } from '../content/offer.mjs';
+import { home } from '../content/pages.mjs';
 import { isServiceGated } from '../api/_lib/gates.js';
 import { PRODUCTS, SERVICE_PRODUCTS } from '../api/_lib/pricing.js';
 import { bookingCopy } from '../build/booking-form.mjs';
@@ -112,40 +113,86 @@ test('nothing the audit or the Driver First plan removed has come back', async (
   }
 });
 
-test('the homepage leads with vehicle transfers for the motor trade', async () => {
-  const fi = await read('index.html');
-  assert.match(fi, /class="accent">Autonsiirrot<\/span> autoalan yrityksille/);
-  assert.match(fi, /Pyydä siirtotarjous/);
-  // The four primary services are on it, each linking to its own page.
-  for (const key of primaryKeys) {
-    assert.ok(fi.includes(`href="${serviceUrl(key, 'fi')}"`), `the homepage does not offer ${key}`);
-  }
-  // The private driver is secondary: reachable, but not one of the four.
-  assert.ok(fi.includes(`href="${serviceUrl('personalDriver', 'fi')}"`), 'no link to the private driver');
-
-  const en = await read('en/index.html');
-  assert.match(en, /class="accent">Vehicle transfers<\/span> for the motor trade/);
-  assert.match(en, /Request a transfer quote/);
-});
-
-test('the private driver is reachable but stays out of the header menu', async () => {
+test('the homepage offers the three choices and keeps business one click away', async () => {
   for (const locale of LOCALES) {
     const html = await read(fileFor(url('home', locale)));
-    const head = /<header class="site-head">([\s\S]*?)<\/header>/.exec(html)[1];
-    const foot = /<footer class="site-foot">([\s\S]*?)<\/footer>/.exec(html)[1];
-    const href = `href="${serviceUrl('personalDriver', locale)}"`;
+    const c = home[locale];
 
-    // Brief page 4: "Place Oma kuljettaja in secondary navigation or the footer."
-    const grid = /<ul class="menu-list[^"]*">([\s\S]*?)<\/div>/.exec(head);
-    assert.equal(grid && grid[1].includes(href), false, `${locale}: the private driver is in the main service grid`);
-    assert.ok(foot.includes(href), `${locale}: the private driver is not in the footer either`);
+    // The balanced hero the brief asks for, not a dealership-only one.
+    assert.ok(html.includes(escapeHtml(c.lead)), `${locale}: the hero lead is not the briefed one`);
+    assert.match(html, new RegExp(`class="accent">${c.h1Accent}</span>`), `${locale}: hero heading`);
 
-    // It is quoted per route, so its own page must publish no starting price.
-    // Scoped to the head of the page: the related cards at the foot carry
-    // other services' prices, which is what they are for.
+    // Every choice that is sold is on the page, each linking to its own
+    // service page and to the form with its own service preselected.
+    const sold = c.choices.filter((ch) => !isServiceGated(ch.key));
+    const cards = [...html.matchAll(/<li class="choice-card">[\s\S]*?<\/li>/g)].map((m) => m[0]);
+    assert.equal(cards.length, sold.length, `${locale}: ${cards.length} choice cards, expected ${sold.length}`);
+    for (const ch of sold) {
+      const card = cards.find((x) => x.includes(escapeHtml(ch.title)));
+      assert.ok(card, `${locale}: no card for ${ch.key}`);
+      assert.ok(card.includes(`href="${serviceUrl(ch.key, locale)}"`), `${locale}: ${ch.key} card does not link its page`);
+      assert.ok(card.includes(`href="${ch.href}"`), `${locale}: ${ch.key} card does not preselect its service`);
+    }
+    // A gated choice is never advertised on the homepage.
+    for (const ch of c.choices.filter((x) => isServiceGated(x.key))) {
+      assert.equal(html.includes(escapeHtml(ch.title)), false, `${locale}: ${ch.key} is advertised while gated`);
+    }
+
+    // The business page keeps its visible link.
+    assert.ok(html.includes(escapeHtml(c.businessLine)), `${locale}: no line for business customers`);
+    assert.ok(html.includes(`href="${serviceUrl('business', locale)}"`), `${locale}: no link to the business page`);
+  }
+});
+
+test('the homepage follows the brief: choices, trust, steps, proof, FAQ, CTA', async () => {
+  for (const locale of LOCALES) {
+    const html = await read(fileFor(url('home', locale)));
+    const c = home[locale];
+    // In this order, each one present exactly once.
+    const order = [c.choicesTitle, c.trustTitle, c.stepsTitle, c.proofTitle, c.faqTitle]
+      .map((title) => html.indexOf(escapeHtml(plainAccent(title))));
+    for (const [i, at] of order.entries()) assert.ok(at > 0, `${locale}: section ${i + 1} is missing`);
+    for (let i = 1; i < order.length; i++) {
+      assert.ok(order[i] > order[i - 1], `${locale}: the sections are out of the briefed order`);
+    }
+    assert.match(html, /<section class="cta-band">/, `${locale}: no final CTA`);
+
+    // Three trust points and three booking steps, no more.
+    assert.equal(c.trustPoints.length, 3, `${locale}: ${c.trustPoints.length} trust points`);
+    assert.equal(c.bookingSteps.length, 3, `${locale}: ${c.bookingSteps.length} booking steps`);
+    for (const point of c.trustPoints) {
+      assert.ok(html.includes(escapeHtml(point.t)), `${locale}: trust point "${point.t}" missing`);
+    }
+
+    // 350-550 words of useful copy, per the brief - the page's own content,
+    // not the header, the menus and the footer that every page repeats.
+    const main = /<main[^>]*>([\s\S]*?)<\/main>/.exec(html)[1];
+    const words_ = main.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ').trim().split(' ').length;
+    assert.ok(words_ >= 320 && words_ <= 600, `${locale}: ${words_} words of homepage copy`);
+  }
+});
+
+test('the private driver has its own page, its own menu entry and no price', async () => {
+  for (const locale of LOCALES) {
+    const head = /<header class="site-head">([\s\S]*?)<\/header>/
+      .exec(await read(fileFor(url('home', locale))))[1];
+    // The brief puts the three customer paths in the services menu.
+    assert.ok(head.includes(`href="${serviceUrl('personalDriver', locale)}"`),
+      `${locale}: the private driver is not in the services menu`);
+    assert.ok(head.includes(`href="${serviceUrl('relocation', locale)}"`),
+      `${locale}: the car transfer is not in the services menu`);
+    // A gated service stays out of it.
+    for (const key of gatedKeys) {
+      assert.equal(head.includes(`href="${serviceUrl(key, locale)}"`), false,
+        `${locale}: ${key} is in the menu while gated`);
+    }
+
+    // It is quoted per route, so its own page publishes no starting price.
     const page = await read(fileFor(serviceUrl('personalDriver', locale)));
     const own = /<section class="page-head[\s\S]*?<\/section>/.exec(page)[0];
-    assert.equal(new RegExp(`${ui[locale].priceFrom} \\d+ €`).test(own), false, `${locale}: the private driver publishes a price`);
+    assert.equal(new RegExp(`${ui[locale].priceFrom} \\d+ €`).test(own), false,
+      `${locale}: the private driver publishes a price`);
   }
 });
 
@@ -222,10 +269,12 @@ test('the confirmation the client specified is on the page and in the email', as
   const script = await read('assets/booking.js');
   assert.match(script, /finish\(res\.data\.reference\)/, 'the confirmation is not tied to a successful send');
 
+  // The wording of the 28 October brief: a booking exists on acceptance of the
+  // quote, not on the passing of 24 hours.
   const expected = {
-    fi: ['Kiitos tarjouspyynnöstäsi!', 'DriveMe-tiimi ottaa sinuun yhteyttä 24 tunnin kuluessa. Tarjouspyyntö ei vielä vahvista varausta.'],
-    en: ['Thank you for your enquiry!', 'The DriveMe team will contact you within 24 hours. An enquiry does not confirm a booking yet.'],
-    sv: ['Tack för din offertförfrågan!', 'DriveMe-teamet kontaktar dig inom 24 timmar. En offertförfrågan bekräftar ännu ingen bokning.'],
+    fi: ['Kiitos tarjouspyynnöstäsi!', 'DriveMe-tiimi ottaa sinuun yhteyttä 24 tunnin kuluessa. Varauksesi on vahvistettu vasta, kun hyväksyt tarjouksemme ja saat meiltä kirjallisen vahvistuksen.'],
+    en: ['Thank you for your enquiry!', 'The DriveMe team will contact you within 24 hours. Your booking is confirmed only after you accept our quote and receive our written confirmation.'],
+    sv: ['Tack för din offertförfrågan!', 'DriveMe-teamet kontaktar dig inom 24 timmar. Din bokning är bekräftad först när du godkänner vår offert och får vår skriftliga bekräftelse.'],
   };
   for (const locale of LOCALES) {
     const html = await read(fileFor(url('booking', locale)));
@@ -300,7 +349,9 @@ test('a gated service offers no booking CTA, no price and says why', async () =>
         assert.equal(html.includes(`href="${url('booking', l)}?${words[l].params.service}=${key}"`), false,
           `${key} (${locale}) links to the booking form while gated`);
       }
-      assert.match(html, /(odottaa viranomais|awaiting regulatory)/i,
+      // Either notice is acceptable: one gate waits on the licence and
+      // insurance position, the other on the vehicle and the people to drive it.
+      assert.match(html, /(odottaa viranomais|awaiting regulatory|odottaa kaluston|awaiting confirmation of the vehicle|inväntar bekräftelse)/i,
         `${key} (${locale}) does not say it is awaiting clearance`);
       assert.equal(html.includes('"offers"'), false, `${key} (${locale}) schema claims a bookable offer`);
     }
@@ -604,7 +655,10 @@ test('the header marks the section the page actually belongs to', async () => {
   // One service page used to mark "Vehicle transfers" whatever it was, so the
   // service transfer page claimed to be somewhere it was not.
   const expected = {
-    workshopTransfer: 'serviceTransfers',
+    // Since the 28 October brief every service page but the business hub
+    // belongs to the Services menu.
+    workshopTransfer: 'services',
+    chauffeur: 'services',
     business: 'business',
     branchTransfer: 'services',
     homeDelivery: 'services',
@@ -676,21 +730,26 @@ test('the homepage hero is a photograph, preloaded, in two widths', async () => 
   }
 });
 
-test('the homepage shows the transfer services as photo tiles under the hero', async () => {
+test('the detailed B2B content lives on the business page, not the homepage', async () => {
+  // "Put detailed B2B information on its own page" (brief, 28 Oct 2026).
   for (const locale of LOCALES) {
     const html = await read(fileFor(url('home', locale)));
-    const heroEnd = html.indexOf('</section>', html.indexOf('<section class="hero">'));
-    const mosaicAt = html.indexOf('<section class="sec sec-navy svc-mosaic-sec">');
-    assert.ok(mosaicAt > heroEnd, `${locale}: the mosaic is not under the hero`);
+    assert.equal(/<li class="svc-tile/.test(html), false, `${locale}: the photo mosaic is back on the homepage`);
+    assert.equal(/<article class="path">/.test(html), false, `${locale}: the four-card B2B block is back`);
 
-    const mosaic = html.slice(mosaicAt, html.indexOf('</section>', mosaicAt));
-    for (const key of primaryKeys) {
-      assert.ok(mosaic.includes(`href="${serviceUrl(key, locale)}"`), `${locale}: the mosaic omits ${key}`);
+    // And the business page still carries them.
+    const biz = await read(fileFor(serviceUrl('business', locale)));
+    for (const key of ['branchTransfer', 'homeDelivery', 'purchasedCarPickup']) {
+      assert.ok(biz.includes(`href="${serviceUrl(key, locale)}"`), `${locale}: the business page lost ${key}`);
     }
-    const tiles = (mosaic.match(/<li class="svc-tile/g) || []).length;
-    assert.ok(tiles >= 5 && tiles <= 8, `${locale}: ${tiles} tiles is not the six offers`);
   }
 });
+
+/** The part of a heading before its *accent*: that much is contiguous text in
+    the rendered HTML, while the accent itself sits inside an <em>. */
+function plainAccent(title) {
+  return title.split('*')[0].trim() || title.replace(/\*/g, '');
+}
 
 function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')

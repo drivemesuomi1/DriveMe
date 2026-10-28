@@ -8,7 +8,7 @@
 
 import { LOCALES, DEFAULT_LOCALE } from '../content/site.mjs';
 import { services } from '../content/services.mjs';
-import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking, blog } from '../content/pages.mjs';
+import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking, blog, about } from '../content/pages.mjs';
 import { offer } from '../content/offer.mjs';
 
 /** id -> { fi: '/path/', en: '/en/path/' } */
@@ -34,6 +34,7 @@ register('contact', perLocale(contact));
 register('booking', perLocale(booking));
 register('offer', perLocale(offer));
 register('blog', perLocale(blog));
+register('about', perLocale(about));
 
 // A service slug is stored without its language folder, so it reads the same
 // in every language file: /auton-vienti-katsastukseen/, /en/car-to-inspection/,
