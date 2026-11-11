@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fi" class="has-promo">
+<html lang="fi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,15 +41,6 @@
 </head>
 <body>
 <a class="skip" href="#main">Siirry sisältöön</a>
-<a class="promo-bar" href="/uuden-asiakkaan-etu/" data-until="2026-10-31">
-  <span class="wrap promo-inner">
-    <span class="promo-lead">Uuden asiakkaan etu</span>
-    <span class="promo-dot" aria-hidden="true"></span>
-    <span class="promo-text">Uusille yksityisasiakkaille 10 % ensimmäisestä tilauksesta</span>
-    <span class="promo-more"><span class="promo-more-label">Lue lisää</span><span class="arrow" aria-hidden="true">→</span></span>
-  </span>
-  <span class="promo-sheen" aria-hidden="true"></span>
-</a>
 <div class="topbar">
   <div class="wrap topbar-inner">
     <p class="topbar-note">Helsinki · Espoo · Vantaa · Kauniainen</p>
@@ -368,21 +359,13 @@
 
             <!-- Progressive disclosure: the campaign code is real but rare, so
                  it is one line until someone needs it. Arriving from the offer
-                 page opens it with the code already in place. -->
-            <div class="offer-reveal">
-              <button class="link-btn" type="button" id="offer-toggle" aria-expanded="false" aria-controls="offer-field">
-                <span class="plus" aria-hidden="true">+</span> Minulla on etukoodi
-              </button>
-              <div id="offer-field" hidden>
-                
-            <div class="field">
-              <label for="offer_code">Etukoodi<span class="req" data-for="offer_code" hidden>*</span></label>
-              <input type="text" id="offer_code" name="offer_code" maxlength="20" autocapitalize="characters" aria-describedby="offer_code-help">
-              <span class="help" id="offer_code-help">Vapaaehtoinen. Huomioimme kampanjakoodin tarjouksessa.</span>
-              <span class="err" id="offer_code-err" role="alert"></span>
-            </div>
-              </div>
-            </div>
+                 page opens it with the code already in place.
+
+                 With no campaign running there is no code to type, so the
+                 field goes away rather than inviting people to hunt for one.
+                 Giving content/offer.mjs a new end date brings it back; the
+                 browser script treats the field as optional either way. -->
+            
         </fieldset>
         </div>
 

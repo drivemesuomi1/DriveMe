@@ -33,6 +33,7 @@ import { esc } from './layout.mjs';
 import { url } from './routes.mjs';
 import { isGated } from './blocks.mjs';
 import { form as svForm } from '../content/sv/form.mjs';
+import { offerExpired } from '../content/offer.mjs';
 
 const COPY = {
   fi: {
@@ -419,15 +420,20 @@ export function bookingForm(locale) {
 
             <!-- Progressive disclosure: the campaign code is real but rare, so
                  it is one line until someone needs it. Arriving from the offer
-                 page opens it with the code already in place. -->
-            <div class="offer-reveal">
+                 page opens it with the code already in place.
+
+                 With no campaign running there is no code to type, so the
+                 field goes away rather than inviting people to hunt for one.
+                 Giving content/offer.mjs a new end date brings it back; the
+                 browser script treats the field as optional either way. -->
+            ${offerExpired() ? '' : `<div class="offer-reveal">
               <button class="link-btn" type="button" id="offer-toggle" aria-expanded="false" aria-controls="offer-field">
                 <span class="plus" aria-hidden="true">+</span> ${esc(c.offerToggle)}
               </button>
               <div id="offer-field" hidden>
                 ${field('offer_code', c.offerCode, text('offer_code', { help: true, autocapitalize: 'characters', maxlength: 20 }), c.offerCodeHelp)}
               </div>
-            </div>`)}
+            </div>`}`)}
         </div>
 
         <p class="hint form-required-note">${esc(c.requiredNote)}</p>

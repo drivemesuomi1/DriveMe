@@ -208,7 +208,7 @@ test('the quote form asks for the job, in three steps, and quotes nothing', asyn
     for (const id of ['service', 'pickup_location', 'destination', 'date', 'time', 'vehicle_details',
       'passengers', 'extra_stops', 'vehicle_plate', 'roadworthy', 'appointment_time', 'return_needed',
       'customer_name', 'customer_phone', 'customer_email', 'company_name', 'business_id',
-      'volume', 'recurrence', 'notes', 'offer_code']) {
+      'volume', 'recurrence', 'notes'].concat(offerExpired() ? [] : ['offer_code'])) {
       assert.match(html, new RegExp(`id="${id}"`), `${locale}: the form has no ${id} field`);
     }
 
@@ -219,7 +219,7 @@ test('the quote form asks for the job, in three steps, and quotes nothing', asyn
       assert.match(html, new RegExp(`id="${id}"[^>]* required`), `${locale}: ${id} must be required`);
     }
     for (const id of ['time', 'vehicle_plate', 'appointment_time', 'extra_stops',
-      'company_name', 'business_id', 'volume', 'notes', 'offer_code']) {
+      'company_name', 'business_id', 'volume', 'notes'].concat(offerExpired() ? [] : ['offer_code'])) {
       assert.equal(new RegExp(`id="${id}"[^>]* required`).test(html), false,
         `${locale}: ${id} must stay optional`);
     }
@@ -535,11 +535,18 @@ test('the new-customer offer is one page per language, with its code and end dat
     assert.match(html, new RegExp(`<html lang="${locale}"[ >]`), `${locale} offer page language`);
     assert.ok(html.includes(`<title>${escapeHtml(c.title)}</title>`), `${locale} offer page title`);
     assert.ok(html.includes(escapeHtml(c.description)), `${locale} offer page description`);
-    assert.ok(html.includes(OFFER.code), `${locale} offer page does not show the code`);
-
-    // The code travels to the request form in this language's own word.
-    const href = `${ui[locale].bookHref}?${words[locale].params.source}=offer&${words[locale].params.offer}=${OFFER.code}`;
-    assert.ok(html.includes(`href="${href}"`), `${locale} offer page does not carry the code to the form`);
+    if (offerExpired()) {
+      // Past the end date the page stays - the URL is shared and indexed -
+      // but it stops offering a discount it will not honour.
+      assert.ok(html.includes(escapeHtml(c.expired)), `${locale} expired offer page does not say so`);
+      assert.equal(html.includes(`${words[locale].params.offer}=${OFFER.code}`), false,
+        `${locale} expired offer page still carries the code to the form`);
+    } else {
+      assert.ok(html.includes(OFFER.code), `${locale} offer page does not show the code`);
+      // The code travels to the request form in this language's own word.
+      const href = `${ui[locale].bookHref}?${words[locale].params.source}=offer&${words[locale].params.offer}=${OFFER.code}`;
+      assert.ok(html.includes(`href="${href}"`), `${locale} offer page does not carry the code to the form`);
+    }
 
     // A campaign page states the terms it is bound by, and who it is for.
     for (const term of c.terms) assert.ok(html.includes(escapeHtml(term.slice(0, 60))), `${locale} offer terms`);
@@ -552,9 +559,16 @@ test('the new-customer offer is one page per language, with its code and end dat
   }
 });
 
-test('the request form takes an offer code, optionally, in every language', async () => {
+test('the offer code field follows the campaign, in every language', async () => {
   for (const locale of LOCALES) {
     const html = await read(fileFor(url('booking', locale)));
+    if (offerExpired()) {
+      // No campaign, no code to type: the field goes rather than sending
+      // people hunting for one that does not exist.
+      assert.equal(html.includes('id="offer_code"'), false, `${locale} form offers a code with no campaign running`);
+      assert.equal(html.includes('id="offer-toggle"'), false, `${locale} form still has the code toggle`);
+      continue;
+    }
     const input = /<input type="text" id="offer_code"[^>]*>/.exec(html);
     assert.ok(input, `${locale} form has no offer code field`);
     assert.equal(/required/.test(input[0]), false, `${locale} offer code must stay optional`);
@@ -563,6 +577,17 @@ test('the request form takes an offer code, optionally, in every language', asyn
     assert.match(html, /id="offer-toggle" aria-expanded="false" aria-controls="offer-field"/,
       `${locale} offer code field cannot be opened`);
   }
+});
+
+test('the form still works with no code field on it', async () => {
+  // Every reference to the field is guarded, so a campaign ending cannot
+  // break the form it was bolted onto.
+  const script = await read('assets/booking.js');
+  assert.match(script, /if \(offerCode && \$\('offer_code'\)\)/, 'the code prefill is not guarded');
+  assert.match(script, /if \(offerToggle\)/, 'the toggle listener is not guarded');
+  // val() answers '' for a field that is not there, so the payload still builds.
+  assert.match(script, /function val\(id\) \{ var e = \$\(id\); return e \? String\(e\.value \|\| ''\)\.trim\(\) : ''; \}/,
+    'val() no longer tolerates a missing field');
 });
 
 test('the blog page carries the widget, and the policy lets it run', async () => {
@@ -678,6 +703,26 @@ test('the header marks the section the page actually belongs to', async () => {
       assert.ok(around.includes(escapeHtml(want)), `${key} (${locale}) should mark ${want}`);
     }
   }
+});
+
+test('an expired campaign leaves no strip and no gap under it', async () => {
+  // .has-promo rests the header 40px down, under the strip. If the strip goes
+  // and the class stays, the header hangs in mid-air and the page scrolls
+  // through the gap - which is what happened on 1 November 2026.
+  for (const p of pages) {
+    const html = await read(fileFor(p.path));
+    const hasClass = /<html[^>]*class="[^"]*has-promo/.test(html);
+    const hasBar = html.includes('class="promo-bar"');
+    assert.equal(hasClass, hasBar, `${p.path}: the promo class and the strip disagree`);
+    if (offerExpired()) {
+      assert.equal(hasBar, false, `${p.path}: the campaign ended but the strip is still built`);
+    }
+  }
+  // And the browser takes the class away with the strip, for the window
+  // between the campaign ending and the next deploy.
+  const script = await read('assets/site.js');
+  assert.match(script, /removeChild\(promo\)[\s\S]{0,400}classList\.remove\('has-promo'\)/,
+    'site.js removes the expired strip without removing the class');
 });
 
 test('the campaign strip sits above the header of every page but the offer itself', async () => {

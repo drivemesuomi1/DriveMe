@@ -215,7 +215,14 @@
     var until = promo.getAttribute('data-until');
     var today = new Date();
     var iso = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
-    if (until && iso > until) promo.parentNode.removeChild(promo);
+    if (until && iso > until) {
+      promo.parentNode.removeChild(promo);
+      /* The header rests under the strip via .has-promo { top: 40px }. Taking
+         the strip away without taking the class away leaves the header pinned
+         40px down, and the page scrolls through the gap above it - which is
+         what every page did between the campaign ending and the next deploy. */
+      document.documentElement.classList.remove('has-promo');
+    }
   }
 
   /* ------------------------------------------------ language switch ---
