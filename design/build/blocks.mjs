@@ -160,9 +160,12 @@ export function factCard(title, items, variant, note) {
   return `<div class="fact"><h3>${esc(title)}</h3>${tickList(items, variant, note)}</div>`;
 }
 
-export function callout(title, body, tone = 'info') {
+// `level` is the title's heading level: 2 when the callout is a top-level
+// block of a page (a sibling of the h2 sections), 3 when it sits inside one.
+// The look is the same either way: site.css styles .callout h2 and h3 alike.
+export function callout(title, body, tone = 'info', level = 3) {
   return `<div class="callout${tone === 'info' ? '' : ' ' + tone}">
-    ${title ? `<h3>${esc(title)}</h3>` : ''}<p>${esc(body)}</p></div>`;
+    ${title ? `<h${level}>${esc(title)}</h${level}>` : ''}<p>${esc(body)}</p></div>`;
 }
 
 export function faqList(items) {
@@ -185,7 +188,7 @@ export function priceTable(head, rows, note) {
   return `<div class="table-scroll"><table>
     <thead><tr>${head.map((h) => `<th scope="col">${esc(h)}</th>`).join('')}</tr></thead>
     <tbody>${rows.map((r) => `<tr>
-      <th scope="row" style="font-weight:600">${esc(r[0])}</th>
+      <th scope="row" style="font-weight:600">${r[4] ? `<a href="${esc(r[4])}">${esc(r[0])}</a>` : esc(r[0])}</th>
       <td><span class="price">${esc(r[1])}</span></td>
       <td>${esc(r[2])}</td>
       <td>${esc(r[3])}</td>
@@ -439,7 +442,8 @@ export function renderBlock(block, locale) {
     case 'faq':
       return wrap(faqList(block.items));
     case 'callout':
-      return callout(block.title, block.body, block.tone || 'info');
+      // A page-level block: its siblings carry h2 titles, so it does too.
+      return callout(block.title, block.body, block.tone || 'info', 2);
     case 'statusRail':
       return wrap(statusRail(locale));
     case 'cancellation':

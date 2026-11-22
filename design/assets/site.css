@@ -608,7 +608,7 @@ section[id],div[id]{scroll-margin-top:120px}
 .page-head a:not(.btn),.sec-navy a:not(.btn):not(.card a){color:#fff}
 .page-head .callout,.sec-navy .callout{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);border-left-color:var(--brand-on-navy)}
 .page-head .callout p,.sec-navy .callout p{color:var(--on-navy-2)}
-.page-head .callout h3,.sec-navy .callout h3{color:#fff}
+.page-head .callout h2,.page-head .callout h3,.sec-navy .callout h2,.sec-navy .callout h3{color:#fff}
 .btn .arrow{transition:transform var(--standard)}
 .btn:hover .arrow{transform:translateX(3px)}
 
@@ -638,6 +638,11 @@ section[id],div[id]{scroll-margin-top:120px}
 .hero h1 .accent{color:#9CC8FF;font-weight:700;display:block}
 .hero .eyebrow{color:#E9F2FF}
 .hero .lead{color:#DFE8F3;margin-top:var(--s-6);max-width:46ch}
+/* Finnish compounds are long: on a phone the accent word has to fit the
+   column, and may break rather than run off the screen. */
+@media (max-width:480px){
+  .hero h1{font-size:clamp(1.85rem,8vw,2.6rem);overflow-wrap:anywhere}
+}
 .hero .trust-strip li{color:#DFE8F3}
 .hero-ctas{display:flex;flex-wrap:wrap;gap:var(--s-3);margin-top:var(--s-8)}
 
@@ -712,7 +717,9 @@ section[id],div[id]{scroll-margin-top:120px}
 }
 
 @media (max-width:940px){
-  .hero-grid{grid-template-columns:1fr;gap:var(--s-8)}
+  /* minmax(0,1fr) rather than 1fr: a 1fr track grows to its longest word, and
+     "Kuljettajapalvelut" pushed the whole hero column past a 375px screen. */
+  .hero-grid{grid-template-columns:minmax(0,1fr);gap:var(--s-8)}
   .hero h1{max-width:18ch}
   /* One column: the scrim has to darken the whole frame, not just one side. */
   .hero-scrim{background:linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.72) 55%,rgba(0,0,0,.80) 100%)}
@@ -762,7 +769,7 @@ section[id],div[id]{scroll-margin-top:120px}
 }
 .page-head>*{position:relative;z-index:1}
 .page-head-inner{padding-block:clamp(32px,6vw,64px)}
-.page-head h1{color:#fff;max-width:19ch;font-weight:700;letter-spacing:-.012em}
+.page-head h1{color:#fff;max-width:19ch;font-weight:700;letter-spacing:-.012em;overflow-wrap:break-word}
 .page-head .lead{color:var(--on-navy-2);margin-top:var(--s-6)}
 .service-hero{background:#15191d}
 .service-hero .service-hero-photo{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center top}
@@ -932,7 +939,7 @@ section[id],div[id]{scroll-margin-top:120px}
    ========================================================================== */
 .facts{display:grid;gap:var(--s-6);grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:start}
 .fact{background:var(--surface);border:1px solid var(--ink-300);border-radius:var(--r-card);padding:var(--s-8) var(--s-6)}
-.fact h3{font-size:var(--t-h4);margin-bottom:var(--s-4)}
+.fact h2,.fact h3{font-size:var(--t-h4);margin-bottom:var(--s-4)}
 .ticks{list-style:none;display:grid;gap:var(--s-3)}
 .ticks li{position:relative;padding-left:30px;font-size:var(--t-small);color:var(--ink-700);line-height:1.55}
 .ticks li::before{position:absolute;left:0;top:0;font-weight:700}
@@ -948,7 +955,10 @@ section[id],div[id]{scroll-margin-top:120px}
   border:1px solid var(--brand-soft);border-left:3px solid var(--brand);
   background:var(--brand-soft);padding:var(--s-6);border-radius:var(--r-card);
 }
-.callout h3{font-size:var(--t-h4);margin-bottom:var(--s-2)}
+.callout h2,.callout h3{font-size:var(--t-h4);margin-bottom:var(--s-2)}
+/* An h2 used as a component title (callout, fact card) is there for the
+   document outline only: it keeps the h3 metrics, so nothing moves. */
+.callout h2,.fact h2{letter-spacing:-.008em;line-height:1.25}
 .callout p{color:var(--ink-700);font-size:var(--t-small);line-height:1.6}
 .callout.warn{border-color:#EFE0C2;border-left-color:var(--caution);background:var(--caution-soft)}
 .callout.stop{border-color:#EED6D6;border-left-color:var(--critical);background:var(--critical-soft)}
@@ -1108,6 +1118,23 @@ td .price{font-weight:600;color:var(--brand-deep);white-space:nowrap}
    the line that stands in until there is something to show. */
 .blog-feed{min-height:220px}
 .blog-pending{color:var(--ink-500);font-size:var(--t-small);line-height:1.6}
+/* Static article list (crawlable); the Soro widget replaces it in the browser. */
+.blog-list-title{font-size:var(--t-h3);margin-bottom:var(--s-6)}
+.blog-list{list-style:none;display:grid;gap:var(--s-6);padding:0;max-width:75ch}
+.blog-item{padding-bottom:var(--s-6);border-bottom:1px solid var(--ink-100)}
+.blog-item h3{font-size:1.15rem;line-height:1.35}
+.blog-item h3 a{color:inherit;text-decoration:none}
+.blog-item h3 a:hover,.blog-item h3 a:focus-visible{text-decoration:underline}
+.blog-meta{color:var(--ink-500);font-size:var(--t-small);margin:var(--s-1) 0 var(--s-2)}
+.blog-item p{color:var(--ink-700);line-height:1.6}
+/* A synced article. The image carries its real width and height from the
+   sync, so the browser reserves its space before it loads. */
+.blog-article{max-width:72ch}
+.blog-article-image{display:block;width:100%;height:auto;border-radius:var(--r-card);margin-bottom:var(--s-8)}
+.blog-article h2{margin:var(--s-8) 0 var(--s-3);font-size:1.45rem;line-height:1.3}
+.blog-article h3{margin:var(--s-6) 0 var(--s-2);font-size:1.15rem}
+.blog-article p{margin-top:var(--s-4)}
+.blog-back{margin-top:var(--s-8)}
 .page-head-note{margin-top:var(--s-4);color:var(--on-navy-2)}
 
 .foot-grid .foot-social{list-style:none;display:flex;gap:var(--s-3);margin-top:var(--s-6)}

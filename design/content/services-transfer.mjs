@@ -20,6 +20,9 @@
  * published prices, because that is exactly the scope they were set for.
  */
 
+import { PRODUCTS, WAITING } from '../api/_lib/pricing.js';
+
+
 export const transferServices = [
   /* ------------------------------------------------------------------ */
   {
@@ -154,7 +157,7 @@ export const transferServices = [
       ],
       boundary: 'DriveMe vastaa siirrosta ja dokumentoidusta luovutuksesta. Kaupan ehdoista, asiakirjoista ja autosta annetuista lupauksista vastaa myyjäliike. Luovutuksen kuittaus on kuittaus vastaanotosta, ei kuluttajan oikeuksista luopumista.',
       faq: [
-        { q: 'Mille alueelle toimitatte?', a: 'Pääkaupunkiseutu ja Uusimaa kuuluvat vakioalueeseen. Pidemmät toimitukset Suomessa sovitaan reittikohtaisesti, kun kuljettajan paluujärjestely on selvillä.' },
+        { q: 'Mille alueelle toimitatte?', a: 'Toimitamme Helsingissä, Espoossa, Vantaalla ja Kauniaisissa, ja auto noudetaan aina näiltä alueilta. Toimitus muualle Suomeen sovitaan erikseen reitin mukaan, kun kuljettajan paluujärjestely on selvillä.' },
         { q: 'Pitääkö ostajan olla paikalla?', a: 'Kyllä, tai hänen nimeämänsä vastaanottaja. Luovutus kuitataan sille henkilölle, jonka olette ilmoittaneet.' },
         { q: 'Entä asiakirjat ja avaimet?', a: 'Kuljettaja toimittaa mukaan annetut asiakirjat ja avaimet sellaisenaan. Emme täytä tai allekirjoita kauppa-asiakirjoja liikkeen puolesta.' },
         { q: 'Voitteko noutaa vaihtoauton samalla?', a: 'Voimme, mutta se on oma siirtonsa: erillinen ajoneuvo, oma kuntotarkistus ja oma tarjousrivi.' },
@@ -193,7 +196,7 @@ export const transferServices = [
       ],
       boundary: 'DriveMe is responsible for the transfer and the documented handover. The selling dealer remains responsible for the terms of sale, the documents and any representations about the car. The receipt acknowledges delivery; it does not waive consumer rights.',
       faq: [
-        { q: 'Which areas do you deliver to?', a: 'The capital region and Uusimaa are the standard area. Longer deliveries in Finland are agreed per route, once the driver’s return leg is settled.' },
+        { q: 'Which areas do you deliver to?', a: 'We deliver in Helsinki, Espoo, Vantaa and Kauniainen, and the car is always collected in one of these cities. A delivery elsewhere in Finland is agreed separately per route, once the driver’s return leg is settled.' },
         { q: 'Does the buyer need to be present?', a: 'Yes, or a receiver they have named. The handover is signed off by the person you told us about.' },
         { q: 'What about documents and keys?', a: 'The driver delivers the documents and keys given to them, as they are. We do not complete or sign sale documents on the dealer’s behalf.' },
         { q: 'Can you collect a trade-in at the same time?', a: 'We can, but it is its own transfer: a separate vehicle, its own condition check and its own line in the quote.' },
@@ -305,9 +308,9 @@ export const transferServices = [
       slug: 'huoltosiirto',
       nav: 'Huoltosiirto',
       short: 'Huoltosiirto',
-      title: 'Huoltosiirto – auton nouto ja palautus | DriveMe',
-      description: 'Auton siirto valittuun huoltopisteeseen ja palautus sovitusti. DriveMe hoitaa ajon; huoltotyö sovitaan suoraan palveluntarjoajan kanssa.',
-      h1: 'Huoltosiirto – auton nouto ja palautus',
+      title: 'Auto huoltoon ja katsastukseen – huoltosiirto | DriveMe',
+      description: `Viemme autosi huoltoon, katsastukseen, renkaanvaihtoon tai pesuun ja takaisin pääkaupunkiseudulla. Alkaen ${PRODUCTS.serviceRun.from} €, katsastusajo alkaen ${PRODUCTS.inspection.from} €.`,
+      h1: 'Huoltosiirto – autosi huoltoon tai katsastukseen ja takaisin',
       lead: 'DriveMe noutaa ajokuntoisen auton sovitusta osoitteesta, vie sen valitsemaanne huoltopisteeseen ja palauttaa sen sovitusti. Palvelu sopii yritysten kalustolle ja korjaamojen asiakkaille sekä yksityisille auton omistajille.',
       destinations: [
         { id: 'katsastus', label: 'Katsastus', body: 'Varaat katsastusajan, me hoidamme auton asemalle ja takaisin katsastusdokumenttien kanssa.' },
@@ -341,6 +344,8 @@ export const transferServices = [
       ],
       boundary: 'DriveMe vastaa siirrosta, dokumentoinnista ja sovitusta aikataulusta. Varauksesta, työn sisällöstä ja sen maksamisesta vastaa tilaaja suoraan palveluntarjoajalle. Kuljettaja ei hyväksy lisätöitä.',
       faq: [
+        { q: 'Voiko DriveMe viedä autoni katsastukseen?', a: `Kyllä. Varaat katsastusajan itse, ja kuljettaja noutaa auton, vie sen katsastusasemalle ja tuo sen takaisin. Katsastusajo, jossa kuljettaja odottaa asemalla, on alkaen ${PRODUCTS.inspection.from} € ja sisältää ${WAITING.waitReturnIncludedMinutes} minuuttia odotusta. Katsastusmaksun maksat suoraan katsastusasemalle.` },
+        { q: 'Paljonko auton vienti huoltoon maksaa?', a: `Nouto, vienti huoltoon ja palautus erillisenä ajona on alkaen ${PRODUCTS.serviceRun.from} € (tyypillisesti ${PRODUCTS.serviceRun.typical[0]}–${PRODUCTS.serviceRun.typical[1]} €) pääkaupunkiseudulla arkipäivisin. Hinnat sisältävät arvonlisäveron, ja vahvistamme kiinteän hinnan ennen ajoa.` },
         { q: 'Pitääkö aika olla varattuna etukäteen?', a: 'Kyllä. Tilaaja varaa huolto-, katsastus- tai muun ajan ja ilmoittaa meille palveluntarjoajan, ajan ja mahdollisen varausnumeron.' },
         { q: 'Mihin kaikkiin palveluihin siirto sopii?', a: 'Siirto voidaan sopia huoltoon, katsastukseen, renkaanvaihtoon, pesuun, lasikorjaukseen tai muuhun varattuun autopalveluun. DriveMe hoitaa ajon, työn tekee valitsemanne palveluntarjoaja.' },
         { q: 'Mitä tapahtuu, jos huolto viivästyy?', a: 'Palautus ajetaan erillisenä ajona, kun palveluntarjoaja vahvistaa auton olevan valmis. Huoltopisteellä vietetty aika ilman kuljettajaa ei ole kuljettajan odotusta eikä sitä veloiteta odotuksena.' },
@@ -351,9 +356,9 @@ export const transferServices = [
       slug: 'service-transfer',
       nav: 'Service transfer',
       short: 'Service transfer',
-      title: 'Service transfer — collection and return | DriveMe',
-      description: 'A car taken to the service point you choose and returned as agreed. DriveMe does the driving; the work itself is agreed directly with the provider.',
-      h1: 'Service transfer — collection and return',
+      title: 'Car to the service or inspection and back | DriveMe',
+      description: `We take your car to the service, inspection, tyre change or wash and back in the Helsinki capital region. From ${PRODUCTS.serviceRun.from} €, inspection run from ${PRODUCTS.inspection.from} €.`,
+      h1: 'Service transfer — your car to the service or inspection and back',
       lead: 'DriveMe collects a roadworthy car from the agreed address, takes it to the service point you choose and returns it as agreed. It suits company fleets, workshop customers and private owners alike.',
       destinations: [
         { id: 'inspection', label: 'Inspection', body: 'You book the slot; we take the car to the station and bring it back with the paperwork.' },
@@ -387,6 +392,8 @@ export const transferServices = [
       ],
       boundary: 'DriveMe is responsible for the transfer, the documentation and the agreed schedule. The booking, the content of the work and paying for it stay between the customer and the provider. The driver approves no extra work.',
       faq: [
+        { q: 'Can DriveMe take my car to the inspection?', a: `Yes. You book the inspection slot, and the driver collects the car, takes it to the station and brings it back. An inspection run where the driver waits at the station is from ${PRODUCTS.inspection.from} € and includes ${WAITING.waitReturnIncludedMinutes} minutes of waiting. You pay the inspection fee directly to the station.` },
+        { q: 'How much does a service run cost?', a: `Collection, the drive to the service and a separate return is from ${PRODUCTS.serviceRun.from} € (typically ${PRODUCTS.serviceRun.typical[0]}–${PRODUCTS.serviceRun.typical[1]} €) inside the capital region on weekdays. Prices include VAT, and we confirm a fixed price before the drive.` },
         { q: 'Does the appointment have to be booked in advance?', a: 'Yes. You book the service, inspection or other appointment and tell us the provider, the time and any booking reference.' },
         { q: 'Which services does this cover?', a: 'A transfer can be agreed to a service, an inspection, a tyre change, a wash, glass repair or any other booked car service. DriveMe does the driving; your chosen provider does the work.' },
         { q: 'What happens if the workshop runs late?', a: 'The return is dispatched as a separate drive once the provider confirms the car is ready. Time the car spends at the provider without a driver is not driver waiting and is not charged as such.' },

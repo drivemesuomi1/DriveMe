@@ -1,0 +1,82 @@
+# Soro blog -> static article pages, without anyone remembering to do it.
+#
+# Daily, and on demand: run the blog sync, then the full build and tests. If
+# articles changed, open a pull request for review. Nothing is merged or
+# deployed automatically; Netlify deploys when a person merges the PR.
+#
+# Failure is loud and harmless. The sync refuses to write if the Soro feed is
+# empty, an article has no body, the list collapses by more than half, or an
+# article claims coverage outside Helsinki, Espoo, Vantaa and Kauniainen. Any
+# failed step fails the job (GitHub notifies the repository's watchers) and
+# commits nothing, so the live site keeps serving the last good copy.
+#
+# One-time repository setting required for the PR step:
+#   Settings -> Actions -> General -> Workflow permissions ->
+#   "Allow GitHub Actions to create and approve pull requests".
+
+name: Blog sync
+
+on:
+  schedule:
+    - cron: '15 4 * * *'   # 06:15 / 07:15 Helsinki time
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: blog-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: design
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: design/package-lock.json
+
+      - run: npm ci
+
+      # Exits non-zero and writes nothing if any guard trips.
+      - name: Sync articles from Soro
+        run: npm run blog:sync
+
+      # Build every page from the synced data and run the whole test suite,
+      # including the service-area guard and the blog redirect checks.
+      - name: Build and test
+        run: npm run check
+
+      - name: Open a pull request if articles changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+            echo "No article changes."
+            exit 0
+          fi
+          branch="blog-sync/$(date -u +%Y-%m-%d)"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            echo "A sync branch for today already exists; leaving it for review."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add -A .
+          git commit -m "Sync blog articles from Soro"
+          git push origin "$branch"
+          gh pr create \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$branch" \
+            --title "Blog sync $(date -u +%Y-%m-%d)" \
+            --body "Automated sync of the Soro blog into static article pages (\`npm run blog:sync\` + \`npm run check\`, all passing). Review the new or changed articles under \`design/blogi/\` before merging; merging deploys them."

@@ -428,7 +428,8 @@ test('llms.txt tells an assistant what we sell, at the price we charge', async (
     assert.ok(txt.includes(`from ${PRODUCTS[key].from} €`), `llms.txt lost the ${key} price`);
   }
   // A transfer quoted per route must never carry an invented figure.
-  assert.match(txt, /Toimipisteiden välinen siirto\]\([^)]*\) — quoted individually/);
+  // llms.txt link notes use the `: ` separator the llmstxt.org format reads.
+  assert.match(txt, /Toimipisteiden välinen siirto\]\([^)]*\): [^\n€]*quoted individually\./);
 });
 
 test('robots.txt keeps operational surfaces out and lets AI search in', async () => {
@@ -599,7 +600,8 @@ test('the blog page carries the widget, and the policy lets it run', async () =>
     assert.ok(html.includes(`${blogEmbed.origin}/api/embed/${blogEmbed.id}`),
       `${locale}: the embed script is missing or points elsewhere`);
     // Never an empty page under a heading: the container says so itself.
-    assert.match(html, /<p class="blog-pending">/, `${locale}: nothing stands in for an empty feed`);
+    // Either the static list of synced articles or, before any sync, the note.
+    assert.match(html, /<ul class="blog-list"|<p class="blog-pending">/, `${locale}: nothing stands in for an empty feed`);
     // An ordinary indexable page, linked from the footer.
     assert.ok(html.includes(`<link rel="canonical" href="https://driveme.fi${url('blog', locale)}">`),
       `${locale}: the blog has no canonical`);

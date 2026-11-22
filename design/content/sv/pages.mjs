@@ -18,18 +18,18 @@ const range = (p) => `${p.typical[0]}-${p.typical[1]} €`;
 
 export const home = {
   slug: 'sv',
-  title: 'Förartjänster och bilflyttar | DriveMe',
-  description: 'En förare till din egen bil, bil med chaufför eller en bilflytt till överenskommen adress. Berätta vad du behöver, så får du en tydlig offert före bokningen.',
+  title: 'Förartjänster och bilflyttar i Helsingfors | DriveMe',
+  description: 'En yrkesförare till din egen bil i huvudstadsregionen: bilflytt, körning till service eller besiktning och personlig förare. Fast pris före körningen.',
   eyebrow: 'Förartjänster och bilflyttar',
   h1: 'Förartjänster och bilflyttar',
   h1Accent: 'Förartjänster',
   h1Rest: 'och bilflyttar',
-  lead: 'En egen förare, bil med chaufför eller en flytt av din bil. Berätta vad du behöver - du får en tydlig offert före bokningen.',
+  lead: 'En yrkesförare kör din egen bil: till en annan adress, till service eller besiktning, eller kör dig dit du ska. Berätta vad du behöver - du får en tydlig offert före bokningen.',
   primary: { label: 'Begär offert', href: '/sv/begar-offert/?kalla=home_hero' },
   secondary: { label: 'Ring oss', href: 'tel:+358503572836' },
-  trustLine: 'Huvudstadsregionen och Nyland. Längre flyttar i Finland avtalas rutt för rutt.',
+  trustLine: 'Vi betjänar Helsingfors, Esbo, Vanda och Grankulla. En längre flytt därifrån till annan ort i Finland avtalas med separat offert.',
 
-  choicesTitle: 'Tre sätt vi *kan hjälpa*',
+  choicesTitle: 'Hur vi *kan hjälpa*',
   choices: [
     {
       key: 'relocation',
@@ -158,7 +158,7 @@ export const home = {
       homeDelivery: 'Den sålda bilen till kundens dörr, med dokumenterad överlämning.',
       purchasedCarPickup: 'Den inköpta bilen från säljaren till er, med skicket registrerat.',
       workshopTransfer: 'Till verkstad, besiktning eller tvätt och tillbaka igen.',
-      relocation: 'Bilen flyttad till en annan adress i Finland, även längre rutter.',
+      relocation: 'Bilen flyttad till en annan adress i huvudstadsregionen. Längre flyttar med separat offert.',
       business: 'Återkommande flyttar med avtalad faktureringspraxis.',
     },
   },
@@ -207,15 +207,15 @@ export const servicesHub = {
 };
 
 const priceRows = [
-  ['Bilen körd till en annan adress', `från ${fmt(PRODUCTS.oneWay.from)}`, 'En upphämtning och en leverans', `Vanligtvis ${range(PRODUCTS.oneWay)} beroende på rutt och tidpunkt`],
-  ['Upphämtning och retur senare', `från ${fmt(PRODUCTS.pickupReturn.from)}`, 'Två överenskomna körningar', `Vanligtvis ${range(PRODUCTS.pickupReturn)}; leverantörens tid debiteras inte när föraren har åkt`],
-  ['Service-, däck- eller tvättkörning', `från ${fmt(PRODUCTS.serviceRun.from)}`, 'Upphämtning, leverans och retur senare', `Vanligtvis ${range(PRODUCTS.serviceRun)}; leverantörens avgifter ingår inte`],
-  ['Bilen till besiktning', `från ${fmt(PRODUCTS.inspection.from)}`, `Upphämtning, väntan högst ${WAITING.waitReturnIncludedMinutes} min och retur`, 'Besiktningsavgiften betalas direkt till stationen'],
-  ['Vänta och returnera', `från ${fmt(PRODUCTS.waitReturn.from)}`, `Upphämtning, väntan högst ${WAITING.waitReturnIncludedMinutes} min och retur`, `Därefter ${fmt(WAITING.hourlyRate)}/h i poster om ${WAITING.unitMinutes} minuter`],
-  ['Återlämning till bilhandel eller leasingbolag', `från ${fmt(PRODUCTS.handover.from)}`, 'Upphämtning och dokumenterad överlämning', 'Leverantörens avgifter betalar du direkt'],
-  ['Förare för din resa i din egen bil', 'Fast offert', 'Förare, överenskommen rutt och tidtabell', 'Priset bildas av rutt, längd, antal passagerare och returresa'],
-  ['Långdistansflytt', 'Fast offert', 'Körd flytt utanför huvudstadsregionen', 'Bränsle, laddning och förarens returresa specificeras'],
-  ['Företagskunder', 'Avtalspris', 'Återkommande flyttar, rapportering och fakturering', 'Månatlig minimivolym eller serviceavgift'],
+  ['Bilen körd till en annan adress', `från ${fmt(PRODUCTS.oneWay.from)}`, 'En upphämtning och en leverans', `Vanligtvis ${range(PRODUCTS.oneWay)} beroende på rutt och tidpunkt`, '/sv/bilflytt/'],
+  ['Upphämtning och retur senare', `från ${fmt(PRODUCTS.pickupReturn.from)}`, 'Två överenskomna körningar', `Vanligtvis ${range(PRODUCTS.pickupReturn)}; leverantörens tid debiteras inte när föraren har åkt`, '/sv/bilflytt/'],
+  ['Service-, däck- eller tvättkörning', `från ${fmt(PRODUCTS.serviceRun.from)}`, 'Upphämtning, leverans och retur senare', `Vanligtvis ${range(PRODUCTS.serviceRun)}; leverantörens avgifter ingår inte`, '/sv/serviceflytt/'],
+  ['Bilen till besiktning', `från ${fmt(PRODUCTS.inspection.from)}`, `Upphämtning, väntan högst ${WAITING.waitReturnIncludedMinutes} min och retur`, 'Besiktningsavgiften betalas direkt till stationen', '/sv/serviceflytt/#besiktning'],
+  ['Vänta och returnera', `från ${fmt(PRODUCTS.waitReturn.from)}`, `Upphämtning, väntan högst ${WAITING.waitReturnIncludedMinutes} min och retur`, `Därefter ${fmt(WAITING.hourlyRate)}/h i poster om ${WAITING.unitMinutes} minuter`, '/sv/serviceflytt/'],
+  ['Återlämning till bilhandel eller leasingbolag', `från ${fmt(PRODUCTS.handover.from)}`, 'Upphämtning och dokumenterad överlämning', 'Leverantörens avgifter betalar du direkt', '/sv/bilflytt/'],
+  ['Personlig förare för din egen bil', 'Fast offert', 'Förare, överenskommen rutt och tidtabell', 'Priset bildas av rutt, längd, antal passagerare och returresa', '/sv/personlig-forare/'],
+  ['Långdistansflytt', 'Fast offert', 'Hämtning i serviceområdet, körning till annan ort i Finland', 'Bränsle, laddning och förarens returresa specificeras', '/sv/bilflytt/'],
+  ['Företagskunder', 'Avtalspris', 'Återkommande flyttar, rapportering och fakturering', 'Månatlig minimivolym eller serviceavgift', '/sv/for-foretag/'],
 ];
 
 export const pricing = {
@@ -269,7 +269,7 @@ export const pricing = {
 
 export const howPage = {
   slug: 'sv/sa-fungerar-det',
-  title: 'Så fungerar DriveMe | Från prisförfrågan till slutfört uppdrag',
+  title: 'Så fungerar DriveMe | Från offert till slutfört uppdrag',
   description: 'Från prisförfrågan till bekräftelse, från upphämtning till dokumenterad överlämning. Så flyttar DriveMe din bil utan att du behöver åka med.',
   h1: 'Så *fungerar DriveMe*',
   lead: 'En offertförfrågan tar under en minut, och varje offert skrivs av en människa. Därför har varje bekräftat uppdrag en riktig förare, en riktig tid och ett riktigt pris.',
@@ -375,8 +375,8 @@ export const safety = {
 
 export const faqPage = {
   slug: 'sv/vanliga-fragor',
-  title: 'Vanliga frågor om DriveMe',
-  description: 'Svar på de vanligaste frågorna: tidsbokningar, betalningar, dokumentation, bilens skick och avbokningar.',
+  title: 'Vanliga frågor om förare till din bil | DriveMe',
+  description: 'Behöver jag en tidsbokning, vem betalar leverantören, hur fungerar avbokning och vad kostar en förare till min bil? Svaren finns här.',
   h1: 'Vanliga frågor *om DriveMe*',
   lead: 'Hittar du inte svaret? Ring eller skriv, så hjälper vi dig.',
   items: [
@@ -389,10 +389,12 @@ export const faqPage = {
     { q: 'Kan någon annan lämna över nycklarna?', a: 'Ja, när det är godkänt i bokningen och identiteten och överlämningssättet är bekräftade.' },
     { q: 'Ingår tredje parts avgift i priset?', a: 'Nej, om det inte uttryckligen står i offerten.' },
     { q: 'Är DriveMe en verkstad eller besiktningsstation?', a: 'Nej. DriveMe säljer transporten, ansvaret för bilen under körningen, den dokumenterade överlämningen och den överenskomna samordningen - inte reparation, besiktning, rådgivning eller betalningsförmedling.' },
-    { q: 'Vilket område betjänar ni?', a: 'Helsingfors, Esbo, Vanda och Grankulla. Längre flyttar prissätter vi från fall till fall.' },
+    { q: 'Vilket område betjänar ni?', a: 'Helsingfors, Esbo, Vanda och Grankulla. Bilen hämtas alltid i någon av dessa städer. En längre flytt därifrån till annan ort i Finland prissätter vi separat.' },
     { q: 'När är bokningen bindande?', a: 'När vi har bekräftat förare, tid och fast pris. Att skicka formuläret skapar bara en förfrågan.' },
-    { q: 'Kan jag åka med i bilen?', a: 'Ja. I tjänsten "Förare för din resa" kör föraren dig och ditt sällskap i din egen bil, till exempel till flygplatsen eller på en längre resa. Vid en bilflytt åker däremot ingen med.' },
+    { q: 'Kan jag åka med i bilen?', a: 'Ja. I tjänsten Personlig förare kör föraren dig och ditt sällskap i din egen bil, till exempel till ett evenemang, arbetsmöten eller flygplatsen. Vid en bilflytt eller serviceflytt åker däremot ingen med.' },
     { q: 'Hur fungerar avbokning?', a: 'Avgiftsfritt minst 24 timmar före upphämtningen. Under 24 timmar: 50 % av DriveMe-arvodet. Efter att föraren åkt debiterar vi grundavgiften och den tid som gått åt enligt villkoren.' },
+    { q: 'Kan jag anlita någon som kör min egen bil i Helsingfors?', a: 'Ja. DriveMe ordnar en yrkesförare för din egen bil i Helsingfors, Esbo, Vanda och Grankulla. Föraren kan flytta bilen till en annan adress, köra den till service eller besiktning och tillbaka, eller köra dig och ditt sällskap i din egen bil. DriveMe står för föraren, aldrig för bilen.' },
+    { q: 'Vad kostar en förare till min bil?', a: `En bilflytt till en annan adress kostar från ${PRODUCTS.oneWay.from} €, en serviceflytt från ${PRODUCTS.serviceRun.from} € och en besiktningskörning från ${PRODUCTS.inspection.from} €. Personlig förare och företagsflyttar prissätts individuellt. Priserna inkluderar moms, och ett fast pris bekräftas alltid före körningen.` },
   ],
 };
 
@@ -447,18 +449,20 @@ export const terms = {
 
 export const contact = {
   slug: 'sv/kontakt',
-  title: 'Kontakt | DriveMe',
+  title: 'Kontakt: telefon, e-post och kontor i Esbo | DriveMe',
   description: 'Kontakta DriveMe: telefon, e-post och serviceområde i huvudstadsregionen. Begär pris för en bilflytt.',
   h1: 'Kontakt',
   lead: 'En kontaktperson sköter uppdraget från början till slut. När något kräver omdöme når du en riktig människa.',
   hoursTitle: 'Förfrågningar och kontakt',
   hours: [
     'Du kan skicka en prisförfrågan med formuläret när som helst.',
-    'Vi ringer upp och bekräftar tid och pris före körningen.',
+    'Vi skickar ett fast pris per e-post inom 24 timmar. Ring om det är brådskande.',
+    'Bokningen bekräftas när du godkänner offerten och vi bekräftar förare och tid.',
     'Tillägg för natt, veckoslut och helgdagar finns i prislistan.',
   ],
   areaTitle: 'Serviceområde',
-  areaNote: 'Längre flyttar prissätter vi från fall till fall.',
+  areaNote: 'Bilen hämtas alltid i dessa städer. En längre flytt till annan ort i Finland prissätter vi separat.',
+  companyTitle: 'Företag och kontor',
 };
 
 export const about = {
@@ -508,6 +512,10 @@ export const blog = {
   h1: 'DriveMes *blogg*',
   lead: 'Vi skriver om bilflyttar, serviceflyttar och vardagen i bilbranschen i huvudstadsregionen - vad det innebär att beställa en flytt och vad som är värt att veta på förhand.',
   pending: 'Artiklarna dyker upp här. Syns ingen lista, uppdatera sidan om en stund.',
+  listTitle: 'Alla artiklar (på finska)',
+  readArticle: 'Läs artikeln',
+  published: 'Publicerad',
+  back: 'Alla artiklar',
   note: 'Artiklarna publiceras på finska.',
   ctaTitle: 'Behöver du en flytt *nu*?',
   ctaBody: 'Berätta rutten, tidpunkten och bilen, så skickar vi ett fast pris inom 24 timmar.',

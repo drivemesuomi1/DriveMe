@@ -176,7 +176,7 @@ export const words = {
   companyPhone: 'Telefon: ',
   companyEmail: 'E-post: ',
   companyArea: 'Serviceområde: ',
-  coverageBody: (areas) => `Vi betjänar för närvarande i ${areas}. Längre flyttar prissätts från fall till fall.`,
+  coverageBody: (areas) => `Vi betjänar ${areas}, och bilen hämtas alltid där. En längre flytt till annan ort i Finland prissätts separat.`,
   ctaBody: 'Berätta var bilen finns och vart den ska. Vi bekräftar ett fast pris före körningen.',
   registerInterest: 'Anmäl ditt intresse',
   interestTitle: 'Berätta om ditt intresse',

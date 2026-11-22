@@ -476,6 +476,13 @@
   status = 301
   force = true
 
+# Blog deep links (/blogi/?post=<slug>) are NOT redirected here. `npm run
+# build` writes _redirects with one 301 per synced article instead, and
+# Netlify applies _redirects before this file. A blanket ?post= rule would
+# also catch an article published in Soro but not yet synced and send a shared
+# link to a 404; with per-slug rules that link falls through to /blogi/, where
+# the widget shows the article as it always has.
+
 # Operational surfaces: never cache, never index.
 [[headers]]
   for = "/admin"

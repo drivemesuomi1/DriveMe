@@ -1,0 +1,54 @@
+/ 
+/en/ 
+/sv/ 
+/palvelut/ 
+/en/services/ 
+/sv/tjanster/ 
+/hinnasto/ L:heading-level-skip
+/en/pricing/ L:heading-level-skip
+/sv/priser/ L:heading-level-skip
+/nain-se-toimii/ 
+/en/how-it-works/ 
+/sv/sa-fungerar-det/ 
+/turvallisuus/ 
+/en/safety/ 
+/sv/sakerhet/ 
+/usein-kysyttya/ 
+/en/faq/ 
+/sv/vanliga-fragor/ 
+/ehdot/ L:heading-level-skip
+/en/terms/ L:heading-level-skip
+/sv/villkor/ L:heading-level-skip
+/yhteystiedot/ M:thin-content L:heading-level-skip
+/en/contact/ L:heading-level-skip
+/sv/kontakt/ L:heading-level-skip
+/uuden-asiakkaan-etu/ 
+/en/new-customer-offer/ 
+/sv/nykundserbjudande/ 
+/blogi/ M:thin-content
+/en/blog/ M:thin-content
+/sv/blogg/ M:thin-content
+/meista/ 
+/en/about/ 
+/sv/om-oss/ 
+/toimipisteiden-valinen-siirto/ 
+/en/branch-to-branch-transfer/ 
+/sv/bilflytt-mellan-verksamhetsstallen/ 
+/kotiintoimitus/ 
+/en/home-delivery/ 
+/sv/hemleverans/ 
+/ostoauton-nouto/ 
+/en/purchased-vehicle-collection/ 
+/sv/hamtning-av-inkopt-bil/ 
+/huoltosiirto/ 
+/en/service-transfer/ 
+/sv/serviceflytt/ 
+/auton-siirtopalvelu/ 
+/en/vehicle-relocation/ 
+/sv/bilflytt/ 
+/oma-kuljettaja/ 
+/en/personal-driver/ 
+/sv/personlig-forare/ 
+/yrityksille/ M:title-not-reflected-in-content
+/en/for-companies/ 
+/sv/for-foretag/ 

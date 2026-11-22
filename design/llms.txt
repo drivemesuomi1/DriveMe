@@ -7,23 +7,50 @@
 > DriveMe brings the driver, never the car.
 
 - Operator: Mansio Group Oy (DriveMe), Helsinki, Finland
-- Service area: Helsinki, Espoo, Vantaa, Kauniainen
+- Service area: Helsinki, Espoo, Vantaa, Kauniainen - these four cities only, not
+  the rest of Uusimaa. The car is always collected in one of them; a longer
+  move from there to elsewhere in Finland is priced on a separate quote.
 - Phone: +358 50 357 2836 · Email: info@driveme.fi
 - Languages: Finnish (https://driveme.fi/), English (https://driveme.fi/en/), Swedish (https://driveme.fi/sv/)
 - Prices include VAT. Third-party charges (inspection, service, tyres, wash)
   are paid by the customer directly to that provider.
-- A request is not a booking: DriveMe calls back and confirms a fixed price
-  before anyone drives.
+- A request is not a booking: DriveMe sends a fixed price by email within 24
+  hours, and the booking exists once the customer accepts that quote.
+- DriveMe is not a taxi, a limousine service or a car rental: the customer
+  supplies the car, DriveMe supplies the driver.
+
+## Pricing rules (VAT included)
+
+- Car moved to another address: from 89 € (typically 99–129 €)
+- Service, tyre or wash run with a later return: from 149 € (typically 149–199 €)
+- Inspection run, driver waits up to 60 min and returns the car: from 169 €
+- Personal driver in the customer's own car, and business transfers: quoted individually
+- Starting prices cover one job inside the capital region on a weekday.
+- Waiting: 15 min included per handover, then 35 €/h in 30-minute units.
+- Premiums (only the highest one applies): night 22–6 +25 %, weekend +15 %, public holiday +25 %, under 12 h notice +25 %.
+- Cancellation: free at least 24 h before pickup; later, 50 % of the DriveMe fee.
+
+## Common questions
+
+- Can I hire someone to drive my own car in Helsinki? Yes — DriveMe supplies
+  a professional driver for the customer's own car in Helsinki, Espoo, Vantaa, Kauniainen.
+- Is there a service that takes my car to the inspection? Yes — the customer
+  books the inspection; DriveMe collects the car, takes it to the station and
+  returns it (https://driveme.fi/huoltosiirto/).
+- Can someone move my car within Helsinki? Yes — a vehicle transfer to another
+  address (https://driveme.fi/auton-siirtopalvelu/).
+- How do I book? Send the quote form (https://driveme.fi/pyyda-tarjous/) or call
+  +358 50 357 2836.
 
 ## Services
 
-- [Toimipisteiden välinen siirto](https://driveme.fi/toimipisteiden-valinen-siirto/) — quoted individually. Branch transfer
-- [Kotiintoimitus](https://driveme.fi/kotiintoimitus/) — quoted individually. Home delivery
-- [Ostoauton nouto](https://driveme.fi/ostoauton-nouto/) — quoted individually. Purchase pickup
-- [Huoltosiirto](https://driveme.fi/huoltosiirto/) — from 149 € incl. VAT. Service transfer
-- [Auton siirtopalvelu](https://driveme.fi/auton-siirtopalvelu/) — from 89 € incl. VAT. Relocation
-- [Oma kuljettaja](https://driveme.fi/oma-kuljettaja/) — quoted individually. Personal driver
-- [Yrityksille](https://driveme.fi/yrityksille/) — quoted individually. For companies
+- [Toimipisteiden välinen siirto](https://driveme.fi/toimipisteiden-valinen-siirto/): Branch transfer, quoted individually.
+- [Kotiintoimitus](https://driveme.fi/kotiintoimitus/): Home delivery, quoted individually.
+- [Ostoauton nouto](https://driveme.fi/ostoauton-nouto/): Purchase pickup, quoted individually.
+- [Huoltosiirto](https://driveme.fi/huoltosiirto/): Service transfer, from 149 € incl. VAT.
+- [Auton siirtopalvelu](https://driveme.fi/auton-siirtopalvelu/): Relocation, from 89 € incl. VAT.
+- [Oma kuljettaja](https://driveme.fi/oma-kuljettaja/): Personal driver, quoted individually.
+- [Yrityksille](https://driveme.fi/yrityksille/): For companies, quoted individually.
 
 ## Key pages
 
@@ -33,3 +60,28 @@
 - [Frequently asked questions](https://driveme.fi/usein-kysyttya/)
 - [Terms of service](https://driveme.fi/ehdot/)
 - [Contact](https://driveme.fi/yhteystiedot/)
+
+## Articles (Finnish)
+
+- [Opas oman auton lentokenttäjärjestelyihin](https://driveme.fi/blogi/opas-oman-auton-lentokenttajarjestelyihin/): Opas oman auton lentokenttäjärjestelyihin auttaa suunnittelemaan lähtösi, pysäköinnin ja paluun rauhassa - omalla aikataulullasi ja ilman turhaa kiirettä.
+- [Autonsiirto vai oma kuljettaja? Valitse oikein](https://driveme.fi/blogi/autonsiirto-vai-oma-kuljettaja/): Autonsiirto vai oma kuljettaja? Vertaa vaihtoehtoja, kun ajokuntoinen autosi pitää saada sovittuun osoitteeseen turvallisesti ja ajallaan ilman kiirettä.
+- [Ennakkohinta vai tuntiveloitus siirtoajossa?](https://driveme.fi/blogi/ennakkohinta-vai-tuntiveloitus-siirtoajossa/): Ennakkohinta vai tuntiveloitus siirtoajossa? Opi, milloin kumpi hinnoittelu sopii autonsiirtoon ja miten sovit kuljettajan ajon selkeästi ennen lähtöä.
+- [Yritysauton luovutusprosessi ilman epäselvyyksiä](https://driveme.fi/blogi/yritysauton-luovutusprosessi/): Yritysauton luovutusprosessi etenee hallitusti, kun reitti, avaimet, aikataulu ja vastaanottaja sovitaan ennen kuljettajan ajoa varmasti ja ajallaan.
+- [Oman kuljettajan tilaaminen matkalle helposti](https://driveme.fi/blogi/oman-kuljettajan-tilaaminen-matkalle/): Oman kuljettajan tilaaminen matkalle omalla autolla säästää aikaa. Lue, miten ajo sovitaan, mitä hinta sisältää ja miten palvelu hyödyttää kiireistä arkea.
+- [Kuinka tilata autonkuljettaja yritykselle?](https://driveme.fi/blogi/kuinka-tilata-autonkuljettaja-yritykselle/): Kuinka tilata autonkuljettaja yritykselle? Varaa ammattikuljettaja yrityksen omaan ajokuntoiseen autoon sovitulle reitille, ajalle ja hinnalle selkeästi.
+- [Myytyjen autojen toimitusopas myyjälle](https://driveme.fi/blogi/myytyjen-autojen-toimitusopas/): Myytyjen autojen toimitusopas auttaa sopimaan noudon, luovutuksen ja aikataulun, kun ammattikuljettaja ajaa ajokuntoisen auton ostajalle ajallaan.
+- [Onko kuljettajapalvelu saatavilla Helsingissä?](https://driveme.fi/blogi/onko-kuljettajapalvelu-saatavilla-helsingissa/): Onko kuljettajapalvelu saatavilla Helsingissä? Ammattikuljettaja ajaa omaa autoasi sovitulla reitillä, aikataululla ja ennen ajoa vahvistetulla hinnalla.
+- [Ajoneuvon vastaanottoprotokolla autoliikkeelle](https://driveme.fi/blogi/ajoneuvon-vastaanottoprotokolla-autoliikkeelle/): Ajoneuvon vastaanottoprotokolla autoliikkeelle selkeyttää luovutuksen, vähentää epäselvyyksiä ja auttaa pitämään ne sovitut ajoneuvosiirrot aikataulussa.
+- [Auto siirtoon ilman omaa ajoa - näin se toimii](https://driveme.fi/blogi/auto-siirtoon-ilman-omaa-ajoa/): Auto siirtoon ilman omaa ajoa, kun aikaa ei riitä. Katso, miten nouto, dokumentointi, luovutus, hinta ja aikataulu sovitaan aina hyvissä ajoin ennen ajoa.
+- [Ajoneuvosiirtojen keskitetty tilaaminen yritykselle](https://driveme.fi/blogi/ajoneuvosiirtojen-keskitetty-tilaaminen-yritykselle/): Ajoneuvosiirtojen keskitetty tilaaminen yritykselle selkeyttää arkea: sovitut hinnat, aikataulut, dokumentoidut luovutukset ja selkeä koontilaskutus.
+- [Mitä auton siirrossa dokumentoidaan käytännössä?](https://driveme.fi/blogi/mita-auton-siirrossa-dokumentoidaan/): Mitä auton siirrossa dokumentoidaan? Katso, miten nouto, kunto, avaimet, kilometrit ja luovutus kirjataan selkeästi sovittua ajoa varten ennen lähtöä.
+- [Auton siirron hinta etukäteen - näin se sovitaan](https://driveme.fi/blogi/auton-siirron-hinta-etukateen/): Auton siirron hinta etukäteen tuo varmuutta budjetointiin. Lue, mitä tarjous sisältää ja miten sovitut nouto- ja luovutusvaiheet etenevät rauhallisesti.
+- [Kaluston siirto toimipisteiden välillä hallintaan](https://driveme.fi/blogi/kaluston-siirto-toimipisteiden-valilla/): Kaluston siirto toimipisteiden välillä vapauttaa henkilöstön aikaa. Sovittu hinta, aikataulu sekä dokumentoitu nouto ja luovutus tuovat varmuutta arkeen.
+- [Auton siirtopalvelu pääkaupunkiseudulla yrityksille](https://driveme.fi/blogi/auton-siirtopalvelu-paakaupunkiseudulla/): Auton siirtopalvelu pääkaupunkiseudulla vapauttaa aikaa. Katso, miten nouto, dokumentointi, luovutus, hinta ja aikataulu sovitaan selkeästi ennen ajoa.
+- [Auton siirto huoltoon ilman järjestelykuormaa](https://driveme.fi/blogi/auton-siirto-huoltoon/): Auton siirto huoltoon vapauttaa aikaa ja pitää huoltokäynnin hallinnassa. Katso, miten nouto, luovutus, dokumentointi ja hinta sovitaan etukäteen aina.
+- [Autovuokraamon autojen siirtojen ulkoistus](https://driveme.fi/blogi/autovuokraamon-autojen-siirtojen-ulkoistus/): Autovuokraamon autojen siirtojen ulkoistus vapauttaa henkilöstön aikaa ja tuo noutoihin, luovutuksiin, aikatauluihin ja laskutukseen selkeän mallin työhön.
+- [Leasingautojen siirtopalvelu selkeyttää autokiertoa](https://driveme.fi/blogi/leasingautojen-siirtopalvelu/): Leasingautojen siirtopalvelu säästää aikaa, kun noudot, luovutukset, aikataulut ja auton kunto dokumentoidaan ennen ajoa. Hinta vahvistetaan etukäteen.
+- [Ostoauton noutopalvelu pitää autokierron liikkeessä](https://driveme.fi/blogi/ostoauton-noutopalvelu/): Ostoauton noutopalvelu vapauttaa autoliikkeen aikaa ja varmistaa, että nouto, kunnon kirjaus ja luovutus hoidetaan sovitusti alusta loppuun selkeästi.
+- [Auton kotiinkuljetus asiakkaalle ilman järjestelyjä](https://driveme.fi/blogi/auton-kotiinkuljetus-asiakkaalle/): Auton kotiinkuljetus asiakkaalle tuo selkeyttä autokauppaan: nouto, ajo ja luovutus sovitaan etukäteen, ja jokainen vaihe dokumentoidaan turvallisesti.
+- [Ajoneuvosiirrot yrityksille ilman turhaa odotusta](https://driveme.fi/blogi/ajoneuvosiirrot-yrityksille/): Ajoneuvosiirrot yrityksille säästävät henkilöstön aikaa. Lue, miten sovittu hinta, aikataulu ja dokumentoitu luovutus helpottavat työn arjen järjestelyjä.
+- [Ajoneuvologistiikka pitää autokierron liikkeessä](https://driveme.fi/blogi/ajoneuvologistiikka/): Ajoneuvologistiikka nopeuttaa autokierron hallintaa. Katso, miten dokumentoidut siirrot, sovitut aikataulut ja selkeä vastuu tukevat toimintaa.

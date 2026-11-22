@@ -1,0 +1,54 @@
+/ 
+/en/ 
+/sv/ 
+/palvelut/ 
+/en/services/ M:meta-description-too-long
+/sv/tjanster/ 
+/hinnasto/ L:heading-level-skip
+/en/pricing/ L:heading-level-skip
+/sv/priser/ L:heading-level-skip
+/nain-se-toimii/ 
+/en/how-it-works/ 
+/sv/sa-fungerar-det/ M:title-too-long
+/turvallisuus/ 
+/en/safety/ 
+/sv/sakerhet/ 
+/usein-kysyttya/ M:description-not-reflected-in-content
+/en/faq/ M:description-not-reflected-in-content
+/sv/vanliga-fragor/ M:title-too-short
+/ehdot/ L:heading-level-skip
+/en/terms/ L:heading-level-skip
+/sv/villkor/ L:heading-level-skip
+/yhteystiedot/ M:title-too-short M:thin-content L:heading-level-skip
+/en/contact/ M:title-too-short L:heading-level-skip
+/sv/kontakt/ M:title-too-short L:heading-level-skip
+/uuden-asiakkaan-etu/ 
+/en/new-customer-offer/ 
+/sv/nykundserbjudande/ 
+/blogi/ M:thin-content
+/en/blog/ M:thin-content
+/sv/blogg/ M:thin-content
+/meista/ 
+/en/about/ 
+/sv/om-oss/ 
+/toimipisteiden-valinen-siirto/ M:images-missing-dimensions
+/en/branch-to-branch-transfer/ M:images-missing-dimensions
+/sv/bilflytt-mellan-verksamhetsstallen/ M:images-missing-dimensions
+/kotiintoimitus/ M:images-missing-dimensions
+/en/home-delivery/ M:images-missing-dimensions
+/sv/hemleverans/ M:images-missing-dimensions
+/ostoauton-nouto/ M:images-missing-dimensions
+/en/purchased-vehicle-collection/ M:images-missing-dimensions
+/sv/hamtning-av-inkopt-bil/ M:images-missing-dimensions
+/huoltosiirto/ M:images-missing-dimensions
+/en/service-transfer/ M:images-missing-dimensions
+/sv/serviceflytt/ M:images-missing-dimensions
+/auton-siirtopalvelu/ M:meta-description-too-long M:images-missing-dimensions
+/en/vehicle-relocation/ M:meta-description-too-long M:images-missing-dimensions
+/sv/bilflytt/ M:images-missing-dimensions
+/oma-kuljettaja/ M:images-missing-dimensions
+/en/personal-driver/ M:images-missing-dimensions
+/sv/personlig-forare/ M:images-missing-dimensions
+/yrityksille/ M:images-missing-dimensions M:title-not-reflected-in-content M:description-not-reflected-in-content
+/en/for-companies/ M:images-missing-dimensions
+/sv/for-foretag/ M:images-missing-dimensions

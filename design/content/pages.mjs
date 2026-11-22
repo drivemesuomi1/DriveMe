@@ -19,18 +19,18 @@ const fmt = (n) => `${n} €`;
 export const home = {
   fi: {
     slug: '',
-    title: 'Kuljettajapalvelut ja autonsiirrot | DriveMe',
-    description: 'Oma kuljettaja autoosi, auto kuljettajalla tai auton siirto sovittuun osoitteeseen. Kerro tarpeesi, niin saat selkeän tarjouksen ennen varausta.',
+    title: 'Kuljettajapalvelu ja autonsiirrot Helsingissä | DriveMe',
+    description: 'Kuljettaja omalle autollesi pääkaupunkiseudulla: auton siirto, vienti huoltoon tai katsastukseen ja oma kuljettaja. Kiinteä hinta ennen ajoa.',
     eyebrow: 'Kuljettajapalvelut ja autonsiirrot',
     h1: 'Kuljettajapalvelut ja autonsiirrot',
     h1Accent: 'Kuljettajapalvelut',
     h1Rest: 'ja autonsiirrot',
-    lead: 'Oma kuljettaja, auto kuljettajalla tai autosi siirto. Kerro tarpeesi - saat selkeän tarjouksen ennen varausta.',
+    lead: 'Ammattikuljettaja ajaa omaa autoasi: siirtää sen toiseen osoitteeseen, vie huoltoon tai katsastukseen tai kuljettaa sinut perille. Kerro tarpeesi - saat selkeän tarjouksen ennen varausta.',
     primary: { label: 'Pyydä tarjous', href: '/pyyda-tarjous/?lahde=home_hero' },
     secondary: { label: 'Soita meille', href: 'tel:+358503572836' },
-    trustLine: 'Pääkaupunkiseutu ja Uusimaa. Pidemmät siirrot Suomessa sovitaan reittikohtaisesti.',
+    trustLine: 'Palvelemme Helsingissä, Espoossa, Vantaalla ja Kauniaisissa. Pidempi siirto sieltä muualle Suomeen sovitaan erillisellä tarjouksella.',
 
-    choicesTitle: 'Kolme tapaa, joilla *autamme*',
+    choicesTitle: 'Näin voimme *auttaa*',
     choices: [
       {
         key: 'relocation',
@@ -161,7 +161,7 @@ export const home = {
         homeDelivery: 'Myyty auto asiakkaan ovelle, dokumentoidulla luovutuksella.',
         purchasedCarPickup: 'Ostoauto myyjältä liikkeeseenne, kunto kirjattuna.',
         workshopTransfer: 'Auto huoltoon, katsastukseen tai pesuun ja takaisin.',
-        relocation: 'Auton siirto toiseen osoitteeseen Suomessa, myös pidemmät reitit.',
+        relocation: 'Auton siirto toiseen osoitteeseen pääkaupunkiseudulla. Pidemmät siirrot erillisellä tarjouksella.',
         business: 'Toistuvat siirrot sovitulla laskutuskäytännöllä.',
       },
     },
@@ -197,18 +197,18 @@ export const home = {
   },
   en: {
     slug: 'en',
-    title: 'Chauffeur services and vehicle transfers | DriveMe',
-    description: 'A driver for your own car, a vehicle with a chauffeur, or a car moved where you need it. Tell us your plans for a clear quote before booking.',
+    title: 'Own-car driver and car transfers in Helsinki | DriveMe',
+    description: 'A professional driver for your own car in the Helsinki region: car transfers, runs to the service or inspection, and a personal driver. Fixed price first.',
     eyebrow: 'Chauffeur services and vehicle transfers',
     h1: 'Chauffeur services and vehicle transfers',
     h1Accent: 'Chauffeur services',
     h1Rest: 'and vehicle transfers',
-    lead: 'A driver for your car, a vehicle with a chauffeur, or a car moved where you need it. Tell us your plans for a clear quote before booking.',
+    lead: 'A professional driver for your own car: moved to another address, taken to the service or the inspection, or driving you there. Tell us your plans for a clear quote before booking.',
     primary: { label: 'Request a quote', href: '/en/request-a-quote/?source=home_hero' },
     secondary: { label: 'Call us', href: 'tel:+358503572836' },
-    trustLine: 'The capital region and Uusimaa. Longer transfers in Finland are agreed per route.',
+    trustLine: 'We serve Helsinki, Espoo, Vantaa and Kauniainen. A longer transfer from there to elsewhere in Finland is agreed on a separate quote.',
 
-    choicesTitle: 'Three ways we *can help*',
+    choicesTitle: 'How we *can help*',
     choices: [
       {
         key: 'relocation',
@@ -337,7 +337,7 @@ export const home = {
         homeDelivery: 'A sold car to the customer’s door, with a documented handover.',
         purchasedCarPickup: 'A purchased car from the seller to you, condition recorded.',
         workshopTransfer: 'To the workshop, inspection or wash and back again.',
-        relocation: 'A car moved to another address in Finland, longer routes included.',
+        relocation: 'A car moved to another address in the capital region. Longer moves on a separate quote.',
         business: 'Recurring transfers on an agreed billing arrangement.',
       },
     },
@@ -392,7 +392,7 @@ export const servicesHub = {
   en: {
     slug: 'en/services',
     title: 'Vehicle transfers and service runs in Helsinki | DriveMe',
-    description: 'DriveMe transfer services: branch-to-branch moves, deliveries to customers, purchased-vehicle collections, service transfers and single vehicle moves in the capital region.',
+    description: 'DriveMe transfers: branch-to-branch moves, deliveries to customers, purchased-vehicle collections, service transfers and single car moves.',
     h1: 'Vehicle transfers and *service runs*',
     lead: 'A driver takes the car where it needs to go. Company transfers are priced by route; single moves and service runs follow the published price list.',
     groups: [
@@ -410,27 +410,27 @@ const range = (p) => `${p.typical[0]}-${p.typical[1]} €`;
 
 // Passenger products are not sold, so they are not in the price list.
 const priceRowsFi = [
-  ['Auton siirto toiseen osoitteeseen', `alkaen ${fmt(PRODUCTS.oneWay.from)}`, 'Yksi nouto ja yksi toimitus', `Tyypillisesti ${range(PRODUCTS.oneWay)} reitin ja ajankohdan mukaan`],
-  ['Nouto ja palautus myöhemmin', `alkaen ${fmt(PRODUCTS.pickupReturn.from)}`, 'Kaksi sovittua siirtoa', `Tyypillisesti ${range(PRODUCTS.pickupReturn)}; palveluntarjoajan aikaa ei veloiteta, kun kuljettaja on lähtenyt`],
-  ['Huolto-, rengas- tai pesuajo', `alkaen ${fmt(PRODUCTS.serviceRun.from)}`, 'Nouto, toimitus ja palautus myöhemmin', `Tyypillisesti ${range(PRODUCTS.serviceRun)}; palveluntarjoajan maksut eivät sisälly`],
-  ['Auton vienti katsastukseen', `alkaen ${fmt(PRODUCTS.inspection.from)}`, `Nouto, odotus enintään ${WAITING.waitReturnIncludedMinutes} min ja palautus`, 'Katsastusmaksu maksetaan suoraan asemalle'],
-  ['Odota ja palauta', `alkaen ${fmt(PRODUCTS.waitReturn.from)}`, `Nouto, odotus enintään ${WAITING.waitReturnIncludedMinutes} min ja palautus`, `Sen jälkeen ${fmt(WAITING.hourlyRate)}/h ${WAITING.unitMinutes} minuutin erissä`],
-  ['Palautus autoliikkeeseen tai leasingyhtiölle', `alkaen ${fmt(PRODUCTS.handover.from)}`, 'Nouto ja dokumentoitu luovutus', 'Palveluntarjoajan veloitukset maksat suoraan'],
-  ['Kuljettaja matkallesi omalla autollasi', 'Kiinteä tarjous', 'Kuljettaja, sovittu reitti ja aikataulu', 'Hinta muodostuu reitistä, kestosta, matkustajamäärästä ja paluusta'],
-  ['Pitkän matkan siirto', 'Kiinteä tarjous', 'Ajettu siirto pääkaupunkiseudun ulkopuolelle', 'Polttoaine, lataus ja kuljettajan paluu eritellään'],
-  ['Yritysasiakkaat', 'Sopimushinta', 'Toistuvat siirrot, raportointi ja laskutus', 'Kuukausittainen vähimmäismäärä tai palvelumaksu'],
+  ['Auton siirto toiseen osoitteeseen', `alkaen ${fmt(PRODUCTS.oneWay.from)}`, 'Yksi nouto ja yksi toimitus', `Tyypillisesti ${range(PRODUCTS.oneWay)} reitin ja ajankohdan mukaan`, '/auton-siirtopalvelu/'],
+  ['Nouto ja palautus myöhemmin', `alkaen ${fmt(PRODUCTS.pickupReturn.from)}`, 'Kaksi sovittua siirtoa', `Tyypillisesti ${range(PRODUCTS.pickupReturn)}; palveluntarjoajan aikaa ei veloiteta, kun kuljettaja on lähtenyt`, '/auton-siirtopalvelu/'],
+  ['Huolto-, rengas- tai pesuajo', `alkaen ${fmt(PRODUCTS.serviceRun.from)}`, 'Nouto, toimitus ja palautus myöhemmin', `Tyypillisesti ${range(PRODUCTS.serviceRun)}; palveluntarjoajan maksut eivät sisälly`, '/huoltosiirto/'],
+  ['Auton vienti katsastukseen', `alkaen ${fmt(PRODUCTS.inspection.from)}`, `Nouto, odotus enintään ${WAITING.waitReturnIncludedMinutes} min ja palautus`, 'Katsastusmaksu maksetaan suoraan asemalle', '/huoltosiirto/#katsastus'],
+  ['Odota ja palauta', `alkaen ${fmt(PRODUCTS.waitReturn.from)}`, `Nouto, odotus enintään ${WAITING.waitReturnIncludedMinutes} min ja palautus`, `Sen jälkeen ${fmt(WAITING.hourlyRate)}/h ${WAITING.unitMinutes} minuutin erissä`, '/huoltosiirto/'],
+  ['Palautus autoliikkeeseen tai leasingyhtiölle', `alkaen ${fmt(PRODUCTS.handover.from)}`, 'Nouto ja dokumentoitu luovutus', 'Palveluntarjoajan veloitukset maksat suoraan', '/auton-siirtopalvelu/'],
+  ['Oma kuljettaja omalle autollesi', 'Kiinteä tarjous', 'Kuljettaja, sovittu reitti ja aikataulu', 'Hinta muodostuu reitistä, kestosta, matkustajamäärästä ja paluusta', '/oma-kuljettaja/'],
+  ['Pitkän matkan siirto', 'Kiinteä tarjous', 'Nouto palvelualueelta, ajo muualle Suomeen', 'Polttoaine, lataus ja kuljettajan paluu eritellään', '/auton-siirtopalvelu/'],
+  ['Yritysasiakkaat', 'Sopimushinta', 'Toistuvat siirrot, raportointi ja laskutus', 'Kuukausittainen vähimmäismäärä tai palvelumaksu', '/yrityksille/'],
 ];
 
 const priceRowsEn = [
-  ['Car moved to another address', `from ${fmt(PRODUCTS.oneWay.from)}`, 'One collection and one delivery', `Typically ${range(PRODUCTS.oneWay)} depending on route and timing`],
-  ['Pickup and later return', `from ${fmt(PRODUCTS.pickupReturn.from)}`, 'Two scheduled movements', `Typically ${range(PRODUCTS.pickupReturn)}; provider time is not billed once the driver has left`],
-  ['Workshop, tyre or wash run', `from ${fmt(PRODUCTS.serviceRun.from)}`, 'Collection, delivery and later return', `Typically ${range(PRODUCTS.serviceRun)}; provider charges excluded`],
-  ['Vehicle inspection run', `from ${fmt(PRODUCTS.inspection.from)}`, `Collection, up to ${WAITING.waitReturnIncludedMinutes} min wait, return`, 'The inspection fee is paid directly to the station'],
-  ['Wait and return', `from ${fmt(PRODUCTS.waitReturn.from)}`, `Collection, up to ${WAITING.waitReturnIncludedMinutes} min wait, return`, `Then ${fmt(WAITING.hourlyRate)}/h in ${WAITING.unitMinutes}-minute units`],
-  ['Dealer or lease handover', `from ${fmt(PRODUCTS.handover.from)}`, 'Collection and documented handover', 'Provider charges are settled directly'],
-  ['A driver for your journey in your own car', 'Fixed quote', 'A driver, the agreed route and schedule', 'Priced from the route, duration, passengers and return leg'],
-  ['Long-distance relocation', 'Fixed quote', 'Driven move outside the capital region', 'Fuel, charging and the driver’s return stated explicitly'],
-  ['Corporate fleet', 'Contract pricing', 'Recurring moves, reporting and invoicing', 'Minimum monthly volume or service fee'],
+  ['Car moved to another address', `from ${fmt(PRODUCTS.oneWay.from)}`, 'One collection and one delivery', `Typically ${range(PRODUCTS.oneWay)} depending on route and timing`, '/en/vehicle-relocation/'],
+  ['Pickup and later return', `from ${fmt(PRODUCTS.pickupReturn.from)}`, 'Two scheduled movements', `Typically ${range(PRODUCTS.pickupReturn)}; provider time is not billed once the driver has left`, '/en/vehicle-relocation/'],
+  ['Workshop, tyre or wash run', `from ${fmt(PRODUCTS.serviceRun.from)}`, 'Collection, delivery and later return', `Typically ${range(PRODUCTS.serviceRun)}; provider charges excluded`, '/en/service-transfer/'],
+  ['Vehicle inspection run', `from ${fmt(PRODUCTS.inspection.from)}`, `Collection, up to ${WAITING.waitReturnIncludedMinutes} min wait, return`, 'The inspection fee is paid directly to the station', '/en/service-transfer/#inspection'],
+  ['Wait and return', `from ${fmt(PRODUCTS.waitReturn.from)}`, `Collection, up to ${WAITING.waitReturnIncludedMinutes} min wait, return`, `Then ${fmt(WAITING.hourlyRate)}/h in ${WAITING.unitMinutes}-minute units`, '/en/service-transfer/'],
+  ['Dealer or lease handover', `from ${fmt(PRODUCTS.handover.from)}`, 'Collection and documented handover', 'Provider charges are settled directly', '/en/vehicle-relocation/'],
+  ['A personal driver for your own car', 'Fixed quote', 'A driver, the agreed route and schedule', 'Priced from the route, duration, passengers and return leg', '/en/personal-driver/'],
+  ['Long-distance relocation', 'Fixed quote', 'Collected in the service area, driven elsewhere in Finland', 'Fuel, charging and the driver’s return stated explicitly', '/en/vehicle-relocation/'],
+  ['Corporate fleet', 'Contract pricing', 'Recurring moves, reporting and invoicing', 'Minimum monthly volume or service fee', '/en/for-companies/'],
 ];
 
 export const pricing = {
@@ -765,8 +765,8 @@ export const safety = {
 export const faqPage = {
   fi: {
     slug: 'usein-kysyttya',
-    title: 'Usein kysyttyä DriveMe-palvelusta',
-    description: 'Vastaukset yleisimpiin kysymyksiin: ajanvaraukset, maksut, dokumentointi, ajokelpoisuus ja peruutukset.',
+    title: 'Usein kysyttyä kuljettajapalvelusta | DriveMe',
+    description: 'Tarvitsenko ajanvarauksen, kuka maksaa palveluntarjoajalle, miten peruutus toimii ja voiko joku viedä autoni katsastukseen? Vastaukset täällä.',
     h1: 'Usein kysyttyä *DriveMe-palvelusta*',
     lead: 'Jos et löydä vastausta, soita tai kirjoita, niin autamme.',
     items: [
@@ -779,16 +779,20 @@ export const faqPage = {
       { q: 'Voiko joku muu luovuttaa avaimet?', a: 'Kyllä, kun se on valtuutettu varauksessa ja henkilöllisyys sekä luovutustapa on vahvistettu.' },
       { q: 'Sisältyykö kolmannen osapuolen maksu hintaan?', a: 'Ei, ellei tarjouksessa nimenomaisesti niin sanota.' },
       { q: 'Onko DriveMe korjaamo tai katsastusasema?', a: 'Ei. DriveMe myy kuljetuksen, säilytysvastuun ajon ajaksi, dokumentoidun luovutuksen ja sovitun koordinoinnin - ei korjausta, katsastusta, neuvontaa eikä maksunvälitystä.' },
-      { q: 'Millä alueella toimitte?', a: 'Helsinki, Espoo, Vantaa ja Kauniainen. Pidemmät siirrot hinnoittelemme tapauskohtaisesti.' },
+      { q: 'Millä alueella toimitte?', a: 'Helsingissä, Espoossa, Vantaalla ja Kauniaisissa. Auto noudetaan aina näiltä alueilta. Pidemmän siirron sieltä muualle Suomeen hinnoittelemme erikseen.' },
       { q: 'Milloin varaus on sitova?', a: 'Kun olemme vahvistaneet kuljettajan, ajan ja kiinteän hinnan. Lomakkeen lähettäminen luo vasta pyynnön.' },
-      { q: 'Voinko matkustaa auton mukana?', a: 'Kyllä. Kuljettaja matkallesi -palvelussa kuljettaja ajaa sinut ja matkaseurueesi omalla autollasi, esimerkiksi lentoasemalle tai pitkälle matkalle. Auton siirroissa taas kukaan ei matkusta autossa.' },
+      { q: 'Voinko matkustaa auton mukana?', a: 'Kyllä. Oma kuljettaja -palvelussa kuljettaja ajaa sinut ja matkaseurueesi omalla autollasi, esimerkiksi tapahtumaan, työpäivän tapaamisiin tai lentoasemalle. Auton siirroissa ja huoltosiirroissa taas kukaan ei matkusta autossa.' },
       { q: 'Miten peruutus toimii?', a: 'Maksuton vähintään 24 tuntia ennen noutoa. Alle 24 tuntia: 50 % DriveMe-palkkiosta. Kuljettajan lähdön jälkeen veloitamme perusmaksun ja toteutuneen ajan ehtojen mukaisesti.' },
+      { q: 'Voinko palkata kuljettajan ajamaan omaa autoani Helsingissä?', a: 'Kyllä. DriveMe tuo ammattikuljettajan, joka ajaa omaa autoasi Helsingissä, Espoossa, Vantaalla ja Kauniaisissa. Kuljettaja voi siirtää auton toiseen osoitteeseen, viedä sen huoltoon tai katsastukseen ja takaisin, tai ajaa sinut ja seurueesi perille omalla autollasi. DriveMe tuo kuljettajan, ei autoa.' },
+      { q: 'Paljonko kuljettajapalvelu maksaa?', a: `Auton siirto toiseen osoitteeseen alkaen ${PRODUCTS.oneWay.from} €, huoltosiirto alkaen ${PRODUCTS.serviceRun.from} € ja katsastusajo alkaen ${PRODUCTS.inspection.from} €. Oma kuljettaja ja yritysten siirrot hinnoitellaan tapauskohtaisesti. Hinnat sisältävät arvonlisäveron, ja kiinteä hinta vahvistetaan aina ennen ajoa.` },
+      { q: 'Voiko joku viedä autoni katsastukseen puolestani?', a: `Kyllä. Varaat katsastusajan, ja DriveMen kuljettaja noutaa auton, vie sen asemalle ja tuo takaisin. Katsastusajo on alkaen ${PRODUCTS.inspection.from} € ja sisältää ${WAITING.waitReturnIncludedMinutes} minuuttia odotusta; katsastusmaksun maksat suoraan asemalle.` },
+      { q: 'Miten varaan kuljettajan?', a: 'Lähetä tarjouspyyntö lomakkeella (noin minuutti) tai soita +358 50 357 2836. Lähetämme kiinteän hinnan 24 tunnin kuluessa. Varaus on vahvistettu, kun hyväksyt tarjouksen ja vahvistamme kuljettajan ja ajan.' },
     ],
   },
   en: {
     slug: 'en/faq',
-    title: 'Frequently asked questions | DriveMe',
-    description: 'Answers on appointments, payments, documentation, vehicle eligibility and cancellations.',
+    title: 'FAQ: a driver for your own car in Helsinki | DriveMe',
+    description: 'Do I need an appointment, who pays the provider, how does cancellation work, and can someone take my car to the inspection? Answers here.',
     h1: 'Frequently *asked questions*',
     lead: 'If your answer is not here, call or write and we will help.',
     items: [
@@ -801,10 +805,14 @@ export const faqPage = {
       { q: 'Can someone else hand over the keys?', a: 'Yes, when authorised in the booking and the identity and handover method are confirmed.' },
       { q: 'Is the third-party fee included?', a: 'No, unless an offer expressly says so.' },
       { q: 'Is DriveMe a workshop or inspection station?', a: 'No. DriveMe sells transportation, custody during the drive, documented handover and agreed coordination - not repairs, inspections, advice or payment intermediation.' },
-      { q: 'Where do you operate?', a: 'Helsinki, Espoo, Vantaa and Kauniainen. Longer moves are priced individually.' },
+      { q: 'Where do you operate?', a: 'In Helsinki, Espoo, Vantaa and Kauniainen. The car is always collected in one of these cities. A longer move from there to elsewhere in Finland is priced separately.' },
       { q: 'When is a booking binding?', a: 'When we have confirmed the driver, the time and the fixed fee. Submitting the form only creates a request.' },
-      { q: 'Can I travel with the car?', a: 'Yes. With "a driver for your journey" a driver takes you and your passengers in your own car, for example to the airport or on a longer trip. On a vehicle move, nobody travels in the car.' },
+      { q: 'Can I travel with the car?', a: 'Yes. With the personal driver service a driver takes you and your passengers in your own car, for example to an event, business meetings or the airport. On a vehicle transfer or service run, nobody travels in the car.' },
       { q: 'How does cancellation work?', a: 'Free at least 24 hours before pickup. Under 24 hours: 50% of the DriveMe fee. After driver dispatch we charge the base fee and incurred time under the terms.' },
+      { q: 'Can I hire someone to drive my own car in Helsinki?', a: 'Yes. DriveMe provides a professional driver for your own car in Helsinki, Espoo, Vantaa and Kauniainen. The driver can move the car to another address, take it to the service or inspection and back, or drive you and your passengers in your own car. DriveMe brings the driver, never the car.' },
+      { q: 'How much does a driver for my car cost?', a: `A car moved to another address is from ${PRODUCTS.oneWay.from} €, a service transfer from ${PRODUCTS.serviceRun.from} € and an inspection run from ${PRODUCTS.inspection.from} €. A personal driver and business transfers are quoted individually. Prices include VAT, and a fixed price is always confirmed before the drive.` },
+      { q: 'Can someone take my car to the inspection for me?', a: `Yes. You book the inspection slot, and a DriveMe driver collects the car, takes it to the station and brings it back. An inspection run is from ${PRODUCTS.inspection.from} € and includes ${WAITING.waitReturnIncludedMinutes} minutes of waiting; you pay the inspection fee directly to the station.` },
+      { q: 'How do I book a driver?', a: 'Send a quote request through the form (about a minute) or call +358 50 357 2836. We send a fixed price within 24 hours. The booking is confirmed when you accept the quote and we confirm the driver and the time.' },
     ],
   },
 };
@@ -917,7 +925,7 @@ export const terms = {
 export const contact = {
   fi: {
     slug: 'yhteystiedot',
-    title: 'Yhteystiedot | DriveMe',
+    title: 'Yhteystiedot: puhelin, sähköposti ja toimisto | DriveMe',
     description: 'Ota yhteyttä DriveMeen: puhelin, sähköposti ja palvelualue pääkaupunkiseudulla. Pyydä hinta auton siirrolle.',
     h1: 'Yhteystiedot',
     lead: 'Yksi yhteyshenkilö hoitaa työn alusta loppuun. Poikkeustilanteessa saat oikean ihmisen kiinni.',
@@ -926,26 +934,32 @@ export const contact = {
     hoursTitle: 'Pyynnöt ja yhteydenotot',
     hours: [
       'Hintapyynnön voi jättää lomakkeella milloin tahansa.',
-      'Soitamme takaisin ja vahvistamme ajan ja hinnan ennen ajoa.',
+      'Lähetämme kiinteän hinnan sähköpostiin 24 tunnin kuluessa. Kiireellisissä asioissa soita.',
+      'Varaus vahvistuu, kun hyväksyt tarjouksen ja vahvistamme kuljettajan ja ajan.',
       'Yön, viikonlopun ja arkipyhän lisät on kerrottu hinnastossa.',
     ],
     areaTitle: 'Palvelualue',
-    areaNote: 'Pidemmät siirrot hinnoittelemme tapauskohtaisesti.',
+    areaNote: 'Auto noudetaan aina näiltä alueilta. Pidemmän siirron muualle Suomeen hinnoittelemme erikseen.',
+    // Who the customer is dealing with, and where: the same constants the
+    // footer and the LocalBusiness schema read.
+    companyTitle: 'Yritys ja toimisto',
   },
   en: {
     slug: 'en/contact',
-    title: 'Contact | DriveMe',
+    title: 'Contact: phone, email and office in Espoo | DriveMe',
     description: 'Contact DriveMe: phone, email and service area in the Helsinki capital region. Get a price to move your car.',
     h1: 'Contact',
     lead: 'One contact person runs the job from start to finish. When a job needs judgement, you reach a real person.',
     hoursTitle: 'Requests and contact',
     hours: [
       'You can send a price request with the form at any time.',
-      'We call you back and confirm the time and price before the drive.',
+      'We email a fixed price within 24 hours. For anything urgent, call.',
+      'The booking is confirmed when you accept the quote and we confirm the driver and the time.',
       'Night, weekend and public-holiday premiums are listed in the price list.',
     ],
     areaTitle: 'Service area',
-    areaNote: 'Longer moves are priced individually.',
+    areaNote: 'The car is always collected in these cities. A longer move elsewhere in Finland is priced separately.',
+    companyTitle: 'Company and office',
   },
 };
 
@@ -1045,6 +1059,11 @@ export const blog = {
     lead: 'Kirjoitamme autonsiirroista, huoltosiirroista ja autoalan arjesta pääkaupunkiseudulla - siitä, mitä siirron tilaaminen käytännössä vaatii ja mitä kannattaa tietää etukäteen.',
     // Shown until the widget has articles to put in its place.
     pending: 'Artikkelit ilmestyvät tähän. Jos lista ei näy, päivitä sivu hetken kuluttua.',
+    // Static article list and article pages (build/blog-sync.mjs).
+    listTitle: 'Kaikki artikkelit',
+    readArticle: 'Lue artikkeli',
+    published: 'Julkaistu',
+    back: 'Kaikki artikkelit',
     ctaTitle: 'Tarvitsetko siirron *nyt*?',
     ctaBody: 'Kerro reitti, ajankohta ja auto, niin lähetämme kiinteän hinnan 24 tunnin kuluessa.',
   },
@@ -1055,6 +1074,10 @@ export const blog = {
     h1: 'The DriveMe *blog*',
     lead: 'We write about vehicle transfers, service transfers and the day-to-day of the motor trade in the capital region - what ordering a transfer actually involves, and what is worth knowing in advance.',
     pending: 'Articles appear here. If the list is empty, refresh the page in a moment.',
+    listTitle: 'All articles (in Finnish)',
+    readArticle: 'Read the article',
+    published: 'Published',
+    back: 'All articles',
     note: 'Articles are published in Finnish.',
     ctaTitle: 'Need a transfer *now*?',
     ctaBody: 'Tell us the route, the timing and the car, and we send a fixed price within 24 hours.',

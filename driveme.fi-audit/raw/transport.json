@@ -1,0 +1,125 @@
+{
+  "url": "https://driveme.fi/",
+  "host": "driveme.fi",
+  "tls": {
+    "host": "driveme.fi",
+    "port": 443,
+    "connected_ip": "13.215.239.219",
+    "verified": true,
+    "verify_error": null,
+    "verify_code": null,
+    "certificate_read": true,
+    "subject": {
+      "common_name": "driveme.fi",
+      "organization": null
+    },
+    "issuer": {
+      "common_name": "YE1",
+      "organization": "Let's Encrypt"
+    },
+    "not_before": "2026-09-28T06:48:36Z",
+    "not_after": "2026-12-27T06:48:35Z",
+    "days_until_expiry": 35,
+    "expired": false,
+    "not_yet_valid": false,
+    "san": [
+      "*.driveme.fi",
+      "driveme.fi"
+    ],
+    "san_count": 2,
+    "covers_host": true,
+    "sibling_host": "www.driveme.fi",
+    "covers_sibling": true,
+    "protocol": "TLSv1.3",
+    "cipher": "TLS_AES_128_GCM_SHA256",
+    "cipher_bits": 128
+  },
+  "headers": {
+    "url": "https://driveme.fi/",
+    "status": 200,
+    "https": true,
+    "hsts": {
+      "present": true,
+      "value": "max-age=63072000; includeSubDomains; preload",
+      "max_age": 63072000,
+      "include_subdomains": true,
+      "preload": true,
+      "meets_preload_requirements": true,
+      "preload_gaps": [],
+      "preload_scope_note": "Covers the header directives, the certificate and the same-host HTTP redirect when those sections ran. Not checked: that every subdomain serves HTTPS, and that this host is the registrable domain the preload list requires.",
+      "issues": []
+    },
+    "csp": {
+      "present": true,
+      "report_only": false,
+      "policies": 1,
+      "issues": [
+        "'unsafe-inline' in script-src."
+      ]
+    },
+    "x_content_type_options": {
+      "present": true,
+      "value": "nosniff",
+      "ok": true
+    },
+    "framing": {
+      "x_frame_options": null,
+      "frame_ancestors": true,
+      "ok": true
+    },
+    "referrer_policy": {
+      "present": true,
+      "value": "strict-origin-when-cross-origin",
+      "ok": true
+    },
+    "permissions_policy": {
+      "present": true,
+      "feature_policy_present": false
+    },
+    "cookies": []
+  },
+  "redirects": {
+    "http_to_https": {
+      "checked_url": "http://driveme.fi/",
+      "redirects_to_https": true,
+      "one_hop": true,
+      "first_hop_status": 301,
+      "first_hop_target": "https://driveme.fi/",
+      "first_hop_same_host": true,
+      "permanent": true,
+      "hops": 1,
+      "final_url": "https://driveme.fi/",
+      "error": null
+    },
+    "www": {
+      "host": "driveme.fi",
+      "sibling_host": "www.driveme.fi",
+      "host_final_url": "https://driveme.fi/",
+      "sibling_final_url": "https://driveme.fi/",
+      "sibling_resolves": true,
+      "sibling_tls_error": false,
+      "same_final_url": true,
+      "error": null
+    }
+  },
+  "findings": [
+    {
+      "id": "csp-weak",
+      "severity": "Low",
+      "message": "The Content-Security-Policy has obvious gaps.",
+      "evidence": {
+        "issues": [
+          "'unsafe-inline' in script-src."
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "Critical": 0,
+    "High": 0,
+    "Medium": 0,
+    "Low": 1,
+    "Info": 0,
+    "total": 1
+  }
+}

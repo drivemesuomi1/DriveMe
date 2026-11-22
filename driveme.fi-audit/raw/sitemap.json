@@ -1,0 +1,130 @@
+{
+  "target": "https://driveme.fi",
+  "robots_url": "https://driveme.fi/robots.txt",
+  "declared": [
+    {
+      "url": "https://driveme.fi/sitemap.xml",
+      "query_redacted": false
+    }
+  ],
+  "found": [
+    {
+      "url": "https://driveme.fi/sitemap.xml",
+      "query_redacted": false,
+      "source": "robots.txt",
+      "status_code": 200,
+      "kind": "urlset",
+      "valid": true,
+      "error": null
+    }
+  ],
+  "checked": [
+    {
+      "url": "https://driveme.fi/sitemap.xml",
+      "query_redacted": false,
+      "source": "robots.txt",
+      "status_code": 200,
+      "kind": "urlset",
+      "valid": true,
+      "error": null
+    },
+    {
+      "url": "https://driveme.fi/sitemap_index.xml",
+      "query_redacted": false,
+      "source": "common_path",
+      "status_code": 404,
+      "kind": null,
+      "valid": false,
+      "error": "HTTP 404"
+    },
+    {
+      "url": "https://driveme.fi/sitemap-index.xml",
+      "query_redacted": false,
+      "source": "common_path",
+      "status_code": 404,
+      "kind": null,
+      "valid": false,
+      "error": "HTTP 404"
+    },
+    {
+      "url": "https://driveme.fi/wp-sitemap.xml",
+      "query_redacted": false,
+      "source": "common_path",
+      "status_code": 404,
+      "kind": null,
+      "valid": false,
+      "error": "HTTP 404"
+    }
+  ],
+  "warnings": [],
+  "error": null,
+  "expanded": {
+    "files": [
+      {
+        "url": "https://driveme.fi/sitemap.xml",
+        "query_redacted": false,
+        "source": "robots.txt",
+        "status_code": 200,
+        "kind": "urlset",
+        "valid": true,
+        "error": null,
+        "gzip": false,
+        "bytes": 27381,
+        "decompressed_bytes": null,
+        "url_count": 54,
+        "child_count": 0,
+        "invalid_loc_count": 0,
+        "duplicate_count": 0,
+        "lastmod_count": 0,
+        "lastmod_invalid_count": 0,
+        "lastmod_oldest": null,
+        "lastmod_newest": null,
+        "lastmod_most_common": null,
+        "lastmod_identical_share": null,
+        "cross_host_url_count": 0,
+        "cross_host_url_examples": [],
+        "redacted_url_count": 0,
+        "redacted_url_examples": [],
+        "findings": [],
+        "sample_urls": [
+          "https://driveme.fi/",
+          "https://driveme.fi/en/",
+          "https://driveme.fi/sv/",
+          "https://driveme.fi/palvelut/",
+          "https://driveme.fi/en/services/",
+          "https://driveme.fi/sv/tjanster/",
+          "https://driveme.fi/hinnasto/",
+          "https://driveme.fi/en/pricing/",
+          "https://driveme.fi/sv/priser/",
+          "https://driveme.fi/nain-se-toimii/",
+          "https://driveme.fi/en/how-it-works/",
+          "https://driveme.fi/sv/sa-fungerar-det/",
+          "https://driveme.fi/turvallisuus/",
+          "https://driveme.fi/en/safety/",
+          "https://driveme.fi/sv/sakerhet/",
+          "https://driveme.fi/usein-kysyttya/",
+          "https://driveme.fi/en/faq/",
+          "https://driveme.fi/sv/vanliga-fragor/",
+          "https://driveme.fi/ehdot/",
+          "https://driveme.fi/en/terms/"
+        ]
+      }
+    ],
+    "totals": {
+      "sitemap_files": 1,
+      "total_urls": 54,
+      "unique_urls": 54,
+      "duplicates_within_files": 0,
+      "duplicates_across_files": 0,
+      "invalid_locs": 0
+    },
+    "children": {
+      "limit": 50,
+      "listed": 0,
+      "fetched": 0,
+      "skipped": 0
+    },
+    "truncated": false,
+    "sample_size": 20
+  }
+}

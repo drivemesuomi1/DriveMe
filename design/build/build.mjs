@@ -13,15 +13,17 @@
  */
 
 import { mkdir, writeFile, readFile, rm } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ORIGIN, LOCALES, brand, ui, words, nav, menuGroups, howItWorks, trustStrip } from '../content/site.mjs';
 import { services, byKey } from '../content/services.mjs';
-import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType } from '../api/_lib/pricing.js';
+import { SERVICE_PRODUCTS, PRODUCTS, servicesOfType, WAITING, PREMIUMS, CANCELLATION } from '../api/_lib/pricing.js';
 import { home, servicesHub, pricing, howPage, safety, faqPage, terms, contact, booking, blog, about } from '../content/pages.mjs';
 import { offer, OFFER, offerExpired } from '../content/offer.mjs';
-import { page, esc, serviceSchema, breadcrumbSchema, faqSchema, HREFLANG } from './layout.mjs';
+import { articles, articlePath, fiDate } from '../content/blog.mjs';
+import { page, esc, serviceSchema, breadcrumbSchema, faqSchema, websiteSchema, HREFLANG } from './layout.mjs';
 import { url, serviceUrl, allPages, fileFor } from './routes.mjs';
 import {
   crumbs, serviceCards, stepsList, factCard, callout, faqList, tickList, fancy, plain, trustIcon,
@@ -37,6 +39,32 @@ import { bookingForm, bookingScript } from './booking-form.mjs';
    one, and neither is anywhere near the 7.6MB the video cost. The file names
    carry the year because /assets is cached for a year - a new picture needs a
    new name to reach anyone who has been here before. */
+/**
+ * Intrinsic size of a JPEG, read from its SOF marker, so every service hero
+ * carries width and height without a hand-kept table that drifts when a
+ * photo is replaced. Returns null for anything it cannot read.
+ */
+function jpegSize(rel) {
+  try {
+    const b = readFileSync(join(ROOT, rel));
+    let i = 2;
+    while (i + 9 < b.length) {
+      if (b[i] !== 0xFF) { i++; continue; }
+      const m = b[i + 1];
+      if (m >= 0xC0 && m <= 0xCF && ![0xC4, 0xC8, 0xCC].includes(m)) {
+        return { width: b.readUInt16BE(i + 7), height: b.readUInt16BE(i + 5) };
+      }
+      i += 2 + b.readUInt16BE(i + 2);
+    }
+  } catch { /* missing file: no dimensions */ }
+  return null;
+}
+
+const heroDims = (name) => {
+  const d = jpegSize(`assets/service-heroes/${name}.jpg`);
+  return d ? ` width="${d.width}" height="${d.height}"` : '';
+};
+
 const HERO_PHOTO = {
   src: '/assets/hero-chauffeur-2026.jpg',
   srcset: '/assets/hero-chauffeur-2026-1000.jpg 1000w, /assets/hero-chauffeur-2026.jpg 1600w',
@@ -179,7 +207,9 @@ ${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody, primaryHref: src('home_c
     // the body - it is the Largest Contentful Paint on every homepage.
     headExtra: `<link rel="preload" as="image" href="${HERO_PHOTO.src}" imagesrcset="${HERO_PHOTO.srcset}" imagesizes="100vw" fetchpriority="high">`,
     schema: [
-      breadcrumbSchema([{ label: ui[locale].breadcrumbHome, href: url('home', locale) }]),
+      // No BreadcrumbList here: the homepage shows no breadcrumb, and a
+      // one-item trail ("Home") describes nothing a crawler can use.
+      websiteSchema(locale),
       faqSchema(homeFaq(locale)),
     ],
   });
@@ -357,7 +387,7 @@ function renderService(service, locale) {
   const body = `
 <!-- Operational note (${service.key}): ${esc(service.devNote)} -->
 <section class="page-head${heroImage ? ' service-hero' : ''}${heroImage && service.category === 'driver' ? ' service-hero-passenger' : ''}${['homeDelivery', 'relocation'].includes(service.key) ? ' service-hero-right' : ''}">
-  ${heroImage ? `<img class="service-hero-photo" src="/assets/service-heroes/${heroImage}.jpg" alt="${esc(c.nav)}" fetchpriority="high" decoding="async">\n  ` : ''}<div class="wrap page-head-inner">
+  ${heroImage ? `<img class="service-hero-photo" src="/assets/service-heroes/${heroImage}.jpg" alt="${esc(c.nav)}"${heroDims(heroImage)} fetchpriority="high" decoding="async">\n  ` : ''}<div class="wrap page-head-inner">
     ${heroImage ? '<div class="service-hero-copy">\n    ' : ''}${crumbs([
     { label: t.breadcrumbHome, href: url('home', locale) },
     { label: nav[locale][0].label, href: url('services', locale) },
@@ -506,7 +536,7 @@ function renderBlockPage(id, def, locale, navKey) {
 </section>
 <section class="sec">
   <div class="wrap stack">
-    ${c.reviewNotice ? callout(words[locale].reviewPending, c.reviewNotice, 'warn') : ''}
+    ${c.reviewNotice ? callout(words[locale].reviewPending, c.reviewNotice, 'warn', 2) : ''}
     ${c.blocks.map((b) => renderBlock(b, locale)).join('\n')}
   </div>
 </section>
@@ -671,7 +701,7 @@ function renderContact(locale) {
   <div class="wrap">
     <div class="facts">
       <div class="fact">
-        <h3>${esc(words[locale].getInTouch)}</h3>
+        <h2>${esc(words[locale].getInTouch)}</h2>
         <dl class="contact-list">
           <div><dt>${esc(t.phoneLabel)}</dt><dd><a href="tel:${brand.phoneHref}">${esc(brand.phone)}</a></dd></div>
           <div><dt>${esc(t.generalEmailLabel)}</dt><dd><a href="mailto:${brand.email}">${esc(brand.email)}</a></dd></div>
@@ -680,12 +710,20 @@ function renderContact(locale) {
         <p class="contact-cta"><a href="${t.bookHref}">${esc(t.requestPrice)} →</a></p>
       </div>
       <div class="fact">
-        <h3>${esc(c.hoursTitle)}</h3>
+        <h2>${esc(c.hoursTitle)}</h2>
         ${tickList(c.hours, 'plain', c.hoursNote)}
       </div>
       <div class="fact">
-        <h3>${esc(c.areaTitle)}</h3>
+        <h2>${esc(c.areaTitle)}</h2>
         ${tickList(words[locale].cities, 'check', c.areaNote)}
+      </div>
+      <div class="fact">
+        <h2>${esc(c.companyTitle)}</h2>
+        <dl class="contact-list">
+          <div><dt>${esc(t.officeLabel)}</dt><dd><a href="${esc(brand.office.maps)}" target="_blank" rel="noopener">${esc(brand.office.street)}<br>${esc(brand.office.postalCode)} ${esc(brand.office.city)}</a></dd></div>
+          <div><dt>${esc(words[locale].companyProvider.trim().replace(/:$/, ''))}</dt><dd>${esc(brand.legalName)} (DriveMe)</dd></div>
+          ${brand.businessId ? `<div><dt>${esc(words[locale].companyBusinessId.trim().replace(/:$/, ''))}</dt><dd>${esc(brand.businessId)}</dd></div>` : ''}
+        </dl>
       </div>
     </div>
     <div style="margin-top:26px">${disclaimerBlock(locale)}</div>
@@ -712,6 +750,87 @@ ${ctaBand(locale)}`;
    The container is not left empty. A widget that is disabled, blocked or
    still empty would otherwise leave a blank page under a heading, and the
    visitor would read that as a broken site rather than as "no posts yet". */
+/** The synced articles as plain links: title, date and excerpt. */
+function blogList(locale) {
+  const c = blog[locale];
+  return `<h2 class="blog-list-title">${esc(c.listTitle)}</h2>
+    <ul class="blog-list"${locale === 'fi' ? '' : ' lang="fi"'}>${articles.map((a) => `
+      <li class="blog-item">
+        <h3><a href="${articlePath(a.slug)}">${esc(a.title)}</a></h3>
+        <p class="blog-meta"><time datetime="${esc(a.isoDate)}">${esc(fiDate(a.isoDate))}</time></p>
+        <p>${esc(a.excerpt)}</p>
+      </li>`).join('')}
+    </ul>`;
+}
+
+/**
+ * One synced Soro article as its own page. Finnish only, self-canonical, in
+ * the sitemap with its real publication date. The body is the sanitised HTML
+ * from content/blog/articles.json (build/blog-sync.mjs keeps only p, h2-h4,
+ * lists, emphasis and safe links).
+ */
+function renderArticle(a) {
+  const locale = 'fi';
+  const c = blog.fi;
+  const t = ui.fi;
+  const path = articlePath(a.slug);
+  const body = `
+<section class="page-head">
+  <div class="wrap page-head-inner">
+    ${crumbs([
+    { label: t.breadcrumbHome, href: url('home', locale) },
+    { label: plain(c.h1), href: url('blog', locale) },
+    { label: a.title },
+  ])}
+    <h1>${esc(a.title)}</h1>
+    <p class="lead">${esc(a.excerpt)}</p>
+    <p class="hint page-head-note">${esc(c.published)} <time datetime="${esc(a.isoDate)}">${esc(fiDate(a.isoDate))}</time> · DriveMe</p>
+  </div>
+</section>
+<section class="sec">
+  <div class="wrap">
+    <article class="prose blog-article">
+      ${/* The first image of the page, so not lazy: it is the likely LCP on a
+           phone. Real dimensions come from the sync (image header). */
+  a.image ? `<img class="blog-article-image" src="${esc(a.image)}" alt=""${a.imageWidth ? ` width="${a.imageWidth}" height="${a.imageHeight}"` : ''} fetchpriority="high" decoding="async">` : ''}
+      ${a.content}
+    </article>
+    <p class="blog-back"><a href="${url('blog', locale)}">← ${esc(c.back)}</a></p>
+  </div>
+</section>
+${ctaBand(locale, { title: c.ctaTitle, body: c.ctaBody })}`;
+
+  return page({
+    id: 'blog', locale, navKey: null, selfPath: path,
+    langTargets: { fi: path, en: url('blog', 'en'), sv: url('blog', 'sv') },
+    // The brand suffix only while the whole title stays within ~60 characters;
+    // a long article title is more useful whole than cut off in results.
+    title: a.title.length <= 49 ? `${a.title} | DriveMe` : a.title,
+    description: a.excerpt,
+    body,
+    schema: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: a.title,
+        description: a.excerpt,
+        datePublished: a.isoDate,
+        inLanguage: 'fi-FI',
+        url: `${ORIGIN}${path}`,
+        mainEntityOfPage: `${ORIGIN}${path}`,
+        ...(a.image ? { image: a.image } : {}),
+        author: { '@id': `${ORIGIN}/#business` },
+        publisher: { '@id': `${ORIGIN}/#business` },
+      },
+      breadcrumbSchema([
+        { label: t.breadcrumbHome, href: url('home', locale) },
+        { label: plain(c.h1), href: url('blog', locale) },
+        { label: a.title, href: path },
+      ]),
+    ],
+  });
+}
+
 function renderBlog(locale) {
   const c = blog[locale];
   const t = ui[locale];
@@ -726,7 +845,10 @@ function renderBlog(locale) {
 </section>
 <section class="sec">
   <div class="wrap">
-    <div id="soro-blog" class="blog-feed"><p class="blog-pending">${esc(c.pending)}</p></div>
+    <!-- The static list is what a crawler (or a visitor without JavaScript)
+         reads. The Soro widget replaces the contents of #soro-blog with its
+         own live list when it runs, so nobody sees the list twice. -->
+    <div id="soro-blog" class="blog-feed">${articles.length ? blogList(locale) : `<p class="blog-pending">${esc(c.pending)}</p>`}</div>
     <script src="${brand.blogEmbed.origin}/api/embed/${brand.blogEmbed.id}" defer></script>
   </div>
 </section>
@@ -833,9 +955,19 @@ ${alt}
   </url>`;
     }).join('\n');
 
+  // Blog articles: Finnish only (no alternates), dated from Soro's own
+  // publication time - the one lastmod in this file that is a real date.
+  const posts = articles.map((a) => `  <url>
+    <loc>${ORIGIN}${articlePath(a.slug)}</loc>
+    <lastmod>${a.isoDate.slice(0, 10)}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>`).join('\n');
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${items}
+${items}${posts ? `
+${posts}` : ''}
 </urlset>
 `;
 }
@@ -895,7 +1027,7 @@ function llmsTxt() {
     const price = !product || product.quote || product.hidden
       ? 'quoted individually'
       : `from ${product.from} € incl. VAT`;
-    return `- [${s.fi.nav}](${ORIGIN}${url(`service:${key}`, 'fi')}) — ${price}. ${s.en.short}`;
+    return `- [${s.fi.nav}](${ORIGIN}${url(`service:${key}`, 'fi')}): ${s.en.short}, ${price}.`;
   };
   const sold = services.filter((s) => !isGated(s)).map((s) => s.key);
 
@@ -908,13 +1040,40 @@ function llmsTxt() {
 > DriveMe brings the driver, never the car.
 
 - Operator: ${brand.legalName} (DriveMe), ${brand.city}, Finland
-- Service area: ${brand.coverage.join(', ')}
+- Service area: ${brand.coverage.join(', ')} - these four cities only, not
+  the rest of Uusimaa. The car is always collected in one of them; a longer
+  move from there to elsewhere in Finland is priced on a separate quote.
 - Phone: ${brand.phone} · Email: ${brand.email}
 - Languages: Finnish (${ORIGIN}/), English (${ORIGIN}/en/), Swedish (${ORIGIN}/sv/)
 - Prices include VAT. Third-party charges (inspection, service, tyres, wash)
   are paid by the customer directly to that provider.
-- A request is not a booking: DriveMe calls back and confirms a fixed price
-  before anyone drives.
+- A request is not a booking: DriveMe sends a fixed price by email within 24
+  hours, and the booking exists once the customer accepts that quote.
+- DriveMe is not a taxi, a limousine service or a car rental: the customer
+  supplies the car, DriveMe supplies the driver.
+
+## Pricing rules (VAT included)
+
+- Car moved to another address: from ${PRODUCTS.oneWay.from} € (typically ${PRODUCTS.oneWay.typical[0]}–${PRODUCTS.oneWay.typical[1]} €)
+- Service, tyre or wash run with a later return: from ${PRODUCTS.serviceRun.from} € (typically ${PRODUCTS.serviceRun.typical[0]}–${PRODUCTS.serviceRun.typical[1]} €)
+- Inspection run, driver waits up to ${WAITING.waitReturnIncludedMinutes} min and returns the car: from ${PRODUCTS.inspection.from} €
+- Personal driver in the customer's own car, and business transfers: quoted individually
+- Starting prices cover one job inside the capital region on a weekday.
+- Waiting: ${WAITING.includedMinutes} min included per handover, then ${WAITING.hourlyRate} €/h in ${WAITING.unitMinutes}-minute units.
+- Premiums (only the highest one applies): night ${PREMIUMS.night.fromHour}–${PREMIUMS.night.toHour} +${PREMIUMS.night.pct} %, weekend +${PREMIUMS.weekend.pct} %, public holiday +${PREMIUMS.publicHoliday.pct} %, under ${PREMIUMS.urgent.withinHours} h notice +${PREMIUMS.urgent.pct} %.
+- Cancellation: free at least ${CANCELLATION.freeBeforeHours} h before pickup; later, ${CANCELLATION.lateFeePct} % of the DriveMe fee.
+
+## Common questions
+
+- Can I hire someone to drive my own car in Helsinki? Yes — DriveMe supplies
+  a professional driver for the customer's own car in ${brand.coverage.join(', ')}.
+- Is there a service that takes my car to the inspection? Yes — the customer
+  books the inspection; DriveMe collects the car, takes it to the station and
+  returns it (${ORIGIN}${url('service:workshopTransfer', 'fi')}).
+- Can someone move my car within Helsinki? Yes — a vehicle transfer to another
+  address (${ORIGIN}${url('service:relocation', 'fi')}).
+- How do I book? Send the quote form (${ORIGIN}${url('booking', 'fi')}) or call
+  ${brand.phone}.
 
 ## Services
 
@@ -928,7 +1087,27 @@ ${sold.map(line).join('\n')}
 - [Frequently asked questions](${ORIGIN}${url('faq', 'fi')})
 - [Terms of service](${ORIGIN}${url('terms', 'fi')})
 - [Contact](${ORIGIN}${url('contact', 'fi')})
-`;
+${articles.length ? `
+## Articles (Finnish)
+
+${articles.map((a) => `- [${a.title}](${ORIGIN}${articlePath(a.slug)}): ${a.excerpt}`).join('\n')}
+` : ''}`;
+}
+
+/**
+ * _redirects - Soro widget deep links (?post=<slug>) to the static article,
+ * one rule per SYNCED article. Netlify applies this file before netlify.toml.
+ * An article that exists in Soro but has not been synced yet matches nothing,
+ * so its shared link still opens /blogi/ and the widget renders it.
+ */
+function blogRedirects() {
+  const lines = ['# Generated by build/build.mjs from content/blog/articles.json - do not edit.'];
+  for (const a of articles) {
+    for (const from of [url('blog', 'fi'), url('blog', 'en'), url('blog', 'sv')]) {
+      lines.push(`${from} post=${a.slug} ${articlePath(a.slug)} 301!`);
+    }
+  }
+  return lines.join('\n') + '\n';
 }
 
 /* =============================================================== main */
@@ -959,10 +1138,15 @@ async function main() {
     }
   }
 
+  for (const a of articles) {
+    await emit(articlePath(a.slug), renderArticle(a));
+  }
+
   await emitRaw('404.html', render404());
   await emitRaw('sitemap.xml', sitemap());
   await emitRaw('robots.txt', robots());
   await emitRaw('llms.txt', llmsTxt());
+  await emitRaw('_redirects', blogRedirects());
 
   await writeFile(MANIFEST, JSON.stringify(written.sort(), null, 2), 'utf8');
   console.log(`built ${written.length} files:`);

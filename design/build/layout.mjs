@@ -42,9 +42,12 @@ export function page(o) {
   // alternates: pointing them at another URL would tell a crawler this page
   // is that page.
   const routed = Boolean(routes[o.id]) && o.canonical !== false;
-  const canonical = routed ? abs(per[o.locale]) : '';
+  // A single-language page outside the route table (a blog article) names
+  // its own address: indexable, self-canonical, and no hreflang, because it
+  // has no translation to point at.
+  const canonical = o.selfPath ? abs(o.selfPath) : routed ? abs(per[o.locale]) : '';
 
-  const alternates = routed
+  const alternates = o.selfPath ? '' : routed
     ? LOCALES
       .filter((l) => per[l])
       .map((l) => `<link rel="alternate" hreflang="${HREFLANG[l]}" href="${esc(abs(per[l]))}">`)
@@ -86,7 +89,7 @@ ${canonical ? `<meta property="og:url" content="${esc(canonical)}">` : ''}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css?v=5">
+<link rel="stylesheet" href="/assets/site.css?v=6">
 ${o.noindex ? '<meta name="robots" content="noindex,follow">\n' : ''}${o.headExtra || ''}
 <script type="application/ld+json">
 ${JSON.stringify(schema.length === 1 ? schema[0] : schema, null, 0)}
@@ -94,7 +97,7 @@ ${JSON.stringify(schema.length === 1 ? schema[0] : schema, null, 0)}
 </head>
 <body>
 <a class="skip" href="#main">${esc(t.skip)}</a>
-${header(o.locale, o.navKey, o.id)}
+${header(o.locale, o.navKey, o.id, o.langTargets)}
 <main id="main">
 ${o.body}
 </main>
@@ -103,13 +106,21 @@ ${/* Not on the request page itself: there the floating CTA points at the page
       the visitor is already reading, competing with the form's own submit. */
   o.id === 'booking' ? '' : `<a class="btn btn-accent float-cta" id="float-cta" href="${t.bookHref}">${esc(t.requestPrice)} <span class="arrow" aria-hidden="true">→</span></a>`}
 <script src="/assets/site.js?v=5" defer></script>
+<!-- Speculation Rules: prefetch a same-site page when the visitor starts to
+     reach for its link (moderate = hover or pointer-down), so the next page
+     paints sooner. Prefetch only - never prerender - so no script runs, no
+     beacon fires and nothing changes state: it is one ordinary GET of HTML.
+     Excluded: the API, the operational surfaces (admin, tracking, driver),
+     the quote forms, any job-token URL (?t=) and the Soro widget's ?post=
+     links, which the widget handles in-page. Unsupported browsers ignore it. -->
+<script type="speculationrules">{"prefetch":[{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/api/*","/admin*","/track*","/driver*","/pyyda-tarjous/*","/en/request-a-quote/*","/sv/begar-offert/*","/*?t=*","/*?post=*"]}}]},"eagerness":"moderate"}]}</script>
 ${o.bodyEnd || ''}
 </body>
 </html>
 `;
 }
 
-function header(locale, navKey, id) {
+function header(locale, navKey, id, langTargets) {
   const t = ui[locale];
   const items = nav[locale].filter((n) => headerNav.includes(n.key)).map((n) => {
     const current = n.key === navKey ? ' aria-current="page"' : '';
@@ -125,7 +136,10 @@ function header(locale, navKey, id) {
     </li>`;
   }).join('');
 
-  const per = routes[id] || routes.home;
+  // langTargets: where each language should land from a page that has no
+  // translation of its own (a Finnish article sends English readers to the
+  // English blog page, not to the front page).
+  const per = langTargets || routes[id] || routes.home;
 
   return `${promoBar(locale, id)}<div class="topbar">
   <div class="wrap topbar-inner">
@@ -389,7 +403,10 @@ export function organizationSchema() {
     email: brand.email,
     image: `${ORIGIN}/assets/icons-v2/social-1200x630.png`,
     logo: `${ORIGIN}/assets/icons-v2/icon-512.png`,
-    description: 'DriveMe noutaa asiakkaan ajokuntoisen auton ja ajaa sen sovittuun osoitteeseen, katsastukseen, huoltoon, renkaanvaihtoon tai pesuun pääkaupunkiseudulla. Asiakas ei matkusta autossa.',
+    // Both halves of what is sold: the car driven without the customer, and
+    // the customer driven in their own car. The old line said nobody travels
+    // in the car, which contradicted the personal-driver page.
+    description: 'DriveMe tuo ammattikuljettajan asiakkaan omalle autolle pääkaupunkiseudulla: auton siirto toiseen osoitteeseen, vienti katsastukseen, huoltoon, renkaanvaihtoon tai pesuun ja takaisin, sekä oma kuljettaja, joka ajaa asiakasta tämän omalla autolla. DriveMe tuo kuljettajan, ei autoa.',
     priceRange: '€€',
     ...(brand.businessId ? { taxID: brand.businessId } : {}),
     // The profiles are the same organisation, not three namesakes.
@@ -400,7 +417,8 @@ export function organizationSchema() {
       contactType: 'customer service',
       email: brand.serviceEmail,
       telephone: brand.phone,
-      areaServed: 'FI',
+      // The confirmed service area, not the whole country (owner, 22 Nov 2026).
+      areaServed: brand.coverage.map((c) => ({ '@type': 'City', name: c })),
       availableLanguage: LOCALES,
     }],
     address: {
@@ -444,6 +462,23 @@ export function organizationSchema() {
           return offer;
         }),
     },
+  };
+}
+
+/**
+ * WebSite node for the homepages: names the site (Google uses it for the site
+ * name shown in results) and ties it to the business entity. No SearchAction:
+ * the site has no search to point at.
+ */
+export function websiteSchema(locale) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${ORIGIN}/#website`,
+    name: 'DriveMe',
+    url: `${ORIGIN}/`,
+    inLanguage: HREFLANG[locale],
+    publisher: { '@id': `${ORIGIN}/#business` },
   };
 }
 

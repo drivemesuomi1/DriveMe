@@ -1,0 +1,24 @@
+{
+  "url": "https://driveme.fi/huoltosiirto/",
+  "psi": {
+    "mobile": {
+      "url": "https://driveme.fi/huoltosiirto/",
+      "strategy": "mobile",
+      "lighthouse_version": null,
+      "lighthouse_scores": {},
+      "lab_metrics": {},
+      "field_metrics": {},
+      "opportunities": [],
+      "diagnostics": [],
+      "failed_audits": [],
+      "passed_audits_count": 0,
+      "seo_audits": [],
+      "accessibility_audits": [],
+      "audit_details": {},
+      "analysis_timestamp": null,
+      "error": "PSI rate limit exceeded. No API key was used, so this request shared Google's public keyless quota. Add a Google API key (run `/seo google setup` or pass --api-key) and retry."
+    }
+  },
+  "crux": null,
+  "error": "PSI rate limit exceeded. No API key was used, so this request shared Google's public keyless quota. Add a Google API key (run `/seo google setup` or pass --api-key) and retry."
+}

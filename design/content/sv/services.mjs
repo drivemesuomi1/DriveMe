@@ -54,7 +54,7 @@ export const relocation = {
     { q: 'Behöver jag åka med i bilen?', a: 'Nej. Föraren kör bilen ensam och inga passagerare åker med. Det räcker att nycklarna lämnas över som överenskommet vid upphämtningen och att någon tar emot bilen framme, eller att nycklarna lämnas på en överenskommen plats.' },
     { q: 'Kan jag beställa returen också?', a: 'Ja. Ange i förfrågan att bilen ska tillbaka senare, så prissätter vi upphämtningen och returen som ett uppdrag.' },
     { q: 'Körs bilen eller transporteras den på flak?', a: 'Vi kör den. Det är snabbare och förmånligare för en körduglig bil. Om bilen inte är körduglig eller inte får köras behövs flak, och då hänvisar vi dig till en transportpartner.' },
-    { q: 'Flyttar ni bilar utanför huvudstadsregionen?', a: 'Ja, men långa flyttar prissätts från fall till fall eftersom förarens returresa är en del av kostnaden. Begär offert för rutten.' },
+    { q: 'Flyttar ni bilar utanför huvudstadsregionen?', a: 'Bilen hämtas alltid i Helsingfors, Esbo, Vanda eller Grankulla. En flytt därifrån till annan ort i Finland prissätts separat, eftersom förarens returresa är en del av kostnaden. Begär offert för rutten.' },
     { q: 'Vem betalar bränsle och vägavgifter?', a: 'De anges separat i offerten. Vi gömmer dem inte i priset.' },
   ],
 };
@@ -67,7 +67,7 @@ export const personalDriver = {
   short: 'Personlig förare',
   title: 'Personlig förare för din egen bil i Helsingfors | DriveMe',
   description: 'En professionell förare kör din egen bil under en kväll, ett evenemang, en arbetsdag eller en dag med flera stopp i huvudstadsregionen.',
-  h1: 'Personlig förare för kundens egen bil',
+  h1: 'Personlig förare för din egen bil',
   lead: 'Din bil, dina planer, en professionell förare - för en kväll, ett evenemang eller en dag med flera stopp.',
   keywords: ['personlig förare', 'chaufför egen bil', 'förare för kvällen'],
   steps: [
@@ -99,6 +99,8 @@ export const personalDriver = {
     { q: 'Kör föraren min bil eller er bil?', a: 'Din egen. Det är kärnan i tjänsten: en bekant bil, egna bilbarnstolar och egna saker, utan att byta till ett främmande fordon.' },
     { q: 'Är tjänsten tillgänglig nu?', a: 'Ja. En förare för din egen bil går att boka, och priset bekräftas utifrån rutt och längd före körningen.' },
     { q: 'Finns det ett minimiantal timmar?', a: 'Vi rekommenderar minst två timmar. Vi uppger priset och minimitiden i samband med bokningen.' },
+    { q: 'Vad kostar en personlig förare?', a: 'Varje körning prissätts utifrån tidtabell, rutt och längd, och du får ett fast pris före körningen. Parkering, vägavgifter och bilens bränsle eller laddning ingår inte om inte offerten säger annat.' },
+    { q: 'Hur bokar jag en förare till min egen bil?', a: 'Skicka en offertförfrågan via formuläret eller ring oss. Berätta tidtabell, upphämtningsadress, stopp och mål. Vi skickar ett fast pris inom 24 timmar, och bokningen bekräftas när du godkänner offerten.' },
     { q: 'Transporterar ni ett barn ensamt?', a: 'Nej. Transport av barn utan medföljande vuxen ingår inte i tjänsten.' },
   ],
 };
@@ -152,7 +154,7 @@ export const business = {
   nav: 'För företag',
   short: 'För företag',
   title: 'Företagens bilflytt i Helsingfors | DriveMe',
-  description: 'Upphämtningar, serviceflyttar, överlämningar till anställda och andra flyttar av företagsbilar från en och samma pålitliga partner. I Helsingforsregionen.',
+  description: 'Bilflyttar för bilhandlare, leasing- och fordonsbolag samt biluthyrare: flytt mellan verksamhetsställen, hemleverans och hämtning av inköpt bil.',
   h1: 'Bilflyttjänster för bilbranschen och företag',
   lead: 'DriveMe erbjuder professionella bilflyttjänster för bilbranschen. Vi sköter bilhandelns flyttar, leasing- och vagnparksbolagens flyttar samt hyrbilsföretagens fordonsflyttar utan att er egen personal behöver köra. Vi gör också flytt mellan verksamhetsställen och enskilda flyttar enligt överenskommen tidtabell. Begär offert på en enskild flytt eller diskutera återkommande körningar och avtalad fakturering.',
   keywords: ['bilflyttjänster bilbranschen', 'bilhandelns bilflyttar', 'flytt mellan verksamhetsställen', 'flytt av företagsbilar'],

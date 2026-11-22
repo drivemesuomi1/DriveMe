@@ -5,6 +5,9 @@
  * läsare i Finland - inte översatt mening för mening.
  */
 
+import { PRODUCTS, WAITING } from '../../api/_lib/pricing.js';
+
+
 export const branchTransfer = {
   slug: 'bilflytt-mellan-verksamhetsstallen',
   nav: 'Flytt mellan verksamhetsställen',
@@ -78,7 +81,7 @@ export const homeDelivery = {
   ],
   boundary: 'DriveMe ansvarar för flytten och den dokumenterade överlämningen. För köpets villkor, handlingarna och det som utlovats om bilen ansvarar den säljande affären. Kvitteringen bekräftar mottagandet; den avstår inte från konsumentens rättigheter.',
   faq: [
-    { q: 'Till vilket område levererar ni?', a: 'Huvudstadsregionen och Nyland hör till standardområdet. Längre leveranser i Finland avtalas rutt för rutt, när förarens returresa är klar.' },
+    { q: 'Till vilket område levererar ni?', a: 'Vi levererar i Helsingfors, Esbo, Vanda och Grankulla, och bilen hämtas alltid i någon av dessa städer. En leverans till annan ort i Finland avtalas separat för rutten, när förarens returresa är klar.' },
     { q: 'Måste köparen vara på plats?', a: 'Ja, eller en mottagare som köparen har namngett. Överlämningen kvitteras av den person ni har uppgett.' },
     { q: 'Hur går det med handlingar och nycklar?', a: 'Föraren levererar de handlingar och nycklar som lämnats med, som de är. Vi fyller inte i och undertecknar inte köpehandlingar för affärens räkning.' },
     { q: 'Kan ni hämta en inbytesbil samtidigt?', a: 'Det kan vi, men det är en egen flytt: ett separat fordon, en egen skickkontroll och en egen rad i offerten.' },
@@ -129,9 +132,9 @@ export const workshopTransfer = {
   slug: 'serviceflytt',
   nav: 'Serviceflytt',
   short: 'Serviceflytt',
-  title: 'Serviceflytt – upphämtning och retur | DriveMe',
-  description: 'Bilen körs till det serviceställe du väljer och returneras enligt överenskommelse. DriveMe sköter körningen; arbetet avtalas direkt med leverantören.',
-  h1: 'Serviceflytt – upphämtning och retur',
+  title: 'Bilen till service eller besiktning – serviceflytt | DriveMe',
+  description: `Vi kör din bil till service, besiktning, däckbyte eller tvätt och tillbaka i huvudstadsregionen. Från ${PRODUCTS.serviceRun.from} €, besiktningskörning från ${PRODUCTS.inspection.from} €.`,
+  h1: 'Serviceflytt – din bil till service eller besiktning och tillbaka',
   lead: 'DriveMe hämtar den kördugliga bilen på överenskommen adress, kör den till det serviceställe ni väljer och returnerar den enligt överenskommelse. Tjänsten passar företagens fordon, verkstädernas kunder och privata bilägare.',
   destinations: [
     { id: 'besiktning', label: 'Besiktning', body: 'Du bokar tiden; vi kör bilen till stationen och tillbaka med handlingarna.' },
@@ -165,6 +168,7 @@ export const workshopTransfer = {
   ],
   boundary: 'DriveMe ansvarar för flytten, dokumentationen och den överenskomna tidtabellen. Bokningen, arbetets innehåll och betalningen för det sköter beställaren direkt med leverantören. Föraren godkänner inga tilläggsarbeten.',
   faq: [
+    { q: 'Kan DriveMe köra min bil till besiktningen?', a: `Ja. Du bokar besiktningstiden själv, och föraren hämtar bilen, kör den till stationen och tillbaka. En besiktningskörning där föraren väntar på stationen kostar från ${PRODUCTS.inspection.from} € och omfattar ${WAITING.waitReturnIncludedMinutes} minuters väntetid. Besiktningsavgiften betalar du direkt till stationen.` },
     { q: 'Måste tiden vara bokad på förhand?', a: 'Ja. Beställaren bokar service-, besiktnings- eller annan tid och meddelar oss leverantör, tidpunkt och eventuellt bokningsnummer.' },
     { q: 'Vilka tjänster passar flytten för?', a: 'Flytten kan avtalas till service, besiktning, däckbyte, tvätt, glasreparation eller annan bokad biltjänst. DriveMe sköter körningen, arbetet utför den leverantör ni valt.' },
     { q: 'Vad händer om servicen blir försenad?', a: 'Returen körs som en separat körning när leverantören bekräftar att bilen är klar. Tid som bilen står hos leverantören utan förare är ingen förarväntan och debiteras inte som sådan.' },
