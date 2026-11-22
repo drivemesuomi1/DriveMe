@@ -63,7 +63,8 @@ test('every areaServed lists exactly the four cities', async () => {
 });
 
 test('llms.txt names the four cities and mentions Uusimaa only to exclude it', async () => {
-  const txt = await readFile(join(ROOT, 'llms.txt'), 'utf8');
+  // CRLF from a Windows checkout (core.autocrlf) must not fail the check.
+  const txt = (await readFile(join(ROOT, 'llms.txt'), 'utf8')).replace(/\r\n/g, '\n');
   assert.ok(txt.includes(`Service area: ${brand.coverage.join(', ')} - these four cities only, not\n  the rest of Uusimaa.`));
   const withoutExclusion = txt.replace('not\n  the rest of Uusimaa', '');
   assert.equal(WIDER.test(withoutExclusion), false, 'llms.txt claims wider coverage');

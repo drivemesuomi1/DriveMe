@@ -12,7 +12,9 @@ import { sanitize } from '../build/blog-sync.mjs';
 import { articles, articlePath } from '../content/blog.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const read = (rel) => readFile(join(ROOT, rel), 'utf8');
+// Line endings normalised: a Windows checkout with core.autocrlf turns the
+// generated files into CRLF, while the repository and Netlify have LF.
+const read = async (rel) => (await readFile(join(ROOT, rel), 'utf8')).replace(/\r\n/g, '\n');
 
 test('the sanitiser keeps article structure and drops everything active', () => {
   const dirty = '<p class="x" onclick="evil()">Hei <strong>sinä</strong></p>'
