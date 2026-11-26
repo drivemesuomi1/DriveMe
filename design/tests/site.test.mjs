@@ -119,7 +119,13 @@ test('the homepage offers the three choices and keeps business one click away', 
     const c = home[locale];
 
     // The balanced hero the brief asks for, not a dealership-only one.
-    assert.ok(html.includes(escapeHtml(c.lead)), `${locale}: the hero lead is not the briefed one`);
+    // Compared as visible text: service keywords inside it are links.
+    const leadHtml = /<p class="lead">([\s\S]*?)<\/p>/.exec(html)[1];
+    assert.equal(leadHtml.replace(/<[^>]+>/g, ''), escapeHtml(c.lead), `${locale}: the hero lead is not the briefed one`);
+    for (const l of c.leadLinks || []) {
+      assert.ok(leadHtml.includes(`<a href="${serviceUrl(l.service, locale)}">${escapeHtml(l.text)}</a>`),
+        `${locale}: "${l.text}" in the lead does not link to its service page`);
+    }
     assert.match(html, new RegExp(`class="accent">${c.h1Accent}</span>`), `${locale}: hero heading`);
 
     // Every choice that is sold is on the page, each linking to its own

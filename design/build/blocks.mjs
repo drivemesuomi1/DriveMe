@@ -395,7 +395,7 @@ export const serviceHeroImages = {
  * pages themselves, so a card is a preview of where it goes - and the price
  * rides along, which a bare link could never carry.
  */
-export function relatedLinks(keys, locale) {
+export function relatedLinks(keys, locale, title) {
   const t = ui[locale];
   const cards = keys.map((k) => {
     const photo = `/assets/service-heroes/card/${serviceHeroImages[k]}`;
@@ -416,7 +416,7 @@ export function relatedLinks(keys, locale) {
   }).join('');
 
   return `<div>
-    <div class="sec-head"><h2>${esc(t.related)}</h2></div>
+    <div class="sec-head"><h2>${esc(title || t.related)}</h2></div>
     <ul class="rel-grid">${cards}</ul>
     <p class="rel-all"><a href="${url('services', locale)}">${esc(t.allServices)} →</a></p>
   </div>`;

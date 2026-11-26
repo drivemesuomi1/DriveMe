@@ -125,7 +125,7 @@ function renderHome(locale) {
     <div class="hero-copy reveal">
       <p class="eyebrow">${esc(c.eyebrow)}</p>
       <h1><span class="accent">${esc(c.h1Accent)}</span> ${esc(c.h1Rest)}</h1>
-      <p class="lead">${esc(c.lead)}</p>
+      <p class="lead">${linkedLead(c, locale)}</p>
       <div class="hero-ctas">
         <a class="btn btn-light" href="${c.primary.href}">${esc(c.primary.label)} <span class="arrow" aria-hidden="true">→</span></a>
         <a class="btn btn-outline-light" href="${c.secondary.href}">${esc(c.secondary.label)}</a>
@@ -337,8 +337,45 @@ function safetyPoints(locale) {
   return words[locale].safetyPoints;
 }
 
+/**
+ * The services section at the foot of the main information pages (how it
+ * works, FAQ, contact, about, safety, terms): the same photo cards the
+ * service pages use for related services, so every main page links to the
+ * three core services in its own content, plus "all services" for the rest.
+ * A gated service is never shown.
+ */
+const MAIN_PAGE_SERVICES = ['relocation', 'workshopTransfer', 'personalDriver'];
+function mainPageServices(locale) {
+  const keys = MAIN_PAGE_SERVICES.filter((k) => !isGated(byKey[k]));
+  const label = nav[locale].find((n) => n.key === 'services').label;
+  return `<section class="sec sec-raised">
+  <div class="wrap">
+    ${relatedLinks(keys, locale, label)}
+  </div>
+</section>`;
+}
+
+/** Homepage FAQ: any homepage-specific questions first, five in all. */
 function homeFaq(locale) {
-  return faqPage[locale].items.slice(0, 5);
+  const extra = home[locale].faqExtra || [];
+  return extra.concat(faqPage[locale].items).slice(0, 5);
+}
+
+/**
+ * The hero lead with its service keywords linked to their pages (first
+ * occurrence of each phrase in `leadLinks`), so the homepage passes its
+ * relevance to the service pages with descriptive anchors. Plain text where a
+ * language defines no links.
+ */
+function linkedLead(c, locale) {
+  let html = esc(c.lead);
+  for (const l of c.leadLinks || []) {
+    const phrase = esc(l.text);
+    const at = html.indexOf(phrase);
+    if (at < 0) throw new Error(`leadLinks: "${l.text}" is not in the ${locale} lead`);
+    html = `${html.slice(0, at)}<a href="${serviceUrl(l.service, locale)}">${phrase}</a>${html.slice(at + phrase.length)}`;
+  }
+  return html;
 }
 
 /* ====================================================== services hub */
@@ -540,6 +577,7 @@ function renderBlockPage(id, def, locale, navKey) {
     ${c.blocks.map((b) => renderBlock(b, locale)).join('\n')}
   </div>
 </section>
+${/* The price list links every row to its service already. */ id === 'pricing' ? '' : mainPageServices(locale)}
 ${ctaBand(locale)}`;
 
   return page({
@@ -570,6 +608,7 @@ function renderFaq(locale) {
     ${disclaimerBlock(locale)}
   </div>
 </section>
+${mainPageServices(locale)}
 ${ctaBand(locale)}`;
 
   return page({
@@ -729,6 +768,7 @@ function renderContact(locale) {
     <div style="margin-top:26px">${disclaimerBlock(locale)}</div>
   </div>
 </section>
+${mainPageServices(locale)}
 ${ctaBand(locale)}`;
 
   return page({

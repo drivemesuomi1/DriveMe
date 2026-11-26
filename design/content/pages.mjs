@@ -19,13 +19,20 @@ const fmt = (n) => `${n} €`;
 export const home = {
   fi: {
     slug: '',
-    title: 'Kuljettajapalvelu ja autonsiirrot Helsingissä | DriveMe',
-    description: 'Kuljettaja omalle autollesi pääkaupunkiseudulla: auton siirto, vienti huoltoon tai katsastukseen ja oma kuljettaja. Kiinteä hinta ennen ajoa.',
+    // Client copy, 27 Nov 2026, extended to all four service cities.
+    title: 'Kuljettajapalvelu Helsinki, Espoo, Vantaa, Kauniainen | DriveMe',
+    description: 'Ammattikuljettaja ajaa omaa autoasi Helsingissä, Espoossa, Vantaalla ja Kauniaisissa. Oma kuljettaja ja auton siirto – kiinteä hinta ennen ajoa. Pyydä tarjous!',
     eyebrow: 'Kuljettajapalvelut ja autonsiirrot',
-    h1: 'Kuljettajapalvelut ja autonsiirrot',
-    h1Accent: 'Kuljettajapalvelut',
-    h1Rest: 'ja autonsiirrot',
-    lead: 'Ammattikuljettaja ajaa omaa autoasi: siirtää sen toiseen osoitteeseen, vie huoltoon tai katsastukseen tai kuljettaa sinut perille. Kerro tarpeesi - saat selkeän tarjouksen ennen varausta.',
+    h1: 'Kuljettajapalvelu Helsingissä, Espoossa, Vantaalla ja Kauniaisissa',
+    h1Accent: 'Kuljettajapalvelu',
+    h1Rest: 'Helsingissä, Espoossa, Vantaalla ja Kauniaisissa',
+    lead: 'Ammattikuljettaja ajaa omaa autoasi Helsingissä, Espoossa, Vantaalla ja Kauniaisissa. Tilaa oma kuljettaja tai auton siirto – viemme autosi huoltoon, katsastukseen tai sovittuun osoitteeseen. Saat kiinteän hinnan ennen ajoa.',
+    // Phrases in the lead that link to their service page (first occurrence).
+    leadLinks: [
+      { text: 'oma kuljettaja', service: 'personalDriver' },
+      { text: 'auton siirto', service: 'relocation' },
+      { text: 'huoltoon, katsastukseen', service: 'workshopTransfer' },
+    ],
     primary: { label: 'Pyydä tarjous', href: '/pyyda-tarjous/?lahde=home_hero' },
     secondary: { label: 'Soita meille', href: 'tel:+358503572836' },
     trustLine: 'Palvelemme Helsingissä, Espoossa, Vantaalla ja Kauniaisissa. Pidempi siirto sieltä muualle Suomeen sovitaan erillisellä tarjouksella.',
@@ -34,13 +41,13 @@ export const home = {
     choices: [
       {
         key: 'relocation',
-        title: 'Auton siirto',
+        title: 'Auton siirto Helsingissä, Espoossa, Vantaalla ja Kauniaisissa',
         body: 'Noudamme autosi ja ajamme sen sovittuun osoitteeseen.',
         href: '/pyyda-tarjous/?palvelu=relocation&lahde=home_move',
       },
       {
         key: 'personalDriver',
-        title: 'Oma kuljettaja',
+        title: 'Oma kuljettaja – matkusta omassa autossasi',
         body: 'Matkusta omassa autossasi ammattikuljettajan kanssa.',
         href: '/pyyda-tarjous/?palvelu=personalDriver&lahde=home_driver',
       },
@@ -52,6 +59,13 @@ export const home = {
       },
     ],
     businessLine: 'Autoliike, leasing- tai kalustoyhtiö? Hoidamme toimipisteiden väliset siirrot, kotiintoimitukset ja ostoautojen noudot sopimuksella.',
+
+    // Shown first in the homepage FAQ (client, 27 Nov 2026); the rest of the
+    // homepage FAQ comes from the FAQ page, keeping five questions in all.
+    faqExtra: [
+      { q: 'Mitä oma kuljettaja maksaa?', a: 'Hinta vahvistetaan ennen ajoa. Pyydä tarjous, niin saat kiinteän hinnan 24 tunnin kuluessa.' },
+      { q: 'Voiko kuljettaja viedä autoni katsastukseen?', a: 'Kyllä. Kuljettajamme vie autosi katsastukseen, huoltoon tai renkaanvaihtoon ja tuo sen takaisin.' },
+    ],
 
     trustTitle: 'Mihin voit *luottaa*',
     trustPoints: [
@@ -204,6 +218,12 @@ export const home = {
     h1Accent: 'Chauffeur services',
     h1Rest: 'and vehicle transfers',
     lead: 'A professional driver for your own car: moved to another address, taken to the service or the inspection, or driving you there. Tell us your plans for a clear quote before booking.',
+    // Phrases in the lead that link to their service page (first occurrence).
+    leadLinks: [
+      { text: 'moved to another address', service: 'relocation' },
+      { text: 'taken to the service or the inspection', service: 'workshopTransfer' },
+      { text: 'driving you there', service: 'personalDriver' },
+    ],
     primary: { label: 'Request a quote', href: '/en/request-a-quote/?source=home_hero' },
     secondary: { label: 'Call us', href: 'tel:+358503572836' },
     trustLine: 'We serve Helsinki, Espoo, Vantaa and Kauniainen. A longer transfer from there to elsewhere in Finland is agreed on a separate quote.',

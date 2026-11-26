@@ -638,6 +638,10 @@ section[id],div[id]{scroll-margin-top:120px}
 .hero h1 .accent{color:#9CC8FF;font-weight:700;display:block}
 .hero .eyebrow{color:#E9F2FF}
 .hero .lead{color:#DFE8F3;margin-top:var(--s-6);max-width:46ch}
+/* Service keywords in the hero lead link to their pages: same colour as the
+   text, marked by an underline, so the paragraph reads as before. */
+.hero .lead a{color:inherit;text-decoration:underline;text-decoration-color:rgba(223,232,243,.55);text-underline-offset:3px;text-decoration-thickness:1px}
+.hero .lead a:hover,.hero .lead a:focus-visible{text-decoration-color:currentColor}
 /* Finnish compounds are long: on a phone the accent word has to fit the
    column, and may break rather than run off the screen. */
 @media (max-width:480px){

@@ -25,6 +25,12 @@ export const home = {
   h1Accent: 'Förartjänster',
   h1Rest: 'och bilflyttar',
   lead: 'En yrkesförare kör din egen bil: till en annan adress, till service eller besiktning, eller kör dig dit du ska. Berätta vad du behöver - du får en tydlig offert före bokningen.',
+  // Phrases in the lead that link to their service page (first occurrence).
+  leadLinks: [
+    { text: 'till en annan adress', service: 'relocation' },
+    { text: 'till service eller besiktning', service: 'workshopTransfer' },
+    { text: 'kör dig dit du ska', service: 'personalDriver' },
+  ],
   primary: { label: 'Begär offert', href: '/sv/begar-offert/?kalla=home_hero' },
   secondary: { label: 'Ring oss', href: 'tel:+358503572836' },
   trustLine: 'Vi betjänar Helsingfors, Esbo, Vanda och Grankulla. En längre flytt därifrån till annan ort i Finland avtalas med separat offert.',
