@@ -59,6 +59,7 @@ export const brand = {
   social: [
     { key: 'facebook', label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61595698043597' },
     { key: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/drivemefinland/' },
+    { key: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/company/driveme-suomi/' },
   ],
 };
 
